@@ -166,3 +166,30 @@ def test_streaming_completion_is_sse(monkeypatch):
     payloads = [line.removeprefix("data: ") for line in response.text.splitlines() if line]
     assert json.loads(payloads[1])["choices"][0]["delta"] == {"content": "pong"}
     assert payloads[-1] == "[DONE]"
+
+
+@respx.mock
+def test_streaming_upstream_error_emits_sse_error_instead_of_crashing(monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant")
+    respx.post(constants.ANTHROPIC_API_URL).mock(
+        return_value=httpx.Response(429, json={"error": {"message": "rate limited"}})
+    )
+    with (
+        _client() as client,
+        client.stream(
+            "POST",
+            "/v1/chat/completions",
+            headers=AUTH,
+            json={
+                "model": "c",
+                "stream": True,
+                "messages": [{"role": "user", "content": "hi"}],
+            },
+        ) as response,
+    ):
+        body = b"".join(response.iter_bytes()).decode()
+
+    assert body.rstrip().endswith("data: [DONE]")
+    first_payload = json.loads(body.split("data: ", 1)[1].split("\n\n", 1)[0])
+    assert first_payload["error"]["type"] == "upstream_error"
+    assert "rate limited" in first_payload["error"]["message"]

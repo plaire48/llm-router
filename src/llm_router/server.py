@@ -20,8 +20,12 @@ from llm_router.models import ChatCompletionRequest
 
 
 def _upstream_status_error(exc: httpx.HTTPStatusError) -> RouterError:
+    try:
+        detail = exc.response.text
+    except httpx.ResponseNotRead:
+        detail = f"HTTP {exc.response.status_code}"
     return RouterError(
-        f"upstream error: {exc.response.text}",
+        f"upstream error: {detail}",
         type="upstream_error",
         code="upstream_error",
         status_code=exc.response.status_code,

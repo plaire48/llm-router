@@ -47,14 +47,16 @@ class AnthropicAdapter:
         body = to_anthropic_request(request, profile)
         body["stream"] = True
         translator = StreamTranslator(profile)
-        yield f"data: {json.dumps(translator.start())}\n\n"
         async with self.client.stream(
             "POST",
             constants.ANTHROPIC_API_URL,
             json=body,
             headers=headers,
         ) as response:
+            if response.status_code >= 400:
+                await response.aread()
             response.raise_for_status()
+            yield f"data: {json.dumps(translator.start())}\n\n"
             event_type: str | None = None
             async for line in response.aiter_lines():
                 if line.startswith("event:"):
