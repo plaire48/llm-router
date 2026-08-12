@@ -1,0 +1,74 @@
+from typer.testing import CliRunner
+
+from llm_router.cli import app
+
+runner = CliRunner()
+
+YAML = """
+profiles:
+  - name: gpt-4o
+    provider: openai
+    auth: api_key
+    api_key_env: OPENAI_API_KEY
+    model: gpt-4o
+"""
+
+
+def _profiles_file(tmp_path):
+    path = tmp_path / "profiles.yaml"
+    path.write_text(YAML)
+    return path
+
+
+def test_profiles_list(tmp_path):
+    result = runner.invoke(
+        app,
+        ["profiles", "list", "--profiles", str(_profiles_file(tmp_path))],
+    )
+    assert result.exit_code == 0
+    assert "gpt-4o" in result.stdout
+    assert "openai" in result.stdout
+    assert "api_key" in result.stdout
+
+
+def test_serve_without_master_key_fails(tmp_path, monkeypatch):
+    monkeypatch.delenv("LLM_ROUTER_MASTER_KEY", raising=False)
+    monkeypatch.chdir(tmp_path)
+    result = runner.invoke(
+        app,
+        ["serve", "--profiles", str(_profiles_file(tmp_path))],
+    )
+    assert result.exit_code != 0
+    assert "master" in result.stdout.lower() or "master" in str(result.exception).lower()
+
+
+def test_serve_uses_settings_and_overrides(tmp_path, monkeypatch):
+    monkeypatch.setenv("LLM_ROUTER_MASTER_KEY", "secret")
+    called = {}
+
+    def fake_run(application, *, host, port):
+        called.update(application=application, host=host, port=port)
+
+    monkeypatch.setattr("uvicorn.run", fake_run)
+    result = runner.invoke(
+        app,
+        [
+            "serve",
+            "--profiles",
+            str(_profiles_file(tmp_path)),
+            "--host",
+            "0.0.0.0",
+            "--port",
+            "9999",
+        ],
+    )
+    assert result.exit_code == 0
+    assert called["host"] == "0.0.0.0"
+    assert called["port"] == 9999
+    assert called["application"].title == "FastAPI"
+
+
+def test_oauth_login_rejects_unimplemented_provider():
+    result = runner.invoke(app, ["oauth", "login", "openai"])
+    assert result.exit_code == 1
+    assert "pending verified discovery" in result.stdout
