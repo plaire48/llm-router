@@ -1,8 +1,9 @@
-# 계정 사용량 패널 설계 문서 (Anthropic + OpenAI)
+# 계정 사용량 패널 설계 문서 (Claude Enterprise + ChatGPT Enterprise)
 
 - 날짜: 2026-08-12
 - 상태: 조사 완료, 설계 제안 (사용자 승인 대기)
 - 선행: `2026-08-12-usage-dashboard-design.md` (라우터 자체 사용량 대시보드)
+- **정정 이력:** 초판은 Console Admin API(`usage_report/messages`)와 OpenAI 플랫폼 조직 API를 전제했다. 사용자 조직이 **Claude Enterprise + ChatGPT Enterprise**로 확인되어 전면 교체했다. 두 Enterprise 제품은 API·키 종류가 모두 다르다.
 
 ## 1. 목표
 
@@ -11,71 +12,65 @@
 | 소스 | 무엇을 보여주나 | 왜 필요한가 |
 |---|---|---|
 | **라우터 계측** (구현 완료) | 이 라우터를 거쳐 간 호출의 실제 토큰 수 | 내가 진짜 얼마나 썼는지 — 즉시, 요청 단위, 제공자 무관하게 가로질러 |
-| **Anthropic 계정** (신규) | 조직 전체 토큰 사용량·비용 | 라우터 밖 사용량 포함, 청구서와 대조 |
-| **OpenAI 계정** (신규) | 조직 전체 사용량·비용 | 위와 동일 |
+| **Claude Enterprise 계정** (신규) | 조직 전체 사용자별·조직별 토큰/비용 | 라우터 밖 사용량 포함, 청구와 대조 |
+| **ChatGPT Enterprise 계정** (신규, 불확실) | 워크스페이스 사용량 | 위와 동일 — 단 §2.2 참고 |
 
-라우터 계측은 **대체되지 않는다.** 계정 API는 조직 전체를 늦게(~5분) 집계해 주는 반면, 라우터는 내 호출만 즉시·요청 단위로 보여준다. 둘은 서로 다른 질문에 답하므로 함께 둔다.
+라우터 계측은 **대체되지 않는다.** 계정 API는 조직 전체를 수 시간 지연으로 집계하고 최대 30일간 값이 수정된다. 라우터는 내 호출만 즉시·요청 단위로 보여준다. 서로 다른 질문에 답한다.
 
 ## 2. 조사 결과 (2026-08-12 공식 문서 확인)
 
-### 2.1 Anthropic — Usage & Cost Admin API
+### 2.1 Claude Enterprise — Analytics API ✅ 확정
 
 | 항목 | 값 |
 |---|---|
-| 사용량 | `GET https://api.anthropic.com/v1/organizations/usage_report/messages` |
-| 비용 | `GET https://api.anthropic.com/v1/organizations/cost_report` |
-| 인증 | `x-api-key: sk-ant-admin01-...` + `anthropic-version: 2023-06-01` |
-| 시간 범위 | `starting_at`, `ending_at` (ISO 8601) |
-| 버킷 | `bucket_width=1m|1h|1d` |
-| 그룹핑 | `group_by[]=model|workspace_id|api_key_id|service_tier|context_window|inference_geo|speed` |
-| 필터 | `models[]`, `workspace_ids[]`, `api_key_ids[]`, `service_tiers[]`, … |
-| 토큰 구분 | uncached input / cached input / cache creation / output |
-| 비용 버킷 | **1d 전용**, USD |
-| 페이징 | `has_more` + `next_page` |
-| 데이터 지연 | 보통 5분 이내 |
-| 폴링 권장 | 지속 사용 시 분당 1회 이하 |
+| API | **Claude Enterprise Analytics API** (Console Admin API가 **아님**) |
+| 베이스 | `https://api.anthropic.com/v1/organizations/analytics/` |
+| 키 종류 | **Analytics API key** (`read:analytics` 스코프) |
+| 키 발급 | claude.ai > Organization settings > API — **primary owner만** 가능, 먼저 public API access를 켜야 함 |
+| 인증 헤더 | `x-api-key` |
+| 제공 데이터 | 사용자별 활동, 활동 요약, 프로젝트/스킬/커넥터 사용, **비용·사용량 리포트(사용자별 + 조직 전체 토큰·비용)** |
+| 데이터 시작일 | **2026-01-01 이후만** |
+| 비용·사용량 신선도 | 보통 4시간, 최대 24시간 |
+| 값 수정 | 최대 **30일간** 재조정됨. 청구 등급 수치는 30일 이상 지난 날짜를 조회 |
+| 레이트 리밋 | **조직 단위 60 req/min** (키 단위 아님) |
+| 리스트 파라미터 | 대괄호 표기 — `products[]=chat&products[]=claude_code` |
 
-**버킷 상한** (초과 시 페이징 필요):
+**반드시 알아야 할 세 가지 함정:**
 
-| 단위 | 기본 | 최대 |
-|---|---|---|
-| `1m` | 60 | 1,440 |
-| `1h` | 24 | 168 |
-| `1d` | 7 | 31 |
+1. **요금제에 따라 의미가 다르다.** 공식 문서: *"cost and usage 엔드포인트는 **usage-based** Enterprise 플랜에 적용되고, **seat-based** Enterprise 플랜에서는 **usage credits만** 반영한다."* 시트 기반 플랜이면 토큰 비용이 아니라 크레딧 소진량을 보게 된다. **구현 전에 어느 플랜인지 확인해야 한다.**
+2. **금액은 센트 단위 십진 문자열.** `"41280.000000"` = **$412.80**. 달러로 바꾸려면 십진 파싱 후 100으로 나눈다. 수백만 달러를 넘길 수 있으므로 **이진 부동소수점 파싱 금지**.
+3. **`data_refreshed_at` 이후 구간은 불완전하다.** `ending_at`을 생략하면 응답 꼬리에 미완성 데이터가 붙는다. 반복 호출에서 값이 흔들리지 않게 하려면 `ending_at`을 **이전 응답의 `data_refreshed_at` 이하로** 설정한다.
 
-**중요한 제약:**
+기타: 페이지네이션 커서는 발급 시점의 쿼리에 묶인다 — 파라미터를 바꾸면 400이므로 커서 없이 처음부터 다시 시작해야 한다. Amazon Bedrock 경유 Claude Code 사용량은 이 API에 나오지 않는다.
 
-- **개인 계정은 사용 불가.** 조직(Organization)이 있어야 하고, Admin API key는 admin 역할만 발급할 수 있다.
-- **Claude Enterprise(claude.ai)는 이 API가 아니다.** 별도의 **Claude Enterprise Analytics API**와 **Analytics API key**를 쓴다. Claude Enterprise 조직은 Console에 나타나지 않고 Admin API key가 없다.
-- Priority Tier 비용은 cost_report에 포함되지 않는다(usage로 추적).
-- Code Execution 비용은 cost_report의 `description`에만 나오고 usage에는 없다.
-- Claude Code **사용자별** 비용은 별도의 Claude Code Analytics API.
+### 2.2 ChatGPT Enterprise — 불확실 ⚠️
 
-### 2.2 OpenAI — Admin usage/cost API
+공개 문서만으로는 **일반 워크스페이스 사용량을 뽑는 프로그래밍 API를 확인하지 못했다.** 확인된 것과 못 한 것을 구분해 적는다.
 
-| 항목 | 값 |
-|---|---|
-| 사용량 | `GET https://api.openai.com/v1/organization/usage/completions` |
-| 비용 | `GET https://api.openai.com/v1/organization/costs` |
-| 인증 | `Authorization: Bearer $OPENAI_ADMIN_KEY` (admin key) |
-| 시간 범위 | `start_time`, `end_time` — **Unix 초** (Anthropic의 ISO 8601과 다름) |
-| 그룹핑 | `project_id`, `user_id`, `api_key_id`, `model`, `batch`, `service_tier` |
+**확인된 것:**
 
-**중요:** 재무 목적이면 usage가 아니라 **costs**를 봐야 한다. usage는 세밀하지만 청구서와 정확히 일치하지 않을 수 있다(공식 문서 명시).
+- 워크스페이스 분석 대시보드(Workspace Settings → Analytics): 채택·참여 지표, **CSV 내보내기** 제공.
+- **Analytics API가 존재한다** — 다만 도달 가능한 공식 문서는 **Codex 범위**로 서술돼 있고, 같은 문서가 *"ChatGPT 워크스페이스 분석과 Codex 분석은 서로 다른 제품 범위를 다룬다"* 고 명시한다.
+- Analytics API 인증: **"Platform organization API key"**, 그리고 *"키의 조직이 워크스페이스의 조직과 일치해야 한다"*.
+- Compliance API: `api.chatgpt.com/v1/compliance` — 감사·법무용 대화 기록(JSONL). **사용량 분석용이 아니다.**
+
+**확인 못 한 것:** 라우트·스키마·파라미터·페이지네이션 계약 전체가 **인증 포털 뒤에** 있다 — `https://chatgpt.com/codex/cloud/settings/apireference`. 공식 문서가 *"인증된 레퍼런스가 현재의 키 발급, 스코프 요건, 라우트, 스키마, 필드, 시간 의미론, 페이지네이션 동작을 소유한다. 이 페이지는 그 계약을 복제하지 않는다"* 고 명시한다.
+
+> 서드파티 블로그들은 "OpenAI가 Admin API에 사용량 분석 엔드포인트를 추가했다"고 주장하지만 **OpenAI 자체 문서로 확인되지 않았다.** 근거 없는 구현을 시작하지 않는다.
+
+**따라서 ChatGPT Enterprise 소스는 스파이크가 선행한다** — §5 참고.
 
 ### 2.3 이 프로젝트에 중요한 사실
 
-**계정 사용량 API는 우리가 이미 가진 구독 OAuth 토큰으로 접근할 수 없다.** 별도의 관리자 키가 필요하다:
+**계정 사용량 API는 우리가 가진 구독 OAuth 토큰으로 접근할 수 없다.** 완전히 분리된 축이다.
 
-| 무엇을 보려는가 | 필요한 자격증명 | 어디서 얻나 |
+| 목적 | 자격증명 | 발급 주체·위치 |
 |---|---|---|
-| Anthropic API 조직 사용량 | Admin API key (`sk-ant-admin01-...`) | Console, admin 역할 |
-| Claude Enterprise(claude.ai) 사용량 | Analytics API key | claude.ai |
-| OpenAI 조직 사용량 | OpenAI Admin key | OpenAI 플랫폼, owner 역할 |
+| 추론 (구현 완료) | 구독 OAuth 토큰 | 사용자 브라우저 로그인 |
+| Claude Enterprise 사용량 | Analytics API key | **primary owner**, claude.ai 조직 설정 |
+| ChatGPT Enterprise 사용량 | Platform organization API key | 워크스페이스와 같은 조직 |
 
-즉 **구독 OAuth(추론용)와 관리자 키(집계 조회용)는 완전히 분리된 축**이다. 구독으로 로그인했다고 사용량 API가 열리지 않고, 반대도 마찬가지다.
-
-**그리고 "구독 잔여량"은 여전히 이 API들로 안 나온다.** 이 API들은 **API 조직의 과금형 사용량**을 보여준다. Claude Pro/Max나 ChatGPT Plus 구독의 잔여 할당량을 알려주는 공식 엔드포인트는 여전히 없다.
+**그리고 "구독 잔여량"은 여전히 이 API들로 안 나온다.** Claude Enterprise가 seat-based 플랜이면 **usage credits** 소진량은 볼 수 있다 — 이게 잔여량에 가장 근접한 값이지만, Pro/Max 개인 구독의 잔여 할당량과는 다른 개념이다.
 
 ## 3. 설계
 
@@ -85,87 +80,102 @@
 
 ```
 /dashboard
- ├─ [라우터 계측]  ← SQLite (기존, 즉시·요청 단위)
- ├─ [Anthropic 계정] ← GET /v1/account/anthropic/usage  → Admin API 프록시
- └─ [OpenAI 계정]    ← GET /v1/account/openai/usage     → Admin API 프록시
+ ├─ [라우터 계측]        ← SQLite (기존, 즉시·요청 단위)
+ ├─ [Claude Enterprise]  ← GET /v1/account/claude/usage   → Analytics API 프록시
+ └─ [ChatGPT Enterprise] ← GET /v1/account/chatgpt/usage  → 스파이크 후 결정
 ```
 
-브라우저가 제공자 API를 직접 부르지 않는다. **라우터가 프록시**한다 — 관리자 키가 브라우저로 나가면 안 되고, CORS도 피할 수 있다.
+브라우저가 제공자 API를 직접 부르지 않는다. **라우터가 프록시**한다 — 관리자 키가 브라우저로 나가면 안 되고, CORS도 피한다.
 
 ### 3.2 구성 요소
 
 - `usage/accounts/base.py` — `AccountUsageSource` 프로토콜: `async def usage(days: int) -> AccountUsage`
-- `usage/accounts/anthropic.py` — Admin API 호출 + 정규화
-- `usage/accounts/openai.py` — Admin API 호출 + 정규화 (Unix 초 변환 포함)
+- `usage/accounts/claude_enterprise.py` — Analytics API 호출 + 정규화
+- `usage/accounts/chatgpt_enterprise.py` — **스파이크 완료 후 작성**
 - `usage/accounts/__init__.py` — `.env` 키 존재 여부로 사용 가능한 소스 구성
 
-**정규화된 공통 모양** (두 제공자의 응답 차이를 여기서 흡수):
+**정규화된 공통 모양:**
 
 ```python
 @dataclass
 class AccountUsageBucket:
-    day: str              # YYYY-MM-DD
-    model: str | None
-    input_tokens: int
-    output_tokens: int
-    total_tokens: int
-    cost_usd: float | None   # 비용 API가 없거나 실패하면 None
+    day: str                   # YYYY-MM-DD
+    label: str | None          # 모델 또는 사용자 — 제공자별 그룹 축
+    input_tokens: int | None
+    output_tokens: int | None
+    total_tokens: int | None
+    amount_usd: Decimal | None  # 센트 문자열 / 100. float 금지
+    basis: Literal["cost", "credits", "unknown"]  # seat-based면 "credits"
 ```
+
+`basis` 필드가 있는 이유: seat-based 플랜은 비용이 아니라 크레딧이므로, UI가 이걸 "비용"으로 잘못 부르지 않게 한다.
 
 ### 3.3 설정 (`.env`)
 
 ```
-ANTHROPIC_ADMIN_KEY=sk-ant-admin01-...   # 없으면 Anthropic 패널 비활성
-OPENAI_ADMIN_KEY=sk-admin-...            # 없으면 OpenAI 패널 비활성
+CLAUDE_ANALYTICS_KEY=...    # 없으면 Claude 패널 비활성
+CHATGPT_ANALYTICS_KEY=...   # 스파이크 완료 후 활성
 ```
 
-**키가 없으면 패널을 숨기지 않고 "설정되지 않음 + 발급 방법 안내"를 보여준다.** 조용히 사라지면 왜 안 보이는지 알 수 없다.
+키가 없으면 패널을 숨기지 않고 **"설정되지 않음 + 발급 방법 안내"**(primary owner가 claude.ai 조직 설정에서 발급)를 보여준다.
 
 ### 3.4 캐싱 (필수)
 
-제공자 API는 폴링 제한이 있고(Anthropic: 분당 1회 권장) 데이터는 ~5분 지연된다. 대시보드를 열 때마다 부르면 안 된다.
+조직 단위 60 req/min 제한이 있고 데이터는 수 시간 지연된다. 대시보드를 열 때마다 부르면 안 된다.
 
-- 응답을 **60초 메모리 캐시**한다.
-- 대시보드 새로고침은 캐시를 읽는다.
-- 캐시 만료 시에만 업스트림 호출.
+- 응답을 **5분 메모리 캐시** (데이터 신선도가 4~24시간이므로 60초는 무의미하게 공격적).
+- `ending_at`은 **직전 응답의 `data_refreshed_at` 이하로** 고정해 값이 흔들리지 않게 한다.
 
 ### 3.5 에러 처리
 
-계정 패널의 실패가 **라우터 계측 패널을 깨뜨리면 안 된다.** 각 패널은 독립적으로 로드하고, 실패는 그 패널 안에서만 표시한다.
+계정 패널의 실패가 **라우터 계측 패널을 깨뜨리면 안 된다.** 각 패널은 독립 로드, 실패는 그 패널 안에서만 표시.
 
 | 상황 | 표시 |
 |---|---|
-| 키 미설정 | "설정되지 않음" + 발급 안내 |
-| 401/403 | "키가 유효하지 않거나 권한 부족 (admin 역할 필요)" |
-| 개인 계정 | "조직이 없는 개인 계정은 이 API를 쓸 수 없습니다" |
-| 429 | "요청 한도 — 잠시 후 재시도" + 캐시된 마지막 값 표시 |
-| 그 외 | 상태코드와 제공자 메시지 |
+| 키 미설정 | "설정되지 않음" + primary owner 발급 안내 |
+| 401/403 | "키가 유효하지 않거나 스코프 부족 (`read:analytics` 필요)" |
+| 400 + 날짜 | "요청한 날짜의 데이터가 아직 없음" — 에러가 알려주는 최신 가용일 표시 |
+| 2026-01-01 이전 조회 | "이 API는 2026-01-01부터 데이터를 제공합니다" |
+| 429 | "조직 단위 한도(60/min) — 캐시된 마지막 값 표시" |
 
 ### 3.6 UI
 
-기존 대시보드에 탭 또는 섹션 3개. 각 섹션은 동일한 시각 언어(일자별 막대 + 요약 타일)를 쓰되, 헤더에 **데이터 출처와 신선도**를 명시한다:
+섹션 3개, 동일한 시각 언어(일자별 막대 + 요약 타일). 각 헤더에 **출처와 신선도**를 명시한다:
 
 - 라우터 계측: "이 라우터를 거친 호출 · 실시간"
-- 계정: "조직 전체 · 약 5분 지연 · 60초 캐시"
+- Claude Enterprise: "조직 전체 · 최대 24시간 지연 · 30일간 값 조정됨"
 
-같은 기간의 두 숫자가 다를 수 있는데(라우터 밖 사용량, 집계 지연), 출처를 적어두면 혼란이 없다.
+같은 기간의 두 숫자가 다를 수 있으므로(라우터 밖 사용량, 집계 지연, 사후 조정) 출처를 적어두면 혼란이 없다. seat-based 플랜이면 금액 타일 라벨을 **"크레딧"**으로 바꾼다.
 
 ## 4. 범위에서 제외
 
-- **구독 잔여량** — 공식 API 없음 (§2.3). 별도 스파이크 주제로 남긴다.
-- **Claude Enterprise Analytics API** — Admin API와 키 종류·엔드포인트가 다르다. 사용자가 Enterprise 조직을 쓴다고 확인되면 별도 소스로 추가.
-- **Claude Code Analytics API** (사용자별 비용) — 별도 엔드포인트.
+- **구독 잔여량** — 공식 API 없음. seat-based의 크레딧 소진량이 가장 근접.
+- **Compliance API** (대화 내용·감사 기록) — 목적이 다르고 민감도가 훨씬 높다.
+- **Claude Code 사용자별 생산성 지표** — Analytics API에 있지만 이번 범위는 토큰·비용에 한정.
 - 비용 알림·예산 임계값.
 
-## 5. 테스트 전략
+## 5. 선행 스파이크
 
-- **단위**: 각 제공자 응답 픽스처 → 정규화 결과 검증(특히 OpenAI Unix 초 ↔ ISO 변환, Anthropic 4종 토큰 합산).
-- **통합**: respx로 업스트림 목킹, 캐시가 60초 내 재호출을 막는지, 한 소스 실패가 다른 소스에 영향 없는지.
-- **API**: 키 미설정 시 503 대신 "미설정" 상태를 정상 응답으로 반환하는지, 마스터 키 인증이 걸리는지.
+### 5A. Claude Enterprise 플랜 확인 (필수, 5분)
+
+**usage-based인가 seat-based인가?** 이것이 비용 숫자의 의미를 결정한다. Analytics API 키를 발급받아 cost/usage 엔드포인트를 1회 호출하고 응답이 실제 비용인지 크레딧인지 확인해 `basis` 기본값을 정한다.
+
+### 5B. ChatGPT Enterprise Analytics API 발견 (필수)
+
+인증 포털(`https://chatgpt.com/codex/cloud/settings/apireference`)에 접속해 확인할 것:
+
+1. ChatGPT **워크스페이스** 사용량 엔드포인트가 존재하는가, 아니면 **Codex 전용**인가?
+2. 존재한다면 라우트·파라미터·응답 스키마·페이지네이션.
+3. 토큰 수를 주는가, 메시지/시트 수만 주는가?
+4. Platform organization API key 발급 절차와 필요 역할.
+
+**결과에 따라 분기:** 워크스페이스 사용량 API가 있으면 Claude와 동형으로 구현. Codex 전용이면 해당 범위만 구현하고 UI에 명시. 아무것도 없으면 **CSV 내보내기 업로드**로 대체(대시보드에서 내려받은 CSV를 라우터가 파싱해 표시).
 
 ## 6. 출처
 
+- [Analytics APIs — 어느 API·키가 필요한가](https://platform.claude.com/docs/en/manage-claude/analytics-api)
+- [Usage and Cost API (Console 조직용 — 우리 경우엔 해당 없음)](https://platform.claude.com/docs/en/manage-claude/usage-cost-api)
 - [Admin API](https://platform.claude.com/docs/en/api/administration-api.md)
-- [Usage and Cost API](https://platform.claude.com/docs/en/manage-claude/usage-cost-api)
-- [OpenAI Usage API reference](https://platform.openai.com/docs/api-reference/usage/completions)
-- [OpenAI Costs API reference](https://developers.openai.com/api/reference/resources/admin/subresources/organization/subresources/usage/methods/costs)
+- [ChatGPT Enterprise Workspace analytics](https://learn.chatgpt.com/docs/enterprise/workspace-analytics)
+- [ChatGPT Enterprise Analytics API](https://learn.chatgpt.com/docs/enterprise/analytics-api)
+- [ChatGPT Enterprise Compliance API](https://learn.chatgpt.com/docs/enterprise/compliance-api)
