@@ -19,6 +19,7 @@
 | 2 | Messages 200 + 가용 모델 | ☐ |
 | 3 | 스트리밍 SSE | ☐ |
 | 4 | 도구 호출 | ☐ |
+| 4.5 | 사용량·잔여량 헤더 | ☐ |
 | 5 | refresh 토큰 회전 | ☐ |
 
 ---
@@ -167,6 +168,39 @@ curl -sS http://127.0.0.1:8788/v1/chat/completions \
 ```
 
 - [ ] 200이고, 응답 텍스트가 `22`나 `sunny`를 반영한다 (도구 결과를 실제로 읽었다는 증거)
+
+---
+
+## 4.5 사용량·잔여 할당량 헤더 (추가 조사)
+
+**목적:** "로그인만으로 사용량까지 본다"가 가능한지 판별한다. Anthropic API는 응답에 `anthropic-ratelimit-*` 헤더를 실어 보낸다. 구독 OAuth 경로에서도 이 헤더가 오면, **별도 키 없이 로그인만으로 잔여 할당량을 표시할 수 있다.**
+
+라우터를 거치지 않고 업스트림 응답 헤더를 직접 본다. 저장된 토큰을 꺼내 쓴다(값은 화면에 안 찍힌다):
+
+```bash
+python3 - <<'PY'
+import json, pathlib, httpx
+from llm_router.oauth import constants
+
+d = json.loads((pathlib.Path.home()/'.llm-router/credentials.json').read_text())
+r = httpx.post(
+    constants.ANTHROPIC_API_URL,
+    headers=constants.auth_headers(d["access_token"]),
+    json={"model": "claude-opus-4-8", "max_tokens": 8,
+          "messages": [{"role": "user", "content": "hi"}]},
+    timeout=30,
+)
+print("status:", r.status_code)
+for k, v in sorted(r.headers.items()):
+    if "ratelimit" in k.lower() or "quota" in k.lower() or "usage" in k.lower():
+        print(f"  {k}: {v}")
+PY
+```
+
+- [ ] `anthropic-ratelimit-*` 계열 헤더가 **하나라도** 보인다 → **로그인만으로 잔여량 표시 가능.** 보이는 헤더 이름을 전부 기록한다
+- [ ] 아무것도 안 보인다 → 구독 잔여량은 응답 헤더로도 알 수 없다. 사용량은 라우터가 자체 집계한 값만 표시한다
+
+> 어느 쪽이든 **라우터 자체 사용량 대시보드는 이미 동작한다.** 이 단계는 "그 위에 잔여 할당량까지 얹을 수 있는가"를 가르는 것이다.
 
 ---
 
