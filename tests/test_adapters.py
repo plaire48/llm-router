@@ -79,9 +79,7 @@ async def test_openai_adapter_passthrough_replaces_model(monkeypatch):
 
     respx.post("https://api.openai.com/v1/chat/completions").mock(side_effect=handler)
     async with httpx.AsyncClient() as client:
-        output = await build_adapter(OPENAI_PROFILE, client).complete(
-            _request("g"), OPENAI_PROFILE
-        )
+        output = await build_adapter(OPENAI_PROFILE, client).complete(_request("g"), OPENAI_PROFILE)
     assert captured["body"]["model"] == "gpt-4o"
     assert captured["body"]["stream"] is False
     assert captured["auth"] == "Bearer sk-oai"

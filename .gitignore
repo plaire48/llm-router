@@ -1,7 +1,11 @@
+.DS_Store
 .env
-__pycache__/
-*.pyc
-.venv/
+.env.*
+!.env.example
 .pytest_cache/
 .ruff_cache/
+.venv/
+__pycache__/
+*.egg-info/
 dist/
+profiles.yaml

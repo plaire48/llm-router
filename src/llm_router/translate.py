@@ -53,9 +53,7 @@ def _openai_tools_to_anthropic(tools: list) -> list[dict]:
             {
                 "name": function["name"],
                 "description": function.get("description", ""),
-                "input_schema": function.get(
-                    "parameters", {"type": "object", "properties": {}}
-                ),
+                "input_schema": function.get("parameters", {"type": "object", "properties": {}}),
             }
         )
     return output
@@ -135,9 +133,7 @@ def to_anthropic_request(request: ChatCompletionRequest, profile: Profile) -> di
     if request.top_p is not None:
         body["top_p"] = request.top_p
     if request.stop is not None:
-        body["stop_sequences"] = (
-            [request.stop] if isinstance(request.stop, str) else request.stop
-        )
+        body["stop_sequences"] = [request.stop] if isinstance(request.stop, str) else request.stop
     if request.stream:
         body["stream"] = True
     if request.tools and request.tool_choice != "none":

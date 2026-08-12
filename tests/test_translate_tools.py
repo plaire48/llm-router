@@ -130,10 +130,7 @@ def test_stream_tool_call_deltas():
         },
     )
     assert start[0]["choices"][0]["delta"]["tool_calls"][0]["id"] == "toolu_1"
-    assert (
-        start[0]["choices"][0]["delta"]["tool_calls"][0]["function"]["name"]
-        == "get_weather"
-    )
+    assert start[0]["choices"][0]["delta"]["tool_calls"][0]["function"]["name"] == "get_weather"
     delta = translator.feed(
         "content_block_delta",
         {"index": 0, "delta": {"type": "input_json_delta", "partial_json": '{"city"'}},

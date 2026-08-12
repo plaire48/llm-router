@@ -16,9 +16,7 @@ from llm_router.oauth.flow import build_authorize_url, exchange_code, make_pkce
 def test_pkce_challenge_is_s256_of_verifier():
     verifier, challenge = make_pkce()
     expected = (
-        base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest())
-        .rstrip(b"=")
-        .decode()
+        base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b"=").decode()
     )
     assert 43 <= len(verifier) <= 128
     assert challenge == expected

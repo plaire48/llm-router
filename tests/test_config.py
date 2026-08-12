@@ -50,13 +50,16 @@ def test_resolve_unknown_raises_404(tmp_path):
 
 
 def test_duplicate_name_or_alias_rejected(tmp_path):
-    duplicate = YAML + """
+    duplicate = (
+        YAML
+        + """
   - name: sonnet
     provider: openai
     auth: api_key
     api_key_env: OPENAI_API_KEY
     model: x
 """
+    )
     with pytest.raises(RouterError, match="duplicate profile name/alias: sonnet"):
         load_profiles(_write(tmp_path, duplicate))
 
