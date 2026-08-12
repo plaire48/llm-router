@@ -8,11 +8,11 @@
 
 localhost에서 도는 로컬 LLM 게이트웨이. 구독 계정(Claude·OpenAI)의 OAuth 인증과 일반 API key 제공자를 하나의 **OpenAI 호환 API**로 열어준다. API key/엔드포인트로 LLM을 소비하는 에이전트 도구가 로컬 엔드포인트 + 로컬 마스터 키만으로 모든 LLM을 쓸 수 있게 한다.
 
-**최종 소비자(sink):** agent factory SDK의 LLM 서빙 연동이 궁극 목적. 이 부류(Agent Factory의 self-hosted endpoint: Model ID+URL+Port+API key, OpenAI Agents SDK, Microsoft agent-framework, OpenCrew 등)는 전부 `base_url + api_key + model`(OpenAI 호환) 또는 self-hosted 엔드포인트로 LLM을 소비한다. 따라서 소스(Claude/OpenAI OAuth, 기타 key)와 소비자는 직교하며, 라우터의 OpenAI 호환 표면이 공통 계약이다. 대표 검증 클라이언트: OpenCrew(PyPI `opencrew`, Letta 기반).
+**용도:** LLM을 API 형태로 서빙하는 것 자체가 목적이다. 특정 제품 연동이 아니라, `base_url + api_key + model`로 LLM을 소비하는 모든 클라이언트(에이전트 SDK, 커스텀 코드 등)가 대상이다. 소스(Claude/OpenAI OAuth, 기타 key)와 소비자는 직교하며, 라우터의 OpenAI 호환 표면이 공통 계약이다. 대표 검증 클라이언트: OpenCrew(PyPI `opencrew`, Letta 기반).
 
 성공 기준:
 
-1. agent factory SDK(또는 임의의 OpenAI 호환 클라이언트)에 `base_url=http://localhost:<port>/v1`, `api_key=<마스터 키>`, `model=<프로필명>`을 설정하면 Claude/OpenAI 구독 모델로 추론이 정상 동작한다(스트리밍·도구 호출 포함).
+1. 임의의 OpenAI 호환 클라이언트에 `base_url=http://localhost:<port>/v1`, `api_key=<마스터 키>`, `model=<프로필명>`을 설정하면 Claude/OpenAI 구독 모델로 추론이 정상 동작한다(스트리밍·도구 호출 포함).
 2. OpenAI SDK 표준 클라이언트가 코드 수정 없이 이 서버를 쓸 수 있다(계약 테스트로 보장).
 3. 프로필 추가만으로 새 제공자/모델이 열린다.
 4. `GET /v1/models`가 프로필 목록을 반환해 소비자의 모델 선택/연결 테스트가 동작한다.

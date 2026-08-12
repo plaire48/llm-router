@@ -4,7 +4,7 @@
 >
 > **이 저장소의 역할 분담:** 구현은 Codex가 담당한다. 이 문서는 Codex가 사전 지식 없이 태스크 단위로 실행할 수 있도록 작성됐다. Claude는 계획·리뷰만 한다.
 
-**Goal:** localhost에서 도는 OpenAI 호환 LLM 게이트웨이를 만든다 — Claude·OpenAI 구독 OAuth와 API-key 제공자를 하나의 엔드포인트로 열어, agent factory SDK를 비롯한 OpenAI 호환/self-hosted 소비자(검증 클라이언트: OpenCrew)가 로컬 마스터 키만으로 모든 LLM을 쓰게 한다.
+**Goal:** localhost에서 도는 OpenAI 호환 LLM 게이트웨이를 만든다 — Claude·OpenAI 구독 OAuth와 API-key 제공자를 하나의 엔드포인트로 열어, LLM을 API 형태로 서빙한다. `base_url + api_key + model`로 소비하는 어떤 클라이언트든 대상(검증 클라이언트: OpenCrew).
 
 **Architecture:** FastAPI 서버가 OpenAI 호환 표면(`/v1/chat/completions`, `/v1/models`, `/health`)을 노출한다. 요청의 `model`을 프로필로 라우팅하고, 프로필의 `provider`가 어댑터를 고른다. AnthropicAdapter는 OpenAI↔Anthropic 포맷을 순수 함수로 변환하고 OAuth 또는 API key 자격증명을 붙인다. OpenAIAdapter는 패스스루(API key/OpenAI OAuth)하되, OpenAI 구독 OAuth가 Responses API만 열면 변환 경로를 추가한다(Task 2B·14). 두 OAuth 경로는 코드 투입 전 스파이크(Task 2·2B)로 선검증한다.
 
