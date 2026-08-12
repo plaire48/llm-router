@@ -31,7 +31,8 @@ LLM Router — 구독 계정의 OAuth 로그인(Claude, OpenAI)을 localhost 포
 승인된 설계 스펙: `docs/superpowers/specs/2026-08-12-llm-router-design.md` — 작업 전 반드시 읽는다.
 
 - 스택: Python 3.11+ / FastAPI / httpx / Pydantic / typer.
-- 형태: OpenAI 호환 표면(chat/completions·models·health) + 마스터 키 인증 + model명→프로필 라우팅 + provider 어댑터(Anthropic은 OAuth/API key 겸용·포맷 변환, OpenAI·OpenAI호환은 패스스루).
+- 형태: OpenAI 호환 표면(chat/completions·models·health) + 마스터 키 인증 + model명→프로필 라우팅 + provider 어댑터. Anthropic은 OAuth/API key 겸용·포맷 변환. OpenAI는 OAuth(구독)/API key 겸용 — 구독 OAuth가 여는 API 형태는 스파이크(스펙 §7B)가 확정하며 chat↔Responses 변환이 필요할 수 있음. OpenAI호환은 패스스루.
+- 미지수는 두 OAuth 경로뿐. 구현 전에 §7A(Claude·리스크 낮음)·§7B(OpenAI·리스크 높음) 스파이크로 각각 실제 구독 계정 검증이 선행된다.
 - 구현이 진행되면 "여러 파일을 읽어야 보이는 큰 그림"만 여기에 갱신한다. 파일 트리 나열은 하지 않는다.
 
 ## 이 파일의 유지 규칙
