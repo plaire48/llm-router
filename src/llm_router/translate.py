@@ -104,3 +104,50 @@ def from_anthropic_response(data: dict, profile: Profile) -> dict:
             "total_tokens": prompt_tokens + completion_tokens,
         },
     }
+
+
+class StreamTranslator:
+    def __init__(self, profile: Profile, completion_id: str | None = None) -> None:
+        self.profile = profile
+        self.id = completion_id or f"chatcmpl-{uuid.uuid4().hex}"
+        self.created = int(time.time())
+        self._tool_index: dict[int, int] = {}
+        self._next_tool_slot = 0
+
+    def _chunk(self, delta: dict, finish_reason: str | None = None) -> dict:
+        return {
+            "id": self.id,
+            "object": "chat.completion.chunk",
+            "created": self.created,
+            "model": self.profile.name,
+            "choices": [
+                {
+                    "index": 0,
+                    "delta": delta,
+                    "finish_reason": finish_reason,
+                }
+            ],
+        }
+
+    def start(self) -> dict:
+        return self._chunk({"role": "assistant"})
+
+    def feed(self, event_type: str, data: dict) -> list[dict]:
+        if event_type == "content_block_delta":
+            delta = data.get("delta", {})
+            if delta.get("type") == "text_delta":
+                return [self._chunk({"content": delta.get("text", "")})]
+            return self._feed_tool_delta(data)
+        if event_type == "content_block_start":
+            return self._feed_tool_start(data)
+        if event_type == "message_delta":
+            stop_reason = (data.get("delta") or {}).get("stop_reason")
+            if stop_reason is not None:
+                return [self._chunk({}, finish_reason=map_finish_reason(stop_reason))]
+        return []
+
+    def _feed_tool_start(self, data: dict) -> list[dict]:
+        return []
+
+    def _feed_tool_delta(self, data: dict) -> list[dict]:
+        return []
