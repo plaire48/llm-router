@@ -7,6 +7,8 @@ from llm_router.models import ChatCompletionRequest, Profile
 
 
 class Adapter(Protocol):
+    observed_usage: dict | None
+
     async def complete(self, request: ChatCompletionRequest, profile: Profile) -> dict: ...
 
     def stream(

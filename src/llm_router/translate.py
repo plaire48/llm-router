@@ -212,6 +212,28 @@ class StreamTranslator:
         self.created = int(time.time())
         self._tool_index: dict[int, int] = {}
         self._next_tool_slot = 0
+        self._prompt_tokens: int | None = None
+        self._completion_tokens: int | None = None
+
+    @property
+    def usage(self) -> dict[str, int] | None:
+        if self._prompt_tokens is None and self._completion_tokens is None:
+            return None
+        prompt = self._prompt_tokens or 0
+        completion = self._completion_tokens or 0
+        return {
+            "prompt_tokens": prompt,
+            "completion_tokens": completion,
+            "total_tokens": prompt + completion,
+        }
+
+    def _absorb_usage(self, usage: dict | None) -> None:
+        if not isinstance(usage, dict):
+            return
+        if isinstance(usage.get("input_tokens"), int):
+            self._prompt_tokens = usage["input_tokens"]
+        if isinstance(usage.get("output_tokens"), int):
+            self._completion_tokens = usage["output_tokens"]
 
     def _chunk(self, delta: dict, finish_reason: str | None = None) -> dict:
         return {
@@ -232,6 +254,9 @@ class StreamTranslator:
         return self._chunk({"role": "assistant"})
 
     def feed(self, event_type: str, data: dict) -> list[dict]:
+        if event_type == "message_start":
+            self._absorb_usage((data.get("message") or {}).get("usage"))
+            return []
         if event_type == "content_block_delta":
             delta = data.get("delta", {})
             if delta.get("type") == "text_delta":
@@ -240,6 +265,7 @@ class StreamTranslator:
         if event_type == "content_block_start":
             return self._feed_tool_start(data)
         if event_type == "message_delta":
+            self._absorb_usage(data.get("usage"))
             stop_reason = (data.get("delta") or {}).get("stop_reason")
             if stop_reason is not None:
                 return [self._chunk({}, finish_reason=map_finish_reason(stop_reason))]

@@ -16,6 +16,7 @@ class OpenAIAdapter:
     def __init__(self, client: httpx.AsyncClient, credential: Credential) -> None:
         self.client = client
         self.credential = credential
+        self.observed_usage: dict | None = None
 
     def _url(self, profile: Profile) -> str:
         base_url = (profile.base_url or DEFAULT_BASE_URL).rstrip("/")
@@ -49,6 +50,8 @@ class OpenAIAdapter:
                 status_code=502,
             )
         data["model"] = profile.name
+        usage = data.get("usage")
+        self.observed_usage = usage if isinstance(usage, dict) else None
         return data
 
     async def stream(
@@ -95,6 +98,9 @@ class OpenAIAdapter:
                             status_code=502,
                         )
                     chunk["model"] = profile.name
+                    chunk_usage = chunk.get("usage")
+                    if isinstance(chunk_usage, dict):
+                        self.observed_usage = chunk_usage
                     yield f"data: {json.dumps(chunk)}\n\n"
                     continue
                 yield f"{line}\n\n"

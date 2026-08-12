@@ -20,6 +20,7 @@ class AnthropicAdapter:
     def __init__(self, client: httpx.AsyncClient, credential: Credential) -> None:
         self.client = client
         self.credential = credential
+        self.observed_usage: dict | None = None
 
     async def complete(self, request: ChatCompletionRequest, profile: Profile) -> dict:
         headers = await self.credential.headers()
@@ -36,7 +37,9 @@ class AnthropicAdapter:
                 code="invalid_upstream_response",
                 status_code=502,
             ) from exc
-        return from_anthropic_response(data, profile)
+        result = from_anthropic_response(data, profile)
+        self.observed_usage = result.get("usage")
+        return result
 
     async def stream(
         self,
@@ -75,4 +78,5 @@ class AnthropicAdapter:
                     ) from exc
                 for chunk in translator.feed(event_type, data):
                     yield f"data: {json.dumps(chunk)}\n\n"
+        self.observed_usage = translator.usage
         yield "data: [DONE]\n\n"
