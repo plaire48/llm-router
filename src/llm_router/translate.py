@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import json
 import time
 import uuid
 from typing import Any
 
+from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, Profile
 
 _FINISH_REASONS = {
@@ -43,12 +45,80 @@ def _content_to_text(content: Any) -> str:
     )
 
 
+def _openai_tools_to_anthropic(tools: list) -> list[dict]:
+    output: list[dict] = []
+    for tool in tools:
+        function = tool.function if hasattr(tool, "function") else tool.get("function", {})
+        output.append(
+            {
+                "name": function["name"],
+                "description": function.get("description", ""),
+                "input_schema": function.get(
+                    "parameters", {"type": "object", "properties": {}}
+                ),
+            }
+        )
+    return output
+
+
+def _map_tool_choice(choice: str | dict | None) -> dict | None:
+    if choice == "auto":
+        return {"type": "auto"}
+    if choice == "required":
+        return {"type": "any"}
+    if isinstance(choice, dict) and choice.get("type") == "function":
+        return {"type": "tool", "name": choice["function"]["name"]}
+    return None
+
+
+def _parse_tool_arguments(arguments: str, tool_name: str) -> dict:
+    try:
+        value = json.loads(arguments or "{}")
+    except json.JSONDecodeError as exc:
+        raise RouterError(f"invalid JSON arguments for tool '{tool_name}': {exc.msg}") from exc
+    if not isinstance(value, dict):
+        raise RouterError(f"tool arguments for '{tool_name}' must be a JSON object")
+    return value
+
+
 def to_anthropic_request(request: ChatCompletionRequest, profile: Profile) -> dict:
     system_chunks: list[str] = []
     messages: list[dict] = []
     for message in request.messages:
         if message.role == "system":
             system_chunks.append(_content_to_text(message.content))
+            continue
+        if message.role == "assistant" and message.tool_calls:
+            blocks: list[dict] = []
+            text = _content_to_text(message.content)
+            if text:
+                blocks.append({"type": "text", "text": text})
+            for tool_call in message.tool_calls:
+                blocks.append(
+                    {
+                        "type": "tool_use",
+                        "id": tool_call.id,
+                        "name": tool_call.function.name,
+                        "input": _parse_tool_arguments(
+                            tool_call.function.arguments, tool_call.function.name
+                        ),
+                    }
+                )
+            messages.append({"role": "assistant", "content": blocks})
+            continue
+        if message.role == "tool":
+            messages.append(
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": message.tool_call_id,
+                            "content": _content_to_text(message.content),
+                        }
+                    ],
+                }
+            )
             continue
         messages.append({"role": message.role, "content": _content_to_text(message.content)})
 
@@ -70,6 +140,11 @@ def to_anthropic_request(request: ChatCompletionRequest, profile: Profile) -> di
         )
     if request.stream:
         body["stream"] = True
+    if request.tools and request.tool_choice != "none":
+        body["tools"] = _openai_tools_to_anthropic(request.tools)
+        tool_choice = _map_tool_choice(request.tool_choice)
+        if tool_choice is not None:
+            body["tool_choice"] = tool_choice
 
     for key, value in profile.params.items():
         if key != "max_tokens":
@@ -78,11 +153,26 @@ def to_anthropic_request(request: ChatCompletionRequest, profile: Profile) -> di
 
 
 def from_anthropic_response(data: dict, profile: Profile) -> dict:
-    text_parts = [
-        block.get("text", "")
-        for block in data.get("content", [])
-        if block.get("type") == "text"
-    ]
+    text_parts: list[str] = []
+    tool_calls: list[dict] = []
+    for block in data.get("content", []):
+        if block.get("type") == "text":
+            text_parts.append(block.get("text", ""))
+        elif block.get("type") == "tool_use":
+            tool_calls.append(
+                {
+                    "id": block.get("id"),
+                    "type": "function",
+                    "function": {
+                        "name": block.get("name"),
+                        "arguments": json.dumps(block.get("input", {})),
+                    },
+                }
+            )
+    message: dict = {"role": "assistant", "content": "".join(text_parts) or None}
+    if tool_calls:
+        message["tool_calls"] = tool_calls
+
     usage = data.get("usage", {}) or {}
     prompt_tokens = usage.get("input_tokens", 0)
     completion_tokens = usage.get("output_tokens", 0)
@@ -94,7 +184,7 @@ def from_anthropic_response(data: dict, profile: Profile) -> dict:
         "choices": [
             {
                 "index": 0,
-                "message": {"role": "assistant", "content": "".join(text_parts)},
+                "message": message,
                 "finish_reason": map_finish_reason(data.get("stop_reason")),
             }
         ],
@@ -147,7 +237,45 @@ class StreamTranslator:
         return []
 
     def _feed_tool_start(self, data: dict) -> list[dict]:
-        return []
+        block = data.get("content_block", {})
+        if block.get("type") != "tool_use":
+            return []
+        anthropic_index = data.get("index", 0)
+        slot = self._next_tool_slot
+        self._tool_index[anthropic_index] = slot
+        self._next_tool_slot += 1
+        return [
+            self._chunk(
+                {
+                    "tool_calls": [
+                        {
+                            "index": slot,
+                            "id": block.get("id"),
+                            "type": "function",
+                            "function": {
+                                "name": block.get("name"),
+                                "arguments": "",
+                            },
+                        }
+                    ]
+                }
+            )
+        ]
 
     def _feed_tool_delta(self, data: dict) -> list[dict]:
-        return []
+        delta = data.get("delta", {})
+        if delta.get("type") != "input_json_delta":
+            return []
+        slot = self._tool_index.get(data.get("index", 0), 0)
+        return [
+            self._chunk(
+                {
+                    "tool_calls": [
+                        {
+                            "index": slot,
+                            "function": {"arguments": delta.get("partial_json", "")},
+                        }
+                    ]
+                }
+            )
+        ]
