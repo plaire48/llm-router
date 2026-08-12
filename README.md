@@ -24,11 +24,9 @@ cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
 ```
 
-`.env`의 마스터 키는 opencode 및 OpenAI 호환 API 클라이언트가 로컬 라우터를 호출할 때 사용합니다.
-대시보드에서는 입력하지 않습니다.
+기본 localhost 실행에는 로컬 API 키가 필요하지 않습니다.
 
 ```dotenv
-LLM_ROUTER_MASTER_KEY=sk-local-change-me
 LLM_ROUTER_HOST=127.0.0.1
 LLM_ROUTER_PORT=8787
 LLM_ROUTER_USAGE_DB=~/.llm-router/usage.db
@@ -76,7 +74,6 @@ Claude 브라우저 로그인, OpenAI 브라우저 로그인, FabriX, OpenAI 호
 
 ```bash
 curl http://127.0.0.1:8787/v1/chat/completions \
-  -H "Authorization: Bearer $LLM_ROUTER_MASTER_KEY" \
   -H "Content-Type: application/json" \
   -d '{"model":"claude-sonnet","messages":[{"role":"user","content":"안녕"}]}'
 ```
@@ -107,15 +104,13 @@ FabriX의 SSE `CHUNK` 응답도 로컬 OpenAI Chat Completions 스트림으로 �
 
 - 서버 주소: `http://127.0.0.1:8787/v1/chat/completions`
 - 모델: 사용할 라우터 프로필 이름(예: `claude-sonnet`)
-- Authorization: `Bearer ${LLM_ROUTER_API_KEY}`
-- `LLM_ROUTER_API_KEY` 값: 로컬 라우터의 `LLM_ROUTER_MASTER_KEY`
+- API 키·Authorization: 비워 둠
 
 Studio/SDK는 OpenAI Chat Completions 요청을 보내고, 라우터가 실제 업스트림 모델과 인증 방식을
 결정합니다. 따라서 Agent 프로젝트는 Claude/OpenAI 로그인 토큰이나 FabriX 키를 알 필요가 없습니다.
 
-배포 패키지에는 Endpoint, model 프로필 이름, 환경변수 이름만 포함합니다. 인증값은 패키지에 넣지 않고
-설치 시 로컬 보안 저장소에서 주입합니다. 설치 런처는 다음 두 검사만 통과하면 같은 Agent 코드를 그대로
-실행할 수 있습니다.
+배포 패키지에는 Endpoint와 model 프로필 이름만 포함합니다. 설치 런처는 다음 두 검사만 통과하면 같은
+Agent 코드를 그대로 실행할 수 있습니다.
 
 1. `GET http://127.0.0.1:8787/health`가 성공하는지 확인
 2. `GET /v1/models`에 Agent가 사용할 프로필 이름이 있는지 확인
@@ -136,8 +131,7 @@ Studio/SDK는 OpenAI Chat Completions 요청을 보내고, 라우터가 실제 �
       "npm": "@ai-sdk/openai-compatible",
       "name": "llm-router / claude-sonnet",
       "options": {
-        "baseURL": "http://127.0.0.1:8787/v1",
-        "apiKey": "sk-local-change-me"
+        "baseURL": "http://127.0.0.1:8787/v1"
       },
       "models": {
         "claude-sonnet": {"name": "claude-sonnet"}
@@ -170,8 +164,10 @@ Studio/SDK는 OpenAI Chat Completions 요청을 보내고, 라우터가 실제 �
 - `GET /v1/usage/summary`
 - `GET /v1/usage/account/openai`
 
-`/v1/models`와 `/v1/chat/completions`는 `LLM_ROUTER_MASTER_KEY` Bearer 인증을 사용합니다. 데스크톱
-화면의 제어 API는 대시보드가 자동 발급한 localhost 세션 쿠키를 사용합니다.
+localhost의 `/v1/models`와 `/v1/chat/completions`는 로컬 API 키 없이 호출합니다. 데스크톱 화면의
+제어 API는 대시보드가 자동 발급한 localhost 세션 쿠키를 사용합니다. `0.0.0.0` 등 localhost 밖으로
+바인딩할 때만 `LLM_ROUTER_MASTER_KEY`를 반드시 설정해야 하며, 이 경우 LLM API에는 Bearer 인증이
+적용됩니다.
 
 ## 개발
 

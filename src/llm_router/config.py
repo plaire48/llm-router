@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Any
 
 import yaml
-from pydantic import StringConstraints, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from llm_router.errors import RouterError
@@ -14,16 +14,29 @@ from llm_router.models import Profile
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="LLM_ROUTER_", env_file=".env", extra="ignore")
 
-    master_key: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    master_key: str | None = None
     host: str = "127.0.0.1"
     port: int = 8787
     usage_db: Path = Path.home() / ".llm-router" / "usage.db"
     log_bodies: bool = False
 
+    @field_validator("master_key", mode="before")
+    @classmethod
+    def _normalize_master_key(cls, value: object) -> str | None:
+        if value is None:
+            return None
+        normalized = str(value).strip()
+        return normalized or None
+
     @field_validator("usage_db", mode="before")
     @classmethod
     def _expand_usage_db(cls, value: str | Path) -> Path:
         return Path(value).expanduser()
+
+
+def is_loopback_host(host: str) -> bool:
+    normalized = host.strip().lower().removeprefix("[").removesuffix("]")
+    return normalized in {"127.0.0.1", "localhost", "::1"}
 
 
 class ProfileRegistry:

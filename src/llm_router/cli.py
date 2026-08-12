@@ -27,7 +27,7 @@ def serve(
         settings = Settings()
         registry = load_profiles(profiles)
     except Exception as exc:
-        typer.echo(f"config error (is LLM_ROUTER_MASTER_KEY set?): {exc}")
+        typer.echo(f"config error: {exc}")
         raise typer.Exit(code=1) from exc
 
     import uvicorn
@@ -38,7 +38,12 @@ def serve(
     settings.host = settings.host if host is None else host
     settings.port = settings.port if port is None else port
     store = UsageStore(settings.usage_db)
-    application = create_app(settings, registry, store=store, profiles_path=profiles)
+    try:
+        application = create_app(settings, registry, store=store, profiles_path=profiles)
+    except RouterError as exc:
+        store.close()
+        typer.echo(f"config error: {exc.message}")
+        raise typer.Exit(code=1) from exc
     try:
         uvicorn.run(
             application,

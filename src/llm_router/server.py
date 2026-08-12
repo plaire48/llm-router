@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from llm_router.adapters import build_adapter
-from llm_router.config import ProfileFile, ProfileRegistry, Settings
+from llm_router.config import ProfileFile, ProfileRegistry, Settings, is_loopback_host
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.openai_oauth import CodexTokenStore
 from llm_router.errors import RouterError, to_openai_error
@@ -63,6 +63,14 @@ def create_app(
     claude_login: Any | None = None,
     openai_login: Any | None = None,
 ) -> FastAPI:
+    if settings.master_key is None and not is_loopback_host(settings.host):
+        raise RouterError(
+            "LLM_ROUTER_MASTER_KEY is required when binding outside localhost",
+            type="configuration_error",
+            code="master_key_required",
+            status_code=500,
+        )
+
     owns_client = client is None
     recorder = UsageRecorder(store, log_bodies=settings.log_bodies)
 
@@ -92,6 +100,8 @@ def create_app(
         return app.state.client
 
     def require_auth(authorization: str | None = Header(default=None)) -> None:
+        if settings.master_key is None:
+            return
         expected = f"Bearer {settings.master_key}"
         if authorization is None or not secrets.compare_digest(authorization, expected):
             raise RouterError(
@@ -101,8 +111,13 @@ def create_app(
                 status_code=401,
             )
 
+    dashboard_secret = (
+        settings.master_key.encode("utf-8")
+        if settings.master_key is not None
+        else secrets.token_bytes(32)
+    )
     dashboard_session = hmac.new(
-        settings.master_key.encode("utf-8"),
+        dashboard_secret,
         b"llm-router-dashboard-session-v1",
         hashlib.sha256,
     ).hexdigest()
@@ -112,11 +127,19 @@ def create_app(
         session: str | None = Cookie(default=None, alias="llm_router_dashboard"),
     ) -> None:
         expected = f"Bearer {settings.master_key}"
-        bearer_ok = authorization is not None and secrets.compare_digest(authorization, expected)
+        bearer_ok = (
+            settings.master_key is not None
+            and authorization is not None
+            and secrets.compare_digest(authorization, expected)
+        )
         session_ok = session is not None and secrets.compare_digest(session, dashboard_session)
         if not bearer_ok and not session_ok:
             raise RouterError(
-                "open the local dashboard first or provide the master key",
+                (
+                    "open the local dashboard first"
+                    if settings.master_key is None
+                    else "open the local dashboard first or provide the master key"
+                ),
                 type="authentication_error",
                 code="invalid_api_key",
                 status_code=401,

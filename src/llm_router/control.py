@@ -337,10 +337,13 @@ def _opencode_config(settings: Settings, registry: ProfileRegistry) -> dict[str,
     endpoints: list[dict[str, Any]] = []
     for profile in registry.profiles():
         provider_id = f"llm-router-{profile.name}"
+        options = {"baseURL": fallback_url}
+        if settings.master_key is not None:
+            options["apiKey"] = settings.master_key
         providers[provider_id] = {
             "npm": "@ai-sdk/openai-compatible",
             "name": f"llm-router / {profile.name}",
-            "options": {"baseURL": fallback_url, "apiKey": settings.master_key},
+            "options": options,
             "models": {profile.name: {"name": profile.name}},
         }
         endpoints.append({"profile": profile.name, "base_url": fallback_url})
@@ -348,12 +351,14 @@ def _opencode_config(settings: Settings, registry: ProfileRegistry) -> dict[str,
         "$schema": "https://opencode.ai/config.json",
         "provider": providers,
     }
-    return {
+    result = {
         "base_url": fallback_url,
-        "api_key": settings.master_key,
         "endpoints": endpoints,
         "config": config,
     }
+    if settings.master_key is not None:
+        result["api_key"] = settings.master_key
+    return result
 
 
 class ProfileWrite(BaseModel):

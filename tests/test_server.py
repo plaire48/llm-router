@@ -1,10 +1,12 @@
 import json
 
 import httpx
+import pytest
 import respx
 from fastapi.testclient import TestClient
 
 from llm_router.config import ProfileRegistry, Settings
+from llm_router.errors import RouterError
 from llm_router.models import Profile
 from llm_router.oauth import constants
 from llm_router.server import create_app
@@ -42,7 +44,21 @@ def test_models_lists_profile_names():
     assert response.json()["data"][0]["id"] == "c"
 
 
-def test_missing_auth_uses_openai_error_shape():
+def test_local_gateway_lists_models_without_a_local_api_key():
+    settings = Settings(host="127.0.0.1", port=8787, _env_file=None)
+    with TestClient(create_app(settings, REGISTRY)) as client:
+        response = client.get("/v1/models")
+    assert response.status_code == 200
+    assert response.json()["data"][0]["id"] == "c"
+
+
+def test_keyless_gateway_rejects_non_loopback_bind():
+    settings = Settings(host="0.0.0.0", port=8787, _env_file=None)
+    with pytest.raises(RouterError, match="required when binding outside localhost"):
+        create_app(settings, REGISTRY)
+
+
+def test_configured_master_key_still_uses_openai_error_shape():
     with _client() as client:
         response = client.post("/v1/chat/completions", json={"model": "c", "messages": []})
     assert response.status_code == 401

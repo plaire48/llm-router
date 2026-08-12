@@ -21,6 +21,7 @@ REGISTRY = ProfileRegistry(
     ]
 )
 SETTINGS = Settings(master_key="sk-local", host="127.0.0.1", port=8787, _env_file=None)
+KEYLESS_SETTINGS = Settings(host="127.0.0.1", port=8787, _env_file=None)
 
 
 async def _sdk(
@@ -210,11 +211,12 @@ async def test_agent_factory_style_request_is_forwarded_to_openai_compatible_ups
 
     respx.post("https://llm.company.test/v1/chat/completions").mock(side_effect=handler)
     async with httpx.AsyncClient() as upstream_client:
-        transport = httpx.ASGITransport(app=create_app(SETTINGS, registry, client=upstream_client))
+        transport = httpx.ASGITransport(
+            app=create_app(KEYLESS_SETTINGS, registry, client=upstream_client)
+        )
         async with httpx.AsyncClient(transport=transport, base_url="http://router.local") as client:
             response = await client.post(
                 "/v1/chat/completions",
-                headers={"authorization": "Bearer sk-local"},
                 json={
                     "model": "company",
                     "messages": [

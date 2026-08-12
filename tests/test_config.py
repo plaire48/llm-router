@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
 
 from llm_router.config import Settings, load_profiles
 from llm_router.errors import RouterError
@@ -27,12 +26,13 @@ def _write(tmp_path, text):
     return path
 
 
-def test_settings_defaults_and_rejects_empty_master_key():
-    settings = Settings(master_key="secret", _env_file=None)
+def test_settings_defaults_to_keyless_localhost_and_normalizes_master_key():
+    settings = Settings(_env_file=None)
     assert settings.host == "127.0.0.1"
     assert settings.port == 8787
-    with pytest.raises(ValidationError):
-        Settings(master_key="", _env_file=None)
+    assert settings.master_key is None
+    assert Settings(master_key="  ", _env_file=None).master_key is None
+    assert Settings(master_key=" secret ", _env_file=None).master_key == "secret"
 
 
 def test_settings_expands_home_in_usage_database_path():

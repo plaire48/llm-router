@@ -31,15 +31,39 @@ def test_profiles_list(tmp_path):
     assert "api_key" in result.stdout
 
 
-def test_serve_without_master_key_fails(tmp_path, monkeypatch):
+def test_serve_without_master_key_starts_on_localhost(tmp_path, monkeypatch):
     monkeypatch.delenv("LLM_ROUTER_MASTER_KEY", raising=False)
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("LLM_ROUTER_USAGE_DB", str(tmp_path / "usage.db"))
+    called = {}
+
+    def fake_run(application, *, host, port):
+        called.update(application=application, host=host, port=port)
+
+    monkeypatch.setattr("uvicorn.run", fake_run)
     result = runner.invoke(
         app,
         ["serve", "--profiles", str(_profiles_file(tmp_path))],
     )
+    assert result.exit_code == 0
+    assert called["host"] == "127.0.0.1"
+    assert called["port"] == 8787
+
+
+def test_serve_without_master_key_rejects_external_bind(tmp_path, monkeypatch):
+    monkeypatch.delenv("LLM_ROUTER_MASTER_KEY", raising=False)
+    monkeypatch.setenv("LLM_ROUTER_USAGE_DB", str(tmp_path / "usage.db"))
+    result = runner.invoke(
+        app,
+        [
+            "serve",
+            "--profiles",
+            str(_profiles_file(tmp_path)),
+            "--host",
+            "0.0.0.0",
+        ],
+    )
     assert result.exit_code != 0
-    assert "master" in result.stdout.lower() or "master" in str(result.exception).lower()
+    assert "LLM_ROUTER_MASTER_KEY" in result.stdout
 
 
 def test_serve_uses_settings_and_overrides(tmp_path, monkeypatch):
