@@ -93,6 +93,38 @@ def test_request_assistant_toolcall_and_tool_result_roundtrip():
     assert tool_message["content"][0]["tool_use_id"] == "call_1"
 
 
+def test_consecutive_tool_results_merge_into_one_anthropic_user_message():
+    request = ChatCompletionRequest.model_validate(
+        {
+            "model": "c",
+            "messages": [
+                {"role": "user", "content": "compare"},
+                {
+                    "role": "assistant",
+                    "tool_calls": [
+                        {
+                            "id": "call_1",
+                            "function": {"name": "first", "arguments": "{}"},
+                        },
+                        {
+                            "id": "call_2",
+                            "function": {"name": "second", "arguments": "{}"},
+                        },
+                    ],
+                },
+                {"role": "tool", "tool_call_id": "call_1", "content": "one"},
+                {"role": "tool", "tool_call_id": "call_2", "content": "two"},
+            ],
+        }
+    )
+    messages = to_anthropic_request(request, PROFILE)["messages"]
+    assert [message["role"] for message in messages] == ["user", "assistant", "user"]
+    assert [block["tool_use_id"] for block in messages[-1]["content"]] == [
+        "call_1",
+        "call_2",
+    ]
+
+
 def test_response_tool_use_maps_to_tool_calls():
     data = {
         "id": "msg",

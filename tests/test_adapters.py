@@ -1,9 +1,11 @@
 import json
 
 import httpx
+import pytest
 import respx
 
 from llm_router.adapters import build_adapter
+from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, Profile
 from llm_router.oauth import constants
 
@@ -157,3 +159,16 @@ async def test_openai_adapter_stream_rewrites_public_model(monkeypatch):
     first = json.loads(chunks[0].removeprefix("data: "))
     assert first["model"] == "g"
     assert chunks[-1] == "data: [DONE]\n\n"
+
+
+@respx.mock
+async def test_openai_adapter_rejects_invalid_upstream_json(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-oai")
+    respx.post("https://api.openai.com/v1/chat/completions").mock(
+        return_value=httpx.Response(200, text="not-json")
+    )
+    async with httpx.AsyncClient() as client:
+        with pytest.raises(RouterError) as error:
+            await build_adapter(OPENAI_PROFILE, client).complete(_request("g"), OPENAI_PROFILE)
+    assert error.value.status_code == 502
+    assert error.value.code == "invalid_upstream_response"

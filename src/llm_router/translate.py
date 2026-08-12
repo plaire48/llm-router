@@ -79,11 +79,25 @@ def _parse_tool_arguments(arguments: str, tool_name: str) -> dict:
     return value
 
 
+def _content_as_blocks(content: str | list[dict]) -> list[dict]:
+    if isinstance(content, list):
+        return content
+    return [{"type": "text", "text": content}]
+
+
+def _append_message(messages: list[dict], role: str, content: str | list[dict]) -> None:
+    if messages and messages[-1]["role"] == role:
+        previous = _content_as_blocks(messages[-1]["content"])
+        messages[-1]["content"] = previous + _content_as_blocks(content)
+        return
+    messages.append({"role": role, "content": content})
+
+
 def to_anthropic_request(request: ChatCompletionRequest, profile: Profile) -> dict:
     system_chunks: list[str] = []
     messages: list[dict] = []
     for message in request.messages:
-        if message.role == "system":
+        if message.role in ("system", "developer"):
             system_chunks.append(_content_to_text(message.content))
             continue
         if message.role == "assistant" and message.tool_calls:
@@ -102,23 +116,22 @@ def to_anthropic_request(request: ChatCompletionRequest, profile: Profile) -> di
                         ),
                     }
                 )
-            messages.append({"role": "assistant", "content": blocks})
+            _append_message(messages, "assistant", blocks)
             continue
         if message.role == "tool":
-            messages.append(
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "tool_result",
-                            "tool_use_id": message.tool_call_id,
-                            "content": _content_to_text(message.content),
-                        }
-                    ],
-                }
+            _append_message(
+                messages,
+                "user",
+                [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": message.tool_call_id,
+                        "content": _content_to_text(message.content),
+                    }
+                ],
             )
             continue
-        messages.append({"role": message.role, "content": _content_to_text(message.content)})
+        _append_message(messages, message.role, _content_to_text(message.content))
 
     body: dict = {
         "model": profile.model,

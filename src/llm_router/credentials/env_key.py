@@ -1,10 +1,17 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Literal
+
+from dotenv import load_dotenv
 
 from llm_router.errors import RouterError
 from llm_router.oauth.constants import ANTHROPIC_VERSION
+
+
+def load_provider_env() -> None:
+    load_dotenv(dotenv_path=Path.cwd() / ".env", override=False)
 
 
 class EnvApiKey:
@@ -13,6 +20,7 @@ class EnvApiKey:
         self.style = style
 
     async def headers(self) -> dict[str, str]:
+        load_provider_env()
         key = os.environ.get(self.env_var, "").strip()
         if not key:
             raise RouterError(

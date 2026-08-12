@@ -60,6 +60,9 @@ def oauth_login(provider: str) -> None:
 
 def _credential_status(provider: str, auth: str, api_key_env: str | None) -> str:
     if auth == "api_key":
+        from llm_router.credentials.env_key import load_provider_env
+
+        load_provider_env()
         return "set" if api_key_env and os.environ.get(api_key_env) else "missing"
     if provider == "openai":
         return "pending"

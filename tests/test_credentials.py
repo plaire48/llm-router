@@ -37,6 +37,14 @@ async def test_env_key_missing_raises_401(monkeypatch):
     assert "MISSING_KEY" in error.value.message
 
 
+async def test_env_key_loads_arbitrary_provider_key_from_dotenv(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("CUSTOM_PROVIDER_KEY", raising=False)
+    (tmp_path / ".env").write_text("CUSTOM_PROVIDER_KEY=from-dotenv\n")
+    credential = EnvApiKey("CUSTOM_PROVIDER_KEY", style="bearer")
+    assert await credential.headers() == {"authorization": "Bearer from-dotenv"}
+
+
 def test_token_store_roundtrip_and_permissions(tmp_path):
     path = tmp_path / "credentials" / "creds.json"
     store = TokenStore(path)

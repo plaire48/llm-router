@@ -6,6 +6,7 @@ from collections.abc import AsyncIterator
 import httpx
 
 from llm_router.credentials.base import Credential
+from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, Profile
 
 DEFAULT_BASE_URL = "https://api.openai.com/v1"
@@ -31,7 +32,22 @@ class OpenAIAdapter:
         body["stream"] = False
         response = await self.client.post(self._url(profile), json=body, headers=headers)
         response.raise_for_status()
-        data = response.json()
+        try:
+            data = response.json()
+        except json.JSONDecodeError as exc:
+            raise RouterError(
+                "OpenAI-compatible upstream returned invalid JSON",
+                type="upstream_error",
+                code="invalid_upstream_response",
+                status_code=502,
+            ) from exc
+        if not isinstance(data, dict):
+            raise RouterError(
+                "OpenAI-compatible upstream returned a non-object response",
+                type="upstream_error",
+                code="invalid_upstream_response",
+                status_code=502,
+            )
         data["model"] = profile.name
         return data
 
@@ -62,9 +78,20 @@ class OpenAIAdapter:
                     raw_data = line.removeprefix("data:").lstrip()
                     try:
                         chunk = json.loads(raw_data)
-                    except json.JSONDecodeError:
-                        yield f"{line}\n\n"
-                        continue
+                    except json.JSONDecodeError as exc:
+                        raise RouterError(
+                            "OpenAI-compatible upstream returned invalid SSE data",
+                            type="upstream_error",
+                            code="invalid_upstream_response",
+                            status_code=502,
+                        ) from exc
+                    if not isinstance(chunk, dict):
+                        raise RouterError(
+                            "OpenAI-compatible upstream returned non-object SSE data",
+                            type="upstream_error",
+                            code="invalid_upstream_response",
+                            status_code=502,
+                        )
                     chunk["model"] = profile.name
                     yield f"data: {json.dumps(chunk)}\n\n"
                     continue
