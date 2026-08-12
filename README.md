@@ -7,6 +7,7 @@ localhost에서 실행되는 OpenAI 호환 LLM 게이트웨이입니다. 클라�
 
 - 지원: Anthropic API key, OpenAI API key, 임의 OpenAI 호환 `base_url`
 - 지원: `/v1/chat/completions` 비스트리밍·스트리밍·도구 호출, `/v1/models`, `/health`
+- 지원: SQLite 사용량 기록과 `/dashboard` 웹 대시보드
 - 실험적: Claude 구독 OAuth. 현재 설치된 공식 Claude Code 바이너리에서 로그인 및 API 계약을
   확인해 구현했지만 실제 구독 계정 스모크 테스트는 아직 필요합니다.
 - 보류: OpenAI(ChatGPT) 구독 OAuth. 실제 호출 가능 API를 검증하기 전까지 CLI와 서버에서
@@ -29,6 +30,8 @@ python3 -m pip install -e '.[dev]'
 LLM_ROUTER_MASTER_KEY=sk-local-change-me
 LLM_ROUTER_HOST=127.0.0.1
 LLM_ROUTER_PORT=8787
+LLM_ROUTER_USAGE_DB=~/.llm-router/usage.db
+LLM_ROUTER_LOG_BODIES=false
 ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
 ```
@@ -121,6 +124,24 @@ OpenCrew 등 OpenAI 호환 설정을 받는 도구에도 같은 값을 사용합
 - `base_url`: `http://127.0.0.1:8787/v1`
 - `api_key`: `LLM_ROUTER_MASTER_KEY` 값
 - `model`: 프로필 name 또는 alias
+
+## 사용량 대시보드
+
+`llm-router serve`를 실행한 뒤 브라우저에서
+`http://localhost:8787/dashboard`를 열고 `LLM_ROUTER_MASTER_KEY` 값을 입력합니다. 최근
+7·30·90일의 토큰 사용량과 호출 이력을 프로필을 가로질러 확인할 수 있습니다.
+
+사용량 데이터는 기본적으로 `~/.llm-router/usage.db`에 저장됩니다. 위치를 바꾸려면
+`LLM_ROUTER_USAGE_DB`를 설정합니다. 요청·응답 본문은 기본적으로 저장하지 않으며, 디버깅에
+필요한 경우에만 다음 값을 명시적으로 켭니다.
+
+```dotenv
+LLM_ROUTER_LOG_BODIES=true
+```
+
+본문에는 민감한 프롬프트와 도구 결과가 포함될 수 있습니다. 필요한 기간에만 활성화하는 것을
+권장합니다. 대시보드 HTML 자체는 인증 없이 열리지만, 사용량 API는 마스터 키 인증을 요구하며
+입력한 키는 현재 브라우저 탭의 세션 저장소에만 보관됩니다.
 
 ## 개발
 

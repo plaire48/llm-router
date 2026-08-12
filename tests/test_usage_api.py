@@ -84,3 +84,18 @@ def test_usage_endpoints_report_disabled_without_store():
         response = client.get("/v1/usage/summary", headers=AUTH)
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "usage_disabled"
+
+
+def test_dashboard_serves_self_contained_html(tmp_path):
+    store = UsageStore(tmp_path / "u.db")
+    try:
+        with TestClient(create_app(SETTINGS, REGISTRY, store=store)) as client:
+            response = client.get("/dashboard")
+        assert response.status_code == 200
+        assert "text/html" in response.headers["content-type"]
+        body = response.text
+        assert "llm-router" in body
+        assert "http://" not in body.replace("http://localhost", "")
+        assert "https://" not in body
+    finally:
+        store.close()

@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError
 
@@ -31,6 +33,15 @@ def test_settings_defaults_and_rejects_empty_master_key():
     assert settings.port == 8787
     with pytest.raises(ValidationError):
         Settings(master_key="", _env_file=None)
+
+
+def test_settings_expands_home_in_usage_database_path():
+    settings = Settings(
+        master_key="secret",
+        usage_db="~/.llm-router/custom-usage.db",
+        _env_file=None,
+    )
+    assert settings.usage_db == Path.home() / ".llm-router" / "custom-usage.db"
 
 
 def test_resolve_by_name_and_alias(tmp_path):

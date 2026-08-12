@@ -39,9 +39,8 @@ LLM Router — 구독 계정의 OAuth 로그인(Claude, OpenAI)을 localhost 포
 - Anthropic 구독 OAuth는 실제 계정으로 Messages·스트리밍·도구 호출을 검증하기 전까지 MUST 실험적으로 표시한다.
 - OpenAI 구독 OAuth는 스파이크 미완료로 MUST 차단 상태를 유지한다. API key 및 openai_compatible 경로는 동작한다.
 - OAuth 토큰은 `~/.llm-router/credentials.json`에 0600으로 원자 저장하고, 만료 5분 전 동시 요청당 단일 refresh를 수행한다.
-- 사용량 대시보드(설계 승인, 미구현): `usage/` 모듈이 모든 호출을 SQLite(`~/.llm-router/usage.db`)에 기록하고 `/dashboard`에서 웹으로 본다. 스펙 `specs/2026-08-12-usage-dashboard-design.md`, 계획 `plans/2026-08-12-usage-dashboard.md`. 데스크톱 앱이 아니라 라우터가 직접 서빙하는 웹 UI다.
+- 사용량 대시보드: `usage/` 모듈이 모든 호출을 SQLite(`~/.llm-router/usage.db`)에 기록하고 `/dashboard`에서 웹으로 본다. 본문은 `LLM_ROUTER_LOG_BODIES=true`일 때만 저장한다. 데스크톱 앱이 아니라 라우터가 직접 서빙하는 웹 UI다.
 - 로깅 실패는 추론 요청을 MUST 깨뜨리지 않는다. 사용량 기록 경로의 예외는 전부 삼킨다.
-- 미적용 수정: `plans/2026-08-12-fix-streaming-upstream-error.md`(스트리밍 중 업스트림 에러 시 `ResponseNotRead` 크래시). 대시보드 Task 4보다 **먼저** 적용한다.
 - 구현이 진행되면 "여러 파일을 읽어야 보이는 큰 그림"만 여기에 갱신한다. 파일 트리 나열은 하지 않는다.
 
 ## 이 파일의 유지 규칙

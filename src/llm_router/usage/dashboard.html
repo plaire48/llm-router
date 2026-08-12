@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>llm-router usage</title>
+  <style>
+    :root {
+      --paper: #eee9dc;
+      --paper-strong: #f8f4e9;
+      --ink: #171a18;
+      --muted: #64645d;
+      --line: #242824;
+      --soft-line: rgba(23, 26, 24, 0.18);
+      --signal: #ef5b2a;
+      --signal-soft: #ffddd0;
+      --cool: #236b64;
+      --danger: #b32828;
+      --ok: #246b3d;
+      --shadow: 5px 5px 0 #171a18;
+      --display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      --mono: "SFMono-Regular", "Cascadia Code", "Liberation Mono", Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--ink);
+      background-color: var(--paper);
+      background-image:
+        linear-gradient(var(--soft-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--soft-line) 1px, transparent 1px);
+      background-size: 28px 28px;
+      font-family: var(--mono);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    button, input, select { font: inherit; }
+
+    button, select, input {
+      color: var(--ink);
+      background: var(--paper-strong);
+      border: 1px solid var(--line);
+      border-radius: 0;
+    }
+
+    button { cursor: pointer; }
+
+    button:focus-visible, input:focus-visible, select:focus-visible, tr:focus-visible {
+      outline: 3px solid var(--signal);
+      outline-offset: 2px;
+    }
+
+    .shell {
+      width: min(1280px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 56px;
+    }
+
+    .masthead {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 32px;
+      align-items: end;
+      padding: 22px 0 18px;
+      border-top: 6px solid var(--ink);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      width: 9px;
+      height: 9px;
+      background: var(--signal);
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px var(--signal-soft);
+      animation: pulse 2.6s ease-in-out infinite;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(42px, 7vw, 82px);
+      font-weight: 600;
+      letter-spacing: -0.055em;
+      line-height: 0.84;
+    }
+
+    h1 span {
+      color: var(--signal);
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 8px;
+      align-items: end;
+    }
+
+    .control-group {
+      display: grid;
+      gap: 5px;
+    }
+
+    .control-group label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    select, .quiet-button {
+      min-height: 38px;
+      padding: 8px 12px;
+    }
+
+    .quiet-button:hover { background: var(--signal-soft); }
+
+    .notice {
+      display: none;
+      margin-top: 18px;
+      padding: 12px 14px;
+      color: var(--danger);
+      background: var(--paper-strong);
+      border: 1px solid var(--danger);
+    }
+
+    .notice[data-visible="true"] { display: block; }
+
+    .auth-panel {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.72fr);
+      gap: 36px;
+      margin: 48px 0;
+      padding: clamp(24px, 5vw, 58px);
+      overflow: hidden;
+      background: var(--paper-strong);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .auth-panel::before {
+      position: absolute;
+      inset: 12px;
+      border: 1px dashed var(--soft-line);
+      content: "";
+      pointer-events: none;
+    }
+
+    .auth-panel[hidden] { display: none; }
+
+    .auth-index {
+      margin: 0 0 22px;
+      color: var(--signal);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+    }
+
+    .auth-copy h2 {
+      max-width: 650px;
+      margin: 0 0 18px;
+      font-family: var(--display);
+      font-size: clamp(34px, 5vw, 60px);
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+    }
+
+    .auth-copy p { max-width: 58ch; margin: 0; color: var(--muted); }
+
+    .auth-form {
+      position: relative;
+      align-self: center;
+      padding: 22px;
+      background: var(--paper);
+      border-left: 5px solid var(--signal);
+    }
+
+    .auth-form label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .auth-form input {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+    }
+
+    .primary-button {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 10px;
+      color: #fff9ed;
+      background: var(--ink);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow: 3px 3px 0 var(--signal);
+    }
+
+    .primary-button:hover { color: var(--ink); background: var(--signal); }
+
+    .session-note {
+      display: block;
+      margin-top: 13px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .dashboard[hidden] { display: none; }
+
+    .status-strip {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 16px 0;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .status-strip strong { color: var(--ink); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      min-height: 138px;
+      padding: 20px 22px;
+      background: var(--paper-strong);
+      border-right: 1px solid var(--line);
+    }
+
+    .metric:last-child { border-right: 0; }
+
+    .metric-label {
+      display: block;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      display: block;
+      font-family: var(--display);
+      font-size: clamp(36px, 5vw, 58px);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .metric:last-child .metric-value { color: var(--signal); }
+
+    .panel {
+      margin-top: 28px;
+      background: var(--paper-strong);
+      border: 1px solid var(--line);
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: baseline;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
+
+    .panel-head p { margin: 0; color: var(--muted); font-size: 11px; }
+
+    .chart-wrap {
+      min-height: 270px;
+      padding: 18px;
+      overflow-x: auto;
+      background-image: linear-gradient(to bottom, transparent 94%, var(--soft-line) 94%);
+      background-size: 100% 48px;
+    }
+
+    #usage-chart {
+      display: block;
+      width: 100%;
+      min-width: 680px;
+      height: 240px;
+      overflow: visible;
+    }
+
+    .chart-grid { stroke: var(--soft-line); stroke-width: 1; }
+    .chart-bar { fill: var(--signal); transform-box: fill-box; transform-origin: center bottom; animation: rise 520ms cubic-bezier(.2,.75,.25,1) both; }
+    .chart-bar:hover { fill: var(--cool); }
+    .chart-label, .chart-value { fill: var(--muted); font-family: var(--mono); font-size: 10px; }
+    .chart-value { fill: var(--ink); font-weight: 700; }
+
+    .empty {
+      display: grid;
+      min-height: 220px;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th, td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--soft-line);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      background: color-mix(in srgb, var(--paper) 82%, transparent);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    tbody tr[data-call-id] { cursor: pointer; }
+    tbody tr[data-call-id]:hover, tbody tr[data-call-id][aria-expanded="true"] { background: var(--signal-soft); }
+
+    .profile-mark {
+      display: inline-block;
+      padding: 2px 7px;
+      border: 1px solid currentColor;
+      font-weight: 800;
+    }
+
+    .state {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+    }
+
+    .state::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+    .state.ok { color: var(--ok); }
+    .state.error { color: var(--danger); }
+
+    .detail-row td {
+      padding: 0;
+      white-space: normal;
+      background: var(--ink);
+      color: var(--paper-strong);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .detail-block { min-width: 0; padding: 18px; background: var(--ink); }
+
+    .detail-block h3 {
+      margin: 0 0 10px;
+      color: #d8d1bf;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    pre {
+      max-height: 340px;
+      margin: 0;
+      overflow: auto;
+      color: #fff9ed;
+      font: 12px/1.55 var(--mono);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .loading { opacity: 0.48; pointer-events: none; }
+
+    @keyframes pulse { 50% { opacity: 0.38; transform: scale(0.74); } }
+    @keyframes rise { from { opacity: 0; transform: scaleY(0); } }
+
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 22px, 1280px); padding-top: 18px; }
+      .masthead { grid-template-columns: 1fr; align-items: start; }
+      .controls { grid-template-columns: minmax(0, 1fr) auto; }
+      .auth-panel { grid-template-columns: 1fr; gap: 26px; margin-top: 28px; }
+      .metrics { grid-template-columns: 1fr; }
+      .metric { min-height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .metric:last-child { border-bottom: 0; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .panel-head { align-items: flex-start; flex-direction: column; gap: 5px; }
+      .status-strip { flex-direction: column; gap: 4px; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #171a18;
+        --paper-strong: #202420;
+        --ink: #f3eddd;
+        --muted: #aaa99e;
+        --line: #e8dfcb;
+        --soft-line: rgba(232, 223, 203, 0.14);
+        --signal: #ff7547;
+        --signal-soft: #4b2b21;
+        --cool: #63bdb0;
+        --danger: #ff7770;
+        --ok: #76c991;
+        --shadow: 5px 5px 0 #e8dfcb;
+      }
+
+      .primary-button { color: #171a18; background: var(--ink); }
+      .primary-button:hover { background: var(--signal); }
+      .detail-row td, .detail-block { color: #f3eddd; background: #0d0f0e; }
+      .detail-block h3 { color: #aaa99e; }
+      pre { color: #f3eddd; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> Local telemetry / router 01</p>
+        <h1>llm-router <span>ledger</span></h1>
+      </div>
+      <div class="controls">
+        <div class="control-group">
+          <label for="period">관측 기간</label>
+          <select id="period">
+            <option value="7">최근 7일</option>
+            <option value="30">최근 30일</option>
+            <option value="90">최근 90일</option>
+          </select>
+        </div>
+        <button class="quiet-button" id="forget-key" type="button">키 지우기</button>
+      </div>
+    </header>
+
+    <div class="notice" id="notice" role="alert" aria-live="assertive"></div>
+
+    <section class="auth-panel" id="auth-panel" aria-labelledby="auth-title">
+      <div class="auth-copy">
+        <p class="auth-index">ACCESS / 00</p>
+        <h2 id="auth-title">운용 기록을 열기 위한 로컬 키</h2>
+        <p>라우터의 마스터 키로 사용량 API를 엽니다. 키는 이 탭의 sessionStorage에만 보관되며 탭을 닫으면 사라집니다.</p>
+      </div>
+      <form class="auth-form" id="auth-form">
+        <label for="master-key">LLM_ROUTER_MASTER_KEY</label>
+        <input id="master-key" name="master-key" type="password" autocomplete="current-password" required>
+        <button class="primary-button" type="submit">기록 열기</button>
+        <span class="session-note">세션 전용 · 서버에 별도 저장하지 않음</span>
+      </form>
+    </section>
+
+    <section class="dashboard" id="dashboard" hidden aria-busy="false">
+      <div class="status-strip">
+        <span>Scope <strong id="scope-label">최근 7일</strong></span>
+        <span id="updated-at">아직 동기화되지 않음</span>
+      </div>
+
+      <section class="metrics" aria-label="사용량 요약">
+        <div class="metric">
+          <span class="metric-label">Routed calls</span>
+          <strong class="metric-value" id="metric-calls">—</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Observed tokens</span>
+          <strong class="metric-value" id="metric-tokens">—</strong>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Errors</span>
+          <strong class="metric-value" id="metric-errors">—</strong>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="chart-title">
+        <header class="panel-head">
+          <h2 id="chart-title">일자별 토큰 흐름</h2>
+          <p>모든 프로필의 관측 토큰 합계</p>
+        </header>
+        <div class="chart-wrap" id="chart-wrap"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="calls-title">
+        <header class="panel-head">
+          <h2 id="calls-title">최근 호출 기록</h2>
+          <p>행 선택 시 요청·응답 본문 확인</p>
+        </header>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">시각</th>
+                <th scope="col">프로필</th>
+                <th scope="col">모델</th>
+                <th scope="col">모드</th>
+                <th scope="col">토큰</th>
+                <th scope="col">지연</th>
+                <th scope="col">상태</th>
+              </tr>
+            </thead>
+            <tbody id="calls-body"></tbody>
+          </table>
+          <div class="empty" id="calls-empty" hidden>아직 기록된 호출이 없습니다.</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const storageKey = "llmRouterKey";
+      const authPanel = document.querySelector("#auth-panel");
+      const authForm = document.querySelector("#auth-form");
+      const keyInput = document.querySelector("#master-key");
+      const dashboard = document.querySelector("#dashboard");
+      const period = document.querySelector("#period");
+      const notice = document.querySelector("#notice");
+      const callsBody = document.querySelector("#calls-body");
+      const callsEmpty = document.querySelector("#calls-empty");
+      const chartWrap = document.querySelector("#chart-wrap");
+      const number = new Intl.NumberFormat("ko-KR");
+      const dateTime = new Intl.DateTimeFormat("ko-KR", {
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      let openCallId = null;
+
+      function setNotice(message) {
+        notice.textContent = message || "";
+        notice.dataset.visible = message ? "true" : "false";
+      }
+
+      function showAuth(message = "") {
+        sessionStorage.removeItem(storageKey);
+        authPanel.hidden = false;
+        dashboard.hidden = true;
+        if (message) setNotice(message);
+        requestAnimationFrame(() => keyInput.focus());
+      }
+
+      function showDashboard() {
+        authPanel.hidden = true;
+        dashboard.hidden = false;
+        setNotice("");
+      }
+
+      async function api(path) {
+        const key = sessionStorage.getItem(storageKey);
+        if (!key) throw new Error("AUTH_REQUIRED");
+        const response = await fetch(path, {
+          headers: { authorization: `Bearer ${key}` },
+        });
+        if (response.status === 401) throw new Error("AUTH_REQUIRED");
+        let payload = null;
+        try {
+          payload = await response.json();
+        } catch (_error) {
+          throw new Error(`응답을 읽을 수 없습니다 (${response.status})`);
+        }
+        if (!response.ok) {
+          throw new Error(payload?.error?.message || `요청 실패 (${response.status})`);
+        }
+        return payload;
+      }
+
+      function localDay(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function daySeries(rows, days) {
+        const totals = new Map();
+        for (const row of rows) {
+          totals.set(row.day, (totals.get(row.day) || 0) + (row.total_tokens || 0));
+        }
+        const result = [];
+        const cursor = new Date();
+        cursor.setHours(12, 0, 0, 0);
+        cursor.setDate(cursor.getDate() - days + 1);
+        for (let index = 0; index < days; index += 1) {
+          const day = localDay(cursor);
+          result.push({ day, total: totals.get(day) || 0 });
+          cursor.setDate(cursor.getDate() + 1);
+        }
+        return result;
+      }
+
+      function svgNode(name, attributes = {}) {
+        const node = document.createElementNS("http:" + "//www.w3.org/2000/svg", name);
+        for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
+        return node;
+      }
+
+      function renderChart(rows, days) {
+        chartWrap.replaceChildren();
+        const series = daySeries(rows, days);
+        const max = Math.max(...series.map((item) => item.total));
+        if (max === 0) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "선택한 기간에 관측된 토큰이 없습니다.";
+          chartWrap.append(empty);
+          return;
+        }
+
+        const width = 960;
+        const height = 240;
+        const top = 22;
+        const bottom = 34;
+        const plotHeight = height - top - bottom;
+        const slot = width / series.length;
+        const barWidth = Math.max(3, Math.min(24, slot * 0.62));
+        const svg = svgNode("svg", {
+          id: "usage-chart",
+          viewBox: `0 0 ${width} ${height}`,
+          role: "img",
+          "aria-label": `최근 ${days}일의 일자별 총 토큰 막대 차트`,
+          preserveAspectRatio: "xMidYMid meet",
+        });
+        const title = svgNode("title");
+        title.textContent = `최근 ${days}일 토큰 사용량`;
+        svg.append(title);
+
+        for (let line = 0; line <= 4; line += 1) {
+          const y = top + (plotHeight / 4) * line;
+          svg.append(svgNode("line", { x1: 0, y1: y, x2: width, y2: y, class: "chart-grid" }));
+        }
+
+        const labelEvery = days <= 7 ? 1 : days <= 30 ? 5 : 15;
+        series.forEach((item, index) => {
+          const barHeight = Math.max(2, (item.total / max) * plotHeight);
+          const x = slot * index + (slot - barWidth) / 2;
+          const y = top + plotHeight - barHeight;
+          const bar = svgNode("rect", {
+            x,
+            y,
+            width: barWidth,
+            height: barHeight,
+            class: "chart-bar",
+            rx: 1,
+          });
+          bar.style.animationDelay = `${Math.min(index * 16, 360)}ms`;
+          const barTitle = svgNode("title");
+          barTitle.textContent = `${item.day}: ${number.format(item.total)} tokens`;
+          bar.append(barTitle);
+          svg.append(bar);
+
+          if (index % labelEvery === 0 || index === series.length - 1) {
+            const label = svgNode("text", {
+              x: slot * index + slot / 2,
+              y: height - 10,
+              class: "chart-label",
+              "text-anchor": "middle",
+            });
+            label.textContent = item.day.slice(5).replace("-", "/");
+            svg.append(label);
+          }
+        });
+        chartWrap.append(svg);
+      }
+
+      function cell(text, className = "") {
+        const td = document.createElement("td");
+        td.textContent = text;
+        if (className) td.className = className;
+        return td;
+      }
+
+      function formatBody(value) {
+        if (value === null || value === undefined) return "본문 로깅이 꺼져 있습니다";
+        try {
+          return JSON.stringify(JSON.parse(value), null, 2);
+        } catch (_error) {
+          return value;
+        }
+      }
+
+      function closeDetail() {
+        document.querySelector(".detail-row")?.remove();
+        document.querySelector('tr[aria-expanded="true"]')?.setAttribute("aria-expanded", "false");
+        openCallId = null;
+      }
+
+      async function toggleDetail(row, callId) {
+        if (openCallId === callId) {
+          closeDetail();
+          return;
+        }
+        closeDetail();
+        row.setAttribute("aria-expanded", "true");
+        openCallId = callId;
+        const detailRow = document.createElement("tr");
+        detailRow.className = "detail-row";
+        const detailCell = document.createElement("td");
+        detailCell.colSpan = 7;
+        detailCell.textContent = "상세 기록을 불러오는 중…";
+        detailRow.append(detailCell);
+        row.after(detailRow);
+        try {
+          const detail = await api(`/v1/usage/calls/${callId}`);
+          if (openCallId !== callId) return;
+          const grid = document.createElement("div");
+          grid.className = "detail-grid";
+          for (const [heading, body] of [
+            ["Request body", formatBody(detail.request_body)],
+            ["Response body", formatBody(detail.response_body)],
+          ]) {
+            const block = document.createElement("section");
+            block.className = "detail-block";
+            const title = document.createElement("h3");
+            title.textContent = heading;
+            const pre = document.createElement("pre");
+            pre.textContent = body;
+            block.append(title, pre);
+            grid.append(block);
+          }
+          detailCell.replaceChildren(grid);
+        } catch (error) {
+          if (error.message === "AUTH_REQUIRED") {
+            showAuth("마스터 키가 만료되었거나 올바르지 않습니다.");
+            return;
+          }
+          detailCell.textContent = error.message;
+        }
+      }
+
+      function renderCalls(rows) {
+        callsBody.replaceChildren();
+        closeDetail();
+        callsEmpty.hidden = rows.length !== 0;
+        for (const call of rows) {
+          const row = document.createElement("tr");
+          row.dataset.callId = call.id;
+          row.tabIndex = 0;
+          row.setAttribute("aria-expanded", "false");
+          row.setAttribute("aria-label", `${call.profile} 호출 상세 열기`);
+          row.append(cell(dateTime.format(new Date(call.started_at * 1000))));
+
+          const profileCell = cell(call.profile, "");
+          const mark = document.createElement("span");
+          mark.className = "profile-mark";
+          mark.textContent = call.profile;
+          profileCell.replaceChildren(mark);
+          row.append(profileCell);
+          row.append(cell(call.upstream_model));
+          row.append(cell(call.stream ? "STREAM" : "SYNC"));
+          row.append(cell(call.total_tokens === null ? "—" : number.format(call.total_tokens)));
+          row.append(cell(call.duration_ms === null ? "—" : `${number.format(call.duration_ms)} ms`));
+
+          const statusCell = cell("");
+          const state = document.createElement("span");
+          state.className = `state ${call.ok ? "ok" : "error"}`;
+          state.textContent = call.ok ? String(call.status || 200) : String(call.status || "ERR");
+          statusCell.append(state);
+          row.append(statusCell);
+          row.addEventListener("click", () => toggleDetail(row, call.id));
+          row.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              toggleDetail(row, call.id);
+            }
+          });
+          callsBody.append(row);
+        }
+      }
+
+      function renderSummary(rows, days) {
+        const totals = rows.reduce(
+          (sum, row) => ({
+            calls: sum.calls + (row.calls || 0),
+            tokens: sum.tokens + (row.total_tokens || 0),
+            errors: sum.errors + (row.errors || 0),
+          }),
+          { calls: 0, tokens: 0, errors: 0 },
+        );
+        document.querySelector("#metric-calls").textContent = number.format(totals.calls);
+        document.querySelector("#metric-tokens").textContent = number.format(totals.tokens);
+        document.querySelector("#metric-errors").textContent = number.format(totals.errors);
+        document.querySelector("#scope-label").textContent = `최근 ${days}일`;
+        renderChart(rows, days);
+      }
+
+      async function loadData() {
+        const days = Number(period.value);
+        showDashboard();
+        dashboard.classList.add("loading");
+        dashboard.setAttribute("aria-busy", "true");
+        try {
+          const [summary, calls] = await Promise.all([
+            api(`/v1/usage/summary?days=${days}`),
+            api("/v1/usage/calls?limit=50"),
+          ]);
+          renderSummary(summary.data, days);
+          renderCalls(calls.data);
+          document.querySelector("#updated-at").textContent = `Updated ${dateTime.format(new Date())}`;
+        } catch (error) {
+          if (error.message === "AUTH_REQUIRED") {
+            showAuth("마스터 키가 올바르지 않습니다. 다시 입력해 주세요.");
+          } else {
+            setNotice(error.message);
+          }
+        } finally {
+          dashboard.classList.remove("loading");
+          dashboard.setAttribute("aria-busy", "false");
+        }
+      }
+
+      authForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const key = keyInput.value.trim();
+        if (!key) return;
+        sessionStorage.setItem(storageKey, key);
+        keyInput.value = "";
+        loadData();
+      });
+
+      period.addEventListener("change", () => {
+        if (sessionStorage.getItem(storageKey)) loadData();
+      });
+
+      document.querySelector("#forget-key").addEventListener("click", () => {
+        showAuth("이 탭에서 마스터 키를 지웠습니다.");
+      });
+
+      if (sessionStorage.getItem(storageKey)) loadData();
+      else showAuth();
+    })();
+  </script>
+</body>
+</html>

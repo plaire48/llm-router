@@ -187,8 +187,9 @@ def create_app(
         await recorder.finish(record, adapter=adapter, response=response)
         return response
 
-    from llm_router.usage.routes import build_usage_router
+    from llm_router.usage.routes import build_dashboard_router, build_usage_router
 
     app.include_router(build_usage_router(store, require_auth))
+    app.include_router(build_dashboard_router())
 
     return app

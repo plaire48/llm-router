@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from importlib import resources
 from typing import Any
 
 from fastapi import APIRouter, Depends, Query
+from fastapi.responses import HTMLResponse
 
 from llm_router.errors import RouterError
 
@@ -47,5 +49,16 @@ def build_usage_router(store: Any | None, auth_dependency: Callable[..., Any]) -
                 status_code=404,
             )
         return row
+
+    return router
+
+
+def build_dashboard_router() -> APIRouter:
+    router = APIRouter()
+
+    @router.get("/dashboard", response_class=HTMLResponse)
+    async def dashboard() -> HTMLResponse:
+        html = resources.files("llm_router.usage").joinpath("dashboard.html").read_text("utf-8")
+        return HTMLResponse(html)
 
     return router

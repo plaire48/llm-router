@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 import yaml
-from pydantic import StringConstraints
+from pydantic import StringConstraints, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from llm_router.errors import RouterError
@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     port: int = 8787
     usage_db: Path = Path.home() / ".llm-router" / "usage.db"
     log_bodies: bool = False
+
+    @field_validator("usage_db", mode="before")
+    @classmethod
+    def _expand_usage_db(cls, value: str | Path) -> Path:
+        return Path(value).expanduser()
 
 
 class ProfileRegistry:
