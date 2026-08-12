@@ -99,3 +99,13 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "https://" not in body
     finally:
         store.close()
+
+
+def test_dashboard_hidden_attribute_cannot_be_overridden(tmp_path):
+    store = UsageStore(tmp_path / "u.db")
+    try:
+        with TestClient(create_app(SETTINGS, REGISTRY, store=store)) as client:
+            body = client.get("/dashboard").text
+        assert "[hidden] { display: none !important; }" in body
+    finally:
+        store.close()
