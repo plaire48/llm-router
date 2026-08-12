@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     master_key: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
     host: str = "127.0.0.1"
     port: int = 8787
+    usage_db: Path = Path.home() / ".llm-router" / "usage.db"
+    log_bodies: bool = False
 
 
 class ProfileRegistry:
