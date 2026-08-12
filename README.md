@@ -32,6 +32,7 @@ LLM_ROUTER_HOST=127.0.0.1
 LLM_ROUTER_PORT=8787
 LLM_ROUTER_USAGE_DB=~/.llm-router/usage.db
 LLM_ROUTER_LOG_BODIES=false
+CLAUDE_ANALYTICS_KEY=
 ANTHROPIC_API_KEY=
 OPENAI_API_KEY=
 ```
@@ -125,6 +126,38 @@ OpenCrew 등 OpenAI 호환 설정을 받는 도구에도 같은 값을 사용합
 - `api_key`: `LLM_ROUTER_MASTER_KEY` 값
 - `model`: 프로필 name 또는 alias
 
+### opencode 연결
+
+opencode는 `@ai-sdk/openai-compatible` 제공자로 임의의 OpenAI 호환 엔드포인트를 받습니다.
+`opencode.json`에 다음을 추가합니다.
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "llm-router": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llm-router (로컬)",
+      "options": {
+        "baseURL": "http://127.0.0.1:8787/v1",
+        "apiKey": "sk-local-change-me"
+      },
+      "models": {
+        "claude": { "name": "Claude (구독 로그인)" },
+        "openai": { "name": "OpenAI" }
+      }
+    }
+  }
+}
+```
+
+`models`의 키는 라우터로 그대로 전달되므로 **`profiles.yaml`의 프로필 `name`과 정확히 일치해야
+합니다.** 위 예시는 프로필 `claude`, `openai`가 있다고 가정합니다. 프로필을 추가하면 opencode의
+`models`에도 같은 이름을 넣어야 목록에 나타납니다.
+
+`llm-router serve`가 실행 중이어야 하며, opencode는 뒤에서 구독 OAuth가 쓰이는지 API key가
+쓰이는지 알지 못합니다.
+
 ## 사용량 대시보드
 
 `llm-router serve`를 실행한 뒤 브라우저에서
@@ -142,6 +175,21 @@ LLM_ROUTER_LOG_BODIES=true
 본문에는 민감한 프롬프트와 도구 결과가 포함될 수 있습니다. 필요한 기간에만 활성화하는 것을
 권장합니다. 대시보드 HTML 자체는 인증 없이 열리지만, 사용량 API는 마스터 키 인증을 요구하며
 입력한 키는 현재 브라우저 탭의 세션 저장소에만 보관됩니다.
+
+### Claude Enterprise 조직 사용량
+
+대시보드는 라우터 자체 계측과 별도로 Claude Enterprise 조직의 일별 토큰 사용량을 표시할 수
+있습니다. Primary owner가 `claude.ai`의 **Organization settings → API**에서 public API access를
+활성화하고 `read:analytics` 범위의 Analytics API key를 발급한 뒤 다음 환경변수에 설정합니다.
+
+```dotenv
+CLAUDE_ANALYTICS_KEY=your-analytics-key
+```
+
+관리자 키는 브라우저로 전달되지 않고 라우터가 Analytics API를 대신 호출합니다. 응답은 5분간
+메모리에 캐시되며, 조직 단위 요청 한도에 걸리면 마지막 캐시를 표시합니다. 조직 데이터는 최대
+24시간 지연되고 최근 값이 사후 조정될 수 있습니다. 비용과 usage credits의 의미는 Enterprise
+플랜에 따라 달라지므로 플랜이 확인되기 전까지 대시보드에는 토큰과 요청 수만 표시합니다.
 
 ## 개발
 
