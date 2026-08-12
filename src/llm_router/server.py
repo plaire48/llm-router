@@ -17,6 +17,7 @@ from llm_router.adapters import build_adapter
 from llm_router.config import ProfileRegistry, Settings
 from llm_router.errors import RouterError, to_openai_error
 from llm_router.models import ChatCompletionRequest
+from llm_router.usage import UsageRecorder
 
 
 def _upstream_status_error(exc: httpx.HTTPStatusError) -> RouterError:
@@ -45,8 +46,10 @@ def create_app(
     settings: Settings,
     registry: ProfileRegistry,
     client: httpx.AsyncClient | None = None,
+    store: object | None = None,
 ) -> FastAPI:
     owns_client = client is None
+    recorder = UsageRecorder(store, log_bodies=settings.log_bodies)
 
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
@@ -139,42 +142,49 @@ def create_app(
         profile = registry.resolve(request.model)
         active_client = await get_client()
         adapter = build_adapter(profile, active_client)
+        record = recorder.start(profile, request)
+
         if request.stream:
 
             async def generate() -> AsyncIterator[str]:
+                error: RouterError | None = None
                 try:
                     async for line in adapter.stream(request, profile):
                         yield line
                 except RouterError as exc:
-                    yield f"data: {json.dumps(to_openai_error(exc))}\n\n"
-                    yield "data: [DONE]\n\n"
+                    error = exc
                 except httpx.HTTPStatusError as exc:
                     error = _upstream_status_error(exc)
-                    yield f"data: {json.dumps(to_openai_error(error))}\n\n"
-                    yield "data: [DONE]\n\n"
                 except httpx.RequestError as exc:
                     error = _upstream_connection_error(exc)
-                    yield f"data: {json.dumps(to_openai_error(error))}\n\n"
-                    yield "data: [DONE]\n\n"
-                except Exception:  # noqa: BLE001 - response has started; emit an SSE error
+                except Exception:  # noqa: BLE001 - response started; emit an SSE error
                     error = RouterError(
                         "streaming failed",
                         type="server_error",
                         code="stream_error",
                         status_code=500,
                     )
+                if error is not None:
                     yield f"data: {json.dumps(to_openai_error(error))}\n\n"
                     yield "data: [DONE]\n\n"
+                await recorder.finish(record, adapter=adapter, error=error)
 
             return StreamingResponse(generate(), media_type="text/event-stream")
 
         try:
-            return await adapter.complete(request, profile)
-        except RouterError:
+            response = await adapter.complete(request, profile)
+        except RouterError as exc:
+            await recorder.finish(record, adapter=adapter, error=exc)
             raise
         except httpx.HTTPStatusError as exc:
-            raise _upstream_status_error(exc) from exc
+            error = _upstream_status_error(exc)
+            await recorder.finish(record, adapter=adapter, error=error)
+            raise error from exc
         except httpx.RequestError as exc:
-            raise _upstream_connection_error(exc) from exc
+            error = _upstream_connection_error(exc)
+            await recorder.finish(record, adapter=adapter, error=error)
+            raise error from exc
+        await recorder.finish(record, adapter=adapter, response=response)
+        return response
 
     return app

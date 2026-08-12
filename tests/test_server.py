@@ -193,3 +193,109 @@ def test_streaming_upstream_error_emits_sse_error_instead_of_crashing(monkeypatc
     first_payload = json.loads(body.split("data: ", 1)[1].split("\n\n", 1)[0])
     assert first_payload["error"]["type"] == "upstream_error"
     assert "rate limited" in first_payload["error"]["message"]
+
+
+def test_calls_are_recorded_when_store_is_provided(tmp_path, monkeypatch):
+    import asyncio
+
+    from llm_router.usage import UsageStore
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant")
+    store = UsageStore(tmp_path / "usage.db")
+    try:
+        with respx.mock:
+            respx.post(constants.ANTHROPIC_API_URL).mock(
+                return_value=httpx.Response(
+                    200,
+                    json={
+                        "id": "msg",
+                        "model": "claude-sonnet-4-5",
+                        "stop_reason": "end_turn",
+                        "content": [{"type": "text", "text": "pong"}],
+                        "usage": {"input_tokens": 4, "output_tokens": 6},
+                    },
+                )
+            )
+            with TestClient(create_app(SETTINGS, REGISTRY, store=store)) as client:
+                response = client.post(
+                    "/v1/chat/completions",
+                    headers=AUTH,
+                    json={"model": "c", "messages": [{"role": "user", "content": "ping"}]},
+                )
+        assert response.status_code == 200
+        rows = asyncio.run(store.calls(limit=10, offset=0, profile=None))
+        assert len(rows) == 1
+        assert rows[0]["profile"] == "c"
+        assert rows[0]["ok"] == 1
+        assert rows[0]["total_tokens"] == 10
+    finally:
+        store.close()
+
+
+def test_failed_calls_are_recorded_as_errors(tmp_path, monkeypatch):
+    import asyncio
+
+    from llm_router.usage import UsageStore
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant")
+    store = UsageStore(tmp_path / "usage.db")
+    try:
+        with respx.mock:
+            respx.post(constants.ANTHROPIC_API_URL).mock(
+                return_value=httpx.Response(429, json={"error": {"message": "slow down"}})
+            )
+            with TestClient(create_app(SETTINGS, REGISTRY, store=store)) as client:
+                response = client.post(
+                    "/v1/chat/completions",
+                    headers=AUTH,
+                    json={"model": "c", "messages": [{"role": "user", "content": "ping"}]},
+                )
+        assert response.status_code == 429
+        rows = asyncio.run(store.calls(limit=10, offset=0, profile=None))
+        assert rows[0]["ok"] == 0
+        assert rows[0]["status"] == 429
+    finally:
+        store.close()
+
+
+def test_streaming_calls_are_recorded_with_usage(tmp_path, monkeypatch):
+    import asyncio
+
+    from llm_router.usage import UsageStore
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant")
+    sse = (
+        "event: message_start\n"
+        'data: {"message":{"usage":{"input_tokens":4,"output_tokens":0}}}\n\n'
+        "event: content_block_delta\n"
+        'data: {"index":0,"delta":{"type":"text_delta","text":"pong"}}\n\n'
+        "event: message_delta\n"
+        'data: {"delta":{"stop_reason":"end_turn"},"usage":{"output_tokens":6}}\n\n'
+    )
+    store = UsageStore(tmp_path / "usage.db")
+    try:
+        with respx.mock:
+            respx.post(constants.ANTHROPIC_API_URL).mock(
+                return_value=httpx.Response(
+                    200,
+                    text=sse,
+                    headers={"content-type": "text/event-stream"},
+                )
+            )
+            with TestClient(create_app(SETTINGS, REGISTRY, store=store)) as client:
+                response = client.post(
+                    "/v1/chat/completions",
+                    headers=AUTH,
+                    json={
+                        "model": "c",
+                        "stream": True,
+                        "messages": [{"role": "user", "content": "ping"}],
+                    },
+                )
+        assert response.status_code == 200
+        rows = asyncio.run(store.calls(limit=10, offset=0, profile=None))
+        assert rows[0]["stream"] == 1
+        assert rows[0]["ok"] == 1
+        assert rows[0]["total_tokens"] == 10
+    finally:
+        store.close()

@@ -30,13 +30,18 @@ def serve(
     import uvicorn
 
     from llm_router.server import create_app
+    from llm_router.usage import UsageStore
 
-    application = create_app(settings, registry)
-    uvicorn.run(
-        application,
-        host=settings.host if host is None else host,
-        port=settings.port if port is None else port,
-    )
+    store = UsageStore(settings.usage_db)
+    application = create_app(settings, registry, store=store)
+    try:
+        uvicorn.run(
+            application,
+            host=settings.host if host is None else host,
+            port=settings.port if port is None else port,
+        )
+    finally:
+        store.close()
 
 
 @oauth_app.command("login")
