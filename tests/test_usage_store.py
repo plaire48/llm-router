@@ -53,9 +53,27 @@ async def test_summary_aggregates_tokens_and_errors(tmp_path):
         assert len(summary) == 1
         row = summary[0]
         assert row["profile"] == "c"
+        assert row["provider"] == "anthropic"
+        assert row["upstream_model"] == "claude-sonnet-4-5"
         assert row["calls"] == 3
         assert row["total_tokens"] == 18
         assert row["errors"] == 1
+    finally:
+        store.close()
+
+
+async def test_summary_keeps_models_separate_within_a_profile(tmp_path):
+    store = UsageStore(tmp_path / "usage.db")
+    try:
+        await store.record(_record(upstream_model="claude-sonnet-4-5"))
+        await store.record(_record(upstream_model="claude-sonnet-5"))
+
+        summary = await store.summary(days=7)
+
+        assert [row["upstream_model"] for row in summary] == [
+            "claude-sonnet-4-5",
+            "claude-sonnet-5",
+        ]
     finally:
         store.close()
 

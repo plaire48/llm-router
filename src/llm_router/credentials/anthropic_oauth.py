@@ -65,6 +65,9 @@ class TokenStore:
             temporary_path.unlink(missing_ok=True)
             raise
 
+    def delete(self) -> None:
+        self.path.unlink(missing_ok=True)
+
     def is_expired(self, tokens: dict, skew: int = 300) -> bool:
         try:
             expires_at = float(tokens.get("expires_at", 0))

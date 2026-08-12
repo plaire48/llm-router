@@ -23,6 +23,15 @@ OPENAI_PROFILE = Profile(
     api_key_env="OPENAI_API_KEY",
     model="gpt-4o",
 )
+FABRIX_PROFILE = Profile(
+    name="fabrix-local",
+    provider="fabrix",
+    auth="api_key",
+    api_key_env="FABRIX_API_TOKEN",
+    client_key_env="FABRIX_CLIENT_KEY",
+    base_url="https://fabrix.company.test/gateway/",
+    model="019a-model-id",
+)
 
 
 def _request(model: str, *, stream: bool = False) -> ChatCompletionRequest:
@@ -99,12 +108,101 @@ async def test_openai_compatible_uses_profile_base_url(monkeypatch):
         base_url="http://localhost:11434/v1/",
         model="llama3.1",
     )
-    route = respx.post("http://localhost:11434/v1/chat/completions").mock(
-        return_value=httpx.Response(200, json={"choices": []})
-    )
+    captured = {}
+
+    def handler(request):
+        captured["authorization"] = request.headers.get("authorization")
+        return httpx.Response(200, json={"choices": []})
+
+    route = respx.post("http://localhost:11434/v1/chat/completions").mock(side_effect=handler)
     async with httpx.AsyncClient() as client:
         await build_adapter(profile, client).complete(_request("local"), profile)
     assert route.called
+    assert captured["authorization"] == "Bearer local"
+
+
+@respx.mock
+async def test_fabrix_adapter_uses_reference_protocol_and_headers(monkeypatch):
+    monkeypatch.setenv("FABRIX_CLIENT_KEY", "client-key-123")
+    monkeypatch.setenv("FABRIX_API_TOKEN", "token-abc")
+    captured = {}
+
+    def handler(request):
+        captured["headers"] = request.headers
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "content": "안녕하세요",
+                "status": "SUCCESS",
+                "finishReason": "stop",
+                "filterBlockReason": {"resultCode": "FR-201"},
+            },
+        )
+
+    route = respx.post("https://fabrix.company.test/gateway/openapi/chat/v1/messages").mock(
+        side_effect=handler
+    )
+    request = ChatCompletionRequest.model_validate(
+        {
+            "model": "fabrix-local",
+            "messages": [
+                {"role": "system", "content": "친절하게 답하세요."},
+                {"role": "user", "content": "안녕"},
+            ],
+            "temperature": 0.2,
+            "max_tokens": 128,
+        }
+    )
+    async with httpx.AsyncClient() as client:
+        output = await build_adapter(FABRIX_PROFILE, client).complete(request, FABRIX_PROFILE)
+
+    assert route.called
+    assert captured["headers"]["x-fabrix-client"] == "client-key-123"
+    assert captured["headers"]["x-openapi-token"] == "Bearer token-abc"
+    assert captured["body"] == {
+        "modelIds": ["019a-model-id"],
+        "contents": ["안녕"],
+        "isStream": False,
+        "llmConfig": {"max_new_tokens": 128, "temperature": 0.2},
+        "systemPrompt": "친절하게 답하세요.",
+    }
+    assert output["model"] == "fabrix-local"
+    assert output["choices"][0]["message"]["content"] == "안녕하세요"
+
+
+@respx.mock
+async def test_fabrix_adapter_stream_translates_snake_case_sse(monkeypatch):
+    monkeypatch.setenv("FABRIX_CLIENT_KEY", "client-key-123")
+    monkeypatch.setenv("FABRIX_API_TOKEN", "Bearer token-abc")
+    sse = (
+        'data: {"event_status":"THINK","content":"private reasoning",'
+        '"filter_block_reason":{"result_code":"FR-201"}}\n\n'
+        'data: {"event_status":"CHUNK","content":"안녕",'
+        '"finish_reason":null,"filter_block_reason":{"result_code":"FR-201"}}\n\n'
+        'data: {"event_status":"CHUNK","content":"하세요",'
+        '"finish_reason":"stop","filter_block_reason":{"result_code":"FR-201"}}\n\n'
+        "data: [DONE]\n\n"
+    )
+    respx.post("https://fabrix.company.test/gateway/openapi/chat/v1/messages").mock(
+        return_value=httpx.Response(
+            200,
+            text=sse,
+            headers={"content-type": "text/event-stream"},
+        )
+    )
+    chunks = []
+    async with httpx.AsyncClient() as client:
+        async for chunk in build_adapter(FABRIX_PROFILE, client).stream(
+            _request("fabrix-local", stream=True),
+            FABRIX_PROFILE,
+        ):
+            chunks.append(chunk)
+
+    assert not any("private reasoning" in chunk for chunk in chunks)
+    assert any("안녕" in chunk for chunk in chunks)
+    assert any("하세요" in chunk for chunk in chunks)
+    assert chunks[-1] == "data: [DONE]\n\n"
 
 
 @respx.mock

@@ -88,6 +88,8 @@ class UsageStore:
                 """
                 SELECT date(started_at, 'unixepoch', 'localtime') AS day,
                        profile,
+                       provider,
+                       upstream_model,
                        COUNT(*) AS calls,
                        SUM(COALESCE(prompt_tokens, 0)) AS prompt_tokens,
                        SUM(COALESCE(completion_tokens, 0)) AS completion_tokens,
@@ -95,8 +97,8 @@ class UsageStore:
                        SUM(CASE WHEN ok = 0 THEN 1 ELSE 0 END) AS errors
                 FROM calls
                 WHERE started_at >= ?
-                GROUP BY day, profile
-                ORDER BY day DESC, profile ASC
+                GROUP BY day, profile, provider, upstream_model
+                ORDER BY day DESC, profile ASC, upstream_model ASC
                 """,
                 (since,),
             ).fetchall()

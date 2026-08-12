@@ -1,204 +1,67 @@
-# 통합 제어판 설계 — 프론트에서 전부 처리하기
+# LLM Router 데스크톱 콘솔 설계
 
-- 날짜: 2026-08-12
-- 상태: 설계 제안 (승인 대기)
-- 대체: 기존 `/dashboard`는 "보기 전용"이었다. 이 문서는 그것을 **제어판**으로 확장한다.
+## 제품 중심
 
-## 1. 요구사항 (사용자 진술)
+제품의 중심은 대시보드가 아니라 **LLM 서빙 관리**다. 흰색 데스크톱 앱 형태로 다음 세 메뉴를
+제공한다.
 
-브라우저 화면 하나에서 다음을 전부 한다.
+1. 연결
+2. LLM 서빙
+3. 대시보드
 
-1. **Claude·OpenAI를 로그인으로 연결** (API key 없이)
-2. 연결된 계정으로 **localhost에 라우팅 서버를 열어** opencode 등이 붙게 한다
-3. **내 계정이 한도 대비 얼마나 썼는지** 본다
-4. **opencode 연결 설정을 화면에서 바로** 얻는다
+## 연결
 
-핵심: 터미널 명령을 외우지 않아도 화면에서 다 되어야 한다.
+Claude와 OpenAI 로그인 버튼을 각각 하나씩 제공한다.
 
-## 2. 지금 상태 (정직한 출발점)
+- Claude는 공식 Claude Code CLI의 `claude auth login --claudeai`와 `claude auth status --json`을
+  사용한다.
+- OpenAI는 공식 Codex CLI의 `codex login`과 Codex 인증 저장소를 사용한다.
 
-| 조각 | 상태 |
-|---|---|
-| OpenAI 호환 서빙 표면 | ✅ 동작 (94개 테스트) |
-| 라우터 계측 사용량 + 대시보드 | ✅ 동작 |
-| Claude 로그인 서빙 | ⚙️ 구현됨, **실계정 미검증** (§7A) |
-| OpenAI 로그인 서빙 | ⛔ **공개 API 닫힘** — 비공개 백엔드 발견 필요 |
-| 한도 대비 사용량 | ✅ **경로 확정** — Claude Enterprise Spend Limits API (§4). 미구현 |
-| 제어판 프론트 | ❌ 미구현 — 이 문서의 대상 |
+별도 라우터 전용 OAuth 저장소를 로그인 상태의 기준으로 사용하지 않는다.
 
-## 3. 화면 설계
+## LLM 서빙
 
-단일 페이지, 네 개 섹션. 위에서 아래로 사용자가 실제로 밟는 순서다.
+사용자는 UI에서 프로필을 추가·편집·삭제한다. 프로필 필드는 다음과 같다.
 
-### 3.1 연결 (Connections)
+- 프로필 이름
+- 연결 방식: Claude OAuth, OpenAI OAuth, Anthropic API key, OpenAI API key, 사내 OpenAI 호환
+- 업스트림 모델 ID
+- 사내 연결의 Base URL
+- localhost 포트
+- API key 연결의 비밀 키
 
-제공자별 카드 두 개. 상태에 따라 표시가 바뀐다.
+저장 후 시작하면 `http://localhost:<port>/v1`이 열린다. 포트 서버는 관리 서버의 OpenAI 호환
+라우터로 TCP 전달하며, opencode는 생성된 주소에 연결하는 클라이언트다.
 
-```
-┌─ Claude ────────────────────────────┐   ┌─ OpenAI ───────────────────────────┐
-│ ● 연결됨 · Pro                       │   │ ○ 연결 안 됨                        │
-│ 토큰 만료 2026-08-19 (자동 갱신)      │   │                                    │
-│ [연결 해제]                          │   │ [로그인]                            │
-└─────────────────────────────────────┘   └────────────────────────────────────┘
-```
+API key는 `profiles.yaml`과 API 응답에 기록하지 않는다. 0600 로컬 비밀 저장소에 저장하고 런타임
+환경변수로만 주입한다.
 
-**[로그인] 버튼의 동작:** 브라우저 화면에서 눌렀는데 OAuth 콜백은 로컬 서버가 받아야 한다. 흐름:
+## 대시보드
 
-1. 프론트가 `POST /v1/auth/{provider}/login` 호출
-2. 라우터가 PKCE 생성 + 로컬 콜백 리스너 시작 + authorize URL 반환
-3. 프론트가 그 URL을 새 탭으로 연다
-4. 사용자가 제공자 화면에서 로그인
-5. 콜백이 라우터로 돌아오고 토큰 저장
-6. 프론트가 `GET /v1/auth/status`를 폴링해 "연결됨"으로 전환
+대시보드는 별도 메뉴이며 다음 핵심 정보만 표시한다.
 
-즉 **기존 CLI `oauth login`의 로직을 재사용**하되, 트리거와 상태 표시를 HTTP로 노출한다.
+- 연결 계정 수
+- 실행 중 프로필 서버 수
+- 최근 7일 요청과 토큰
+- 계정 사용 창이 제공되는 경우 한도 대비 사용률
+- 일별 입력·출력 토큰
 
-### 3.2 모델 (Profiles)
+## 인증
 
-연결된 제공자로 열 수 있는 모델 목록. 프로필 추가/삭제를 화면에서 한다.
+대시보드에는 키 입력 화면이 없다. `GET /dashboard`가 HttpOnly·SameSite=Strict localhost 세션을
+자동 발급한다. `LLM_ROUTER_MASTER_KEY`는 opencode와 OpenAI 호환 API 호출에만 사용한다.
 
-```
-모델명(내가 정함)   제공자    인증      업스트림 모델            상태
-claude-sonnet      Claude   로그인    claude-sonnet-4-6       ● 사용 가능
-gpt-5              OpenAI   로그인    gpt-5                   ○ 로그인 필요
-local-llama        호환      API key   llama3.1               ● 사용 가능
-                                                              [+ 프로필 추가]
-```
+## API
 
-`profiles.yaml`을 화면에서 편집하는 것과 같다. 저장하면 라우터가 재로드한다.
-
-### 3.3 사용량 (Usage)
-
-**두 층으로 나눠 보여준다. 출처가 다르므로 섞지 않는다.**
-
-```
-┌─ 내가 이 라우터로 쓴 양 ──────────────── 실시간 · 요청 단위 ─┐
-│  [일자별 막대 차트]  총 72,629 토큰 · 40회 · 에러 6          │
-└──────────────────────────────────────────────────────────┘
-
-┌─ 내 계정 한도 ─────────────────── 제공자 보고 · §4 참고 ────┐
-│  Claude:  ▓▓▓▓▓▓░░░░  62.8%   $314.03 / $500.00  (8/31 리셋) │
-│  OpenAI:  — 스파이크 대기                                    │
-└──────────────────────────────────────────────────────────┘
-```
-
-위쪽은 **이미 동작한다**(키 불필요). 아래쪽이 §4의 미지수다.
-
-### 3.4 연결 정보 (Connect your tools)
-
-opencode 등에 붙일 설정을 **복사 버튼과 함께** 보여준다. 프로필 목록에서 자동 생성한다.
-
-```
-base_url : http://127.0.0.1:8787/v1        [복사]
-api_key  : sk-local-••••••••               [복사] [표시]
-
-opencode.json                               [복사]
-{ "provider": { "llm-router": { ... } } }
-```
-
-`models` 키를 현재 프로필 이름으로 자동 채워 넣는다 — 이름 불일치로 404 나는 함정을 원천 차단한다.
-
-## 4. "한도 대비 사용량" — 해결됨 ✅
-
-사용자가 원하는 건 **"조직이 내 계정에 배정한 달러 한도 대비 내가 얼마나 썼나(%)"** 다. Claude Enterprise에는 이걸 정확히 주는 API가 있다.
-
-### 4.1 Claude Enterprise — Spend Limits API
-
-`GET https://api.anthropic.com/v1/organizations/spend_limits/effective`
-
-멤버 한 명당 한 행을 반환한다:
-
-```json
-{
-  "scope": { "type": "user", "user_id": "user_01AbCdEfGh" },
-  "actor": { "user_id": "user_01AbCdEfGh", "email_address": "jane@example.com" },
-  "amount": "50000",                    // 배정된 한도 (센트) → $500.00
-  "currency": "USD",
-  "period": "monthly",
-  "source": { "type": "seat_tier", "seat_tier": "enterprise_standard" },
-  "period_to_date_spend": "31402.5"     // 이번 달 사용 (센트) → $314.03
-}
-```
-
-**`period_to_date_spend / amount` = 62.8%.** 공식 문서가 이 계산을 그대로 안내한다("서버 측 필터는 없으니 클라이언트에서 계산하라").
-
-| 항목 | 값 |
-|---|---|
-| 인증 | **Admin API key + `read:spend_limits` 스코프** (읽기 전용이면 이것만) |
-| 키 발급 | **primary owner**, Claude Enterprise 조직 설정 |
-| 전제조건 | 조직에 **usage credits가 켜져 있어야** 함 (claude.ai 결제 설정) |
-| 한도 상속 | `source`가 알려줌 — `user`(개인 override) / `seat_tier` / `rbac_group` / `organization` |
-| 기간 | 현재 `monthly`만. 매월 1일 00UTC 리셋 |
-| 금액 단위 | **센트 단위 십진 문자열.** `"50000"` = $500.00. 이진 부동소수점 파싱 금지 |
-| 레이트 리밋 | 조직 단위 60 req/min (8개 엔드포인트 공유) |
-| 가용 범위 | **Claude Enterprise 전용.** Console 조직은 사용 불가 |
-
-**`amount`의 세 가지 의미를 구분해야 한다:**
-
-- `null` → **무제한** (한도 막대를 그리지 않는다)
-- `"0"` → 플랜 포함분만 사용 가능 = **이미 한도 도달로 취급**
-- 양수 → 정상. 비율 계산
-
-### 4.2 ChatGPT Enterprise
-
-동일한 개념이 존재한다 — 워크스페이스 기본값 / 그룹 / 개인 예외의 3단 per-user 크레딧 한도. 공식 발표에 따르면 **Cost API로 같은 데이터를 받을 수 있고**, 사용량 수치는 거의 실시간이다(다른 분석 데이터는 지연됨).
-
-다만 정확한 라우트·스키마는 여전히 인증 포털 뒤에 있다(§5B 스파이크). **주의:** ChatGPT Enterprise의 크레딧 한도는 OpenAI 플랫폼 API 과금과 **별개**다.
-
-### 4.3 라우터 자체 집계와의 관계
-
-세 층을 **섞지 않고 나란히** 보여준다.
-
-| 층 | 출처 | 무엇을 답하나 |
-|---|---|---|
-| 라우터 계측 | SQLite (키 불필요) | 이 라우터로 내가 쓴 양 — 즉시, 요청 단위 |
-| 한도 대비 | Spend Limits API | 조직 배정 한도 중 몇 % — **라우터 밖 사용 포함** |
-| 상세 내역 | Analytics API `user_cost_report` | 모델별·일자별 내 비용 내역 |
-
-한도 쪽은 **웹 채팅·Claude Code 등 라우터를 거치지 않은 사용까지 포함**하므로 라우터 집계보다 큰 값이 정상이다. UI에 그 이유를 적어둔다.
-
-## 5. 구현 순서 (의존성 순)
-
-```
-[1] §7A 체크리스트 실행        → Claude 로그인 서빙 검증  (사용자, 15분)
-[1'] Admin API key 발급        → read:spend_limits 스코프  (primary owner, 5분)
-                                     ↓
-[2] 제어판 프론트
-   2a. 연결 섹션 (로그인 버튼 + 상태)   ← 지금 착수 가능
-   2b. 모델 섹션 (프로필 편집)          ← 지금 착수 가능
-   2c. 사용량 상단 (라우터 계측)         ← 이미 있음, 재배치만
-   2d. 사용량 하단 (한도 대비 %)        ← [1'] 키 필요. 코드는 지금 작성 가능
-   2e. 연결 정보 섹션                   ← 지금 착수 가능
-
-[3] OpenAI 로그인 서빙  ← 비공개 백엔드 발견 필요 (Codex 인계 명세 있음)
-[4] ChatGPT Enterprise 한도  ← §5B 스파이크 (인증 포털)
-```
-
-**2a·2b·2c·2e는 지금 바로 착수할 수 있다.** 2d만 §7A 결과를 기다린다. 3은 별도 트랙이다.
-
-## 6. 새로 필요한 API
-
-프론트가 화면에서 전부 하려면 라우터가 아래를 노출해야 한다. 전부 마스터 키 인증.
-
-| 엔드포인트 | 용도 |
-|---|---|
-| `GET /v1/auth/status` | 제공자별 연결 상태·만료·플랜 |
-| `POST /v1/auth/{provider}/login` | 로그인 시작 → authorize URL 반환 |
-| `DELETE /v1/auth/{provider}` | 연결 해제(토큰 삭제) |
-| `GET /v1/profiles` | 프로필 목록 + 사용 가능 여부 |
-| `PUT /v1/profiles` | 프로필 저장 후 재로드 |
-| `GET /v1/usage/quota` | 한도 대비 사용량 — Spend Limits API 프록시 (§4.1) |
-| `GET /v1/connect/opencode` | opencode.json 설정 생성 |
-
-## 7. 보안 주의
-
-- **토큰은 절대 프론트로 내려보내지 않는다.** 상태(연결됨/만료시각)만 노출한다.
-- 마스터 키는 지금처럼 `sessionStorage`에만 둔다.
-- `PUT /v1/profiles`는 파일을 쓰는 엔드포인트다 — 경로 조작이 불가능하도록 `profiles.yaml` 한 곳만 대상으로 고정한다.
-- 로그인 콜백은 기존 CLI와 동일하게 `state` 검증을 강제한다.
-
-## 8. 범위에서 제외
-
-- 여러 사용자·계정 동시 관리 (개인 로컬 도구)
-- 조직 전체 사용량 (사용자 요구가 "내 계정"으로 확정됨)
-- 비용 알림·예산 임계값
+- `GET /v1/auth/status`
+- `POST /v1/auth/{anthropic|openai}/login`
+- `DELETE /v1/auth/{anthropic|openai}`
+- `GET /v1/profiles`
+- `POST /v1/profiles`
+- `PUT /v1/profiles/{name}`
+- `DELETE /v1/profiles/{name}`
+- `POST /v1/profiles/{name}/{start|stop}`
+- `POST /v1/profiles/discover-models`
+- `GET /v1/connect/opencode`
+- `GET /v1/usage/summary`
+- `GET /v1/usage/account/openai`

@@ -3,1015 +3,776 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="theme-color" content="#f4f6f5">
-  <title>llm-router · 사용량 대시보드</title>
+  <title>LLM Router</title>
+  <link rel="icon" href="/favicon.svg?v=arrow-v1" type="image/svg+xml">
   <style>
     :root {
-      --canvas: #f4f6f5;
-      --surface: #ffffff;
-      --surface-subtle: #f8faf9;
-      --ink: #17201d;
-      --muted: #67736e;
-      --faint: #8d9893;
-      --line: #dfe5e2;
-      --line-strong: #cbd4cf;
-      --accent: #0d6b56;
-      --accent-strong: #075543;
-      --accent-soft: #e5f4ef;
-      --danger: #b43b45;
-      --danger-soft: #fbeaec;
-      --ok: #177453;
-      --shadow: 0 1px 2px rgba(19, 32, 27, 0.04), 0 12px 32px rgba(19, 32, 27, 0.05);
-      --sans: "Avenir Next", Avenir, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
-      --mono: "SFMono-Regular", "Cascadia Mono", "Liberation Mono", Menlo, monospace;
+      color-scheme: light;
+      --bg: #f4f4f5;
+      --surface: rgba(255, 255, 255, .82);
+      --surface-solid: #fff;
+      --surface-soft: rgba(248, 248, 250, .82);
+      --ink: #18181a;
+      --muted: #74747c;
+      --faint: #98989f;
+      --line: rgba(30, 30, 34, .09);
+      --line-strong: rgba(30, 30, 34, .15);
+      --blue: #007aff;
+      --blue-soft: rgba(0, 122, 255, .09);
+      --green: #248a3d;
+      --green-soft: rgba(52, 199, 89, .11);
+      --amber: #ad5f00;
+      --amber-soft: rgba(255, 159, 10, .12);
+      --red: #d70015;
+      --red-soft: rgba(255, 59, 48, .10);
+      --heat-0: #ececef;
+      --heat-1: #cdebd8;
+      --heat-2: #8dd1aa;
+      --heat-3: #47ac75;
+      --heat-4: #248a3d;
+      --sidebar: 184px;
+      --radius: 13px;
+      --shadow: 0 .5px 0 rgba(255,255,255,.9) inset, 0 8px 30px rgba(20,20,24,.045), 0 1px 2px rgba(20,20,24,.035);
+      --spring: cubic-bezier(.2, .8, .2, 1);
+      --sans: "SF Pro Text", "SF Pro Display", "Avenir Next", "Pretendard", "Noto Sans KR", sans-serif;
+      --display: "SF Pro Display", "Avenir Next", "Pretendard", sans-serif;
+      --mono: "SFMono-Regular", "Cascadia Code", Consolas, monospace;
     }
-
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
-
+    html, body { min-width: 340px; min-height: 100%; }
     body {
       margin: 0;
-      min-width: 320px;
-      min-height: 100vh;
+      background:
+        radial-gradient(circle at 82% -15%, rgba(0,122,255,.065), transparent 30%),
+        radial-gradient(circle at 55% 120%, rgba(52,199,89,.045), transparent 34%),
+        var(--bg);
       color: var(--ink);
-      background: var(--canvas);
       font-family: var(--sans);
-      font-size: 14px;
-      line-height: 1.55;
+      font-size: 13px;
+      font-feature-settings: "ss01", "cv05", "cv11";
       -webkit-font-smoothing: antialiased;
     }
-
     button, input, select { font: inherit; }
+    button, select { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(0,122,255,.22); outline-offset: 1px; }
 
-    button, select, input {
-      color: var(--ink);
-      background: var(--surface);
+    .app { min-height: 100vh; }
+    .appbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      height: 48px;
+      grid-template-columns: auto auto 1fr auto;
+      align-items: center;
+      gap: 11px;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(248,248,250,.82);
+      box-shadow: 0 .5px 0 rgba(255,255,255,.9) inset, 0 5px 20px rgba(20,20,24,.025);
+      backdrop-filter: saturate(165%) blur(28px);
+      -webkit-backdrop-filter: saturate(165%) blur(28px);
+      -webkit-app-region: drag;
+    }
+    .brand { display: flex; height: 34px; align-items: center; gap: 8px; -webkit-app-region: no-drag; }
+    .brand-mark {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border-radius: 8px;
+      background: #1c1c1e;
+      color: #fff;
+      box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 .5px 0 rgba(255,255,255,.22) inset;
+      font: 700 9px var(--mono);
+      letter-spacing: -.05em;
+    }
+    .brand strong { display: block; white-space: nowrap; font: 700 12px var(--display); letter-spacing: -.03em; }
+    .nav { display: flex; gap: 2px; min-width: 0; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: rgba(118,118,128,.075); -webkit-app-region: no-drag; }
+    .nav button {
+      position: relative;
+      display: flex;
+      width: auto;
+      min-height: 28px;
+      align-items: center;
+      gap: 6px;
+      padding: 0 9px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: #5c5c63;
+      white-space: nowrap;
+      font-size: 9px;
+      font-weight: 630;
+      transition: color .16s var(--spring), background .16s var(--spring), transform .16s var(--spring), box-shadow .16s var(--spring);
+    }
+    .nav button:hover { background: rgba(255,255,255,.58); color: var(--ink); }
+    .nav button:active { transform: scale(.985); }
+    .nav button.active { background: rgba(255,255,255,.96); color: var(--blue); font-weight: 720; box-shadow: 0 .5px 0 #fff inset, 0 1px 4px rgba(0,0,0,.09); }
+    .nav-icon { display: grid; width: 17px; height: 17px; place-items: center; color: currentColor; font: 12px var(--mono); }
+    .nav-icon svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+    .brand-mark svg { width: 17px; height: 17px; }
+    .appbar-spacer { min-width: 0; }
+    .main { min-height: calc(100vh - 48px); }
+    .top-actions { display: flex; gap: 5px; -webkit-app-region: no-drag; }
+    .content { width: min(1320px,100%); margin: 0 auto; padding: 12px 15px 18px; }
+    .page { animation: reveal .32s var(--spring); }
+    @keyframes reveal { from { opacity: 0; transform: translateY(5px) scale(.997); } }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; margin: 0 1px 9px; }
+    .page-heading h2 { margin: 0; font: 700 17px var(--display); letter-spacing: -.035em; }
+    .page-heading p { max-width: 760px; margin: 2px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+
+    .button {
+      min-height: 28px;
+      padding: 0 10px;
       border: 1px solid var(--line-strong);
       border-radius: 8px;
-    }
-
-    button { cursor: pointer; }
-
-    button:focus-visible, input:focus-visible, select:focus-visible, tr:focus-visible {
-      outline: 3px solid rgba(13, 107, 86, 0.24);
-      outline-offset: 2px;
-    }
-
-    .shell {
-      width: min(1380px, calc(100% - 48px));
-      margin: 0 auto;
-      padding: 28px 0 64px;
-    }
-
-    .masthead {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      padding: 0 0 24px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      min-width: 0;
-    }
-
-    .brand-mark {
-      position: relative;
-      width: 38px;
-      height: 38px;
-      flex: 0 0 auto;
-      color: #fff;
-      background: var(--ink);
-      border-radius: 11px;
-    }
-
-    .brand-mark::before,
-    .brand-mark::after {
-      position: absolute;
-      left: 10px;
-      width: 18px;
-      height: 2px;
-      background: currentColor;
-      border-radius: 999px;
-      content: "";
-    }
-
-    .brand-mark::before { top: 13px; transform: rotate(18deg); }
-    .brand-mark::after { bottom: 13px; transform: rotate(-18deg); }
-
-    .eyebrow {
-      margin: 0 0 2px;
-      color: var(--muted);
+      background: rgba(255,255,255,.72);
+      color: #333337;
+      box-shadow: 0 .5px 0 rgba(255,255,255,.9) inset, 0 1px 2px rgba(0,0,0,.025);
       font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.11em;
-      text-transform: uppercase;
+      font-weight: 650;
+      transition: transform .14s var(--spring), background .14s var(--spring), border-color .14s var(--spring), box-shadow .14s var(--spring);
     }
+    .button:hover { border-color: rgba(30,30,34,.23); background: #fff; box-shadow: 0 .5px 0 #fff inset, 0 3px 10px rgba(0,0,0,.055); }
+    .button:active { transform: scale(.97); background: #f1f1f3; }
+    .button.primary { border-color: #1c1c1e; background: #1c1c1e; color: #fff; box-shadow: 0 .5px 0 rgba(255,255,255,.22) inset, 0 2px 6px rgba(0,0,0,.15); }
+    .button.primary:hover { border-color: #000; background: #000; }
+    .button.danger { border-color: transparent; background: transparent; color: var(--red); box-shadow: none; }
+    .button.danger:hover { background: var(--red-soft); }
+    .button.ghost { border-color: transparent; background: transparent; box-shadow: none; }
+    .button.small { min-height: 24px; padding: 0 7px; border-radius: 7px; font-size: 9px; }
+    .button.icon-button { display: inline-grid; width: 28px; min-width: 28px; padding: 0; place-items: center; }
+    .button.small.icon-button { width: 24px; min-width: 24px; }
+    .action-icon { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+    .action-icon.fill { fill: currentColor; stroke: none; }
+    .button:disabled { cursor: not-allowed; opacity: .42; transform: none; }
+    .top-actions > .icon-button { width: 30px; min-width: 30px; min-height: 30px; border-radius: 9px; }
+    .top-actions > .icon-button .action-icon { width: 16px; height: 16px; stroke-width: 1.85; }
+    #refresh:disabled { opacity: .72; }
+    #refresh:disabled .action-icon { animation: refresh-spin .8s linear infinite; }
+    @keyframes refresh-spin { to { transform: rotate(360deg); } }
+    .empty-add-button { width: 34px !important; min-width: 34px !important; min-height: 34px !important; margin-top: 12px; border-radius: 10px !important; }
+    .empty-add-button .action-icon { width: 17px; height: 17px; }
 
-    h1 {
-      margin: 0;
-      font-size: 21px;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      line-height: 1.25;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-    }
-
-    .control-group label {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    select, .quiet-button {
-      min-height: 40px;
-      padding: 8px 13px;
-    }
-
-    select:hover, .quiet-button:hover { border-color: var(--accent); }
-
-    .quiet-button {
-      color: var(--muted);
-      background: transparent;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .notice {
-      display: none;
-      margin-top: 16px;
-      padding: 13px 15px;
-      color: var(--danger);
-      background: var(--danger-soft);
-      border: 1px solid color-mix(in srgb, var(--danger) 28%, transparent);
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .notice[data-visible="true"] { display: block; }
-
-    .auth-panel {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
-      gap: clamp(36px, 8vw, 96px);
-      align-items: center;
-      max-width: 980px;
-      margin: clamp(72px, 12vh, 128px) auto 0;
-      padding: clamp(28px, 5vw, 56px);
-      background: var(--surface);
+    .card {
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .connections { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .connection-card { --provider-accent: #606068; --provider-soft: rgba(96,96,104,.08); position: relative; overflow: hidden; padding: 11px 12px; background: linear-gradient(145deg,rgba(255,255,255,.94),var(--provider-soft)); }
+    .connection-card[data-provider="anthropic"] { --provider-accent: #c85f36; --provider-soft: rgba(200,95,54,.075); }
+    .connection-card[data-provider="openai"] { --provider-accent: #16836c; --provider-soft: rgba(22,131,108,.075); }
+    .connection-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--provider-accent); opacity: .76; }
+    .connection-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .provider-logo { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid transparent; border-radius: 10px; background: var(--provider-soft); color: var(--provider-accent); box-shadow: 0 1px 2px rgba(0,0,0,.035); font: 700 12px var(--mono); }
+    .provider-logo svg, .profile-symbol svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.55; }
+    .provider-logo .claude-glyph, .profile-symbol .claude-glyph { stroke-width: 2.05; }
+    .provider-logo .openai-glyph, .profile-symbol .openai-glyph { stroke-width: 1.3; }
+    .profile-symbol svg { width: 15px; height: 15px; }
+    .provider-title { display: flex; align-items: center; gap: 9px; }
+    .provider-title h3 { margin: 0; font: 680 13px var(--display); letter-spacing: -.02em; }
+    .provider-title p { margin: 2px 0 0; color: var(--muted); font-size: 9px; }
+    .connection-controls { display: flex; align-items: center; gap: 5px; }
+    .connection-state { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.67); color: var(--muted); }
+    .connection-state svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9; }
+    .connection-state.ready { border-color: rgba(36,138,61,.13); background: var(--green-soft); color: var(--green); }
+    .connection-state.pending { border-color: rgba(173,95,0,.12); background: var(--amber-soft); color: var(--amber); }
+    .connection-state.error { border-color: rgba(215,0,21,.11); background: var(--red-soft); color: var(--red); }
+    .connection-action { width: 27px !important; min-width: 27px !important; min-height: 27px !important; border-radius: 8px !important; }
+    .connection-action .action-icon { width: 14px; height: 14px; }
+    .connection-body { min-height: 31px; margin: 8px 0 0; color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .connection-note { display: block; }
+    .account { display: block; margin-top: 4px; color: var(--ink); font: 10px var(--mono); }
+    .connection-count { display: inline-flex; margin-top: 4px; color: var(--ink); font-weight: 650; }
+
+    .badge { display: inline-flex; min-height: 20px; align-items: center; gap: 6px; padding: 0 7px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.62); color: #696970; font-size: 8px; font-weight: 700; white-space: nowrap; }
+    .badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .badge.running, .badge.ready { border-color: rgba(36,138,61,.13); background: var(--green-soft); color: var(--green); }
+    .badge.pending { border-color: rgba(173,95,0,.12); background: var(--amber-soft); color: var(--amber); }
+    .badge.error { border-color: rgba(215,0,21,.11); background: var(--red-soft); color: var(--red); }
+
+    .gateway-card { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 10px; margin-bottom: 8px; padding: 10px 11px; border-color: rgba(52,138,82,.16); background: linear-gradient(145deg,#fff,rgba(52,199,89,.055)); }
+    .gateway-icon { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 10px; background: var(--green-soft); color: var(--green); }
+    .gateway-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.7; }
+    .gateway-copy { min-width: 0; }
+    .gateway-copy span { display: block; color: var(--green); font-size: 7px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+    .gateway-copy code { display: block; overflow: hidden; margin-top: 2px; color: var(--ink); font: 650 10px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+    .gateway-copy small { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; }
+    .profile-list { display: grid; gap: 5px; }
+    .profile-card { display: grid; grid-template-columns: minmax(220px,.9fr) minmax(230px,1fr) auto; align-items: center; gap: 12px; padding: 7px 9px; border-radius: 11px; box-shadow: 0 .5px 0 rgba(255,255,255,.8) inset, 0 2px 9px rgba(20,20,24,.025); transition: transform .15s var(--spring), border-color .15s var(--spring), box-shadow .15s var(--spring); }
+    .profile-card:hover { border-color: var(--line-strong); box-shadow: 0 .5px 0 rgba(255,255,255,.9) inset, 0 5px 16px rgba(20,20,24,.055); transform: translateY(-1px); }
+    .profile-main { display: flex; min-width: 0; align-items: center; gap: 9px; }
+    .profile-symbol { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(0,122,255,.10); border-radius: 9px; background: var(--blue-soft); color: var(--blue); font: 700 9px var(--mono); }
+    .profile-card[data-provider="anthropic"] .profile-symbol { border-color: rgba(200,95,54,.13); background: rgba(200,95,54,.09); color: #c85f36; }
+    .profile-card[data-provider="openai"] .profile-symbol { border-color: rgba(22,131,108,.13); background: rgba(22,131,108,.09); color: #16745f; }
+    .profile-card[data-provider="fabrix"] .profile-symbol { color: #5265d6; background: rgba(82,101,214,.09); }
+    .profile-main h3 { overflow: hidden; margin: 0; font: 650 11px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+    .profile-main p { overflow: hidden; margin: 2px 0 0; color: var(--muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+    .endpoint { min-width: 0; }
+    .endpoint label { display: block; margin-bottom: 2px; color: var(--faint); font-size: 7px; font-weight: 750; letter-spacing: .055em; text-transform: uppercase; }
+    .endpoint code { display: block; overflow: hidden; color: #4b4b51; font: 9px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+    .profile-actions { display: flex; align-items: center; justify-content: flex-end; gap: 3px; }
+    .empty { display: grid; min-height: 78px; place-items: center; padding: 12px; border: 1px dashed var(--line-strong); border-radius: 10px; background: rgba(248,248,250,.47); color: var(--muted); text-align: center; line-height: 1.5; }
+    .empty strong { display: block; margin-bottom: 4px; color: var(--ink); }
+
+    .account-budget-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-bottom: 8px; }
+    .budget-card { --provider-accent: var(--blue); --provider-soft: var(--blue-soft); position: relative; overflow: hidden; min-height: 142px; padding: 10px 11px; background: linear-gradient(145deg,rgba(255,255,255,.96),var(--provider-soft)); }
+    .budget-card[data-provider="anthropic"] { --provider-accent: #c85f36; --provider-soft: rgba(200,95,54,.065); }
+    .budget-card[data-provider="openai"] { --provider-accent: #16836c; --provider-soft: rgba(22,131,108,.065); }
+    .budget-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--provider-accent); opacity: .78; }
+    .budget-provider { display: flex; align-items: center; gap: 8px; }
+    .budget-provider .provider-logo { width: 27px; height: 27px; border-radius: 8px; }
+    .budget-provider h3 { margin: 0; font: 680 12px var(--display); letter-spacing: -.02em; }
+    .budget-provider p { margin: 1px 0 0; color: var(--muted); font-size: 8px; }
+    .budget-overview { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 14px; margin-top: 8px; }
+    .budget-amount > span, .budget-percent > span { display: block; color: var(--faint); font-size: 7px; font-weight: 720; letter-spacing: .035em; }
+    .budget-amount strong { display: block; margin-top: 1px; color: var(--ink); font: 720 22px var(--display); letter-spacing: -.045em; }
+    .budget-amount small { display: block; margin-top: 1px; color: var(--muted); font-size: 8px; }
+    .budget-amount small b { color: var(--ink); font-weight: 680; }
+    .budget-percent { min-width: 64px; padding-left: 12px; border-left: 1px solid var(--line); text-align: right; }
+    .budget-percent strong { display: block; color: var(--provider-accent); font: 720 20px var(--display); letter-spacing: -.04em; }
+    .budget-card .segment-meter i.filled { background: var(--provider-accent); }
+    .budget-card .account-foot span:first-child { color: var(--ink); font-weight: 650; }
+    .budget-empty { display: grid; min-height: 70px; align-content: center; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 7px; margin-bottom: 8px; }
+    .summary-card { position: relative; overflow: hidden; padding: 9px 11px; }
+    .summary-card::after { content: ""; position: absolute; right: -18px; bottom: -25px; width: 68px; height: 68px; border-radius: 50%; background: rgba(0,0,0,.025); filter: blur(2px); }
+    .summary-label { position: relative; z-index: 1; color: var(--muted); font-size: 8px; font-weight: 720; letter-spacing: .02em; }
+    .summary-value { position: relative; z-index: 1; display: block; margin-top: 3px; font: 700 19px var(--display); letter-spacing: -.045em; }
+    .summary-card small { position: relative; z-index: 1; display: block; margin-top: 1px; color: var(--faint); font-size: 8px; }
+    .summary-card.featured { border-color: rgba(0,122,255,.12); background: linear-gradient(145deg,rgba(255,255,255,.9),rgba(242,247,255,.82)); }
+    .summary-card.featured::after { background: rgba(0,122,255,.07); }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+    .dashboard-card { padding: 10px; }
+    .dashboard-card.full { grid-column: 1 / -1; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
+    .card-head h3 { margin: 0; font: 680 12px var(--display); letter-spacing: -.02em; }
+    .card-head p { margin: 2px 0 0; color: var(--muted); font-size: 8px; }
+    .usage-number { margin: 3px 0 1px; font: 700 20px var(--display); letter-spacing: -.04em; }
+    .usage-number .usage-limit { color: var(--muted); font-size: 12px; font-weight: 580; }
+    .track { height: 5px; margin: 6px 0 4px; overflow: hidden; border-radius: 99px; background: #e9e9ec; }
+    .track i { display: block; height: 100%; border-radius: inherit; background: var(--blue); }
+    .usage-meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+    .segment-meter { display: grid; grid-template-columns: repeat(20,minmax(0,1fr)); gap: 3px; margin: 7px 0 5px; }
+    .segment-meter i { height: 6px; border-radius: 2px; background: var(--heat-0); }
+    .segment-meter i.filled { background: var(--green); }
+    .segment-meter.warning i.filled { background: #ff9f0a; }
+    .segment-meter.danger i.filled { background: #ff3b30; }
+    .account-foot { display: flex; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 8px; line-height: 1.4; }
+    .account-foot span:last-child { text-align: right; }
+    .activity-card { overflow: hidden; }
+    .heatmap-wrap { overflow-x: auto; padding: 2px 0 4px; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.16) transparent; }
+    .heatmap { min-width: 850px; }
+    .heatmap-calendar { display: grid; grid-template-columns: 22px 1fr; gap: 7px; }
+    .weekday-labels { display: grid; grid-template-rows: repeat(7,12px); gap: 4px; padding-top: 17px; color: var(--faint); font: 7px/12px var(--mono); }
+    .heatmap-body { min-width: 0; }
+    .month-labels { display: grid; gap: 4px; height: 13px; margin-bottom: 4px; color: var(--faint); font: 7px var(--mono); }
+    .month-labels span { white-space: nowrap; }
+    .heatmap-grid { display: grid; grid-template-rows: repeat(7,12px); grid-auto-flow: column; grid-auto-columns: minmax(12px,1fr); gap: 4px; align-items: center; }
+    .heat-cell { display: block; width: 100%; max-width: 16px; aspect-ratio: 1; border: 1px solid rgba(20,50,37,.025); border-radius: 3px; background: var(--heat-0); transition: transform .14s var(--spring), box-shadow .14s var(--spring); }
+    .heat-cell[data-level="1"] { background: var(--heat-1); }
+    .heat-cell[data-level="2"] { background: var(--heat-2); }
+    .heat-cell[data-level="3"] { background: var(--heat-3); }
+    .heat-cell[data-level="4"] { background: var(--heat-4); }
+    .heat-cell:hover, .heat-cell:focus-visible { z-index: 1; transform: translateY(-2px) scale(1.14); box-shadow: 0 4px 11px rgba(36,138,61,.2); outline: none; }
+    .heatmap-meta { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 8px; color: var(--muted); font-size: 8px; }
+    .heat-legend { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .heat-legend i { width: 9px; height: 9px; border-radius: 2px; background: var(--heat-0); }
+    .heat-legend i:nth-of-type(2) { background: var(--heat-1); }
+    .heat-legend i:nth-of-type(3) { background: var(--heat-2); }
+    .heat-legend i:nth-of-type(4) { background: var(--heat-3); }
+    .heat-legend i:nth-of-type(5) { background: var(--heat-4); }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 5px 7px; border-bottom: 1px solid var(--line); text-align: left; }
+    .data-table th { color: var(--faint); font-size: 8px; font-weight: 700; letter-spacing: .025em; text-transform: uppercase; }
+    .data-table tbody tr { transition: background .12s ease; }
+    .data-table tbody tr:hover { background: rgba(0,122,255,.035); }
+    .data-table tr:last-child td { border-bottom: 0; }
+    .table-wrap { overflow-x: auto; }
+    .data-table .number-cell { text-align: right; white-space: nowrap; }
+    .data-table .profile-cell strong { display: block; font: 650 9px var(--mono); }
+    .data-table .profile-cell span { display: block; max-width: 300px; overflow: hidden; margin-top: 2px; color: var(--muted); font: 8px var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+    .cost { color: var(--green); font-family: var(--mono); font-weight: 700; }
+    .usage-controls { display: flex; align-items: flex-end; gap: 5px; padding: 3px; border: 1px solid var(--line); border-radius: 10px; background: rgba(118,118,128,.07); }
+    .usage-control { display: grid; gap: 2px; }
+    .usage-control label { padding-left: 5px; color: var(--faint); font-size: 7px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+    .usage-control select { height: 27px; padding: 0 24px 0 7px; border: 1px solid var(--line); border-radius: 7px; background: rgba(255,255,255,.85); color: var(--ink); box-shadow: 0 .5px 0 #fff inset, 0 1px 2px rgba(0,0,0,.03); font-size: 9px; }
+    .pricing-note { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 7px; color: var(--faint); font-size: 8px; line-height: 1.45; }
+    .pricing-note a { color: var(--blue); text-decoration: none; }
+    .pricing-note a:hover { text-decoration: underline; }
+    .mono { font-family: var(--mono); }
+    .muted { color: var(--muted); }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 18px; background: rgba(20,20,24,.28); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); animation: fade-in .18s ease; }
+    @keyframes fade-in { from { opacity: 0; } }
+    .modal { width: min(650px,100%); max-height: calc(100vh - 36px); overflow: auto; border: 1px solid rgba(255,255,255,.68); border-radius: 17px; background: rgba(249,249,250,.92); box-shadow: 0 30px 90px rgba(0,0,0,.24), 0 1px 0 rgba(255,255,255,.8) inset; backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); animation: sheet-in .28s var(--spring); }
+    @keyframes sheet-in { from { opacity: 0; transform: translateY(12px) scale(.98); } }
+    .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+    .modal-head h2 { margin: 0; font: 700 17px var(--display); letter-spacing: -.035em; }
+    .modal-head p { margin: 2px 0 0; color: var(--muted); font-size: 9px; }
+    .modal-body { padding: 12px 16px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px 12px; }
+    .field { display: grid; gap: 4px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: #45454b; font-size: 10px; font-weight: 650; }
+    .field input, .field select { width: 100%; height: 34px; padding: 0 9px; border: 1px solid var(--line-strong); border-radius: 9px; background: rgba(255,255,255,.86); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.025) inset; }
+    .field input:focus, .field select:focus { border-color: rgba(0,122,255,.55); box-shadow: 0 0 0 3px rgba(0,122,255,.10); outline: 0; }
+    .field small { color: var(--muted); font-size: 8px; line-height: 1.4; }
+    .input-action { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+    .check { display: flex; align-items: center; gap: 8px; color: #45454b; font-size: 10px; }
+    .check input { accent-color: var(--blue); }
+    #client-key-field:not([hidden]), #client-key-field:not([hidden]) + #api-key-field { grid-column: auto; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 6px; padding: 9px 16px; border-top: 1px solid var(--line); background: rgba(242,242,244,.72); }
+    #page-add { display: none; }
+    .toast { position: fixed; z-index: 50; right: 18px; bottom: 18px; max-width: 420px; padding: 10px 13px; border: 1px solid rgba(255,255,255,.12); border-radius: 11px; background: rgba(28,28,30,.94); color: #fff; box-shadow: 0 14px 38px rgba(0,0,0,.22); backdrop-filter: blur(18px); font-size: 10px; animation: toast-in .24s var(--spring); }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+
+    /* iOS desktop visual system */
+    :root {
+      --bg: #f2f2f7;
+      --surface: #fff;
+      --surface-solid: #fff;
+      --surface-soft: #f7f7fa;
+      --ink: #111114;
+      --muted: #6c6c73;
+      --faint: #8e8e93;
+      --line: rgba(60,60,67,.13);
+      --line-strong: rgba(60,60,67,.22);
+      --blue: #007aff;
+      --blue-soft: rgba(0,122,255,.10);
+      --green: #34a853;
+      --green-soft: rgba(52,199,89,.12);
+      --radius: 16px;
+      --shadow: 0 1px 2px rgba(0,0,0,.035), 0 7px 22px rgba(0,0,0,.025);
+      --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Pretendard", "Noto Sans KR", sans-serif;
+      --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard", "Noto Sans KR", sans-serif;
+    }
+    body {
+      background: linear-gradient(180deg,#f8f8fb 0,#f2f2f7 190px,#f2f2f7 100%);
+      font-size: 13px;
+      font-feature-settings: normal;
+    }
+    .appbar {
+      height: 56px;
+      grid-template-columns: 170px minmax(0,1fr) 170px;
+      gap: 14px;
+      padding: 0 18px;
+      border-bottom-color: rgba(60,60,67,.12);
+      background: rgba(248,248,250,.78);
+      box-shadow: 0 .5px 0 rgba(255,255,255,.82) inset;
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+    }
+    .brand { grid-column: 1; gap: 9px; }
+    .brand-mark { width: 27px; height: 27px; border-radius: 8px; background: var(--blue); box-shadow: 0 1px 2px rgba(0,0,0,.16); }
+    .brand strong { font-size: 12px; font-weight: 680; letter-spacing: -.02em; }
+    .nav {
+      grid-column: 2;
+      justify-self: center;
+      align-self: stretch;
+      gap: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .nav button { min-height: 56px; gap: 8px; padding: 0 6px; border-radius: 0; color: #6d6d74; font-size: 12px; font-weight: 610; letter-spacing: -.015em; }
+    .nav button::after { content: ""; position: absolute; right: 4px; bottom: 0; left: 4px; height: 2px; border-radius: 2px 2px 0 0; background: var(--blue); opacity: 0; transform: scaleX(.45); transition: opacity .16s var(--spring), transform .2s var(--spring); }
+    .nav button:hover { background: transparent; color: var(--ink); }
+    .nav button.active { background: transparent; color: var(--blue); font-weight: 700; box-shadow: none; }
+    .nav button.active::after { opacity: 1; transform: scaleX(1); }
+    .nav-icon, .nav-icon svg { width: 18px; height: 18px; }
+    .appbar-spacer { display: none; }
+    .appbar > .top-actions { grid-column: 3; justify-self: end; }
+    .top-actions > .icon-button {
+      width: 30px;
+      min-width: 30px;
+      min-height: 30px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(118,118,128,.10);
+      color: #494950;
+      box-shadow: none;
+    }
+    .top-actions > .icon-button:hover { background: rgba(118,118,128,.17); box-shadow: none; }
+    .main { min-height: calc(100vh - 56px); }
+    .content { width: min(1160px,100%); padding: 18px 20px 28px; }
+    .page { animation-duration: .26s; }
+    .page-heading { align-items: flex-end; margin: 0 2px 13px; }
+    .page-heading h2 { font-size: 23px; font-weight: 730; letter-spacing: -.045em; }
+    .page-heading p { margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.45; }
+    .button {
+      min-height: 30px;
+      border-color: transparent;
+      border-radius: 9px;
+      background: rgba(118,118,128,.10);
+      color: var(--blue);
+      box-shadow: none;
+      font-weight: 620;
+    }
+    .button:hover { border-color: transparent; background: rgba(118,118,128,.17); box-shadow: none; }
+    .button:active { background: rgba(118,118,128,.22); }
+    .button.primary { border-color: transparent; background: var(--blue); box-shadow: 0 2px 7px rgba(0,122,255,.20); }
+    .button.primary:hover { border-color: transparent; background: #006ee6; }
+    .button.danger { background: var(--red-soft); }
+    .button.danger:hover { background: rgba(255,59,48,.16); }
+    .card { border: 0; background: #fff; box-shadow: var(--shadow); backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .connections { gap: 10px; }
+    .connection-section + .connection-section { margin-top: 15px; }
+    .connection-section-label { margin: 0 4px 7px; color: var(--faint); font-size: 10px; font-weight: 650; letter-spacing: -.01em; }
+    .connection-card {
+      min-height: 118px;
+      padding: 14px;
+      border: 0;
+      border-radius: 16px;
+      background: #fff;
       box-shadow: var(--shadow);
     }
-
-    .auth-panel[hidden] { display: none; }
-
-    .auth-index {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      margin: 0 0 18px;
-      color: var(--accent);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .auth-index::before {
-      width: 7px;
-      height: 7px;
-      background: var(--accent);
-      border-radius: 50%;
-      content: "";
-    }
-
-    .auth-copy h2 {
-      max-width: 520px;
-      margin: 0 0 14px;
-      font-size: clamp(28px, 4vw, 42px);
-      font-weight: 700;
-      letter-spacing: -0.045em;
-      line-height: 1.15;
-    }
-
-    .auth-copy p { max-width: 52ch; margin: 0; color: var(--muted); font-size: 14px; }
-
-    .auth-form {
-      padding: 24px;
-      background: var(--surface-subtle);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-    }
-
-    .auth-form label {
-      display: block;
-      margin-bottom: 8px;
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .auth-form input {
-      width: 100%;
-      min-height: 44px;
-      padding: 10px 13px;
-      background: var(--surface);
-    }
-
-    .primary-button {
-      width: 100%;
-      min-height: 44px;
-      margin-top: 10px;
-      color: #fff;
-      background: var(--accent);
-      border-color: var(--accent);
-      font-weight: 700;
-    }
-
-    .primary-button:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
-
-    .session-note {
-      display: block;
-      margin-top: 11px;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
-    }
-
-    .dashboard[hidden] { display: none; }
-
-    .dashboard-intro {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 24px;
-      margin: 38px 0 18px;
-    }
-
-    .dashboard-intro h2 {
-      margin: 0 0 4px;
-      font-size: 26px;
-      letter-spacing: -0.035em;
-      line-height: 1.25;
-    }
-
-    .dashboard-intro p { margin: 0; color: var(--muted); font-size: 13px; }
-
-    .status-strip {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .status-strip strong { color: var(--accent); font-weight: 700; }
-
-    .live-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 5px 9px;
-      color: var(--ok);
-      background: var(--accent-soft);
-      border-radius: 999px;
-      font-weight: 700;
-    }
-
-    .live-status::before {
-      width: 6px;
-      height: 6px;
-      background: currentColor;
-      border-radius: 50%;
-      content: "";
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .metric {
-      min-height: 148px;
-      padding: 20px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: 0 1px 2px rgba(19, 32, 27, 0.02);
-    }
-
-    .metric-label {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .metric-value {
-      display: block;
-      font-size: clamp(34px, 4.2vw, 48px);
-      font-weight: 700;
-      letter-spacing: -0.055em;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .metric:last-child .metric-value { color: var(--danger); }
-
-    .metric-note {
-      display: block;
-      margin-top: 12px;
-      color: var(--faint);
-      font-size: 11px;
-    }
-
-    .panel {
-      margin-top: 18px;
+    .connection-card::before { display: none; }
+    .provider-logo { width: 36px; height: 36px; border: 0; border-radius: 11px; box-shadow: none; }
+    .provider-logo svg { width: 18px; height: 18px; }
+    .provider-title { gap: 10px; }
+    .provider-title h3 { font-size: 14px; font-weight: 680; }
+    .provider-title p { margin-top: 1px; font-size: 10px; }
+    .connection-state { width: 26px; height: 26px; border: 0; border-radius: 50%; background: #f2f2f7; }
+    .connection-action { width: 29px !important; min-width: 29px !important; min-height: 29px !important; border-radius: 50% !important; }
+    .connection-body { min-height: 30px; margin-top: 12px; font-size: 10px; }
+    .account { font-size: 10px; }
+    .connection-count { font-size: 10px; }
+    .badge { min-height: 22px; padding: 0 8px; border: 0; background: #f2f2f7; font-size: 9px; }
+    .badge.running, .badge.ready { border: 0; background: var(--green-soft); }
+    .badge.pending { border: 0; }
+    .profile-list {
+      gap: 0;
       overflow: hidden;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 12px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: var(--shadow);
     }
-
-    .panel-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      align-items: center;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
+    .profile-card {
+      min-height: 58px;
+      padding: 10px 12px;
+      border: 0;
+      border-bottom: .5px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
-
-    .panel-head h2 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: -0.015em;
+    .profile-card:last-child { border-bottom: 0; }
+    .profile-card:hover { border-color: var(--line); background: #f8f8fa; box-shadow: none; transform: none; }
+    .profile-symbol { width: 34px; height: 34px; border: 0 !important; border-radius: 10px; }
+    .profile-main { gap: 10px; }
+    .profile-main h3 { font-family: var(--display); font-size: 12px; font-weight: 660; }
+    .profile-main p { margin-top: 3px; font-size: 9px; }
+    .endpoint label { margin-bottom: 3px; font-size: 8px; }
+    .endpoint code { font-size: 10px; }
+    .profile-actions { gap: 5px; }
+    .profile-actions .icon-button { width: 27px; min-width: 27px; min-height: 27px; border-radius: 8px; }
+    .empty { min-height: 88px; border-color: rgba(60,60,67,.18); background: rgba(248,248,250,.66); font-size: 10px; }
+    .profile-list > .empty { border: 0; border-radius: 16px; background: #fff; }
+    .account-budget-grid { gap: 10px; margin-bottom: 10px; }
+    .budget-card { min-height: 152px; padding: 14px; background: #fff; }
+    .budget-card::before { display: none; }
+    .budget-provider .provider-logo { width: 34px; height: 34px; border-radius: 10px; }
+    .budget-provider h3 { font-size: 13px; font-weight: 680; }
+    .budget-provider p { margin-top: 2px; font-size: 9px; }
+    .budget-overview { margin-top: 12px; }
+    .budget-amount > span, .budget-percent > span { font-size: 8px; letter-spacing: .025em; }
+    .budget-amount strong { margin-top: 2px; font-size: 27px; font-weight: 720; }
+    .budget-amount small { margin-top: 2px; font-size: 9px; }
+    .budget-percent { min-width: 76px; padding-left: 16px; }
+    .budget-percent strong { font-size: 23px; }
+    .budget-empty { min-height: 78px; font-size: 10px; }
+    .segment-meter { display: block; height: 6px; margin: 11px 0 7px; overflow: hidden; border-radius: 999px; background: #e9e9ee; }
+    .segment-meter i { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--green); transition: width .45s var(--spring); }
+    .segment-meter.warning i.filled { background: #ff9f0a; }
+    .segment-meter.danger i.filled { background: #ff3b30; }
+    .account-foot { font-size: 9px; }
+    .summary-grid {
+      gap: 0;
+      overflow: hidden;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: var(--shadow);
     }
-
-    .panel-head p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
-
-    .panel-tag {
-      padding: 5px 9px;
-      color: var(--muted);
-      background: var(--surface-subtle);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-family: var(--mono);
-      font-size: 10px;
-      white-space: nowrap;
+    .summary-card {
+      min-height: 78px;
+      padding: 13px 15px;
+      border: 0;
+      border-right: .5px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
     }
+    .summary-card:last-child { border-right: 0; }
+    .summary-card::after { display: none; }
+    .summary-card.featured { border-color: var(--line); background: transparent; }
+    .summary-label { font-size: 9px; font-weight: 620; }
+    .summary-value { margin-top: 5px; font-size: 23px; font-weight: 710; }
+    .summary-card small { margin-top: 2px; font-size: 9px; }
+    .dashboard-grid { gap: 10px; }
+    .dashboard-card { padding: 14px; border-radius: 16px; }
+    .card-head { margin-bottom: 10px; }
+    .card-head h3 { font-size: 14px; font-weight: 690; }
+    .card-head p { margin-top: 3px; font-size: 9px; }
+    .heatmap-wrap { padding: 2px 0 1px; }
+    .heatmap { min-width: 900px; }
+    .weekday-labels { grid-template-rows: repeat(7,13px); gap: 4px; padding-top: 18px; }
+    .month-labels { gap: 4px; height: 14px; margin-bottom: 5px; }
+    .heatmap-grid { grid-template-rows: repeat(7,13px); grid-auto-columns: minmax(13px,1fr); gap: 4px; }
+    .heat-cell { width: 13px; max-width: 13px; border: 0; border-radius: 3px; }
+    .heatmap-meta { margin-top: 10px; font-size: 9px; }
+    .data-table th, .data-table td { padding: 8px 9px; border-bottom: .5px solid var(--line); }
+    .data-table th { font-size: 8px; }
+    .data-table .profile-cell strong { font-size: 10px; }
+    .data-table .profile-cell span { font-size: 9px; }
+    .usage-controls { gap: 3px; padding: 2px; border: 0; border-radius: 10px; background: rgba(116,116,128,.10); }
+    .usage-control label { display: none; }
+    .usage-control select { height: 30px; padding: 0 25px 0 9px; border: 0; border-radius: 8px; background-color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.07); font-size: 10px; }
+    .pricing-note { margin-top: 10px; font-size: 9px; }
+    .modal-backdrop { background: rgba(20,20,24,.30); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    .modal { width: min(620px,100%); border: .5px solid rgba(255,255,255,.72); border-radius: 20px; background: rgba(248,248,250,.96); box-shadow: 0 28px 80px rgba(0,0,0,.28); }
+    .modal-head { padding: 16px 18px 12px; }
+    .modal-head h2 { font-size: 19px; }
+    .modal-head p { font-size: 10px; }
+    .modal-body { padding: 14px 18px 16px; }
+    .field { gap: 5px; }
+    .field label { font-size: 10px; }
+    .field input, .field select { height: 38px; padding: 0 11px; border: 0; border-radius: 10px; background: #fff; box-shadow: 0 0 0 .5px var(--line-strong), 0 1px 2px rgba(0,0,0,.025); }
+    .field small { font-size: 9px; }
+    .modal-actions { align-items: center; justify-content: flex-end; padding: 11px 18px; background: rgba(242,242,247,.88); }
+    .modal-buttons { display: flex; gap: 6px; margin-left: auto; }
+    .toast { border: 0; border-radius: 13px; background: rgba(28,28,30,.92); font-size: 11px; }
 
-    .chart-wrap {
-      min-height: 304px;
-      padding: 22px 20px 14px;
-      overflow-x: auto;
+    @media (max-height: 720px) and (min-width: 701px) {
+      .appbar { height: 48px; }
+      .content { padding-top: 13px; }
+      .page-heading { margin-bottom: 10px; }
+      .page-heading p { display: block; }
     }
-
-    #usage-chart {
-      display: block;
-      width: 100%;
-      min-width: 680px;
-      height: 266px;
-      overflow: visible;
+    @media (pointer: coarse) and (max-width: 700px) {
+      .button, .button.small, .nav button, .usage-control select { min-height: 44px; }
+      .profile-card, .summary-card, .dashboard-card { padding-top: 12px; padding-bottom: 12px; }
     }
-
-    .chart-grid { stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 5; }
-    .chart-baseline { stroke: var(--line-strong); stroke-width: 1; }
-    .chart-bar { fill: var(--accent); transform-box: fill-box; transform-origin: center bottom; animation: rise 420ms cubic-bezier(.2,.75,.25,1) both; }
-    .chart-bar:hover { fill: var(--accent-strong); }
-    .chart-label, .chart-value { fill: var(--muted); font-family: var(--mono); font-size: 10px; }
-    .chart-value { fill: var(--faint); font-size: 9px; }
-
-    .empty {
-      display: grid;
-      min-height: 220px;
-      place-items: center;
-      color: var(--muted);
-      font-size: 13px;
-      text-align: center;
+    @media (max-width: 820px) {
+      .brand-copy { display: none; }
+      .appbar { grid-template-columns: 40px minmax(0,1fr) 72px; }
+      .profile-card { grid-template-columns: 1fr auto; }
+      .endpoint { grid-column: 1 / -1; grid-row: 2; }
+      .summary-grid { grid-template-columns: repeat(2,1fr); }
+      .summary-card:nth-child(2) { border-right: 0; }
+      .summary-card:nth-child(-n+2) { border-bottom: .5px solid var(--line); }
     }
-
-    .table-wrap { overflow-x: auto; }
-
-    table {
-      width: 100%;
-      min-width: 900px;
-      border-collapse: collapse;
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
+    @media (max-width: 700px) {
+      .appbar { gap: 7px; padding: 0 10px; }
+      .content { padding: 14px 11px 20px; }
+      .connections, .account-budget-grid, .dashboard-grid, .summary-grid { grid-template-columns: 1fr; }
+      .profile-card { grid-template-columns: 1fr; }
+      .endpoint { grid-column: auto; grid-row: auto; }
+      .profile-actions { justify-content: flex-start; flex-wrap: wrap; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .page-heading { align-items: stretch; flex-direction: column; }
+      .usage-controls { width: 100%; }
+      .usage-control { min-width: 0; flex: 1; }
+      .usage-control select { width: 100%; }
+      .heatmap-meta, .account-foot { align-items: flex-start; flex-direction: column; }
+      .account-foot span:last-child { text-align: left; }
+      .summary-card { border-right: 0; border-bottom: .5px solid var(--line); }
+      .summary-card:nth-child(3) { border-bottom: .5px solid var(--line); }
+      .summary-card:last-child { border-bottom: 0; }
     }
-
-    th, td {
-      padding: 13px 20px;
-      text-align: left;
-      border-bottom: 1px solid var(--line);
-      white-space: nowrap;
+    @media (max-width: 520px) {
+      .nav-label { display: none; }
+      .nav button { width: 32px; justify-content: center; padding: 0; }
+      .appbar { grid-template-columns: 36px minmax(0,1fr) 72px; }
     }
-
-    th {
-      color: var(--muted);
-      background: var(--surface-subtle);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-    }
-
-    th:nth-child(5), th:nth-child(6),
-    td:nth-child(5), td:nth-child(6) { text-align: right; }
-
-    tbody tr[data-call-id] { cursor: pointer; }
-    tbody tr[data-call-id]:hover, tbody tr[data-call-id][aria-expanded="true"] { background: var(--accent-soft); }
-    tbody tr:last-child td { border-bottom: 0; }
-
-    .profile-mark {
-      display: inline-block;
-      padding: 3px 8px;
-      color: var(--accent-strong);
-      background: var(--accent-soft);
-      border-radius: 5px;
-      font-weight: 700;
-    }
-
-    .state {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      min-width: 54px;
-      font-weight: 700;
-    }
-
-    .state::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
-    .state.ok { color: var(--ok); }
-    .state.error { color: var(--danger); }
-
-    .detail-row td {
-      padding: 0;
-      white-space: normal;
-      color: #eaf1ee;
-      background: #17201d;
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1px;
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    .detail-block { min-width: 0; padding: 20px; background: #17201d; }
-
-    .detail-block h3 {
-      margin: 0 0 10px;
-      color: #9eb0a9;
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    pre {
-      max-height: 340px;
-      margin: 0;
-      overflow: auto;
-      color: #f4f8f6;
-      font: 12px/1.55 var(--mono);
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .loading { opacity: 0.55; pointer-events: none; }
-
-    @keyframes pulse { 50% { opacity: 0.35; } }
-    @keyframes rise { from { opacity: 0; transform: scaleY(0); } }
-
-    @media (max-width: 760px) {
-      .shell { width: min(100% - 28px, 1380px); padding-top: 18px; }
-      .masthead { align-items: flex-start; flex-direction: column; }
-      .controls { width: 100%; }
-      .control-group { flex: 1; }
-      .control-group select { flex: 1; min-width: 0; }
-      .auth-panel { grid-template-columns: 1fr; gap: 28px; margin-top: 36px; padding: 26px 22px; }
-      .dashboard-intro { align-items: flex-start; flex-direction: column; margin-top: 28px; }
-      .status-strip { flex-wrap: wrap; }
-      .metrics { grid-template-columns: 1fr; }
-      .metric { min-height: 128px; }
-      .detail-grid { grid-template-columns: 1fr; }
-      .panel-head { align-items: flex-start; flex-direction: column; gap: 5px; }
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --canvas: #111614;
-        --surface: #18201d;
-        --surface-subtle: #1d2723;
-        --ink: #eef4f1;
-        --muted: #a2afa9;
-        --faint: #7f8e87;
-        --line: #2c3833;
-        --line-strong: #3e4b45;
-        --accent: #55c5a2;
-        --accent-strong: #75d9bb;
-        --accent-soft: #203c33;
-        --danger: #ff8d96;
-        --danger-soft: #41262a;
-        --ok: #73d3ac;
-        --shadow: 0 18px 42px rgba(0, 0, 0, 0.18);
-      }
-
-      .brand-mark { color: #17201d; background: var(--accent); }
-      .primary-button { color: #102019; }
-      .detail-row td, .detail-block { background: #0d1210; }
-    }
-
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; }
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
-  <main class="shell">
-    <header class="masthead">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <div>
-          <p class="eyebrow">Local observability</p>
-          <h1>LLM Router</h1>
-        </div>
-      </div>
-      <div class="controls">
-        <div class="control-group">
-          <label for="period">관측 기간</label>
-          <select id="period">
-            <option value="7">최근 7일</option>
-            <option value="30">최근 30일</option>
-            <option value="90">최근 90일</option>
-          </select>
-        </div>
-        <button class="quiet-button" id="forget-key" type="button">키 지우기</button>
-      </div>
+  <div class="app">
+    <header class="appbar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M8.5 16h14m-5-5.5 5.5 5.5-5.5 5.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="brand-copy"><strong>LLM Router</strong></div></div>
+      <nav class="nav" aria-label="주 메뉴">
+        <button data-page="connections" class="active" type="button" aria-current="page"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M6.6 6.6 4.8 4.8a2.55 2.55 0 0 0-3.6 3.6L4 11.2a2.55 2.55 0 0 0 3.6 0l1.3-1.3"/><path d="m11.4 11.4 1.8 1.8a2.55 2.55 0 0 0 3.6-3.6L14 6.8a2.55 2.55 0 0 0-3.6 0L9.1 8.1"/></svg></span><span class="nav-label">연결</span></button>
+        <button data-page="serving" type="button"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M4.2 3.4 14 9l-9.8 5.6Z"/></svg></span><span class="nav-label">LLM 서빙</span></button>
+        <button data-page="dashboard" type="button"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 18 18"><rect x="2.6" y="2.6" width="5.2" height="5.2" rx="1.2"/><rect x="10.2" y="2.6" width="5.2" height="5.2" rx="1.2"/><rect x="2.6" y="10.2" width="5.2" height="5.2" rx="1.2"/><rect x="10.2" y="10.2" width="5.2" height="5.2" rx="1.2"/></svg></span><span class="nav-label">대시보드</span></button>
+      </nav>
+      <div class="appbar-spacer"></div>
+      <div class="top-actions"><button class="button icon-button" id="refresh" type="button" title="새로고침" aria-label="새로고침"><svg class="action-icon" viewBox="0 0 18 18" aria-hidden="true"><path d="M14.7 6.4A6.2 6.2 0 1 0 15 11.2"/><path d="M14.8 2.9v3.8H11"/></svg></button></div>
     </header>
 
-    <div class="notice" id="notice" role="alert" aria-live="assertive"></div>
+    <div class="main">
+      <main class="content">
+        <section class="page" id="page-connections">
+          <div class="page-heading"><div><h2>연결</h2><p>브라우저 계정, FabriX, OpenAI 호환 LLM을 연결하고 로컬 서빙 프로필을 만듭니다.</p></div></div>
+          <section class="connection-section" aria-labelledby="browser-connections-label"><h3 class="connection-section-label" id="browser-connections-label">브라우저 계정</h3><div class="connections" id="browser-connections"><div class="empty">계정 연결 상태를 확인하는 중입니다.</div></div></section>
+          <section class="connection-section" aria-labelledby="api-connections-label"><h3 class="connection-section-label" id="api-connections-label">API 연결</h3><div class="connections" id="api-connections"><div class="empty">API 연결을 확인하는 중입니다.</div></div></section>
+        </section>
 
-    <section class="auth-panel" id="auth-panel" aria-labelledby="auth-title">
-      <div class="auth-copy">
-        <p class="auth-index">Protected dashboard</p>
-        <h2 id="auth-title">라우터 사용량을<br>안전하게 확인하세요</h2>
-        <p>마스터 키는 현재 브라우저 탭에만 보관됩니다. 탭을 닫으면 자동으로 삭제되며 서버에는 별도로 저장되지 않습니다.</p>
-      </div>
-      <form class="auth-form" id="auth-form">
-        <label for="master-key">LLM_ROUTER_MASTER_KEY</label>
-        <input id="master-key" name="master-key" type="password" autocomplete="current-password" placeholder="마스터 키 입력" required>
-        <button class="primary-button" type="submit">대시보드 열기</button>
-        <span class="session-note">이 탭의 세션에만 보관됩니다</span>
-      </form>
-    </section>
+        <section class="page" id="page-serving" hidden>
+          <div class="page-heading"><div><h2>LLM 서빙</h2><p>단일 로컬 Gateway가 model 값으로 프로필을 선택합니다.</p></div></div>
+          <div id="gateway"><div class="empty">Gateway 정보를 불러오는 중입니다.</div></div>
+          <div class="profile-list" id="profiles"><div class="empty">프로필을 불러오는 중입니다.</div></div>
+        </section>
 
-    <section class="dashboard" id="dashboard" hidden aria-busy="false">
-      <div class="dashboard-intro">
-        <div>
-          <h2>사용 현황</h2>
-          <p>모든 프로필의 호출, 토큰 및 오류를 모아 보여줍니다.</p>
-        </div>
-        <div class="status-strip">
-          <span class="live-status">연결됨</span>
-          <span><strong id="scope-label">최근 7일</strong> 기준</span>
-          <span id="updated-at">아직 동기화되지 않음</span>
-        </div>
-      </div>
-
-      <section class="metrics" aria-label="사용량 요약">
-        <div class="metric">
-          <span class="metric-label">전체 호출</span>
-          <strong class="metric-value" id="metric-calls">—</strong>
-          <span class="metric-note">선택한 기간의 라우팅 요청</span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">관측 토큰</span>
-          <strong class="metric-value" id="metric-tokens">—</strong>
-          <span class="metric-note">입력·출력 토큰 합계</span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">오류</span>
-          <strong class="metric-value" id="metric-errors">—</strong>
-          <span class="metric-note" id="metric-error-note">실패한 호출 수</span>
-        </div>
-      </section>
-
-      <section class="panel" aria-labelledby="chart-title">
-        <header class="panel-head">
-          <div>
-            <h2 id="chart-title">일자별 토큰 사용량</h2>
-            <p>프로필 전체에서 관측된 토큰 합계</p>
+        <section class="page" id="page-dashboard" hidden>
+          <div class="page-heading"><div><h2>대시보드</h2><p>로그인 계정의 금액 한도와 사용률, 로컬 서빙의 토큰 흐름을 확인합니다.</p></div><div class="usage-controls"><div class="usage-control"><label for="usage-days">기간</label><select id="usage-days"><option value="7">최근 7일</option><option value="30" selected>최근 30일</option><option value="90">최근 90일</option><option value="365">최근 1년</option></select></div><div class="usage-control"><label for="usage-profile">프로필</label><select id="usage-profile"><option value="all">전체 프로필</option></select></div><div class="usage-control"><label for="usage-model">모델</label><select id="usage-model"><option value="all">전체 모델</option></select></div></div></div>
+          <div class="account-budget-grid" aria-label="계정 사용 한도">
+            <article class="card budget-card" data-provider="anthropic" id="claude-usage"><div class="empty">Claude 한도를 불러오는 중입니다.</div></article>
+            <article class="card budget-card" data-provider="openai" id="openai-usage"><div class="empty">OpenAI 한도를 불러오는 중입니다.</div></article>
           </div>
-          <span class="panel-tag">TOKENS / DAY</span>
-        </header>
-        <div class="chart-wrap" id="chart-wrap"></div>
-      </section>
-
-      <section class="panel" aria-labelledby="calls-title">
-        <header class="panel-head">
-          <div>
-            <h2 id="calls-title">최근 호출 기록</h2>
-            <p>행을 선택하면 요청과 응답 본문을 확인할 수 있습니다.</p>
+          <div class="summary-grid">
+            <article class="card summary-card"><span class="summary-label">활성 프로필</span><strong class="summary-value" id="sum-profiles">—</strong><small>선택 기간 내 호출</small></article>
+            <article class="card summary-card"><span class="summary-label">전체 요청</span><strong class="summary-value" id="sum-requests">—</strong><small>성공·실패 포함</small></article>
+            <article class="card summary-card featured"><span class="summary-label" id="sum-token-label">최근 30일 토큰</span><strong class="summary-value" id="sum-tokens">—</strong><small id="sum-token-split">입력 — · 출력 —</small></article>
+            <article class="card summary-card featured"><span class="summary-label">로컬 호출 예상 비용</span><strong class="summary-value cost" id="sum-cost">—</strong><small id="sum-cost-note">공개 API 단가 기준</small></article>
           </div>
-          <span class="panel-tag">LATEST 50</span>
-        </header>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">시각</th>
-                <th scope="col">프로필</th>
-                <th scope="col">모델</th>
-                <th scope="col">모드</th>
-                <th scope="col">토큰</th>
-                <th scope="col">지연</th>
-                <th scope="col">상태</th>
-              </tr>
-            </thead>
-            <tbody id="calls-body"></tbody>
-          </table>
-          <div class="empty" id="calls-empty" hidden>아직 기록된 호출이 없습니다.</div>
+          <div class="dashboard-grid">
+            <article class="card dashboard-card full activity-card"><div class="card-head"><div><h3>1년 토큰 활동</h3><p id="activity-subtitle">최근 1년 · 색이 진할수록 토큰을 많이 사용한 날입니다.</p></div></div><div id="usage-heatmap"><div class="empty">토큰 활동을 불러오는 중입니다.</div></div></article>
+            <article class="card dashboard-card full"><div class="card-head"><div><h3>프로필·모델별 사용량</h3><p>선택 기간 합계</p></div></div><div id="profile-usage"></div></article>
+            <article class="card dashboard-card full"><div class="card-head"><div><h3>일별 상세 내역</h3><p>날짜·프로필·업스트림 모델 기준</p></div></div><div id="daily-usage"></div><div class="pricing-note"><span>비용은 실제 구독 청구액이 아닌 공개 API 단가 환산 추정치입니다. 캐시·장문·도구 비용은 제외됩니다.</span><span><a href="https://developers.openai.com/api/docs/models" target="_blank" rel="noreferrer">OpenAI 단가</a> · <a href="https://www.anthropic.com/news/claude-sonnet-5" target="_blank" rel="noreferrer">Anthropic 단가</a></span></div></article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="profile-modal" hidden>
+    <form class="modal" id="profile-form">
+      <div class="modal-head"><div><h2 id="modal-title">연결 추가</h2><p id="modal-description">업스트림 모델을 로컬 Gateway의 프로필로 연결합니다.</p></div><button class="button ghost small icon-button" id="close-modal" type="button" title="닫기" aria-label="닫기"><svg class="action-icon" viewBox="0 0 18 18"><path d="m4 4 10 10M14 4 4 14"/></svg></button></div>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="field full"><label for="profile-name">프로필 이름</label><input id="profile-name" pattern="[a-z0-9_-]+" placeholder="team-llm" required><small>API 요청의 <span class="mono">model</span> 값으로 사용합니다. 영문 소문자, 숫자, - 또는 _</small></div>
+          <div class="field full"><label for="profile-model" id="model-label">모델</label><div class="input-action"><input id="profile-model" list="model-options" placeholder="모델을 선택하거나 ID 입력" required><button class="button icon-button" id="load-models" type="button" title="모델 불러오기" aria-label="모델 불러오기"><svg class="action-icon" viewBox="0 0 18 18"><path d="M14.8 6.3A6.2 6.2 0 1 0 15 11"/><path d="M11.5 3.2h3.6v3.6"/></svg></button></div><datalist id="model-options"></datalist></div>
+          <div class="field full" id="base-url-field" hidden><label for="profile-base-url" id="base-url-label">OpenAI 호환 Endpoint</label><input id="profile-base-url" type="url" placeholder="https://llm.company.internal/v1"><small id="base-url-help"><span class="mono">/chat/completions</span>와 <span class="mono">/models</span>를 제공하는 OpenAI 호환 주소</small></div>
+          <div class="field full" id="client-key-field" hidden><label for="profile-client-key">FabriX Client Key</label><input id="profile-client-key" type="password" autocomplete="new-password" placeholder="저장된 키를 유지하려면 비워두세요"><small>FabriX의 <span class="mono">x-fabrix-client</span> 헤더에 사용합니다.</small></div>
+          <div class="field full" id="api-key-field" hidden><label for="profile-api-key" id="api-key-label">API 키</label><input id="profile-api-key" type="password" autocomplete="new-password" placeholder="저장된 키를 유지하려면 비워두세요"><small id="api-key-help">키는 profiles.yaml이 아닌 로컬 0600 비밀 저장소에 보관됩니다.</small></div>
         </div>
-      </section>
-    </section>
-  </main>
+      </div>
+      <div class="modal-actions"><div class="modal-buttons"><button class="button" id="cancel-modal" type="button">취소</button><button class="button primary" id="save-profile" type="submit">저장</button></div></div>
+    </form>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <script>
-    (() => {
-      "use strict";
+    const state = { page:"serving", auth:[], profiles:[], gateway:null, summary:[], activitySummary:[], claude:null, openai:null, editing:null, connectionType:"fabrix", usageDays:30, usageProfile:"all", usageModel:"all" };
+    const $ = selector => document.querySelector(selector);
+    const $$ = selector => [...document.querySelectorAll(selector)];
+    const esc = value => String(value ?? "").replace(/[&<>'"]/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
+    const number = value => new Intl.NumberFormat("ko-KR", {notation:Math.abs(Number(value)||0)>=1000000?"compact":"standard",maximumFractionDigits:1}).format(Number(value)||0);
+    function compactTokens(value) { const amount=Math.max(0,Math.round(Number(value)||0)); if(amount>=100000000)return `${Math.round(amount/100000000)}억 토큰`; if(amount>=10000)return `${Math.round(amount/10000)}만 토큰`; if(amount>=1000)return `${Math.round(amount/1000)}천 토큰`; return `${new Intl.NumberFormat("ko-KR").format(amount)} 토큰`; }
+    const clamp = value => Math.max(0,Math.min(100,Number(value)||0));
+    const usd = value => { if(value==null)return "—"; const amount=Number(value)||0; const digits=amount>0&&amount<.0001?6:amount>0&&amount<.01?4:2; return `$${amount.toFixed(digits)}`; };
+    const periodLabel = days => days===365?"최근 1년":`최근 ${days}일`;
+    const dateKey = value => `${value.getFullYear()}-${String(value.getMonth()+1).padStart(2,"0")}-${String(value.getDate()).padStart(2,"0")}`;
+    const moneyFromMinor = (value,currency="USD") => { if(value==null)return "—"; const amount=(Number(value)||0)/100; if(currency==="USD")return usd(amount); try{return new Intl.NumberFormat("ko-KR",{style:"currency",currency,minimumFractionDigits:2}).format(amount);}catch(_){return `${amount.toFixed(2)} ${currency}`;} };
+    const moneyFromMajor = (value,currency="USD") => { if(value==null)return "—"; const amount=Number(value)||0; if(currency==="USD")return usd(amount); try{return new Intl.NumberFormat("ko-KR",{style:"currency",currency,minimumFractionDigits:2}).format(amount);}catch(_){return `${amount.toFixed(2)} ${currency}`;} };
+    const iconPaths = {
+      copy:`<rect x="6.5" y="6.5" width="8" height="8" rx="1.5"/><path d="M4.5 11.5h-1v-8h8v1"/>`,
+      edit:`<path d="m4 13.8 2.7-.6 7-7a1.4 1.4 0 0 0-2-2l-7 7Z"/><path d="m10.8 5.1 2 2"/>`,
+      trash:`<path d="M4 5.5h10M7 3.5h4M6 5.5l.5 9h5l.5-9M8 8v4M10 8v4"/>`,
+      profileAdd:`<rect x="2.5" y="3.3" width="8.8" height="11.2" rx="1.8"/><path d="M5 6.5h3.8M5 9.3h2.6M14.2 7.9v6M11.2 10.9h6"/>`,
+      browserLogin:`<rect x="2.5" y="3.5" width="13" height="11" rx="2"/><path d="M2.5 6.5h13M7 10h5M10 8l2 2-2 2"/>`,
+      disconnect:`<path d="m6.7 6.7-1.8-1.8a2.4 2.4 0 0 0-3.4 3.4l2.2 2.2a2.4 2.4 0 0 0 3.4 0l.8-.8M11.3 11.3l1.8 1.8a2.4 2.4 0 0 0 3.4-3.4l-2.2-2.2a2.4 2.4 0 0 0-3.4 0l-.8.8M3 15 15 3"/>`,
+    };
+    function icon(name) { return `<svg class="action-icon" viewBox="0 0 18 18" aria-hidden="true">${iconPaths[name]}</svg>`; }
+    function iconButton(name,label,attribute,tone="") { return `<button class="button small icon-button ${tone}" ${attribute} type="button" title="${esc(label)}" aria-label="${esc(label)}">${icon(name)}</button>`; }
+    function providerGlyph(provider) { if(provider==="anthropic")return `<svg class="claude-glyph" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2.2v3.2M9 12.6v3.2M2.2 9h3.2M12.6 9h3.2M4.2 4.2l2.3 2.3M11.5 11.5l2.3 2.3M13.8 4.2l-2.3 2.3M6.5 11.5l-2.3 2.3"/></svg>`; if(provider==="openai")return `<svg class="openai-glyph" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2.15c1.95 0 3.55 1.58 3.55 3.54v2.04L9 9.8 5.45 7.73V5.69C5.45 3.73 7.05 2.15 9 2.15Z"/><path d="M9 2.15c1.95 0 3.55 1.58 3.55 3.54v2.04L9 9.8 5.45 7.73V5.69C5.45 3.73 7.05 2.15 9 2.15Z" transform="rotate(120 9 9)"/><path d="M9 2.15c1.95 0 3.55 1.58 3.55 3.54v2.04L9 9.8 5.45 7.73V5.69C5.45 3.73 7.05 2.15 9 2.15Z" transform="rotate(240 9 9)"/></svg>`; if(provider==="fabrix")return `<svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="5" cy="5" r="2"/><circle cx="13" cy="5" r="2"/><circle cx="9" cy="13" r="2"/><path d="m6.6 6.2 1.5 4.9M11.4 6.2l-1.5 4.9M7 5h4"/></svg>`; return `<svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="3.5" width="12" height="4" rx="1.3"/><rect x="3" y="10.5" width="12" height="4" rx="1.3"/><path d="M6 5.5h.1M6 12.5h.1"/></svg>`; }
 
-      const storageKey = "llmRouterKey";
-      const authPanel = document.querySelector("#auth-panel");
-      const authForm = document.querySelector("#auth-form");
-      const keyInput = document.querySelector("#master-key");
-      const dashboard = document.querySelector("#dashboard");
-      const period = document.querySelector("#period");
-      const notice = document.querySelector("#notice");
-      const callsBody = document.querySelector("#calls-body");
-      const callsEmpty = document.querySelector("#calls-empty");
-      const chartWrap = document.querySelector("#chart-wrap");
-      const number = new Intl.NumberFormat("ko-KR");
-      const compactNumber = new Intl.NumberFormat("ko-KR", {
-        notation: "compact",
-        maximumFractionDigits: 1,
-      });
-      const dateTime = new Intl.DateTimeFormat("ko-KR", {
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      });
-      let openCallId = null;
+    function notify(message) { const toast=$("#toast"); toast.textContent=message; toast.hidden=false; clearTimeout(notify.timer); notify.timer=setTimeout(()=>toast.hidden=true,3600); }
+    async function api(path, options={}) { const headers={...(options.headers||{})}; if(options.body) headers["content-type"]="application/json"; const response=await fetch(path,{...options,headers}); let payload={}; try{payload=await response.json();}catch(_){} if(!response.ok) throw new Error(payload?.error?.message||`요청 실패 (${response.status})`); return payload; }
 
-      function setNotice(message) {
-        notice.textContent = message || "";
-        notice.dataset.visible = message ? "true" : "false";
-      }
+    function showPage(page) { state.page=page; $$(".page").forEach(element=>element.hidden=element.id!==`page-${page}`); $$(".nav button").forEach(button=>{const active=button.dataset.page===page;button.classList.toggle("active",active);if(active)button.setAttribute("aria-current","page");else button.removeAttribute("aria-current");}); }
 
-      function showAuth(message = "") {
-        sessionStorage.removeItem(storageKey);
-        authPanel.hidden = false;
-        dashboard.hidden = true;
-        if (message) setNotice(message);
-        requestAnimationFrame(() => keyInput.focus());
-      }
+    function connectionStatus(kind,label) { const paths={ready:`<circle cx="9" cy="9" r="6.2"/><path d="m5.8 9.1 2.1 2.1 4.4-4.5"/>`,pending:`<circle cx="9" cy="9" r="6.2"/><path d="M9 5.5V9l2.4 1.5"/>`,error:`<circle cx="9" cy="9" r="6.2"/><path d="m6.7 6.7 4.6 4.6M11.3 6.7l-4.6 4.6"/>`,offline:`<circle cx="9" cy="9" r="6.2"/><path d="M6.5 9h5"/>`}; return `<span class="connection-state ${kind}" role="status" title="${esc(label)}" aria-label="${esc(label)}"><svg viewBox="0 0 18 18" aria-hidden="true">${paths[kind]}</svg></span>`; }
+    function authCard(item) { const connected=item.connected; const pending=item.login_pending; const statusKind=connected?"ready":pending?"pending":item.status==="error"?"error":"offline"; const statusLabel=connected?"연결됨":pending?"로그인 대기 중":item.status==="error"?"연결 오류":"로그인 필요"; const type=item.provider==="anthropic"?"claude_oauth":"openai_oauth"; const action=connected?`${iconButton("profileAdd","서빙 프로필 추가",`data-new-type="${type}"`,"primary connection-action")}${iconButton("disconnect","연결 해제",`data-disconnect="${item.provider}"`,"danger connection-action")}`:iconButton("browserLogin","브라우저 로그인",`data-login="${item.provider}" ${item.available===false?"disabled":""}`,"primary connection-action"); const note=connected?"브라우저 로그인 세션 사용 중":pending?"브라우저에서 로그인을 완료하세요.":item.status==="error"?(item.message||"연결 상태를 확인하세요."):"계정을 연결하면 로컬 서빙에 바로 사용할 수 있습니다."; return `<article class="card connection-card" data-provider="${esc(item.provider)}"><div class="connection-head"><div class="provider-title"><div class="provider-logo">${providerGlyph(item.provider)}</div><div><h3>${esc(item.label)}</h3><p>브라우저 로그인</p></div></div><div class="connection-controls">${connectionStatus(statusKind,statusLabel)}${action}</div></div><div class="connection-body"><span class="connection-note">${esc(note)}</span>${item.account?`<span class="account">${esc(item.account)}</span>`:""}</div></article>`; }
+    function apiConnectionCard(provider,title,subtitle,type) { const count=state.profiles.filter(profile=>profile.provider===provider).length; return `<article class="card connection-card" data-provider="${esc(provider)}"><div class="connection-head"><div class="provider-title"><div class="provider-logo">${providerGlyph(provider)}</div><div><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div></div><div class="connection-controls">${connectionStatus(count?"ready":"offline",count?"설정됨":"연결 추가 필요")}${iconButton("profileAdd","연결 추가",`data-new-type="${type}"`,"primary connection-action")}</div></div><div class="connection-body"><span class="connection-note">Endpoint와 API 인증 정보를 연결합니다.</span><span class="connection-count">${count?`${number(count)}개 프로필 연결됨`:"아직 연결되지 않음"}</span></div></article>`; }
+    function renderConnections() { const browserCards=state.auth.map(authCard).join(""); const apiCards=apiConnectionCard("fabrix","FabriX","사내 API","fabrix")+apiConnectionCard("openai_compatible","OpenAI 호환 LLM","Endpoint · API 키","internal"); $("#browser-connections").innerHTML=browserCards||`<div class="empty">브라우저 계정 정보를 불러오지 못했습니다.</div>`; $("#api-connections").innerHTML=apiCards; }
 
-      function showDashboard() {
-        authPanel.hidden = true;
-        dashboard.hidden = false;
-        setNotice("");
-      }
+    function renderGateway() { const gateway=state.gateway; if(!gateway){$("#gateway").innerHTML=`<div class="empty">Gateway 정보를 불러오지 못했습니다.</div>`;return;} $("#gateway").innerHTML=`<article class="card gateway-card"><span class="gateway-icon" title="Gateway 실행 중" aria-label="Gateway 실행 중"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9h10M10 5l4 4-4 4"/><circle cx="3" cy="9" r="1.3"/></svg></span><div class="gateway-copy"><span>단일 로컬 Gateway · 실행 중</span><code>${esc(gateway.chat_completions_url)}</code><small>Agent Factory SDK · OpenAI 호환 · Request model 값으로 아래 프로필 선택</small></div>${iconButton("copy","Gateway Endpoint 복사",`data-copy-gateway="${esc(gateway.base_url)}"`)}</article>`; }
+    function profileCard(profile) { const provider=profile.provider==="anthropic"?"Claude / Anthropic":profile.provider==="openai"?"OpenAI":profile.provider==="fabrix"?"FabriX":"OpenAI 호환 LLM"; const browserProvider=profile.provider==="anthropic"||profile.provider==="openai"; const authLabel=browserProvider?"브라우저 로그인":"API 키"; const stateClass=profile.status==="ready"?"ready":profile.status==="login_required"?"pending":"error"; const stateLabel=profile.status==="ready"?"사용 가능":profile.status==="login_required"?"로그인 필요":"인증 필요"; return `<article class="card profile-card" data-provider="${esc(profile.provider)}"><div class="profile-main"><div class="profile-symbol">${providerGlyph(profile.provider)}</div><div><h3>${esc(profile.name)}</h3><p>${esc(provider)} · ${esc(profile.model)} · ${authLabel}</p></div></div><div class="endpoint"><label>Request model</label><code>${esc(profile.name)}</code></div><div class="profile-actions"><span class="badge ${stateClass}">${stateLabel}</span>${iconButton("copy","model 값 복사",`data-copy-model="${esc(profile.name)}"`)}${iconButton("edit","프로필 편집",`data-edit="${esc(profile.name)}"`)}${iconButton("trash","프로필 삭제",`data-delete="${esc(profile.name)}"`,"danger")}</div></article>`; }
+    function renderProfiles() { renderGateway(); $("#profiles").innerHTML=state.profiles.map(profileCard).join("")||`<div class="empty"><div><strong>아직 라우팅할 프로필이 없습니다.</strong>연결 메뉴에서 계정이나 사내 LLM을 먼저 연결하세요.</div></div>`; }
 
-      async function api(path) {
-        const key = sessionStorage.getItem(storageKey);
-        if (!key) throw new Error("AUTH_REQUIRED");
-        const response = await fetch(path, {
-          headers: { authorization: `Bearer ${key}` },
-        });
-        if (response.status === 401) throw new Error("AUTH_REQUIRED");
-        let payload = null;
-        try {
-          payload = await response.json();
-        } catch (_error) {
-          throw new Error(`응답을 읽을 수 없습니다 (${response.status})`);
-        }
-        if (!response.ok) {
-          throw new Error(payload?.error?.message || `요청 실패 (${response.status})`);
-        }
-        return payload;
-      }
+    function visibleUsageRows() { return state.summary.filter(row=>(state.usageProfile==="all"||row.profile===state.usageProfile)&&(state.usageModel==="all"||row.upstream_model===state.usageModel)); }
+    function visibleActivityRows() { return state.activitySummary.filter(row=>(state.usageProfile==="all"||row.profile===state.usageProfile)&&(state.usageModel==="all"||row.upstream_model===state.usageModel)); }
+    function renderUsageFilters() { const allRows=[...state.summary,...state.activitySummary]; const names=[...new Set([...state.profiles.map(profile=>profile.name),...allRows.map(row=>row.profile)])].sort(); const models=[...new Set([...state.profiles.map(profile=>profile.model),...allRows.map(row=>row.upstream_model)].filter(Boolean))].sort(); const profileSelect=$("#usage-profile"); const modelSelect=$("#usage-model"); profileSelect.innerHTML=`<option value="all">전체 프로필</option>${names.map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("")}`; modelSelect.innerHTML=`<option value="all">전체 모델</option>${models.map(model=>`<option value="${esc(model)}">${esc(model)}</option>`).join("")}`; if(state.usageProfile!=="all"&&!names.includes(state.usageProfile))state.usageProfile="all"; if(state.usageModel!=="all"&&!models.includes(state.usageModel))state.usageModel="all"; profileSelect.value=state.usageProfile; modelSelect.value=state.usageModel; $("#usage-days").value=String(state.usageDays); }
+    function segmentMeter(value) { const pct=clamp(value); const tone=pct>=90?"danger":pct>=75?"warning":""; return `<div class="segment-meter ${tone}" role="progressbar" aria-label="한도 사용률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i class="filled" style="width:${pct}%" aria-hidden="true"></i></div>`; }
+    function resetLabel(value) { if(value==null)return ""; const date=new Date(typeof value==="number"?value*1000:value); if(Number.isNaN(date.getTime()))return ""; return `${new Intl.DateTimeFormat("ko-KR",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}).format(date)} 초기화`; }
+    function currentMonthAccountTokens() { const buckets=state.openai?.token_usage?.daily_usage_buckets||[]; const today=new Date(); const prefix=`${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`; return buckets.reduce((sum,bucket)=>String(bucket.startDate||bucket.start_date||"").startsWith(prefix)?sum+(Number(bucket.tokens)||0):sum,0); }
+    function budgetMarkup(provider,title,subtitle,badge,used,limit,pct,remaining,detail) { return `<div class="card-head"><div class="budget-provider"><div class="provider-logo">${providerGlyph(provider)}</div><div><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div></div><span class="badge ready">${esc(badge)}</span></div><div class="budget-overview"><div class="budget-amount"><span>사용 금액</span><strong>${used}</strong><small>전체 한도 <b>${limit}</b></small></div><div class="budget-percent" aria-label="사용률 ${number(pct)}%"><strong>${number(pct)}%</strong><span>사용률</span></div></div>${segmentMeter(pct)}<div class="account-foot"><span>${remaining} 남음</span><span>${esc(detail)}</span></div>`; }
+    function renderHeatmap() {
+      const grouped=new Map();
+      visibleActivityRows().forEach(row=>{const item=grouped.get(row.day)||{tokens:0,calls:0,cost:0,costKnown:false};item.tokens+=Number(row.total_tokens)||0;item.calls+=Number(row.calls)||0;if(row.estimated_usd!=null){item.cost+=Number(row.estimated_usd)||0;item.costKnown=true;}grouped.set(row.day,item);});
+      const today=new Date(); today.setHours(0,0,0,0); const start=new Date(today); start.setDate(start.getDate()-364); const leading=(start.getDay()+6)%7; const days=[];
+      for(let index=0;index<365;index++){const date=new Date(start);date.setDate(start.getDate()+index);const key=dateKey(date);days.push({date,key,...(grouped.get(key)||{tokens:0,calls:0,cost:0,costKnown:false})});}
+      const max=Math.max(0,...days.map(day=>day.tokens)); const active=days.filter(day=>day.tokens>0); const total=days.reduce((sum,day)=>sum+day.tokens,0); const weeks=Math.ceil((leading+days.length)/7); const monthLabels=[]; let lastMonth=-1;
+      days.forEach((day,index)=>{if(day.date.getMonth()===lastMonth)return;lastMonth=day.date.getMonth();const week=Math.floor((leading+index)/7)+1;monthLabels.push(`<span style="grid-column:${week}">${new Intl.DateTimeFormat("ko-KR",{month:"short"}).format(day.date)}</span>`);});
+      const blanks=Array.from({length:leading},()=>`<span aria-hidden="true"></span>`).join("");
+      const cells=days.map(day=>{const level=day.tokens&&max?Math.max(1,Math.ceil(Math.log(day.tokens+1)/Math.log(max+1)*4)):0;const dayLabel=new Intl.DateTimeFormat("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(day.date);const tokenLabel=compactTokens(day.tokens);const ariaLabel=`${dayLabel} · ${tokenLabel}`;return `<span class="heat-cell" data-level="${level}" role="gridcell" tabindex="0" aria-label="${esc(ariaLabel)}" title="${esc(tokenLabel)}"></span>`;}).join("");
+      $("#usage-heatmap").innerHTML=`<div class="heatmap-wrap"><div class="heatmap"><div class="heatmap-calendar"><div class="weekday-labels" aria-hidden="true"><span>월</span><span></span><span>수</span><span></span><span>금</span><span></span><span></span></div><div class="heatmap-body"><div class="month-labels" style="grid-template-columns:repeat(${weeks},minmax(12px,1fr))">${monthLabels.join("")}</div><div class="heatmap-grid" role="grid" aria-label="최근 1년 일별 토큰 사용량">${blanks}${cells}</div></div></div><div class="heatmap-meta"><span><strong>${number(total)}</strong> 토큰 · 활동한 날 ${number(active.length)}일${active.length?` · 하루 평균 ${number(total/active.length)}`:""}</span><span class="heat-legend">적음 <i></i><i></i><i></i><i></i><i></i> 많음</span></div></div></div>`;
+    }
+    function profileUsageRows(rows) { const grouped=new Map(); rows.forEach(row=>{const key=`${row.provider}\u0000${row.profile}\u0000${row.upstream_model}`; const item=grouped.get(key)||{profile:row.profile,model:row.upstream_model,provider:row.provider,calls:0,input:0,output:0,total:0,errors:0,cost:0,costKnown:false,inputRate:row.input_usd_per_million,outputRate:row.output_usd_per_million}; item.calls+=Number(row.calls)||0; item.input+=Number(row.prompt_tokens)||0; item.output+=Number(row.completion_tokens)||0; item.total+=Number(row.total_tokens)||0; item.errors+=Number(row.errors)||0; if(row.estimated_usd!=null){item.cost+=Number(row.estimated_usd)||0;item.costKnown=true;} grouped.set(key,item);}); return [...grouped.values()].sort((a,b)=>b.total-a.total||a.profile.localeCompare(b.profile)); }
+    function costTitle(row) { return row.inputRate!=null?`입력 $${row.inputRate} · 출력 $${row.outputRate} / 1M tokens`:"공개 단가 정보 없음"; }
+    function renderDashboard() {
+      const rows=visibleUsageRows(); const profiles=profileUsageRows(rows); const calls=rows.reduce((sum,row)=>sum+(Number(row.calls)||0),0); const input=rows.reduce((sum,row)=>sum+(Number(row.prompt_tokens)||0),0); const output=rows.reduce((sum,row)=>sum+(Number(row.completion_tokens)||0),0); const tokens=rows.reduce((sum,row)=>sum+(Number(row.total_tokens)||0),0); const priced=rows.filter(row=>row.estimated_usd!=null); const estimated=priced.reduce((sum,row)=>sum+(Number(row.estimated_usd)||0),0); const unknown=rows.some(row=>row.estimated_usd==null&&(Number(row.total_tokens)||0)>0);
+      $("#sum-profiles").textContent=new Set(rows.map(row=>row.profile)).size; $("#sum-requests").textContent=number(calls); $("#sum-token-label").textContent=`${periodLabel(state.usageDays)} 토큰`; $("#sum-tokens").textContent=number(tokens); $("#sum-token-split").textContent=`입력 ${number(input)} · 출력 ${number(output)}`; $("#sum-cost").textContent=priced.length?usd(estimated):"—"; $("#sum-cost-note").textContent=unknown?"단가 확인 가능 모델만 합산":"공개 API 단가 기준";
+      $("#profile-usage").innerHTML=profiles.length?`<div class="table-wrap"><table class="data-table"><thead><tr><th>프로필 / 모델</th><th class="number-cell">요청</th><th class="number-cell">입력</th><th class="number-cell">출력</th><th class="number-cell">전체 토큰</th><th class="number-cell">예상 $</th></tr></thead><tbody>${profiles.map(row=>`<tr><td class="profile-cell"><strong>${esc(row.profile)}</strong><span>${esc(row.model)}</span></td><td class="number-cell">${number(row.calls)}</td><td class="number-cell">${number(row.input)}</td><td class="number-cell">${number(row.output)}</td><td class="number-cell"><strong>${number(row.total)}</strong></td><td class="number-cell cost" title="${esc(costTitle(row))}">${row.costKnown?usd(row.cost):"—"}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">선택 기간에 호출 기록이 없습니다.</div>`;
+      $("#daily-usage").innerHTML=rows.length?`<div class="table-wrap"><table class="data-table"><thead><tr><th>날짜</th><th>프로필 / 모델</th><th class="number-cell">요청</th><th class="number-cell">입력</th><th class="number-cell">출력</th><th class="number-cell">전체</th><th class="number-cell">예상 $</th></tr></thead><tbody>${rows.map(row=>`<tr><td class="mono">${esc(row.day)}</td><td class="profile-cell"><strong>${esc(row.profile)}</strong><span>${esc(row.upstream_model)}</span></td><td class="number-cell">${number(row.calls)}</td><td class="number-cell">${number(row.prompt_tokens)}</td><td class="number-cell">${number(row.completion_tokens)}</td><td class="number-cell"><strong>${number(row.total_tokens)}</strong></td><td class="number-cell cost" title="${row.input_usd_per_million!=null?esc(`입력 $${row.input_usd_per_million} · 출력 $${row.output_usd_per_million} / 1M tokens`):"공개 단가 정보 없음"}">${usd(row.estimated_usd)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">선택 기간에 호출 기록이 없습니다.</div>`;
+      renderHeatmap(); renderClaudeUsage(); renderOpenAIUsage();
+    }
+    function renderClaudeUsage() {
+      const connected=state.auth.find(item=>item.provider==="anthropic")?.connected; const target=$("#claude-usage");
+      if(!connected){target.innerHTML=`<div class="card-head"><div class="budget-provider"><div class="provider-logo">${providerGlyph("anthropic")}</div><div><h3>Claude</h3><p>월간 금액 한도</p></div></div><span class="badge">로그인 필요</span></div><div class="budget-empty">연결 메뉴에서 Claude 브라우저 로그인을 진행하세요.</div>`;return;}
+      const limits=state.claude?.rate_limits||{}; const extra=limits.extra_usage; const stale=state.claude?.stale; const badge=stale?"캐시된 정보":"연결됨";
+      if(extra?.monthly_limit!=null){const used=Number(extra.used_credits)||0;const limit=Number(extra.monthly_limit)||0;const pct=extra.utilization??(limit?used/limit*100:0);const remaining=Math.max(0,limit-used);const currency=extra.currency||"USD";target.innerHTML=budgetMarkup("anthropic","Claude","이번 달 추가 사용 한도",badge,moneyFromMinor(used,currency),moneyFromMinor(limit,currency),pct,moneyFromMinor(remaining,currency),"월간 계정 한도");return;}
+      const window=limits.five_hour||limits.seven_day; const pct=window?.utilization; target.innerHTML=`<div class="card-head"><div class="budget-provider"><div class="provider-logo">${providerGlyph("anthropic")}</div><div><h3>Claude</h3><p>${limits.five_hour?"현재 5시간":"현재 7일"} 사용 창</p></div></div><span class="badge ready">${badge}</span></div><div class="budget-overview"><div class="budget-amount"><span>사용 금액</span><strong>—</strong><small>계정에서 금액 한도를 제공하지 않았습니다.</small></div><div class="budget-percent"><strong>${pct==null?"—":`${number(pct)}%`}</strong><span>사용률</span></div></div>${segmentMeter(pct)}<div class="account-foot"><span>금액 한도 미제공</span><span>${resetLabel(window?.resets_at)}</span></div>`;
+    }
+    function renderOpenAIUsage() {
+      const connected=state.auth.find(item=>item.provider==="openai")?.connected; const target=$("#openai-usage");
+      if(!connected){target.innerHTML=`<div class="card-head"><div class="budget-provider"><div class="provider-logo">${providerGlyph("openai")}</div><div><h3>OpenAI</h3><p>개인 금액 한도</p></div></div><span class="badge">로그인 필요</span></div><div class="budget-empty">연결 메뉴에서 OpenAI 브라우저 로그인을 진행하세요.</div>`;return;}
+      const limits=state.openai?.rate_limits||{}; const individual=limits.individualLimit; const primary=limits.primary; const pct=individual?100-Number(individual.remainingPercent||0):primary?.usedPercent; const monthTokens=currentMonthAccountTokens(); const stale=state.openai?.stale; const badge=stale?"캐시된 정보":"연결됨";
+      if(individual){const used=Number(individual.used)||0;const limit=Number(individual.limit)||0;const usePct=individual.remainingPercent==null?(limit?used/limit*100:0):100-Number(individual.remainingPercent);const remaining=Math.max(0,limit-used);const currency=individual.currency||"USD";target.innerHTML=budgetMarkup("openai","OpenAI Codex","개인 금액 한도",badge,moneyFromMajor(used,currency),moneyFromMajor(limit,currency),usePct,moneyFromMajor(remaining,currency),`이번 달 ${number(monthTokens)} 토큰`);return;}
+      target.innerHTML=`<div class="card-head"><div class="budget-provider"><div class="provider-logo">${providerGlyph("openai")}</div><div><h3>OpenAI Codex</h3><p>기본 사용 창</p></div></div><span class="badge ready">${badge}</span></div><div class="budget-overview"><div class="budget-amount"><span>사용 금액</span><strong>—</strong><small>계정에서 금액 한도를 제공하지 않았습니다.</small></div><div class="budget-percent"><strong>${pct==null?"—":`${number(pct)}%`}</strong><span>사용률</span></div></div>${segmentMeter(pct)}<div class="account-foot"><span>이번 달 ${number(monthTokens)} 토큰</span><span>${resetLabel(primary?.resetsAt)}</span></div>`;
+    }
 
-      function localDay(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      }
+    function connectionFor(profile) { if(profile.provider==="anthropic") return "claude_oauth"; if(profile.provider==="openai") return "openai_oauth"; if(profile.provider==="fabrix") return "fabrix"; return "internal"; }
+    const defaults={claude_oauth:{model:"claude-sonnet-5"},openai_oauth:{model:"gpt-5.6-sol"},fabrix:{model:""},internal:{model:""}};
+    function selectedConnectionType() { return state.connectionType; }
+    function selectConnectionType(type) { state.connectionType=type; }
+    function syncProfileFields(resetModel=false) { const type=selectedConnectionType(); const isFabrix=type==="fabrix"; const isKey=type==="internal"||isFabrix; const hasEndpoint=type==="internal"||isFabrix; $("#api-key-field").hidden=!isKey; $("#client-key-field").hidden=!isFabrix; $("#base-url-field").hidden=!hasEndpoint; $("#load-models").hidden=!isKey||isFabrix; $("#model-label").textContent=isFabrix?"FabriX 모델 ID":"모델"; $("#profile-model").placeholder=isFabrix?"발급받은 FabriX 모델 ID":"모델을 선택하거나 ID 입력"; $("#base-url-label").textContent=isFabrix?"FabriX Endpoint":"OpenAI 호환 Endpoint"; $("#base-url-help").innerHTML=isFabrix?`기본 주소만 입력하면 <span class="mono">/openapi/chat/v1/messages</span>를 자동으로 붙입니다.`:`<span class="mono">/chat/completions</span>와 <span class="mono">/models</span>를 제공하는 OpenAI 호환 주소`; $("#profile-base-url").placeholder=isFabrix?"https://fabrix.company.internal":"https://llm.company.internal/v1"; $("#api-key-label").textContent=isFabrix?"FabriX API Token":"API 키"; $("#api-key-help").textContent=isFabrix?"x-openapi-token 헤더에 Bearer 인증으로 사용하며 로컬 비밀 저장소에만 보관합니다.":"Authorization: Bearer 인증에 사용하며 로컬 비밀 저장소에만 보관합니다."; if(resetModel) $("#profile-model").value=defaults[type].model; }
+    function openProfileModal(profile=null,preferredType=null) { state.editing=profile?.name||null; const type=profile?connectionFor(profile):(preferredType||"fabrix"); const labels={claude_oauth:"Claude",openai_oauth:"OpenAI",fabrix:"FabriX",internal:"사내 LLM"}; $("#modal-title").textContent=profile?"프로필 편집":`${labels[type]} 연결`; $("#modal-description").textContent=profile?"업스트림 모델과 인증 설정을 편집합니다.":"선택한 연결을 Gateway의 라우팅 프로필로 추가합니다."; selectConnectionType(type); $("#profile-name").value=profile?.name||""; $("#profile-name").disabled=Boolean(profile); $("#profile-model").value=profile?.model||defaults[type].model; $("#profile-base-url").value=profile?.base_url||""; $("#profile-api-key").value=""; $("#profile-client-key").value=""; syncProfileFields(false); $("#profile-modal").hidden=false; setTimeout(()=>$("#profile-name").focus(),0); }
+    function closeProfileModal() { $("#profile-modal").hidden=true; state.editing=null; }
+    function profilePayload() { const type=selectedConnectionType(); const mapping={claude_oauth:["anthropic","oauth"],openai_oauth:["openai","oauth"],fabrix:["fabrix","api_key"],internal:["openai_compatible","api_key"]}; const [provider,auth]=mapping[type]; return {name:$("#profile-name").value.trim(),provider,auth,model:$("#profile-model").value.trim(),base_url:type==="internal"||type==="fabrix"?$("#profile-base-url").value.trim()||null:null,api_key:auth==="api_key"?$("#profile-api-key").value||null:null,client_key:type==="fabrix"?$("#profile-client-key").value||null:null,aliases:[],params:{}}; }
 
-      function daySeries(rows, days) {
-        const totals = new Map();
-        for (const row of rows) {
-          totals.set(row.day, (totals.get(row.day) || 0) + (row.total_tokens || 0));
-        }
-        const result = [];
-        const cursor = new Date();
-        cursor.setHours(12, 0, 0, 0);
-        cursor.setDate(cursor.getDate() - days + 1);
-        for (let index = 0; index < days; index += 1) {
-          const day = localDay(cursor);
-          result.push({ day, total: totals.get(day) || 0 });
-          cursor.setDate(cursor.getDate() + 1);
-        }
-        return result;
-      }
+    async function loadAll() { $("#refresh").disabled=true; try { const [auth,profiles,summary,activity]=await Promise.all([api("/v1/auth/status"),api("/v1/profiles"),api(`/v1/usage/summary?days=${state.usageDays}`),api("/v1/usage/summary?days=365")]); state.auth=auth.data||[]; state.profiles=profiles.data||[]; state.gateway=profiles.gateway||null; state.summary=summary.data||[]; state.activitySummary=activity.data||[]; if(state.auth.find(item=>item.provider==="anthropic")?.connected){try{state.claude=await api("/v1/usage/account/claude");}catch(_){state.claude=null;}} if(state.auth.find(item=>item.provider==="openai")?.connected){try{state.openai=await api("/v1/usage/account/openai");}catch(_){state.openai=null;}} renderConnections(); renderProfiles(); renderUsageFilters(); renderDashboard(); } catch(error){notify(error.message);} finally{$("#refresh").disabled=false;} }
+    async function loadUsage() { try { const summary=await api(`/v1/usage/summary?days=${state.usageDays}`); state.summary=summary.data||[]; renderUsageFilters(); renderDashboard(); } catch(error){notify(error.message);} }
+    async function login(provider){try{await api(`/v1/auth/${provider}/login`,{method:"POST"});notify(`${provider==="anthropic"?"Claude":"OpenAI"} 로그인 창을 열었습니다.`);setTimeout(loadAll,1500);}catch(error){notify(error.message);}}
+    async function disconnect(provider){if(!confirm(`${provider==="anthropic"?"Claude":"OpenAI"} 연결을 해제할까요?`))return;try{await api(`/v1/auth/${provider}`,{method:"DELETE"});await loadAll();}catch(error){notify(error.message);}}
+    async function deleteProfile(name){if(!confirm(`프로필 '${name}'을 삭제할까요?`))return;try{await api(`/v1/profiles/${encodeURIComponent(name)}`,{method:"DELETE"});notify("프로필을 삭제했습니다.");await loadAll();}catch(error){notify(error.message);}}
 
-      function svgNode(name, attributes = {}) {
-        const node = document.createElementNS("http:" + "//www.w3.org/2000/svg", name);
-        for (const [key, value] of Object.entries(attributes)) node.setAttribute(key, value);
-        return node;
-      }
-
-      function renderChart(rows, days) {
-        chartWrap.replaceChildren();
-        const series = daySeries(rows, days);
-        const max = Math.max(...series.map((item) => item.total));
-        if (max === 0) {
-          const empty = document.createElement("div");
-          empty.className = "empty";
-          empty.textContent = "선택한 기간에 관측된 토큰이 없습니다.";
-          chartWrap.append(empty);
-          return;
-        }
-
-        const width = 960;
-        const height = 266;
-        const top = 16;
-        const bottom = 34;
-        const left = 52;
-        const right = 8;
-        const plotHeight = height - top - bottom;
-        const plotWidth = width - left - right;
-        const slot = plotWidth / series.length;
-        const barWidth = Math.max(3, Math.min(24, slot * 0.62));
-        const svg = svgNode("svg", {
-          id: "usage-chart",
-          viewBox: `0 0 ${width} ${height}`,
-          role: "img",
-          "aria-label": `최근 ${days}일의 일자별 총 토큰 막대 차트`,
-          preserveAspectRatio: "xMidYMid meet",
-        });
-        const title = svgNode("title");
-        title.textContent = `최근 ${days}일 토큰 사용량`;
-        svg.append(title);
-
-        for (let line = 0; line <= 4; line += 1) {
-          const y = top + (plotHeight / 4) * line;
-          svg.append(svgNode("line", {
-            x1: left,
-            y1: y,
-            x2: width - right,
-            y2: y,
-            class: line === 4 ? "chart-baseline" : "chart-grid",
-          }));
-          const value = svgNode("text", {
-            x: left - 10,
-            y: y + 3,
-            class: "chart-value",
-            "text-anchor": "end",
-          });
-          value.textContent = compactNumber.format(max - (max / 4) * line);
-          svg.append(value);
-        }
-
-        const labelEvery = days <= 7 ? 1 : days <= 30 ? 5 : 15;
-        series.forEach((item, index) => {
-          const barHeight = Math.max(2, (item.total / max) * plotHeight);
-          const x = left + slot * index + (slot - barWidth) / 2;
-          const y = top + plotHeight - barHeight;
-          const bar = svgNode("rect", {
-            x,
-            y,
-            width: barWidth,
-            height: barHeight,
-            class: "chart-bar",
-            rx: 1,
-          });
-          bar.style.animationDelay = `${Math.min(index * 16, 360)}ms`;
-          const barTitle = svgNode("title");
-          barTitle.textContent = `${item.day}: ${number.format(item.total)} tokens`;
-          bar.append(barTitle);
-          svg.append(bar);
-
-          if (index % labelEvery === 0 || index === series.length - 1) {
-            const label = svgNode("text", {
-              x: left + slot * index + slot / 2,
-              y: height - 10,
-              class: "chart-label",
-              "text-anchor": "middle",
-            });
-            label.textContent = item.day.slice(5).replace("-", "/");
-            svg.append(label);
-          }
-        });
-        chartWrap.append(svg);
-      }
-
-      function cell(text, className = "") {
-        const td = document.createElement("td");
-        td.textContent = text;
-        if (className) td.className = className;
-        return td;
-      }
-
-      function formatBody(value) {
-        if (value === null || value === undefined) return "본문 로깅이 꺼져 있습니다";
-        try {
-          return JSON.stringify(JSON.parse(value), null, 2);
-        } catch (_error) {
-          return value;
-        }
-      }
-
-      function closeDetail() {
-        document.querySelector(".detail-row")?.remove();
-        document.querySelector('tr[aria-expanded="true"]')?.setAttribute("aria-expanded", "false");
-        openCallId = null;
-      }
-
-      async function toggleDetail(row, callId) {
-        if (openCallId === callId) {
-          closeDetail();
-          return;
-        }
-        closeDetail();
-        row.setAttribute("aria-expanded", "true");
-        openCallId = callId;
-        const detailRow = document.createElement("tr");
-        detailRow.className = "detail-row";
-        const detailCell = document.createElement("td");
-        detailCell.colSpan = 7;
-        detailCell.textContent = "상세 기록을 불러오는 중…";
-        detailRow.append(detailCell);
-        row.after(detailRow);
-        try {
-          const detail = await api(`/v1/usage/calls/${callId}`);
-          if (openCallId !== callId) return;
-          const grid = document.createElement("div");
-          grid.className = "detail-grid";
-          for (const [heading, body] of [
-            ["Request body", formatBody(detail.request_body)],
-            ["Response body", formatBody(detail.response_body)],
-          ]) {
-            const block = document.createElement("section");
-            block.className = "detail-block";
-            const title = document.createElement("h3");
-            title.textContent = heading;
-            const pre = document.createElement("pre");
-            pre.textContent = body;
-            block.append(title, pre);
-            grid.append(block);
-          }
-          detailCell.replaceChildren(grid);
-        } catch (error) {
-          if (error.message === "AUTH_REQUIRED") {
-            showAuth("마스터 키가 만료되었거나 올바르지 않습니다.");
-            return;
-          }
-          detailCell.textContent = error.message;
-        }
-      }
-
-      function renderCalls(rows) {
-        callsBody.replaceChildren();
-        closeDetail();
-        callsEmpty.hidden = rows.length !== 0;
-        for (const call of rows) {
-          const row = document.createElement("tr");
-          row.dataset.callId = call.id;
-          row.tabIndex = 0;
-          row.setAttribute("aria-expanded", "false");
-          row.setAttribute("aria-label", `${call.profile} 호출 상세 열기`);
-          row.append(cell(dateTime.format(new Date(call.started_at * 1000))));
-
-          const profileCell = cell(call.profile, "");
-          const mark = document.createElement("span");
-          mark.className = "profile-mark";
-          mark.textContent = call.profile;
-          profileCell.replaceChildren(mark);
-          row.append(profileCell);
-          row.append(cell(call.upstream_model));
-          row.append(cell(call.stream ? "STREAM" : "SYNC"));
-          row.append(cell(call.total_tokens === null ? "—" : number.format(call.total_tokens)));
-          row.append(cell(call.duration_ms === null ? "—" : `${number.format(call.duration_ms)} ms`));
-
-          const statusCell = cell("");
-          const state = document.createElement("span");
-          state.className = `state ${call.ok ? "ok" : "error"}`;
-          state.textContent = call.ok ? String(call.status || 200) : String(call.status || "ERR");
-          statusCell.append(state);
-          row.append(statusCell);
-          row.addEventListener("click", () => toggleDetail(row, call.id));
-          row.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" || event.key === " ") {
-              event.preventDefault();
-              toggleDetail(row, call.id);
-            }
-          });
-          callsBody.append(row);
-        }
-      }
-
-      function renderSummary(rows, days) {
-        const totals = rows.reduce(
-          (sum, row) => ({
-            calls: sum.calls + (row.calls || 0),
-            tokens: sum.tokens + (row.total_tokens || 0),
-            errors: sum.errors + (row.errors || 0),
-          }),
-          { calls: 0, tokens: 0, errors: 0 },
-        );
-        document.querySelector("#metric-calls").textContent = number.format(totals.calls);
-        document.querySelector("#metric-tokens").textContent = number.format(totals.tokens);
-        document.querySelector("#metric-errors").textContent = number.format(totals.errors);
-        const errorRate = totals.calls === 0 ? 0 : (totals.errors / totals.calls) * 100;
-        document.querySelector("#metric-error-note").textContent =
-          `오류율 ${errorRate.toLocaleString("ko-KR", { maximumFractionDigits: 1 })}%`;
-        document.querySelector("#scope-label").textContent = `최근 ${days}일`;
-        renderChart(rows, days);
-      }
-
-      async function loadData() {
-        const days = Number(period.value);
-        showDashboard();
-        dashboard.classList.add("loading");
-        dashboard.setAttribute("aria-busy", "true");
-        try {
-          const [summary, calls] = await Promise.all([
-            api(`/v1/usage/summary?days=${days}`),
-            api("/v1/usage/calls?limit=50"),
-          ]);
-          renderSummary(summary.data, days);
-          renderCalls(calls.data);
-          document.querySelector("#updated-at").textContent = `Updated ${dateTime.format(new Date())}`;
-        } catch (error) {
-          if (error.message === "AUTH_REQUIRED") {
-            showAuth("마스터 키가 올바르지 않습니다. 다시 입력해 주세요.");
-          } else {
-            setNotice(error.message);
-          }
-        } finally {
-          dashboard.classList.remove("loading");
-          dashboard.setAttribute("aria-busy", "false");
-        }
-      }
-
-      authForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const key = keyInput.value.trim();
-        if (!key) return;
-        sessionStorage.setItem(storageKey, key);
-        keyInput.value = "";
-        loadData();
-      });
-
-      period.addEventListener("change", () => {
-        if (sessionStorage.getItem(storageKey)) loadData();
-      });
-
-      document.querySelector("#forget-key").addEventListener("click", () => {
-        showAuth("이 탭에서 마스터 키를 지웠습니다.");
-      });
-
-      if (sessionStorage.getItem(storageKey)) loadData();
-      else showAuth();
-    })();
+    $$(".nav button").forEach(button=>button.addEventListener("click",()=>showPage(button.dataset.page)));
+    $("#refresh").addEventListener("click",loadAll);
+    $("#page-connections").addEventListener("click",event=>{const loginButton=event.target.closest("[data-login]");const disconnectButton=event.target.closest("[data-disconnect]");const addButton=event.target.closest("[data-new-type]");if(loginButton)login(loginButton.dataset.login);if(disconnectButton)disconnect(disconnectButton.dataset.disconnect);if(addButton)openProfileModal(null,addButton.dataset.newType);});
+    $("#gateway").addEventListener("click",event=>{const copy=event.target.closest("[data-copy-gateway]");if(copy)navigator.clipboard.writeText(copy.dataset.copyGateway).then(()=>notify("Gateway Endpoint를 복사했습니다."));});
+    $("#profiles").addEventListener("click",event=>{const edit=event.target.closest("[data-edit]");const remove=event.target.closest("[data-delete]");const copy=event.target.closest("[data-copy-model]");if(edit)openProfileModal(state.profiles.find(item=>item.name===edit.dataset.edit));if(remove)deleteProfile(remove.dataset.delete);if(copy)navigator.clipboard.writeText(copy.dataset.copyModel).then(()=>notify("model 값을 복사했습니다."));});
+    $("#close-modal").addEventListener("click",closeProfileModal); $("#cancel-modal").addEventListener("click",closeProfileModal); $("#profile-modal").addEventListener("click",event=>{if(event.target===$("#profile-modal"))closeProfileModal();});
+    $("#usage-days").addEventListener("change",event=>{state.usageDays=Number(event.target.value);loadUsage();}); $("#usage-profile").addEventListener("change",event=>{state.usageProfile=event.target.value;renderDashboard();}); $("#usage-model").addEventListener("change",event=>{state.usageModel=event.target.value;renderDashboard();});
+    $("#load-models").addEventListener("click",async()=>{const payload=profilePayload();try{const result=await api("/v1/profiles/discover-models",{method:"POST",body:JSON.stringify({provider:payload.provider,auth:payload.auth,base_url:payload.base_url,api_key:payload.api_key})});$("#model-options").innerHTML=(result.data||[]).map(model=>`<option value="${esc(model)}"></option>`).join("");if(result.data?.length&&!$("#profile-model").value)$("#profile-model").value=result.data[0];notify(`${number(result.data?.length)}개 모델을 불러왔습니다.`);}catch(error){notify(error.message);}});
+    $("#profile-form").addEventListener("submit",async event=>{event.preventDefault();const editing=Boolean(state.editing);const payload=profilePayload();$("#save-profile").disabled=true;try{const path=editing?`/v1/profiles/${encodeURIComponent(state.editing)}`:"/v1/profiles";await api(path,{method:editing?"PUT":"POST",body:JSON.stringify(payload)});closeProfileModal();notify(editing?"프로필을 저장했습니다.":"연결을 추가했습니다.");await loadAll();}catch(error){notify(error.message);}finally{$("#save-profile").disabled=false;}});
+    showPage("connections"); loadAll(); setInterval(loadAll,60000);
   </script>
 </body>
 </html>

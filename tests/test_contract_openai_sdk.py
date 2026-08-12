@@ -23,8 +23,11 @@ REGISTRY = ProfileRegistry(
 SETTINGS = Settings(master_key="sk-local", host="127.0.0.1", port=8787, _env_file=None)
 
 
-async def _sdk(upstream_client: httpx.AsyncClient) -> tuple[AsyncOpenAI, httpx.AsyncClient]:
-    transport = httpx.ASGITransport(app=create_app(SETTINGS, REGISTRY, client=upstream_client))
+async def _sdk(
+    upstream_client: httpx.AsyncClient,
+    registry: ProfileRegistry = REGISTRY,
+) -> tuple[AsyncOpenAI, httpx.AsyncClient]:
+    transport = httpx.ASGITransport(app=create_app(SETTINGS, registry, client=upstream_client))
     http_client = httpx.AsyncClient(transport=transport)
     sdk = AsyncOpenAI(
         api_key="sk-local",
@@ -33,6 +36,18 @@ async def _sdk(upstream_client: httpx.AsyncClient) -> tuple[AsyncOpenAI, httpx.A
         max_retries=0,
     )
     return sdk, http_client
+
+
+async def test_openai_sdk_lists_gateway_profile_names():
+    async with httpx.AsyncClient() as upstream_client:
+        sdk, http_client = await _sdk(upstream_client)
+        try:
+            models = await sdk.models.list()
+        finally:
+            await sdk.close()
+            await http_client.aclose()
+
+    assert [model.id for model in models.data] == ["c"]
 
 
 @respx.mock
@@ -152,3 +167,80 @@ async def test_openai_sdk_streaming(monkeypatch):
             await http_client.aclose()
     assert "".join(chunk.choices[0].delta.content or "" for chunk in chunks) == "pong"
     assert chunks[-1].choices[0].finish_reason == "stop"
+
+
+@respx.mock
+async def test_agent_factory_style_request_is_forwarded_to_openai_compatible_upstream(
+    monkeypatch,
+):
+    monkeypatch.setenv("COMPANY_LLM_API_KEY", "company-secret")
+    registry = ProfileRegistry(
+        [
+            Profile(
+                name="company",
+                provider="openai_compatible",
+                auth="api_key",
+                api_key_env="COMPANY_LLM_API_KEY",
+                base_url="https://llm.company.test/v1",
+                model="company-model",
+            )
+        ]
+    )
+    captured = {}
+
+    def handler(request):
+        captured["authorization"] = request.headers["authorization"]
+        captured["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "id": "chatcmpl-company",
+                "object": "chat.completion",
+                "model": "company-model",
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": '{"ok":true}'},
+                        "finish_reason": "stop",
+                    }
+                ],
+                "usage": {"prompt_tokens": 12, "completion_tokens": 4, "total_tokens": 16},
+            },
+        )
+
+    respx.post("https://llm.company.test/v1/chat/completions").mock(side_effect=handler)
+    async with httpx.AsyncClient() as upstream_client:
+        transport = httpx.ASGITransport(app=create_app(SETTINGS, registry, client=upstream_client))
+        async with httpx.AsyncClient(transport=transport, base_url="http://router.local") as client:
+            response = await client.post(
+                "/v1/chat/completions",
+                headers={"authorization": "Bearer sk-local"},
+                json={
+                    "model": "company",
+                    "messages": [
+                        {"role": "developer", "content": "Return JSON."},
+                        {"role": "user", "content": "Run the task."},
+                    ],
+                    "tools": [
+                        {
+                            "type": "function",
+                            "function": {
+                                "name": "finish_task",
+                                "parameters": {"type": "object", "properties": {}},
+                            },
+                        }
+                    ],
+                    "tool_choice": "auto",
+                    "response_format": {"type": "json_object"},
+                    "parallel_tool_calls": False,
+                },
+            )
+
+    assert response.status_code == 200
+    assert response.json()["model"] == "company"
+    assert captured["authorization"] == "Bearer company-secret"
+    assert captured["body"]["model"] == "company-model"
+    assert captured["body"]["messages"][0]["role"] == "developer"
+    assert captured["body"]["tools"][0]["function"]["name"] == "finish_task"
+    assert captured["body"]["response_format"] == {"type": "json_object"}
+    assert captured["body"]["parallel_tool_calls"] is False

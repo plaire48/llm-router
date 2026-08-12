@@ -69,7 +69,32 @@ def test_serve_uses_settings_and_overrides(tmp_path, monkeypatch):
     assert called["application"].title == "FastAPI"
 
 
-def test_oauth_login_rejects_unimplemented_provider():
+def test_oauth_login_openai_uses_official_codex_browser_flow(monkeypatch):
+    called = {}
+
+    monkeypatch.setattr("llm_router.cli.shutil.which", lambda name: "/opt/bin/codex")
+
+    def fake_run(command, *, check):
+        called.update(command=command, check=check)
+
+    monkeypatch.setattr("llm_router.cli.subprocess.run", fake_run)
     result = runner.invoke(app, ["oauth", "login", "openai"])
-    assert result.exit_code == 1
-    assert "pending verified discovery" in result.stdout
+    assert result.exit_code == 0
+    assert called == {"command": ["/opt/bin/codex", "login"], "check": True}
+
+
+def test_oauth_login_anthropic_uses_official_claude_browser_flow(monkeypatch):
+    called = {}
+
+    monkeypatch.setattr("llm_router.cli.shutil.which", lambda name: "/opt/bin/claude")
+
+    def fake_run(command, *, check):
+        called.update(command=command, check=check)
+
+    monkeypatch.setattr("llm_router.cli.subprocess.run", fake_run)
+    result = runner.invoke(app, ["oauth", "login", "anthropic"])
+    assert result.exit_code == 0
+    assert called == {
+        "command": ["/opt/bin/claude", "auth", "login", "--claudeai"],
+        "check": True,
+    }

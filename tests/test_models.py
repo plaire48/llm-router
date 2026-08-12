@@ -56,3 +56,30 @@ def test_profile_requires_base_url_for_compat():
                 "model": "m",
             }
         )
+
+
+def test_fabrix_profile_requires_endpoint_and_both_credentials():
+    profile = Profile.model_validate(
+        {
+            "name": "fabrix",
+            "provider": "fabrix",
+            "auth": "api_key",
+            "api_key_env": "FABRIX_API_TOKEN",
+            "client_key_env": "FABRIX_CLIENT_KEY",
+            "base_url": "https://fabrix.company.test",
+            "model": "019a-model-id",
+        }
+    )
+    assert profile.provider == "fabrix"
+
+    with pytest.raises(ValidationError):
+        Profile.model_validate(
+            {
+                "name": "fabrix",
+                "provider": "fabrix",
+                "auth": "api_key",
+                "api_key_env": "FABRIX_API_TOKEN",
+                "base_url": "https://fabrix.company.test",
+                "model": "019a-model-id",
+            }
+        )

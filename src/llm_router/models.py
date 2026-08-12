@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class FunctionCall(BaseModel):
@@ -49,22 +49,40 @@ class ChatCompletionRequest(BaseModel):
 
 class Profile(BaseModel):
     name: str
-    provider: Literal["anthropic", "openai", "openai_compatible"]
+    provider: Literal["anthropic", "openai", "openai_compatible", "fabrix"]
     auth: Literal["oauth", "api_key"]
     model: str
     api_key_env: str | None = None
+    client_key_env: str | None = None
     base_url: str | None = None
     params: dict = Field(default_factory=dict)
     aliases: list[str] = Field(default_factory=list)
+    port: int | None = Field(default=None, ge=1024, le=65535)
+
+    @field_validator("name")
+    @classmethod
+    def _safe_name(cls, value: str) -> str:
+        value = value.strip()
+        if not value or any(
+            character not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for character in value
+        ):
+            raise ValueError("name must use lowercase letters, numbers, '-' or '_'")
+        return value
 
     @model_validator(mode="after")
     def _check_provider_fields(self) -> Profile:
-        if self.provider == "openai_compatible" and not self.base_url:
-            raise ValueError("openai_compatible requires base_url")
+        if self.provider in {"openai_compatible", "fabrix"} and not self.base_url:
+            raise ValueError(f"{self.provider} requires base_url")
         if self.auth == "api_key" and not self.api_key_env:
             raise ValueError("auth=api_key requires api_key_env")
+        if self.provider == "fabrix" and not self.client_key_env:
+            raise ValueError("fabrix requires client_key_env")
+        if self.provider != "fabrix" and self.client_key_env:
+            raise ValueError("client_key_env is only supported for provider=fabrix")
         if self.auth == "oauth" and self.provider not in ("anthropic", "openai"):
             raise ValueError("auth=oauth is only supported for provider in {anthropic, openai}")
-        if self.auth == "oauth" and self.api_key_env:
-            raise ValueError("auth=oauth does not allow api_key_env")
+        if self.auth == "oauth" and (self.api_key_env or self.client_key_env):
+            raise ValueError("auth=oauth does not allow credential environment variables")
+        if self.provider in {"anthropic", "openai"} and self.auth == "oauth" and self.base_url:
+            raise ValueError("browser login profiles do not allow base_url")
         return self

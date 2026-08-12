@@ -1,22 +1,30 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
 import json
 import secrets
 import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Any
 
 import httpx
-from fastapi import Depends, FastAPI, Header, Request
+from fastapi import Cookie, Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from llm_router.adapters import build_adapter
-from llm_router.config import ProfileRegistry, Settings
+from llm_router.config import ProfileFile, ProfileRegistry, Settings
+from llm_router.credentials.anthropic_oauth import TokenStore
+from llm_router.credentials.openai_oauth import CodexTokenStore
 from llm_router.errors import RouterError, to_openai_error
 from llm_router.models import ChatCompletionRequest
+from llm_router.profile_secrets import ProfileSecretStore
+from llm_router.serving import ProfileServingManager
 from llm_router.usage import UsageRecorder
 
 
@@ -47,6 +55,13 @@ def create_app(
     registry: ProfileRegistry,
     client: httpx.AsyncClient | None = None,
     store: object | None = None,
+    token_store: TokenStore | None = None,
+    codex_token_store: CodexTokenStore | None = None,
+    profiles_path: str | Path | None = None,
+    profile_secret_store: ProfileSecretStore | None = None,
+    serving_manager: ProfileServingManager | None = None,
+    claude_login: Any | None = None,
+    openai_login: Any | None = None,
 ) -> FastAPI:
     owns_client = client is None
     recorder = UsageRecorder(store, log_bodies=settings.log_bodies)
@@ -54,6 +69,9 @@ def create_app(
     @asynccontextmanager
     async def lifespan(application: FastAPI) -> AsyncIterator[None]:
         yield
+        active_serving_manager = getattr(application.state, "serving_manager", None)
+        if active_serving_manager is not None:
+            await active_serving_manager.stop_all()
         active_client = application.state.client
         if owns_client and active_client is not None:
             await active_client.aclose()
@@ -61,6 +79,10 @@ def create_app(
     app = FastAPI(lifespan=lifespan)
     app.state.client = client
     app.state.client_lock = asyncio.Lock()
+    # Kept as an injectable compatibility hook for older integrations. New
+    # versions serve every profile through this FastAPI app's single gateway.
+    active_serving_manager = serving_manager
+    app.state.serving_manager = active_serving_manager
 
     async def get_client() -> httpx.AsyncClient:
         if app.state.client is None:
@@ -74,6 +96,27 @@ def create_app(
         if authorization is None or not secrets.compare_digest(authorization, expected):
             raise RouterError(
                 "invalid master key",
+                type="authentication_error",
+                code="invalid_api_key",
+                status_code=401,
+            )
+
+    dashboard_session = hmac.new(
+        settings.master_key.encode("utf-8"),
+        b"llm-router-dashboard-session-v1",
+        hashlib.sha256,
+    ).hexdigest()
+
+    def require_control_auth(
+        authorization: str | None = Header(default=None),
+        session: str | None = Cookie(default=None, alias="llm_router_dashboard"),
+    ) -> None:
+        expected = f"Bearer {settings.master_key}"
+        bearer_ok = authorization is not None and secrets.compare_digest(authorization, expected)
+        session_ok = session is not None and secrets.compare_digest(session, dashboard_session)
+        if not bearer_ok and not session_ok:
+            raise RouterError(
+                "open the local dashboard first or provide the master key",
                 type="authentication_error",
                 code="invalid_api_key",
                 status_code=401,
@@ -187,9 +230,39 @@ def create_app(
         await recorder.finish(record, adapter=adapter, response=response)
         return response
 
+    from llm_router.control import build_control_router
+    from llm_router.usage.claude_account import ClaudeAccountSource
+    from llm_router.usage.openai_account import OpenAIAccountSource
     from llm_router.usage.routes import build_dashboard_router, build_usage_router
 
-    app.include_router(build_usage_router(store, require_auth))
-    app.include_router(build_dashboard_router())
+    active_token_store = token_store or TokenStore.default()
+    app.include_router(
+        build_usage_router(
+            store,
+            require_control_auth,
+            claude_account_source=ClaudeAccountSource(
+                store=active_token_store,
+                client=client,
+                client_getter=get_client,
+            ),
+            openai_account_source=OpenAIAccountSource(),
+        )
+    )
+    app.include_router(
+        build_control_router(
+            settings,
+            registry,
+            require_control_auth,
+            get_client,
+            token_store=active_token_store,
+            codex_token_store=codex_token_store,
+            profile_file=ProfileFile(profiles_path),
+            secret_store=profile_secret_store,
+            serving_manager=active_serving_manager,
+            claude_login=claude_login,
+            openai_login=openai_login,
+        )
+    )
+    app.include_router(build_dashboard_router(dashboard_session))
 
     return app

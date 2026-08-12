@@ -1,0 +1,245 @@
+import base64
+import json
+import time
+
+from fastapi.testclient import TestClient
+
+from llm_router.config import ProfileRegistry, Settings
+from llm_router.credentials.anthropic_oauth import TokenStore
+from llm_router.credentials.openai_oauth import CodexTokenStore
+from llm_router.models import Profile
+from llm_router.profile_secrets import ProfileSecretStore
+from llm_router.server import create_app
+
+SETTINGS = Settings(master_key="sk-local", host="127.0.0.1", port=8787, _env_file=None)
+AUTH = {"authorization": "Bearer sk-local"}
+REGISTRY = ProfileRegistry(
+    [
+        Profile(
+            name="claude",
+            provider="anthropic",
+            auth="oauth",
+            model="claude-sonnet-5",
+            port=18801,
+        ),
+        Profile(
+            name="openai",
+            provider="openai",
+            auth="oauth",
+            model="gpt-5.6-sol",
+            port=18802,
+        ),
+    ]
+)
+
+
+class FakeClaudeLogin:
+    available = True
+    last_error = None
+
+    def __init__(self, connected=False):
+        self.connected = connected
+        self.started = False
+
+    async def status(self, *, force=False):
+        return {
+            "connected": self.connected,
+            "status": "connected" if self.connected else "disconnected",
+            "account": "claude@example.com" if self.connected else None,
+        }
+
+    async def start(self):
+        self.started = True
+        return {"provider": "anthropic", "status": "pending", "opened_browser": True}
+
+    async def logout(self):
+        self.connected = False
+
+    def is_pending(self):
+        return self.started and not self.connected
+
+
+def _jwt(payload):
+    encoded = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
+    return f"header.{encoded}.signature"
+
+
+def _client(tmp_path, *, claude_connected=False):
+    registry = ProfileRegistry([profile.model_copy(deep=True) for profile in REGISTRY.profiles()])
+    claude_store = TokenStore(tmp_path / "claude.json")
+    codex_store = CodexTokenStore(tmp_path / "auth.json")
+    codex_store.save(
+        {
+            "auth_mode": "chatgpt",
+            "tokens": {
+                "access_token": _jwt({"exp": time.time() + 3600}),
+                "refresh_token": "openai-refresh-secret",
+                "account_id": "account_1",
+            },
+        }
+    )
+    app = create_app(
+        SETTINGS,
+        registry,
+        token_store=claude_store,
+        codex_token_store=codex_store,
+        profiles_path=tmp_path / "profiles.yaml",
+        profile_secret_store=ProfileSecretStore(tmp_path / "secrets.json"),
+        claude_login=FakeClaudeLogin(connected=claude_connected),
+    )
+    return TestClient(app)
+
+
+def test_auth_status_reports_both_providers_without_exposing_tokens(tmp_path):
+    with _client(tmp_path) as client:
+        response = client.get("/v1/auth/status", headers=AUTH)
+
+    assert response.status_code == 200
+    providers = {item["provider"]: item for item in response.json()["data"]}
+    assert providers["anthropic"]["connected"] is False
+    assert providers["openai"]["connected"] is True
+    assert response.headers["cache-control"] == "private, no-store"
+    assert "openai-refresh-secret" not in response.text
+    assert "access_token" not in response.text
+
+
+def test_profiles_are_routes_on_one_shared_gateway(tmp_path):
+    with _client(tmp_path) as client:
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    assert listed.status_code == 200
+    assert listed.json()["editable"] is True
+    assert listed.json()["gateway"] == {
+        "status": "running",
+        "base_url": "http://127.0.0.1:8787/v1",
+        "chat_completions_url": "http://127.0.0.1:8787/v1/chat/completions",
+        "models_url": "http://127.0.0.1:8787/v1/models",
+    }
+    statuses = {item["name"]: item["status"] for item in listed.json()["data"]}
+    assert statuses == {"claude": "login_required", "openai": "ready"}
+    assert {item["serving"]["base_url"] for item in listed.json()["data"]} == {
+        "http://127.0.0.1:8787/v1"
+    }
+    assert all("port" not in item for item in listed.json()["data"])
+
+
+def test_opencode_config_uses_the_shared_gateway_for_every_profile(tmp_path):
+    with _client(tmp_path) as client:
+        response = client.get("/v1/connect/opencode", headers=AUTH)
+
+    payload = response.json()
+    assert payload["base_url"] == "http://127.0.0.1:8787/v1"
+    assert payload["api_key"] == "sk-local"
+    providers = payload["config"]["provider"]
+    assert set(providers) == {"llm-router-claude", "llm-router-openai"}
+    assert providers["llm-router-claude"]["options"]["baseURL"] == payload["base_url"]
+    assert providers["llm-router-openai"]["options"]["baseURL"] == payload["base_url"]
+    assert response.headers["cache-control"] == "private, no-store"
+
+
+def test_openai_login_endpoint_recognizes_existing_codex_browser_session(tmp_path):
+    with _client(tmp_path) as client:
+        response = client.post("/v1/auth/openai/login", headers=AUTH)
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "provider": "openai",
+        "status": "connected",
+        "opened_browser": False,
+    }
+
+
+def test_claude_login_endpoint_uses_official_cli_login_controller(tmp_path):
+    with _client(tmp_path) as client:
+        started = client.post("/v1/auth/anthropic/login", headers=AUTH)
+
+    assert started.status_code == 200
+    assert started.json() == {
+        "provider": "anthropic",
+        "status": "pending",
+        "opened_browser": True,
+    }
+
+
+def test_api_key_profile_is_added_as_a_gateway_route_without_exposing_key(tmp_path):
+    with _client(tmp_path) as client:
+        created = client.post(
+            "/v1/profiles",
+            headers=AUTH,
+            json={
+                "name": "company-llm",
+                "provider": "openai_compatible",
+                "auth": "api_key",
+                "model": "company-model",
+                "base_url": "https://llm.company.test/v1",
+                "api_key": "company-secret",
+            },
+        )
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    assert created.status_code == 200
+    assert created.json()["gateway"]["base_url"] == "http://127.0.0.1:8787/v1"
+    profile = next(item for item in listed.json()["data"] if item["name"] == "company-llm")
+    assert profile["has_api_key"] is True
+    assert "company-secret" not in listed.text
+    assert "company-secret" not in (tmp_path / "profiles.yaml").read_text()
+    assert "company-secret" in (tmp_path / "secrets.json").read_text()
+
+
+def test_openai_and_anthropic_profiles_reject_api_key_auth(tmp_path):
+    with _client(tmp_path) as client:
+        for provider in ("openai", "anthropic"):
+            response = client.post(
+                "/v1/profiles",
+                headers=AUTH,
+                json={
+                    "name": f"{provider}-key",
+                    "provider": provider,
+                    "auth": "api_key",
+                    "model": "public-model",
+                    "api_key": "must-not-be-stored",
+                },
+            )
+
+            assert response.status_code == 400
+            assert response.json()["error"]["code"] == "browser_login_required"
+
+    secrets_path = tmp_path / "secrets.json"
+    assert not secrets_path.exists() or "must-not-be-stored" not in secrets_path.read_text()
+
+
+def test_fabrix_profile_stores_both_secrets_and_uses_shared_gateway(tmp_path):
+    with _client(tmp_path) as client:
+        created = client.post(
+            "/v1/profiles",
+            headers=AUTH,
+            json={
+                "name": "fabrix-team",
+                "provider": "fabrix",
+                "auth": "api_key",
+                "model": "019a-model-id",
+                "base_url": "https://fabrix.company.test",
+                "client_key": "fabrix-client-secret",
+                "api_key": "fabrix-token-secret",
+            },
+        )
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    assert created.status_code == 200
+    assert created.json()["gateway"] == {
+        "status": "running",
+        "base_url": "http://127.0.0.1:8787/v1",
+        "chat_completions_url": "http://127.0.0.1:8787/v1/chat/completions",
+        "models_url": "http://127.0.0.1:8787/v1/models",
+    }
+    profile = next(item for item in listed.json()["data"] if item["name"] == "fabrix-team")
+    assert profile["provider"] == "fabrix"
+    assert profile["has_api_key"] is True
+    assert profile["has_client_key"] is True
+    assert "api_key_env" not in profile
+    assert "client_key_env" not in profile
+    assert "fabrix-client-secret" not in listed.text
+    assert "fabrix-token-secret" not in listed.text
+    yaml_text = (tmp_path / "profiles.yaml").read_text()
+    assert "fabrix-client-secret" not in yaml_text
+    assert "fabrix-token-secret" not in yaml_text

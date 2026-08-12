@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
 import os
+import shutil
+import subprocess
 
 import typer
 
@@ -32,13 +35,15 @@ def serve(
     from llm_router.server import create_app
     from llm_router.usage import UsageStore
 
+    settings.host = settings.host if host is None else host
+    settings.port = settings.port if port is None else port
     store = UsageStore(settings.usage_db)
-    application = create_app(settings, registry, store=store)
+    application = create_app(settings, registry, store=store, profiles_path=profiles)
     try:
         uvicorn.run(
             application,
-            host=settings.host if host is None else host,
-            port=settings.port if port is None else port,
+            host=settings.host,
+            port=settings.port,
         )
     finally:
         store.close()
@@ -46,20 +51,22 @@ def serve(
 
 @oauth_app.command("login")
 def oauth_login(provider: str) -> None:
-    if provider == "openai":
-        typer.echo("OpenAI subscription OAuth is pending verified discovery.")
-        raise typer.Exit(code=1)
-    if provider != "anthropic":
+    commands = {
+        "openai": ("codex", ["login"]),
+        "anthropic": ("claude", ["auth", "login", "--claudeai"]),
+    }
+    if provider not in commands:
         typer.echo(f"unsupported provider: {provider}")
         raise typer.Exit(code=1)
-
-    from llm_router.credentials.anthropic_oauth import TokenStore
-    from llm_router.oauth.flow import login
-
+    executable, arguments = commands[provider]
+    binary = shutil.which(executable)
+    if binary is None:
+        typer.echo(f"{executable} CLI is required for {provider} browser login.")
+        raise typer.Exit(code=1)
     try:
-        login(TokenStore.default())
-    except RouterError as exc:
-        typer.echo(f"OAuth login failed: {exc.message}")
+        subprocess.run([binary, *arguments], check=True)
+    except subprocess.CalledProcessError as exc:
+        typer.echo(f"{provider} browser login failed.")
         raise typer.Exit(code=1) from exc
 
 
@@ -70,13 +77,29 @@ def _credential_status(provider: str, auth: str, api_key_env: str | None) -> str
         load_provider_env()
         return "set" if api_key_env and os.environ.get(api_key_env) else "missing"
     if provider == "openai":
-        return "pending"
+        from llm_router.credentials.openai_oauth import CodexTokenStore
 
-    from llm_router.credentials.anthropic_oauth import TokenStore
+        try:
+            tokens = CodexTokenStore.default().tokens()
+            return (
+                "logged_in" if tokens and CodexTokenStore.account_id(tokens) else "login_required"
+            )
+        except RouterError:
+            return "invalid_store"
 
     try:
-        return "logged_in" if TokenStore.default().load() else "login_required"
-    except RouterError:
+        binary = shutil.which("claude")
+        if binary is None:
+            return "cli_missing"
+        result = subprocess.run(
+            [binary, "auth", "status", "--json"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(result.stdout) if result.returncode == 0 else {}
+        return "logged_in" if payload.get("loggedIn") is True else "login_required"
+    except (OSError, json.JSONDecodeError):
         return "invalid_store"
 
 
