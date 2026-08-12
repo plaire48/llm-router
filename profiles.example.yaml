@@ -1,0 +1,23 @@
+profiles:
+  - name: claude-sonnet
+    provider: anthropic
+    auth: oauth
+    model: claude-sonnet-4-5
+    params: {max_tokens: 4096}
+    aliases: [sonnet, claude]
+  - name: claude-key
+    provider: anthropic
+    auth: api_key
+    api_key_env: ANTHROPIC_API_KEY
+    model: claude-sonnet-4-5
+  - name: gpt-4o
+    provider: openai
+    auth: api_key
+    api_key_env: OPENAI_API_KEY
+    model: gpt-4o
+  - name: local-llama
+    provider: openai_compatible
+    auth: api_key
+    api_key_env: LOCAL_API_KEY
+    base_url: http://localhost:11434/v1
+    model: llama3.1
