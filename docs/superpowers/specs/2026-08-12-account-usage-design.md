@@ -1,7 +1,7 @@
 # 계정 사용량 패널 설계 문서 (Claude Enterprise + ChatGPT Enterprise)
 
 - 날짜: 2026-08-12
-- 상태: 조사 완료, 설계 제안 (사용자 승인 대기)
+- 상태: Claude Enterprise 구현 완료, 실제 조직 키 스모크 테스트·플랜 확인 및 ChatGPT 스파이크 대기
 - 선행: `2026-08-12-usage-dashboard-design.md` (라우터 자체 사용량 대시보드)
 - **정정 이력:** 초판은 Console Admin API(`usage_report/messages`)와 OpenAI 플랫폼 조직 API를 전제했다. 사용자 조직이 **Claude Enterprise + ChatGPT Enterprise**로 확인되어 전면 교체했다. 두 Enterprise 제품은 API·키 종류가 모두 다르다.
 
@@ -37,7 +37,7 @@
 
 **반드시 알아야 할 세 가지 함정:**
 
-1. **요금제에 따라 의미가 다르다.** 공식 문서: *"cost and usage 엔드포인트는 **usage-based** Enterprise 플랜에 적용되고, **seat-based** Enterprise 플랜에서는 **usage credits만** 반영한다."* 시트 기반 플랜이면 토큰 비용이 아니라 크레딧 소진량을 보게 된다. **구현 전에 어느 플랜인지 확인해야 한다.**
+1. **요금제에 따라 의미가 다르다.** 공식 문서: *"cost and usage 엔드포인트는 **usage-based** Enterprise 플랜에 적용되고, **seat-based** Enterprise 플랜에서는 **usage credits만** 반영한다."* 시트 기반 플랜이면 토큰 비용이 아니라 크레딧 소진량을 보게 된다. **금액/크레딧을 UI에 표시하기 전에 어느 플랜인지 확인해야 한다.**
 2. **금액은 센트 단위 십진 문자열.** `"41280.000000"` = **$412.80**. 달러로 바꾸려면 십진 파싱 후 100으로 나눈다. 수백만 달러를 넘길 수 있으므로 **이진 부동소수점 파싱 금지**.
 3. **`data_refreshed_at` 이후 구간은 불완전하다.** `ending_at`을 생략하면 응답 꼬리에 미완성 데이터가 붙는다. 반복 호출에서 값이 흔들리지 않게 하려면 `ending_at`을 **이전 응답의 `data_refreshed_at` 이하로** 설정한다.
 
