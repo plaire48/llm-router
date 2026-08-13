@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     port: int = 8787
     usage_db: Path = Path.home() / ".llm-router" / "usage.db"
     log_bodies: bool = False
+    opencode_url: str = "http://127.0.0.1:4097"
+    opencode_binary: str = "opencode"
+    opencode_directory: Path = Path.home() / ".llm-router" / "opencode"
+    opencode_auto_start: bool = True
 
     @field_validator("master_key", mode="before")
     @classmethod
@@ -32,6 +36,19 @@ class Settings(BaseSettings):
     @classmethod
     def _expand_usage_db(cls, value: str | Path) -> Path:
         return Path(value).expanduser()
+
+    @field_validator("opencode_directory", mode="before")
+    @classmethod
+    def _expand_opencode_directory(cls, value: str | Path) -> Path:
+        return Path(value).expanduser()
+
+    @field_validator("opencode_url", mode="before")
+    @classmethod
+    def _normalize_opencode_url(cls, value: object) -> str:
+        normalized = str(value).strip().rstrip("/")
+        if not normalized.startswith(("http://", "https://")):
+            raise ValueError("opencode_url must be an HTTP(S) URL")
+        return normalized
 
 
 def is_loopback_host(host: str) -> bool:

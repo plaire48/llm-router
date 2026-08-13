@@ -87,7 +87,7 @@ def build_usage_router(
             return {
                 "object": "openai_account_usage",
                 "status": "not_available",
-                "source": "codex_app_server",
+                "source": "openai_account_service",
                 "configured": False,
                 "stale": False,
                 "rate_limits": {},

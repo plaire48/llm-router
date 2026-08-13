@@ -1,14 +1,16 @@
 from __future__ import annotations
 
-import json
+import asyncio
 import os
-import shutil
-import subprocess
 
 import typer
 
 from llm_router.config import Settings, load_profiles
+from llm_router.credentials.anthropic_oauth import TokenStore
+from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.errors import RouterError
+from llm_router.oauth.openai_flow import login as login_openai
+from llm_router.provider_policy import ANTHROPIC_OAUTH_DISABLED_MESSAGE
 
 app = typer.Typer(help="llm-router: local OpenAI-compatible LLM gateway")
 oauth_app = typer.Typer(help="OAuth login")
@@ -56,22 +58,17 @@ def serve(
 
 @oauth_app.command("login")
 def oauth_login(provider: str) -> None:
-    commands = {
-        "openai": ("codex", ["login"]),
-        "anthropic": ("claude", ["auth", "login", "--claudeai"]),
-    }
-    if provider not in commands:
+    if provider not in {"openai", "anthropic"}:
         typer.echo(f"unsupported provider: {provider}")
         raise typer.Exit(code=1)
-    executable, arguments = commands[provider]
-    binary = shutil.which(executable)
-    if binary is None:
-        typer.echo(f"{executable} CLI is required for {provider} browser login.")
+    if provider == "anthropic":
+        typer.echo(ANTHROPIC_OAUTH_DISABLED_MESSAGE)
         raise typer.Exit(code=1)
     try:
-        subprocess.run([binary, *arguments], check=True)
-    except subprocess.CalledProcessError as exc:
-        typer.echo(f"{provider} browser login failed.")
+        asyncio.run(login_openai())
+    except (RouterError, OSError) as exc:
+        detail = exc.message if isinstance(exc, RouterError) else str(exc)
+        typer.echo(f"{provider} browser login failed: {detail}")
         raise typer.Exit(code=1) from exc
 
 
@@ -82,29 +79,25 @@ def _credential_status(provider: str, auth: str, api_key_env: str | None) -> str
         load_provider_env()
         return "set" if api_key_env and os.environ.get(api_key_env) else "missing"
     if provider == "openai":
-        from llm_router.credentials.openai_oauth import CodexTokenStore
-
         try:
-            tokens = CodexTokenStore.default().tokens()
+            tokens = OpenAIAccountStore.default().tokens()
             return (
-                "logged_in" if tokens and CodexTokenStore.account_id(tokens) else "login_required"
+                "logged_in"
+                if tokens and OpenAIAccountStore.account_id(tokens)
+                else "login_required"
             )
         except RouterError:
             return "invalid_store"
 
     try:
-        binary = shutil.which("claude")
-        if binary is None:
-            return "cli_missing"
-        result = subprocess.run(
-            [binary, "auth", "status", "--json"],
-            check=False,
-            capture_output=True,
-            text=True,
+        tokens = TokenStore.default().load()
+        connected = bool(
+            tokens
+            and isinstance(tokens.get("access_token"), str)
+            and (not TokenStore.default().is_expired(tokens) or tokens.get("refresh_token"))
         )
-        payload = json.loads(result.stdout) if result.returncode == 0 else {}
-        return "logged_in" if payload.get("loggedIn") is True else "login_required"
-    except (OSError, json.JSONDecodeError):
+        return "logged_in" if connected else "login_required"
+    except RouterError:
         return "invalid_store"
 
 

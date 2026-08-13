@@ -20,10 +20,13 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from llm_router.adapters import build_adapter
 from llm_router.config import ProfileFile, ProfileRegistry, Settings, is_loopback_host
 from llm_router.credentials.anthropic_oauth import TokenStore
-from llm_router.credentials.openai_oauth import CodexTokenStore
+from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.errors import RouterError, to_openai_error
+from llm_router.http_client import create_async_client
 from llm_router.models import ChatCompletionRequest
+from llm_router.opencode_runtime import OpenCodeRuntime
 from llm_router.profile_secrets import ProfileSecretStore
+from llm_router.provider_policy import anthropic_oauth_disabled_error, is_policy_disabled
 from llm_router.serving import ProfileServingManager
 from llm_router.usage import UsageRecorder
 
@@ -56,12 +59,13 @@ def create_app(
     client: httpx.AsyncClient | None = None,
     store: object | None = None,
     token_store: TokenStore | None = None,
-    codex_token_store: CodexTokenStore | None = None,
+    codex_token_store: OpenAIAccountStore | None = None,
     profiles_path: str | Path | None = None,
     profile_secret_store: ProfileSecretStore | None = None,
     serving_manager: ProfileServingManager | None = None,
     claude_login: Any | None = None,
     openai_login: Any | None = None,
+    opencode_runtime: OpenCodeRuntime | None = None,
 ) -> FastAPI:
     if settings.master_key is None and not is_loopback_host(settings.host):
         raise RouterError(
@@ -72,6 +76,13 @@ def create_app(
         )
 
     owns_client = client is None
+    active_openai_store = codex_token_store or OpenAIAccountStore.default()
+    active_opencode_runtime = opencode_runtime or OpenCodeRuntime(
+        base_url=settings.opencode_url,
+        binary=settings.opencode_binary,
+        directory=settings.opencode_directory,
+        auto_start=settings.opencode_auto_start,
+    )
     recorder = UsageRecorder(store, log_bodies=settings.log_bodies)
 
     @asynccontextmanager
@@ -80,6 +91,7 @@ def create_app(
         active_serving_manager = getattr(application.state, "serving_manager", None)
         if active_serving_manager is not None:
             await active_serving_manager.stop_all()
+        await active_opencode_runtime.close()
         active_client = application.state.client
         if owns_client and active_client is not None:
             await active_client.aclose()
@@ -96,7 +108,7 @@ def create_app(
         if app.state.client is None:
             async with app.state.client_lock:
                 if app.state.client is None:
-                    app.state.client = httpx.AsyncClient(timeout=httpx.Timeout(600.0))
+                    app.state.client = create_async_client(timeout=httpx.Timeout(600.0))
         return app.state.client
 
     def require_auth(authorization: str | None = Header(default=None)) -> None:
@@ -197,6 +209,7 @@ def create_app(
                     "owned_by": "llm-router",
                 }
                 for name in registry.names()
+                if not is_policy_disabled(registry.resolve(name))
             ],
         }
 
@@ -206,8 +219,15 @@ def create_app(
         _: None = Depends(require_auth),
     ) -> dict | StreamingResponse:
         profile = registry.resolve(request.model)
+        if is_policy_disabled(profile):
+            raise anthropic_oauth_disabled_error()
         active_client = await get_client()
-        adapter = build_adapter(profile, active_client)
+        adapter = build_adapter(
+            profile,
+            active_client,
+            openai_store=active_openai_store,
+            opencode_runtime=active_opencode_runtime,
+        )
         record = recorder.start(profile, request)
 
         if request.stream:
@@ -278,12 +298,13 @@ def create_app(
             require_control_auth,
             get_client,
             token_store=active_token_store,
-            codex_token_store=codex_token_store,
+            codex_token_store=active_openai_store,
             profile_file=ProfileFile(profiles_path),
             secret_store=profile_secret_store,
             serving_manager=active_serving_manager,
             claude_login=claude_login,
             openai_login=openai_login,
+            opencode_runtime=active_opencode_runtime,
         )
     )
     app.include_router(build_dashboard_router(dashboard_session))

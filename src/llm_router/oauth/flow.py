@@ -14,6 +14,7 @@ import httpx
 
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.errors import RouterError
+from llm_router.http_client import create_async_client
 from llm_router.oauth import constants
 
 
@@ -169,7 +170,7 @@ def login(store: TokenStore, *, timeout: float = 300.0) -> None:
         )
 
     async def complete_exchange() -> dict:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+        async with create_async_client(timeout=httpx.Timeout(30.0)) as client:
             return await exchange_code(
                 client,
                 code=code,

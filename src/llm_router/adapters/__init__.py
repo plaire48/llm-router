@@ -7,9 +7,11 @@ from llm_router.adapters.base import Adapter
 from llm_router.adapters.claude_code import ClaudeCodeAdapter, ClaudeOAuthAdapter
 from llm_router.adapters.fabrix import FabrixAdapter
 from llm_router.adapters.openai import OpenAIAdapter
-from llm_router.adapters.openai_codex import OpenAICodexAdapter
-from llm_router.credentials import build_credential
+from llm_router.adapters.opencode import OpenCodeAdapter
+from llm_router.credentials import OpenAIAccountStore, OpenAIChatGPTOAuth, build_credential
 from llm_router.models import Profile
+from llm_router.opencode_runtime import OpenCodeRuntime
+from llm_router.provider_policy import anthropic_oauth_disabled_error, is_policy_disabled
 
 __all__ = [
     "Adapter",
@@ -18,19 +20,27 @@ __all__ = [
     "ClaudeOAuthAdapter",
     "FabrixAdapter",
     "OpenAIAdapter",
-    "OpenAICodexAdapter",
+    "OpenCodeAdapter",
     "build_adapter",
 ]
 
 
-def build_adapter(profile: Profile, client: httpx.AsyncClient) -> Adapter:
-    if profile.provider == "anthropic" and profile.auth == "oauth":
-        return ClaudeOAuthAdapter(client)
+def build_adapter(
+    profile: Profile,
+    client: httpx.AsyncClient,
+    *,
+    openai_store: OpenAIAccountStore | None = None,
+    opencode_runtime: OpenCodeRuntime | None = None,
+) -> Adapter:
+    if is_policy_disabled(profile):
+        raise anthropic_oauth_disabled_error()
     if profile.provider == "fabrix":
         return FabrixAdapter(client)
-    credential = build_credential(profile, client)
+    credential = build_credential(profile, client, openai_store=openai_store)
     if profile.provider == "anthropic":
         return AnthropicAdapter(client, credential)
     if profile.provider == "openai" and profile.auth == "oauth":
-        return OpenAICodexAdapter(client, credential)
+        if not isinstance(credential, OpenAIChatGPTOAuth):
+            raise TypeError("OpenAI OAuth credential is required")
+        return OpenCodeAdapter(client, credential, opencode_runtime or OpenCodeRuntime())
     return OpenAIAdapter(client, credential)

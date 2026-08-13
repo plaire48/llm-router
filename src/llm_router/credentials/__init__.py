@@ -5,26 +5,32 @@ import httpx
 from llm_router.credentials.anthropic_oauth import AnthropicOAuth, TokenStore
 from llm_router.credentials.base import Credential
 from llm_router.credentials.env_key import EnvApiKey
-from llm_router.credentials.openai_oauth import CodexTokenStore, OpenAICodexOAuth
+from llm_router.credentials.openai_oauth import OpenAIAccountStore, OpenAIChatGPTOAuth
 from llm_router.errors import RouterError
 from llm_router.models import Profile
+from llm_router.provider_policy import anthropic_oauth_disabled_error, is_policy_disabled
 
 __all__ = [
     "AnthropicOAuth",
-    "CodexTokenStore",
     "Credential",
     "EnvApiKey",
-    "OpenAICodexOAuth",
+    "OpenAIAccountStore",
+    "OpenAIChatGPTOAuth",
     "TokenStore",
     "build_credential",
 ]
 
 
-def build_credential(profile: Profile, client: httpx.AsyncClient) -> Credential:
+def build_credential(
+    profile: Profile,
+    client: httpx.AsyncClient,
+    *,
+    openai_store: OpenAIAccountStore | None = None,
+) -> Credential:
+    if is_policy_disabled(profile):
+        raise anthropic_oauth_disabled_error()
     if profile.auth == "oauth":
-        if profile.provider == "anthropic":
-            return AnthropicOAuth(TokenStore.default(), client)
-        return OpenAICodexOAuth(CodexTokenStore.default(), client)
+        return OpenAIChatGPTOAuth(openai_store or OpenAIAccountStore.default())
     if not profile.api_key_env:
         raise RouterError(
             f"profile '{profile.name}' has no api_key_env",

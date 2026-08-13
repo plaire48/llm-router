@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
-import shutil
-import time
 from collections.abc import Awaitable, Callable
+from contextlib import suppress
 from typing import Any, Literal
 
 import httpx
@@ -15,191 +13,101 @@ from pydantic import BaseModel, Field
 from llm_router.config import ProfileFile, ProfileRegistry, Settings
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.env_key import load_provider_env
-from llm_router.credentials.openai_oauth import CodexTokenStore
+from llm_router.credentials.openai_oauth import OpenAIAccountStore, OpenAIChatGPTOAuth
 from llm_router.errors import RouterError
 from llm_router.models import Profile
+from llm_router.oauth.openai_flow import login as login_openai
+from llm_router.openai_runtime import OpenAIAccountClient
+from llm_router.opencode_runtime import OpenCodeRuntime
 from llm_router.profile_secrets import ProfileSecretStore
+from llm_router.provider_policy import (
+    ANTHROPIC_OAUTH_DISABLED_MESSAGE,
+    anthropic_oauth_disabled_error,
+    is_policy_disabled,
+)
 from llm_router.serving import ProfileServingManager
 
 
 class ClaudeWebLogin:
-    """Let the official Claude CLI own Claude's browser login session."""
+    """Expose the policy-disabled Claude subscription OAuth state."""
 
-    def __init__(self, *, binary_finder: Callable[[str], str | None] = shutil.which) -> None:
-        self.binary_finder = binary_finder
-        self._task: asyncio.Task[None] | None = None
-        self._last_error: str | None = None
-        self._cached_status: dict[str, Any] | None = None
-        self._cached_at = 0.0
+    def __init__(self, store: TokenStore) -> None:
+        self.store = store
 
     @property
     def available(self) -> bool:
-        return self.binary_finder("claude") is not None
+        return False
 
     async def status(self, *, force: bool = False) -> dict[str, Any]:
-        if not force and self._cached_status is not None and time.monotonic() - self._cached_at < 3:
-            return self._cached_status
-        binary = self.binary_finder("claude")
-        if binary is None:
-            result = {"connected": False, "status": "unavailable", "account": None}
-        else:
-            try:
-                process = await asyncio.create_subprocess_exec(
-                    binary,
-                    "auth",
-                    "status",
-                    "--json",
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                )
-                stdout, _ = await asyncio.wait_for(process.communicate(), timeout=5)
-                payload = json.loads(stdout) if process.returncode == 0 else {}
-            except (OSError, TimeoutError, json.JSONDecodeError):
-                payload = {}
-            connected = payload.get("loggedIn") is True
-            account = payload.get("email") or payload.get("accountEmail")
-            result = {
-                "connected": connected,
-                "status": "connected" if connected else "disconnected",
-                "account": account if isinstance(account, str) else None,
-                "auth_method": payload.get("authMethod"),
-            }
-        self._cached_status = result
-        self._cached_at = time.monotonic()
-        return result
+        return {
+            "connected": False,
+            "status": "disabled",
+            "account": None,
+            "auth_method": None,
+            "message": ANTHROPIC_OAUTH_DISABLED_MESSAGE,
+        }
 
     async def start(self) -> dict[str, Any]:
-        if (await self.status(force=True))["connected"]:
-            return {"provider": "anthropic", "status": "connected", "opened_browser": False}
-        if self.is_pending():
-            return {"provider": "anthropic", "status": "pending", "opened_browser": True}
-        binary = self.binary_finder("claude")
-        if binary is None:
-            raise RouterError(
-                "Claude Code CLI is required for Claude browser login.",
-                type="configuration_error",
-                code="claude_cli_required",
-                status_code=503,
-            )
-        self._last_error = None
-        self._task = asyncio.create_task(self._run(binary))
-        await asyncio.sleep(0)
-        return {"provider": "anthropic", "status": "pending", "opened_browser": True}
-
-    async def _run(self, binary: str) -> None:
-        try:
-            process = await asyncio.create_subprocess_exec(
-                binary,
-                "auth",
-                "login",
-                "--claudeai",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await process.communicate()
-            if process.returncode != 0:
-                detail = (stderr or stdout).decode("utf-8", errors="replace").strip()
-                self._last_error = detail[-500:] or "Claude browser login failed."
-            self._cached_status = None
-        except (OSError, asyncio.CancelledError) as exc:
-            if isinstance(exc, asyncio.CancelledError):
-                raise
-            self._last_error = f"Could not start Claude login: {exc}"
+        raise anthropic_oauth_disabled_error()
 
     async def logout(self) -> None:
-        binary = self.binary_finder("claude")
-        if binary is not None:
-            process = await asyncio.create_subprocess_exec(
-                binary,
-                "auth",
-                "logout",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            await process.communicate()
-        self._cached_status = None
+        self.store.delete()
 
     def is_pending(self) -> bool:
-        return self._task is not None and not self._task.done()
+        return False
 
     @property
     def last_error(self) -> str | None:
-        return self._last_error
+        return None
 
 
 class OpenAIWebLogin:
-    """Let the official Codex CLI own OpenAI's browser login and credential storage."""
+    """Run the SDK-managed OpenAI browser login in the background."""
 
     def __init__(
         self,
-        store: CodexTokenStore,
+        store: OpenAIAccountStore,
         *,
-        binary_finder: Callable[[str], str | None] = shutil.which,
+        login_runner: Callable[[], Awaitable[None]] = login_openai,
+        logout_runner: Callable[[], Awaitable[None]] | None = None,
     ) -> None:
         self.store = store
-        self.binary_finder = binary_finder
+        self.login_runner = login_runner
+        self.logout_runner = logout_runner or OpenAIAccountClient().logout
         self._task: asyncio.Task[None] | None = None
         self._last_error: str | None = None
 
     @property
     def available(self) -> bool:
-        return self.binary_finder("codex") is not None
+        return True
 
     async def start(self) -> dict[str, Any]:
         if _openai_oauth_status(self.store)["connected"]:
             return {"provider": "openai", "status": "connected", "opened_browser": False}
-        if self._task is not None and not self._task.done():
+        if self.is_pending():
             return {"provider": "openai", "status": "pending", "opened_browser": True}
-        binary = self.binary_finder("codex")
-        if binary is None:
-            raise RouterError(
-                "Codex CLI is required for OpenAI browser login.",
-                type="configuration_error",
-                code="codex_cli_required",
-                status_code=503,
-            )
         self._last_error = None
-        self._task = asyncio.create_task(self._run(binary))
+        self._task = asyncio.create_task(self._run())
         await asyncio.sleep(0)
         return {"provider": "openai", "status": "pending", "opened_browser": True}
 
-    async def _run(self, binary: str) -> None:
+    async def _run(self) -> None:
         try:
-            process = await asyncio.create_subprocess_exec(
-                binary,
-                "login",
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            stdout, stderr = await process.communicate()
-            if process.returncode != 0:
-                detail = (stderr or stdout).decode("utf-8", errors="replace").strip()
-                self._last_error = detail[-500:] or "Codex browser login failed."
-        except (OSError, asyncio.CancelledError) as exc:
-            if isinstance(exc, asyncio.CancelledError):
-                raise
-            self._last_error = f"Could not start Codex login: {exc}"
+            await self.login_runner()
+        except asyncio.CancelledError:
+            raise
+        except (RouterError, OSError) as exc:
+            detail = exc.message if isinstance(exc, RouterError) else str(exc)
+            self._last_error = detail[-500:] or "OpenAI browser login failed."
+        except Exception as exc:  # noqa: BLE001 - expose background login failures in status
+            self._last_error = f"Could not complete OpenAI login: {exc}"
 
     async def logout(self) -> None:
-        binary = self.binary_finder("codex")
-        if binary is None:
-            self.store.path.unlink(missing_ok=True)
-            return
-        process = await asyncio.create_subprocess_exec(
-            binary,
-            "logout",
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        stdout, stderr = await process.communicate()
-        if process.returncode != 0:
-            detail = (stderr or stdout).decode("utf-8", errors="replace").strip()
-            raise RouterError(
-                detail[-500:] or "Codex logout failed.",
-                type="authentication_error",
-                code="openai_logout_failed",
-                status_code=500,
-            )
+        if self.is_pending() and self._task is not None:
+            self._task.cancel()
+            with suppress(asyncio.CancelledError):
+                await self._task
+        await self.logout_runner()
 
     def is_pending(self) -> bool:
         return self._task is not None and not self._task.done()
@@ -209,7 +117,7 @@ class OpenAIWebLogin:
         return self._last_error
 
 
-def _openai_oauth_status(store: CodexTokenStore) -> dict[str, Any]:
+def _openai_oauth_status(store: OpenAIAccountStore) -> dict[str, Any]:
     try:
         tokens = store.tokens()
     except RouterError as exc:
@@ -232,40 +140,28 @@ def _openai_oauth_status(store: CodexTokenStore) -> dict[str, Any]:
         "refreshable": bool(tokens and tokens.get("refresh_token")),
         "account": email if isinstance(email, str) else None,
         "message": (
-            "Codex 브라우저 로그인 세션을 사용합니다."
+            "OpenAI 계정의 브라우저 로그인 세션을 사용합니다."
             if connected
             else "OpenAI 브라우저 로그인이 필요합니다."
         ),
     }
 
 
-def _router_claude_oauth_connected(store: TokenStore) -> bool:
-    try:
-        tokens = store.load()
-    except RouterError:
-        return False
-    if not tokens or not isinstance(tokens.get("access_token"), str):
-        return False
-    try:
-        expires_at = float(tokens.get("expires_at", 0))
-    except (TypeError, ValueError):
-        expires_at = 0
-    return expires_at > time.time() or bool(tokens.get("refresh_token"))
-
-
 def _profile_status(
     profile: Profile,
     anthropic_connected: bool,
-    openai_store: CodexTokenStore,
+    openai_store: OpenAIAccountStore,
 ) -> tuple[str, str]:
+    if is_policy_disabled(profile):
+        return "policy_disabled", ANTHROPIC_OAUTH_DISABLED_MESSAGE
     if profile.auth == "oauth":
         if profile.provider == "openai":
             oauth = _openai_oauth_status(openai_store)
             if oauth["connected"]:
-                return "ready", "OpenAI Codex 로그인 연결됨"
+                return "ready", "OpenAI 브라우저 로그인 연결됨"
             return "login_required", "OpenAI 로그인이 필요합니다"
         if anthropic_connected:
-            return "ready", "Claude Code 로그인 연결됨"
+            return "ready", "Claude 브라우저 로그인 연결됨"
         return "login_required", "Claude 로그인이 필요합니다"
 
     load_provider_env()
@@ -285,7 +181,7 @@ def _profile_status(
 def _profile_data(
     profile: Profile,
     anthropic_connected: bool,
-    openai_store: CodexTokenStore,
+    openai_store: OpenAIAccountStore,
     secret_store: ProfileSecretStore,
     settings: Settings,
 ) -> dict[str, Any]:
@@ -331,36 +227,6 @@ def _gateway_data(settings: Settings) -> dict[str, str]:
     }
 
 
-def _opencode_config(settings: Settings, registry: ProfileRegistry) -> dict[str, Any]:
-    fallback_url = f"http://{_public_host(settings.host)}:{settings.port}/v1"
-    providers: dict[str, Any] = {}
-    endpoints: list[dict[str, Any]] = []
-    for profile in registry.profiles():
-        provider_id = f"llm-router-{profile.name}"
-        options = {"baseURL": fallback_url}
-        if settings.master_key is not None:
-            options["apiKey"] = settings.master_key
-        providers[provider_id] = {
-            "npm": "@ai-sdk/openai-compatible",
-            "name": f"llm-router / {profile.name}",
-            "options": options,
-            "models": {profile.name: {"name": profile.name}},
-        }
-        endpoints.append({"profile": profile.name, "base_url": fallback_url})
-    config = {
-        "$schema": "https://opencode.ai/config.json",
-        "provider": providers,
-    }
-    result = {
-        "base_url": fallback_url,
-        "endpoints": endpoints,
-        "config": config,
-    }
-    if settings.master_key is not None:
-        result["api_key"] = settings.master_key
-    return result
-
-
 class ProfileWrite(BaseModel):
     name: str
     provider: Literal["anthropic", "openai", "openai_compatible", "fabrix"]
@@ -391,88 +257,96 @@ def build_control_router(
     client_getter: Callable[[], Awaitable[Any]],
     *,
     token_store: TokenStore | None = None,
-    codex_token_store: CodexTokenStore | None = None,
+    codex_token_store: OpenAIAccountStore | None = None,
     profile_file: ProfileFile | None = None,
     secret_store: ProfileSecretStore | None = None,
     serving_manager: ProfileServingManager | None = None,
     claude_login: ClaudeWebLogin | None = None,
     openai_login: OpenAIWebLogin | None = None,
+    opencode_runtime: OpenCodeRuntime | None = None,
 ) -> APIRouter:
     router = APIRouter()
     router_claude_store = token_store or TokenStore.default()
-    codex_store = codex_token_store or CodexTokenStore.default()
+    codex_store = codex_token_store or OpenAIAccountStore.default()
     profiles_file = profile_file or ProfileFile(None)
     secrets_store = secret_store or ProfileSecretStore.default()
     secrets_store.hydrate()
-    claude_cli_login = claude_login or ClaudeWebLogin()
-    codex_login = openai_login or OpenAIWebLogin(codex_store)
+    claude_web_login = claude_login or ClaudeWebLogin(router_claude_store)
+    active_opencode_runtime = opencode_runtime or OpenCodeRuntime(
+        base_url=settings.opencode_url,
+        binary=settings.opencode_binary,
+        directory=settings.opencode_directory,
+        auto_start=settings.opencode_auto_start,
+    )
+
+    async def logout_openai() -> None:
+        await OpenAIAccountClient().logout()
+        active_opencode_runtime.remove_openai_auth()
+
+    openai_web_login = openai_login or OpenAIWebLogin(
+        codex_store,
+        logout_runner=logout_openai,
+    )
     protected = [Depends(auth_dependency)]
 
     @router.get("/v1/auth/status", dependencies=protected)
     async def auth_status(response: Response) -> dict[str, Any]:
         response.headers["Cache-Control"] = "private, no-store"
-        claude_status = await claude_cli_login.status()
-        router_oauth_connected = _router_claude_oauth_connected(router_claude_store)
-        claude_connected = claude_status["connected"] or router_oauth_connected
+        claude_status = await claude_web_login.status()
         anthropic = {
             **claude_status,
-            "connected": claude_connected,
-            "status": "connected" if claude_connected else claude_status["status"],
-            "message": (
-                "Claude 브라우저 로그인 세션을 사용합니다."
-                if claude_connected
-                else "Claude 브라우저 로그인이 필요합니다."
-            ),
-            "session_source": "claude_cli"
-            if claude_status["connected"]
-            else "router_oauth"
-            if router_oauth_connected
-            else None,
+            "connected": False,
+            "status": "disabled",
+            "message": ANTHROPIC_OAUTH_DISABLED_MESSAGE,
+            "session_source": None,
         }
         anthropic.update(
             {
                 "provider": "anthropic",
                 "label": "Claude",
-                "available": claude_cli_login.available,
+                "available": False,
                 "experimental": False,
-                "login_pending": claude_cli_login.is_pending(),
+                "login_pending": False,
             }
         )
-        if claude_cli_login.last_error and not anthropic["connected"]:
-            anthropic.update(status="error", message=claude_cli_login.last_error)
         openai = _openai_oauth_status(codex_store)
+        client = await client_getter()
+        runtime_ready = await active_opencode_runtime.usable(client)
         openai.update(
             {
                 "provider": "openai",
                 "label": "OpenAI",
-                "available": codex_login.available,
+                "available": openai_web_login.available,
                 "experimental": False,
-                "login_pending": codex_login.is_pending(),
+                "login_pending": openai_web_login.is_pending(),
+                "inference_engine": "opencode",
+                "runtime_available": runtime_ready or active_opencode_runtime.binary_available,
+                "runtime_ready": runtime_ready,
             }
         )
-        if codex_login.last_error and not openai["connected"]:
-            openai.update(status="error", message=codex_login.last_error)
+        if openai_web_login.last_error and not openai["connected"]:
+            openai.update(status="error", message=openai_web_login.last_error)
         return {"object": "auth_status", "data": [anthropic, openai]}
 
     @router.post("/v1/auth/{provider}/login", dependencies=protected)
     async def start_login(provider: str, response: Response) -> dict[str, Any]:
         response.headers["Cache-Control"] = "private, no-store"
         if provider == "openai":
-            return await codex_login.start()
-        if provider != "anthropic":
-            raise RouterError(
-                f"unsupported OAuth provider: {provider}",
-                type="invalid_request_error",
-                code="unsupported_provider",
-                status_code=404,
-            )
-        return await claude_cli_login.start()
+            return await openai_web_login.start()
+        if provider == "anthropic":
+            raise anthropic_oauth_disabled_error()
+        raise RouterError(
+            f"unsupported OAuth provider: {provider}",
+            type="invalid_request_error",
+            code="unsupported_provider",
+            status_code=404,
+        )
 
     @router.delete("/v1/auth/{provider}", dependencies=protected)
     async def disconnect(provider: str, response: Response) -> dict[str, Any]:
         response.headers["Cache-Control"] = "private, no-store"
         if provider == "openai":
-            await codex_login.logout()
+            await openai_web_login.logout()
             return {"provider": provider, "status": "disconnected"}
         if provider != "anthropic":
             raise RouterError(
@@ -482,15 +356,13 @@ def build_control_router(
                 status_code=404,
             )
         router_claude_store.delete()
-        await claude_cli_login.logout()
+        await claude_web_login.logout()
         return {"provider": provider, "status": "disconnected"}
 
     @router.get("/v1/profiles", dependencies=protected)
     async def list_profiles(response: Response) -> dict[str, Any]:
         response.headers["Cache-Control"] = "private, no-store"
-        anthropic_connected = (await claude_cli_login.status())[
-            "connected"
-        ] or _router_claude_oauth_connected(router_claude_store)
+        anthropic_connected = False
         return {
             "object": "list",
             "editable": True,
@@ -508,6 +380,8 @@ def build_control_router(
         }
 
     def profile_from_payload(payload: ProfileWrite, existing: Profile | None = None) -> Profile:
+        if payload.provider == "anthropic" and payload.auth == "oauth":
+            raise anthropic_oauth_disabled_error()
         if payload.provider in {"anthropic", "openai"} and payload.auth != "oauth":
             raise RouterError(
                 "OpenAI and Anthropic profiles require browser login.",
@@ -572,6 +446,8 @@ def build_control_router(
 
     @router.post("/v1/profiles/discover-models", dependencies=protected)
     async def discover_models(payload: ModelDiscovery) -> dict[str, Any]:
+        if payload.provider == "anthropic" and payload.auth == "oauth":
+            raise anthropic_oauth_disabled_error()
         if payload.provider in {"anthropic", "openai"} and payload.auth != "oauth":
             raise RouterError(
                 "OpenAI and Anthropic profiles require browser login.",
@@ -580,11 +456,39 @@ def build_control_router(
                 status_code=400,
             )
         if payload.auth == "oauth":
-            models = (
-                ["claude-sonnet-5", "claude-opus-5", "claude-haiku-4-5"]
-                if payload.provider == "anthropic"
-                else ["gpt-5.6-sol", "gpt-5.4", "gpt-5.3-codex"]
+            client = await client_getter()
+            await active_opencode_runtime.ensure_started(client)
+            auth_payload = await OpenAIChatGPTOAuth(codex_store).opencode_auth()
+            try:
+                auth_response = await client.put(
+                    f"{active_opencode_runtime.base_url}/auth/openai",
+                    json=auth_payload,
+                )
+                auth_response.raise_for_status()
+                provider_response = await client.get(
+                    f"{active_opencode_runtime.base_url}/provider",
+                    params={"directory": str(active_opencode_runtime.directory)},
+                )
+                provider_response.raise_for_status()
+                provider_payload = provider_response.json()
+            except (httpx.HTTPError, ValueError) as exc:
+                raise RouterError(
+                    "OpenCode에서 OpenAI 모델 목록을 불러올 수 없습니다.",
+                    type="upstream_error",
+                    code="opencode_model_discovery_failed",
+                    status_code=502,
+                ) from exc
+            providers = provider_payload.get("all") if isinstance(provider_payload, dict) else None
+            openai_provider = next(
+                (
+                    item
+                    for item in providers or []
+                    if isinstance(item, dict) and item.get("id") == "openai"
+                ),
+                None,
             )
+            provider_models = openai_provider.get("models") if openai_provider else None
+            models = sorted(provider_models) if isinstance(provider_models, dict) else []
             return {"object": "list", "data": models}
         if payload.provider == "fabrix":
             raise RouterError(
@@ -666,10 +570,7 @@ def build_control_router(
     @router.post("/v1/profiles/{profile_name}/start", dependencies=protected)
     async def start_profile(profile_name: str) -> dict[str, Any]:
         profile = registry.resolve(profile_name)
-        anthropic_connected = (await claude_cli_login.status())[
-            "connected"
-        ] or _router_claude_oauth_connected(router_claude_store)
-        status, message = _profile_status(profile, anthropic_connected, codex_store)
+        status, message = _profile_status(profile, False, codex_store)
         if status != "ready":
             raise RouterError(
                 message,
@@ -688,10 +589,5 @@ def build_control_router(
             "deprecated": True,
             "message": "Profiles are routes on the shared gateway and are not stopped separately.",
         }
-
-    @router.get("/v1/connect/opencode", dependencies=protected)
-    async def opencode_config(response: Response) -> dict[str, Any]:
-        response.headers["Cache-Control"] = "private, no-store"
-        return _opencode_config(settings, registry)
 
     return router

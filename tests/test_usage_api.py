@@ -136,7 +136,8 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'showPage("connections")' in body
         assert 'id="page-serving" hidden' in body
         assert "연결 메뉴에서 계정이나 사내 LLM을 먼저 연결하세요." in body
-        assert "OpenAI Codex" in body
+        assert "OpenAI Codex" not in body
+        assert "ChatGPT 계정 사용량" in body
         assert "OpenAI와 Claude는 브라우저 로그인만 사용합니다." not in body
         assert "API 인증은 FabriX 또는 OpenAI 호환 사내 LLM 프로필에만 입력합니다." not in body
         assert "Anthropic · API 키" not in body
@@ -148,9 +149,9 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'name="connection-type"' not in body
         assert 'connectionType:"fabrix"' in body
         assert "state.connectionType=type" in body
-        assert "opencode는 서빙 엔진이 아니라 클라이언트입니다." not in body
-        assert "opencode 설정 복사" not in body
+        assert 'id="opencode-integration"' not in body
         assert "/v1/connect/opencode" not in body
+        assert "브라우저 로그인 · OpenCode 내부 실행" in body
         assert 'rel="icon" href="/favicon.svg?v=arrow-v1"' in body
         assert "프로필·모델별 사용량" in body
         assert "<h2>대시보드</h2>" in body
@@ -193,6 +194,9 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "key-form" not in body
         assert "master-key" not in body
         assert "sessionStorage" not in body
+        assert 'item.available===false?"disabled":""' not in body
+        assert "disabled=item.available===false" in body
+        assert "정책 준수를 위해 Claude 구독 OAuth를 사용할 수 없습니다." in body
     finally:
         store.close()
 

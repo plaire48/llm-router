@@ -7,24 +7,18 @@ import os
 import stat
 import tempfile
 import time
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
-import httpx
-
 from llm_router.errors import RouterError
+from llm_router.openai_runtime import OpenAIAccountClient, openai_account_home
 
-OPENAI_TOKEN_URL = "https://auth.openai.com/oauth/token"
-OPENAI_OAUTH_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
+OPENAI_AUTH_CLAIM = "https://api.openai.com/auth"
 CHATGPT_ACCOUNT_CLAIM = "https://api.openai.com/auth.chatgpt_account_id"
 REFRESH_WINDOW_SECONDS = 300
 
 _refresh_locks: dict[Path, asyncio.Lock] = {}
-
-
-def _codex_home() -> Path:
-    configured = os.environ.get("CODEX_HOME", "").strip()
-    return Path(configured).expanduser() if configured else Path.home() / ".codex"
 
 
 def _jwt_claims(token: str | None) -> dict[str, Any]:
@@ -39,15 +33,15 @@ def _jwt_claims(token: str | None) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
-class CodexTokenStore:
-    """Read and safely update the credential file managed by the official Codex login."""
+class OpenAIAccountStore:
+    """Read the local credential cache managed by the official OpenAI account runtime."""
 
     def __init__(self, path: str | Path) -> None:
         self.path = Path(path).expanduser()
 
     @classmethod
-    def default(cls) -> CodexTokenStore:
-        return cls(_codex_home() / "auth.json")
+    def default(cls) -> OpenAIAccountStore:
+        return cls(openai_account_home() / "auth.json")
 
     def load(self) -> dict[str, Any] | None:
         try:
@@ -56,7 +50,7 @@ class CodexTokenStore:
             return None
         except OSError as exc:
             raise RouterError(
-                f"Could not read Codex credentials: {exc}",
+                f"Could not read OpenAI account credentials: {exc}",
                 type="authentication_error",
                 code="openai_oauth_store_error",
                 status_code=500,
@@ -65,7 +59,7 @@ class CodexTokenStore:
             payload = json.loads(raw)
         except json.JSONDecodeError as exc:
             raise RouterError(
-                "Codex credential store is invalid. Log in to OpenAI again.",
+                "OpenAI account credentials are invalid. Log in to OpenAI again.",
                 type="authentication_error",
                 code="openai_oauth_store_error",
                 status_code=401,
@@ -118,11 +112,18 @@ class CodexTokenStore:
         direct = tokens.get("account_id")
         if isinstance(direct, str) and direct:
             return direct
-        claims = cls.claims(tokens)
-        for key in (CHATGPT_ACCOUNT_CLAIM, "chatgpt_account_id"):
-            value = claims.get(key)
-            if isinstance(value, str) and value:
-                return value
+        for token_key in ("id_token", "access_token"):
+            token = tokens.get(token_key)
+            claims = _jwt_claims(token if isinstance(token, str) else None)
+            for key in (CHATGPT_ACCOUNT_CLAIM, "chatgpt_account_id"):
+                value = claims.get(key)
+                if isinstance(value, str) and value:
+                    return value
+            auth = claims.get(OPENAI_AUTH_CLAIM)
+            if isinstance(auth, dict):
+                value = auth.get("chatgpt_account_id")
+                if isinstance(value, str) and value:
+                    return value
         return None
 
     @classmethod
@@ -131,12 +132,17 @@ class CodexTokenStore:
         return float(value) if isinstance(value, (int, float)) else None
 
 
-class OpenAICodexOAuth:
-    """Authenticate requests to the ChatGPT Codex backend using Codex browser login."""
+class OpenAIChatGPTOAuth:
+    """Authenticate ChatGPT requests with the OpenAI-managed browser session."""
 
-    def __init__(self, store: CodexTokenStore, client: httpx.AsyncClient) -> None:
+    def __init__(
+        self,
+        store: OpenAIAccountStore,
+        *,
+        refresh_runner: Callable[[], Awaitable[None]] | None = None,
+    ) -> None:
         self.store = store
-        self.client = client
+        self.refresh_runner = refresh_runner or self._refresh_with_account_service
         self._lock = _refresh_locks.setdefault(store.path.resolve(), asyncio.Lock())
 
     async def headers(self) -> dict[str, str]:
@@ -145,7 +151,10 @@ class OpenAICodexOAuth:
             async with self._lock:
                 tokens = self.store.tokens()
                 if self._needs_refresh(tokens):
-                    tokens = await self._refresh(tokens)
+                    await self.refresh_runner()
+                    tokens = self.store.tokens()
+                    if self._needs_refresh(tokens):
+                        raise self._login_required()
         access_token = tokens.get("access_token") if tokens else None
         account_id = self.store.account_id(tokens)
         if not isinstance(access_token, str) or not access_token or not account_id:
@@ -159,55 +168,34 @@ class OpenAICodexOAuth:
             "user-agent": "llm-router/0.1.0",
         }
 
+    async def opencode_auth(self) -> dict[str, Any]:
+        """Return a refreshed OpenCode OAuth credential without exposing it to callers."""
+        await self.headers()
+        tokens = self.store.tokens()
+        access = tokens.get("access_token") if tokens else None
+        refresh = tokens.get("refresh_token") if tokens else None
+        expires_at = self.store.expires_at(tokens)
+        if not isinstance(access, str) or not isinstance(refresh, str):
+            raise self._login_required()
+        payload: dict[str, Any] = {
+            "type": "oauth",
+            "access": access,
+            "refresh": refresh,
+            "expires": int((expires_at or time.time() + 3600) * 1000),
+        }
+        account_id = self.store.account_id(tokens)
+        if account_id:
+            payload["accountId"] = account_id
+        return payload
+
     def _needs_refresh(self, tokens: dict[str, Any] | None) -> bool:
         if not tokens or not isinstance(tokens.get("access_token"), str):
             return False
         expires_at = self.store.expires_at(tokens)
         return expires_at is not None and expires_at <= time.time() + REFRESH_WINDOW_SECONDS
 
-    async def _refresh(self, tokens: dict[str, Any] | None) -> dict[str, Any]:
-        refresh_token = tokens.get("refresh_token") if tokens else None
-        if not isinstance(refresh_token, str) or not refresh_token:
-            raise self._login_required()
-        try:
-            response = await self.client.post(
-                OPENAI_TOKEN_URL,
-                json={
-                    "client_id": OPENAI_OAUTH_CLIENT_ID,
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                },
-                headers={"content-type": "application/json"},
-            )
-        except httpx.RequestError as exc:
-            raise RouterError(
-                f"OpenAI login refresh failed: {exc}",
-                type="authentication_error",
-                code="openai_oauth_refresh_failed",
-                status_code=502,
-            ) from exc
-        if response.status_code >= 400:
-            raise self._login_required()
-        try:
-            refreshed = response.json()
-        except ValueError as exc:
-            raise self._login_required() from exc
-        if not isinstance(refreshed, dict):
-            raise self._login_required()
-
-        payload = self.store.load() or {}
-        saved_tokens = payload.get("tokens")
-        saved_tokens = dict(saved_tokens) if isinstance(saved_tokens, dict) else {}
-        for key in ("id_token", "access_token", "refresh_token"):
-            value = refreshed.get(key)
-            if isinstance(value, str) and value:
-                saved_tokens[key] = value
-        if not isinstance(saved_tokens.get("access_token"), str):
-            raise self._login_required()
-        payload["tokens"] = saved_tokens
-        payload["last_refresh"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        self.store.save(payload)
-        return saved_tokens
+    async def _refresh_with_account_service(self) -> None:
+        await OpenAIAccountClient().account(refresh_token=True)
 
     @staticmethod
     def _login_required() -> RouterError:
