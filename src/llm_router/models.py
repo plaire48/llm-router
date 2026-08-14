@@ -48,10 +48,14 @@ class ChatCompletionRequest(BaseModel):
     temperature: float | None = None
     top_p: float | None = None
     max_tokens: int | None = None
+    max_completion_tokens: int | None = None
     stream: bool = False
+    stream_options: dict | None = None
     tools: list[ToolDef] | None = None
     tool_choice: str | dict | None = None
+    parallel_tool_calls: bool | None = None
     stop: str | list[str] | None = None
+    response_format: dict | None = None
 
 
 class Profile(BaseModel):

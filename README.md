@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.15-<platform>.whl
+python3 -m pip install llm_router-0.1.16-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.15 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.15-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.15" `
+gh release download v0.1.16 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.16-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.16" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -223,26 +223,63 @@ FabriX의 SSE `CHUNK` 응답도 로컬 OpenAI Chat Completions 스트림으로 �
 
 ## Agent Factory SDK 연결
 
-`agent-factory-sdk`는 수정하지 않습니다. Studio가 이미 제공하는 **OpenAI 호환 서버** 연결에 아래 값을
-등록하면 기존 HTTP LLM 프로필이 라우터를 그대로 소비합니다.
+Google ADK 2.6.2와 Agent Factory SDK의 `openai/*` 모델은 LiteLLM을 사용합니다. LiteLLM이 OpenAI
+플랫폼 대신 로컬 Gateway를 호출하도록 Agent Factory를 시작하는 프로세스에 다음 값을 설정합니다.
+llm-router에 Master Key가 없더라도 LiteLLM 자체가 빈 키를 거부하므로 임의의 로컬 값을 넣습니다.
 
-- 서버 주소: `http://127.0.0.1:8787/v1/chat/completions`
-- 모델: 사용할 라우터 프로필 이름(예: `claude-sonnet`)
-- API 키·Authorization: 비워 둠
+```powershell
+$env:OPENAI_BASE_URL="http://127.0.0.1:8787/v1"
+$env:OPENAI_API_KEY="local-router" # Master Key를 사용하면 그 값을 입력
+afs serve .\agent.yaml --port 8000
+```
 
-Studio/SDK는 OpenAI Chat Completions 요청을 보내고, 라우터가 실제 업스트림 모델과 인증 방식을
-결정합니다. 따라서 Agent 프로젝트는 Claude/OpenAI 로그인 토큰이나 FabriX 키를 알 필요가 없습니다.
-OpenAI OAuth와 AI Pro 프로필도 표준 `tools`, assistant `tool_calls`, `role: tool` 왕복을 지원하므로
-Agent Factory가 함수를 실행하는 기존 구조를 변경하지 않습니다.
+라우터 프로필 이름이 `openai`이면 ADK 모델은 `openai/openai`, `aipro`이면 `openai/aipro`입니다. 앞의
+`openai/`는 LiteLLM 프로바이더이고 뒤의 값은 Gateway에 전달되는 llm-router 프로필 이름입니다.
 
-배포 패키지에는 Endpoint와 model 프로필 이름만 포함합니다. 설치 런처는 다음 두 검사만 통과하면 같은
-Agent 코드를 그대로 실행할 수 있습니다.
+```yaml
+agent_class: LlmAgent
+name: assistant
+model: openai/openai
+instruction: 필요한 경우 등록된 도구를 사용하세요.
+```
+
+Python 코드에서도 같은 모델 문자열을 사용합니다.
+
+```python
+from agent_factory_sdk import Agent
+
+agent = Agent(model="openai/openai", tools=[get_weather])
+result = agent.run("서울 날씨를 알려줘")
+```
+
+Studio의 서버-target AgentConfig에서는 저장한 모델 연결의 `baseUrl`이 현재 ADK 실행에 자동 전달되지
+않습니다. `LlmAgent.model`을 위 문자열로 저장하고 `afs`/Studio 프로세스에 환경 변수를 설정해야 합니다.
+별도 HTTP workflow 프로필을 사용하는 화면에서는 전체 Endpoint
+`http://127.0.0.1:8787/v1/chat/completions`와 라우터 프로필 이름을 사용합니다.
+
+호환 어댑터가 지원하는 Agent Factory/ADK 계약은 다음과 같습니다.
+
+- 일반 응답과 버퍼링 SSE 스트리밍
+- 함수 및 MCP/RAG 도구의 단일·병렬 `tool_calls` 왕복
+- `tool_choice=required`와 `parallel_tool_calls=false` 검증
+- `LlmAgent.output_schema`의 JSON Schema 구조화 출력
+- 이미지·오디오·비디오 URL 및 inline data
+- LiteLLM `POST /v1/files` 업로드를 통한 PDF·Office 문서 첨부
+- 취소 시 OpenCode 세션 abort와 OpenCode 오류의 OpenAI 오류 형식 변환
+
+Google Search와 Code Execution 같은 Gemini 전용 네이티브 도구는 함수 도구로 가장하지 않고 422 오류로
+거부합니다. OpenCode message API에 없는 요청별 `temperature`, `top_p`, `max_tokens`, `stop` 등의 생성
+옵션도 조용히 무시하지 않고 `unsupported_parameter`로 반환합니다. 해당 값은 OpenCode가 지원하는 모델
+프로필/variant 설정으로 관리해야 합니다.
+
+Agent 프로젝트는 OpenAI OAuth, AI Pro JWT나 업스트림 API Key를 알 필요가 없습니다. 설치 런처는 다음
+두 검사만 통과하면 같은 Agent 코드를 실행할 수 있습니다.
 
 1. `GET http://127.0.0.1:8787/health`가 성공하는지 확인
 2. `GET /v1/models`에 Agent가 사용할 프로필 이름이 있는지 확인
 
-이 경계 덕분에 이후 Agent Factory Studio나 Python 코드로 만든 Agent를 HTML에서 내려받는 설치형
-패키지로 묶더라도, Agent Factory SDK 자체와 Agent 로직은 변경하지 않습니다.
+이 경계를 사용하면 Agent Factory SDK의 에이전트·도구 실행 구조는 변경하지 않고 인증·OpenCode
+User-Agent·세션 변환을 llm-router가 담당합니다.
 
 ## 내부 OpenCode 실행
 
@@ -316,6 +353,9 @@ print(final.choices[0].message.content)
 
 - `GET /health`
 - `GET /v1/models`
+- `POST /v1/files`
+- `GET /v1/files/{file_id}`
+- `DELETE /v1/files/{file_id}`
 - `POST /v1/chat/completions`
 - `GET /v1/auth/status`
 - `POST /v1/auth/openai/login`

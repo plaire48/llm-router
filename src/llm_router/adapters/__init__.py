@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import httpx
 
 from llm_router.adapters.anthropic import AnthropicAdapter
@@ -32,13 +34,18 @@ def build_adapter(
     *,
     openai_store: OpenAIAccountStore | None = None,
     opencode_runtime: OpenCodeRuntime | None = None,
+    file_resolver: Callable[[str], tuple[bytes, str, str] | None] | None = None,
 ) -> Adapter:
     if is_policy_disabled(profile):
         raise anthropic_oauth_disabled_error()
     if profile.provider == "fabrix":
         return FabrixAdapter(client)
     if (profile.provider == "openai" and profile.auth == "oauth") or is_aipro_profile(profile):
-        return OpenCodeAdapter(client, opencode_runtime or OpenCodeRuntime())
+        return OpenCodeAdapter(
+            client,
+            opencode_runtime or OpenCodeRuntime(),
+            file_resolver=file_resolver,
+        )
     credential = build_credential(profile, client, openai_store=openai_store)
     if profile.provider == "anthropic":
         return AnthropicAdapter(client, credential)

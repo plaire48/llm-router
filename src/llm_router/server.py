@@ -9,10 +9,10 @@ import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any
 
 import httpx
-from fastapi import Cookie, Depends, FastAPI, Header, Request
+from fastapi import Cookie, Depends, FastAPI, File, Form, Header, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -25,6 +25,7 @@ from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.errors import RouterError, to_openai_error
 from llm_router.http_client import create_async_client
 from llm_router.models import ChatCompletionRequest
+from llm_router.openai_files import MAX_UPLOAD_BYTES, OpenAIFileStore
 from llm_router.opencode_runtime import OpenCodeRuntime
 from llm_router.profile_secrets import ProfileSecretStore
 from llm_router.provider_policy import anthropic_oauth_disabled_error, is_policy_disabled
@@ -69,6 +70,7 @@ def create_app(
     aipro_token_store: AIProTokenStore | None = None,
     aipro_login: AIProWebLogin | None = None,
     opencode_runtime: OpenCodeRuntime | None = None,
+    uploaded_files: OpenAIFileStore | None = None,
 ) -> FastAPI:
     if settings.master_key is None and not is_loopback_host(settings.host):
         raise RouterError(
@@ -97,6 +99,7 @@ def create_app(
     active_openai_store = codex_token_store or OpenAIAccountStore.from_opencode(
         active_opencode_runtime.auth_path
     )
+    active_uploaded_files = uploaded_files or OpenAIFileStore()
     recorder = UsageRecorder(store, log_bodies=settings.log_bodies)
 
     @asynccontextmanager
@@ -107,6 +110,7 @@ def create_app(
             await active_serving_manager.stop_all()
         await active_aipro_login.close()
         await active_opencode_runtime.close()
+        active_uploaded_files.clear()
         active_client = application.state.client
         if owns_client and active_client is not None:
             await active_client.aclose()
@@ -228,6 +232,44 @@ def create_app(
             ],
         }
 
+    @app.post("/v1/files")
+    async def upload_file(
+        file: Annotated[UploadFile, File()],
+        purpose: Annotated[str, Form()],
+        _: None = Depends(require_auth),
+    ) -> dict[str, object]:
+        data = await file.read(MAX_UPLOAD_BYTES + 1)
+        uploaded = active_uploaded_files.add(
+            data,
+            filename=file.filename or "upload",
+            mime_type=file.content_type or "application/octet-stream",
+            purpose=purpose,
+        )
+        return uploaded.metadata()
+
+    @app.get("/v1/files/{file_id}")
+    async def file_metadata(
+        file_id: str,
+        _: None = Depends(require_auth),
+    ) -> dict[str, object]:
+        uploaded = active_uploaded_files.get(file_id)
+        if uploaded is None:
+            raise RouterError(
+                "uploaded file not found or expired",
+                type="invalid_request_error",
+                code="file_not_found",
+                status_code=404,
+            )
+        return uploaded.metadata()
+
+    @app.delete("/v1/files/{file_id}")
+    async def delete_file(
+        file_id: str,
+        _: None = Depends(require_auth),
+    ) -> dict[str, object]:
+        deleted = active_uploaded_files.delete(file_id)
+        return {"id": file_id, "object": "file", "deleted": deleted}
+
     @app.post("/v1/chat/completions", response_model=None)
     async def chat(
         request: ChatCompletionRequest,
@@ -242,6 +284,7 @@ def create_app(
             active_client,
             openai_store=active_openai_store,
             opencode_runtime=active_opencode_runtime,
+            file_resolver=active_uploaded_files.resolve,
         )
         record = recorder.start(profile, request)
 

@@ -287,6 +287,100 @@ async def test_parallel_tool_results_must_be_returned_together(tmp_path):
     await bridge.close()
 
 
+@respx.mock
+async def test_required_tool_choice_rejects_an_opencode_final_answer(tmp_path):
+    bridge = OpenCodeToolBridge(tmp_path)
+    runtime = FakeRuntime(tmp_path, bridge)
+    request = _tool_request().model_copy(update={"tool_choice": "required"})
+
+    respx.post(f"{runtime.base_url}/session").mock(
+        return_value=httpx.Response(200, json={"id": "ses_required"})
+    )
+    respx.post(f"{runtime.base_url}/mcp").mock(
+        side_effect=lambda call: httpx.Response(
+            200,
+            json={json.loads(call.content)["name"]: {"status": "connected"}},
+        )
+    )
+    respx.get(f"{runtime.base_url}/experimental/tool/ids").mock(
+        return_value=httpx.Response(200, json=[])
+    )
+    respx.post(f"{runtime.base_url}/session/ses_required/prompt_async").mock(
+        return_value=httpx.Response(204)
+    )
+    respx.get(f"{runtime.base_url}/session/ses_required/message").mock(
+        return_value=httpx.Response(200, json=[_assistant(finish="stop", text="No tool")])
+    )
+    respx.post(f"{runtime.base_url}/session/ses_required/abort").mock(
+        return_value=httpx.Response(200, json=True)
+    )
+    respx.post(url__regex=rf"{runtime.base_url}/mcp/llmrouter_[^/]+/disconnect").mock(
+        return_value=httpx.Response(200, json=True)
+    )
+    respx.delete(f"{runtime.base_url}/session/ses_required").mock(
+        return_value=httpx.Response(200, json=True)
+    )
+
+    async with httpx.AsyncClient() as client:
+        with pytest.raises(RouterError) as error:
+            await OpenCodeAdapter(client, runtime, bridge).complete(request, PROFILE)
+
+    assert error.value.code == "required_tool_call_missing"
+
+
+@respx.mock
+async def test_parallel_tool_calls_false_is_enforced_after_model_response(tmp_path):
+    bridge = OpenCodeToolBridge(tmp_path)
+    runtime = FakeRuntime(tmp_path, bridge)
+    request = _tool_request().model_copy(update={"parallel_tool_calls": False})
+
+    def prompt_async(_request):
+        context = next(iter(bridge._contexts.values()))
+        for index, city in enumerate(("Seoul", "Busan")):
+            _atomic_json(
+                context.directory / "calls" / f"weather-{index}.json",
+                {
+                    "id": f"call_{index}",
+                    "name": "get_weather",
+                    "arguments": {"city": city},
+                    "created_at": index,
+                },
+            )
+        return httpx.Response(204)
+
+    respx.post(f"{runtime.base_url}/session").mock(
+        return_value=httpx.Response(200, json={"id": "ses_serial"})
+    )
+    respx.post(f"{runtime.base_url}/mcp").mock(
+        side_effect=lambda call: httpx.Response(
+            200,
+            json={json.loads(call.content)["name"]: {"status": "connected"}},
+        )
+    )
+    respx.get(f"{runtime.base_url}/experimental/tool/ids").mock(
+        return_value=httpx.Response(200, json=[])
+    )
+    respx.post(f"{runtime.base_url}/session/ses_serial/prompt_async").mock(side_effect=prompt_async)
+    respx.get(f"{runtime.base_url}/session/ses_serial/message").mock(
+        return_value=httpx.Response(200, json=[_assistant()])
+    )
+    respx.post(f"{runtime.base_url}/session/ses_serial/abort").mock(
+        return_value=httpx.Response(200, json=True)
+    )
+    respx.post(url__regex=rf"{runtime.base_url}/mcp/llmrouter_[^/]+/disconnect").mock(
+        return_value=httpx.Response(200, json=True)
+    )
+    respx.delete(f"{runtime.base_url}/session/ses_serial").mock(
+        return_value=httpx.Response(200, json=True)
+    )
+
+    async with httpx.AsyncClient() as client:
+        with pytest.raises(RouterError) as error:
+            await OpenCodeAdapter(client, runtime, bridge).complete(request, PROFILE)
+
+    assert error.value.code == "parallel_tool_calls_not_allowed"
+
+
 async def test_streaming_tool_call_uses_openai_delta_shape(tmp_path):
     bridge = OpenCodeToolBridge(tmp_path)
     runtime = FakeRuntime(tmp_path, bridge)

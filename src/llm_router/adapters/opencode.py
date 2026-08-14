@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import json
+import mimetypes
 import time
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from typing import Any
+from urllib.parse import unquote, urlsplit
 
 import httpx
 
@@ -16,6 +19,170 @@ from llm_router.opencode_runtime import OpenCodeRuntime
 from llm_router.opencode_tool_bridge import BridgeCall, BridgeContext, OpenCodeToolBridge
 
 TOOL_COMPLETION_TIMEOUT_SECONDS = 600.0
+FileResolver = Callable[[str], tuple[bytes, str, str] | None]
+
+_AUDIO_MIME_TYPES = {
+    "aac": "audio/aac",
+    "flac": "audio/flac",
+    "m4a": "audio/mp4",
+    "mp3": "audio/mpeg",
+    "mp4": "audio/mp4",
+    "mpeg": "audio/mpeg",
+    "mpga": "audio/mpeg",
+    "ogg": "audio/ogg",
+    "wav": "audio/wav",
+    "webm": "audio/webm",
+}
+
+
+def _invalid_request(message: str, code: str = "invalid_request") -> RouterError:
+    return RouterError(
+        message,
+        type="invalid_request_error",
+        code=code,
+        status_code=422,
+    )
+
+
+def _data_url_mime(url: str) -> str | None:
+    if not url.startswith("data:"):
+        return None
+    header = url[5:].split(",", 1)[0]
+    mime = header.split(";", 1)[0].strip()
+    return mime or None
+
+
+def _url_mime(url: str, fallback: str) -> str:
+    embedded = _data_url_mime(url)
+    if embedded:
+        return embedded
+    guessed, _ = mimetypes.guess_type(unquote(urlsplit(url).path))
+    return guessed or fallback
+
+
+def _url_value(value: Any) -> tuple[str | None, str | None]:
+    if isinstance(value, str):
+        return value, None
+    if not isinstance(value, dict):
+        return None, None
+    url = value.get("url")
+    filename = value.get("filename")
+    return (
+        url if isinstance(url, str) else None,
+        filename if isinstance(filename, str) else None,
+    )
+
+
+def _file_part(
+    *,
+    url: str,
+    mime: str,
+    filename: str | None = None,
+) -> dict[str, Any]:
+    part: dict[str, Any] = {"type": "file", "mime": mime, "url": url}
+    if filename:
+        part["filename"] = filename
+    return part
+
+
+def _content_parts(
+    content: Any,
+    *,
+    file_resolver: FileResolver | None = None,
+) -> list[dict[str, Any]]:
+    if content is None:
+        return []
+    if isinstance(content, str):
+        return [{"type": "text", "text": content}]
+    if not isinstance(content, list):
+        raise _invalid_request("message content must be text or a list of content parts")
+
+    result: list[dict[str, Any]] = []
+    for block in content:
+        if not isinstance(block, dict):
+            raise _invalid_request("message content parts must be objects")
+        block_type = block.get("type")
+        if block_type in {"text", "input_text", "output_text"}:
+            text = block.get("text")
+            if not isinstance(text, str):
+                raise _invalid_request(f"{block_type} content requires text")
+            result.append({"type": "text", "text": text})
+            continue
+        if block_type in {"image_url", "input_image", "video_url", "audio_url"}:
+            field = "image_url" if block_type == "input_image" else str(block_type)
+            url, filename = _url_value(block.get(field))
+            if not url:
+                raise _invalid_request(f"{block_type} content requires a URL")
+            major = {
+                "image_url": "image",
+                "input_image": "image",
+                "video_url": "video",
+                "audio_url": "audio",
+            }[str(block_type)]
+            result.append(
+                _file_part(
+                    url=url,
+                    mime=_url_mime(url, f"{major}/*"),
+                    filename=filename,
+                )
+            )
+            continue
+        if block_type == "input_audio":
+            audio = block.get("input_audio")
+            if not isinstance(audio, dict) or not isinstance(audio.get("data"), str):
+                raise _invalid_request("input_audio content requires base64 data")
+            audio_format = str(audio.get("format", "wav")).lower()
+            mime = _AUDIO_MIME_TYPES.get(audio_format, f"audio/{audio_format}")
+            result.append(
+                _file_part(
+                    url=f"data:{mime};base64,{audio['data']}",
+                    mime=mime,
+                    filename=f"audio.{audio_format}",
+                )
+            )
+            continue
+        if block_type == "file":
+            file = block.get("file")
+            if not isinstance(file, dict):
+                raise _invalid_request("file content requires a file object")
+            file_data = file.get("file_data")
+            filename = file.get("filename")
+            if isinstance(file_data, str):
+                result.append(
+                    _file_part(
+                        url=file_data,
+                        mime=_url_mime(file_data, str(file.get("format") or "application/*")),
+                        filename=filename if isinstance(filename, str) else None,
+                    )
+                )
+                continue
+            file_id = file.get("file_id")
+            resolved = (
+                file_resolver(file_id)
+                if isinstance(file_id, str) and file_resolver is not None
+                else None
+            )
+            if resolved is None:
+                raise _invalid_request(
+                    "file content references an unknown upload; upload it to /v1/files first",
+                    "file_not_found",
+                )
+            data, stored_mime, stored_name = resolved
+            mime = str(file.get("format") or stored_mime or "application/octet-stream")
+            encoded = base64.b64encode(data).decode("ascii")
+            result.append(
+                _file_part(
+                    url=f"data:{mime};base64,{encoded}",
+                    mime=mime,
+                    filename=(filename if isinstance(filename, str) else stored_name),
+                )
+            )
+            continue
+        raise _invalid_request(
+            f"OpenCode does not support message content type {block_type!r}.",
+            "unsupported_content_type",
+        )
+    return result
 
 
 def _text(content: Any) -> str:
@@ -59,38 +226,100 @@ def _model_reference(profile: Profile) -> tuple[str, str]:
 
 def _selected_tools(request: ChatCompletionRequest) -> list[ToolDef]:
     tools = request.tools or []
+    choice = request.tool_choice
+    if isinstance(choice, str) and choice not in {"auto", "none", "required"}:
+        raise _invalid_request(
+            f"unsupported tool_choice: {choice!r}",
+            "invalid_tool_choice",
+        )
+    if choice == "required" and not tools:
+        raise _invalid_request(
+            "tool_choice='required' requires at least one function tool",
+            "invalid_tool_choice",
+        )
     if request.tool_choice == "none":
         return []
-    choice = request.tool_choice
     if not isinstance(choice, dict):
         return tools
     function = choice.get("function")
     name = function.get("name") if isinstance(function, dict) else None
     if not isinstance(name, str):
-        return tools
+        raise _invalid_request(
+            "named tool_choice requires function.name",
+            "invalid_tool_choice",
+        )
     selected = [tool for tool in tools if tool.function.get("name") == name]
     if not selected:
-        raise RouterError(
+        raise _invalid_request(
             f"tool_choice references an unknown function: {name}",
-            type="invalid_request_error",
-            code="invalid_tool_choice",
-            status_code=422,
+            "invalid_tool_choice",
         )
     return selected
+
+
+def _requires_tool_call(request: ChatCompletionRequest) -> bool:
+    return request.tool_choice == "required" or isinstance(request.tool_choice, dict)
+
+
+def _opencode_format(request: ChatCompletionRequest) -> dict[str, Any] | None:
+    response_format = request.response_format
+    if response_format is None:
+        return None
+    format_type = response_format.get("type")
+    if format_type == "text":
+        return {"type": "text"}
+    if format_type == "json_object":
+        return {
+            "type": "json_schema",
+            "schema": {"type": "object", "additionalProperties": True},
+        }
+    if format_type != "json_schema":
+        raise _invalid_request(
+            f"unsupported response_format type: {format_type!r}",
+            "invalid_response_format",
+        )
+    json_schema = response_format.get("json_schema")
+    schema = json_schema.get("schema") if isinstance(json_schema, dict) else None
+    if not isinstance(schema, dict):
+        raise _invalid_request(
+            "response_format json_schema requires json_schema.schema",
+            "invalid_response_format",
+        )
+    return {"type": "json_schema", "schema": schema}
+
+
+def _validate_generation_options(request: ChatCompletionRequest) -> None:
+    unsupported: list[str] = []
+    for name in ("temperature", "top_p", "max_tokens", "max_completion_tokens", "stop"):
+        if getattr(request, name) is not None:
+            unsupported.append(name)
+    extras = request.model_extra or {}
+    for name in ("frequency_penalty", "presence_penalty", "seed", "logit_bias", "logprobs"):
+        if extras.get(name) is not None:
+            unsupported.append(name)
+    if unsupported:
+        raise _invalid_request(
+            "The OpenCode message API does not support these per-request generation options: "
+            + ", ".join(unsupported),
+            "unsupported_parameter",
+        )
 
 
 def _has_trailing_tool_results(request: ChatCompletionRequest) -> bool:
     return bool(request.messages and request.messages[-1].role == "tool")
 
 
-def to_opencode_prompt(request: ChatCompletionRequest, profile: Profile) -> dict[str, Any]:
+def to_opencode_prompt(
+    request: ChatCompletionRequest,
+    profile: Profile,
+    *,
+    file_resolver: FileResolver | None = None,
+) -> dict[str, Any]:
     if not request.messages:
-        raise RouterError(
+        raise _invalid_request(
             "messages must contain at least one message",
-            type="invalid_request_error",
-            code="invalid_request",
-            status_code=422,
         )
+    _validate_generation_options(request)
 
     system_messages = [
         _text(message.content)
@@ -107,8 +336,10 @@ def to_opencode_prompt(request: ChatCompletionRequest, profile: Profile) -> dict
             "Only use the caller-provided functions when a function is needed. "
             "Do not access files, run shell commands, or use any other tools."
         )
-        if request.tool_choice == "required" or isinstance(request.tool_choice, dict):
+        if _requires_tool_call(request):
             tool_instruction += " You must call one of the available caller-provided functions."
+        if request.parallel_tool_calls is False:
+            tool_instruction += " Call at most one function in this model step."
         system_parts = [tool_instruction]
     else:
         system_parts = [
@@ -121,15 +352,39 @@ def to_opencode_prompt(request: ChatCompletionRequest, profile: Profile) -> dict
     if history:
         system_parts.append("Conversation history:\n" + "\n".join(map(_history_line, history)))
 
-    prompt = _text(current.content)
+    prompt_parts = _content_parts(current.content, file_resolver=file_resolver)
     if current.role != "user":
-        prompt = _history_line(current)
+        media = [part for part in prompt_parts if part["type"] == "file"]
+        prompt_parts = [{"type": "text", "text": _history_line(current)}, *media]
+    history_media = [
+        part
+        for message in history
+        for part in _content_parts(message.content, file_resolver=file_resolver)
+        if part["type"] == "file"
+    ]
+    if history_media:
+        system_parts.append(
+            "Media files from earlier conversation turns are attached to this request in "
+            "chronological order."
+        )
+        prompt_parts.extend(history_media)
+    if not prompt_parts:
+        prompt_parts = [{"type": "text", "text": _history_line(current)}]
     provider_id, model_id = _model_reference(profile)
-    return {
+    body: dict[str, Any] = {
         "model": {"providerID": provider_id, "modelID": model_id},
         "system": "\n\n".join(system_parts),
-        "parts": [{"type": "text", "text": prompt}],
+        "parts": prompt_parts,
     }
+    output_format = _opencode_format(request)
+    if output_format is not None:
+        body["format"] = output_format
+    variant = (request.model_extra or {}).get("reasoning_effort") or profile.params.get(
+        "reasoning_effort"
+    )
+    if isinstance(variant, str) and variant:
+        body["variant"] = variant
+    return body
 
 
 def _usage(info: dict[str, Any]) -> dict[str, int]:
@@ -175,6 +430,7 @@ class OpenCodeAdapter:
         client: httpx.AsyncClient,
         runtime: OpenCodeRuntime,
         tool_bridge: OpenCodeToolBridge | None = None,
+        file_resolver: FileResolver | None = None,
     ) -> None:
         self.client = client
         self.runtime = runtime
@@ -186,16 +442,17 @@ class OpenCodeAdapter:
             except AttributeError:
                 pass
         self.tool_bridge = bridge
+        self.file_resolver = file_resolver
         self.observed_usage: dict[str, int] | None = None
 
     async def complete(self, request: ChatCompletionRequest, profile: Profile) -> dict[str, Any]:
         await self.runtime.ensure_profile(self.client, profile)
         if _has_trailing_tool_results(request):
             return await self._resume_tool_completion(request, profile)
-        body = to_opencode_prompt(request, profile)
+        body = to_opencode_prompt(request, profile, file_resolver=self.file_resolver)
         tools = _selected_tools(request)
         if tools:
-            return await self._start_tool_completion(body, tools, profile)
+            return await self._start_tool_completion(body, tools, request, profile)
         return await self._plain_completion(body, profile)
 
     async def _plain_completion(
@@ -213,6 +470,10 @@ class OpenCodeAdapter:
                 json=body,
             )
             return self._final_response(result, profile)
+        except asyncio.CancelledError:
+            if session_id is not None:
+                await self._abort_session(session_id)
+            raise
         finally:
             if session_id is not None:
                 await self._delete_session(session_id)
@@ -221,6 +482,7 @@ class OpenCodeAdapter:
         self,
         body: dict[str, Any],
         tools: list[ToolDef],
+        request: ChatCompletionRequest,
         profile: Profile,
     ) -> dict[str, Any]:
         session_id = await self._create_session()
@@ -239,8 +501,22 @@ class OpenCodeAdapter:
             await self._prompt_async(session_id, body)
             result, calls = await self._wait_for_tool_or_answer(context)
             if calls:
+                if request.parallel_tool_calls is False and len(calls) > 1:
+                    raise RouterError(
+                        "OpenCode returned parallel tool calls while parallel_tool_calls=false.",
+                        type="upstream_error",
+                        code="parallel_tool_calls_not_allowed",
+                        status_code=502,
+                    )
                 keep_session = True
                 return self._tool_response(result, calls, profile)
+            if _requires_tool_call(request):
+                raise RouterError(
+                    "OpenCode returned a final answer although tool_choice requires a function call.",
+                    type="upstream_error",
+                    code="required_tool_call_missing",
+                    status_code=502,
+                )
             return self._final_response(result, profile)
         finally:
             if not keep_session:
@@ -297,7 +573,10 @@ class OpenCodeAdapter:
                 return latest, calls
             info = latest.get("info")
             finish = info.get("finish") if isinstance(info, dict) else None
-            if isinstance(finish, str) and finish not in {"tool-calls", "unknown"}:
+            error_name = self._message_error_name(latest)
+            if error_name in {"MessageOutputLengthError", "ContentFilterError"} or (
+                isinstance(finish, str) and finish not in {"tool-calls", "unknown"}
+            ):
                 return latest, []
             await asyncio.sleep(0.05)
         raise RouterError(
@@ -380,13 +659,7 @@ class OpenCodeAdapter:
         response.raise_for_status()
 
     async def _cleanup_context(self, context: BridgeContext) -> None:
-        try:
-            await self.client.post(
-                f"{self.runtime.base_url}/session/{context.session_id}/abort",
-                params={"directory": str(self.runtime.directory)},
-            )
-        except httpx.HTTPError:
-            pass
+        await self._abort_session(context.session_id)
         try:
             await self.client.post(
                 f"{self.runtime.base_url}/mcp/{context.mcp_name}/disconnect",
@@ -396,6 +669,15 @@ class OpenCodeAdapter:
             pass
         await self._delete_session(context.session_id)
         await self.tool_bridge.discard(context)
+
+    async def _abort_session(self, session_id: str) -> None:
+        try:
+            await self.client.post(
+                f"{self.runtime.base_url}/session/{session_id}/abort",
+                params={"directory": str(self.runtime.directory)},
+            )
+        except httpx.HTTPError:
+            pass
 
     async def _delete_session(self, session_id: str) -> None:
         try:
@@ -412,17 +694,12 @@ class OpenCodeAdapter:
         parts = result.get("parts")
         if not isinstance(info, dict) or not isinstance(parts, list):
             raise self._protocol_error("assistant message is invalid")
-        content = "".join(
-            str(part.get("text", ""))
-            for part in parts
-            if isinstance(part, dict) and part.get("type") == "text" and not part.get("ignored")
-        )
+        content = self._message_content(info, parts)
         self.observed_usage = _usage(info)
         completion_id = info.get("id")
         if not isinstance(completion_id, str):
             completion_id = f"chatcmpl-{uuid.uuid4().hex}"
-        finish = info.get("finish")
-        finish_reason = "length" if finish == "length" else "stop"
+        finish_reason = self._finish_reason(info)
         return {
             "id": completion_id,
             "object": "chat.completion",
@@ -493,21 +770,85 @@ class OpenCodeAdapter:
         }
 
     @staticmethod
-    def _raise_message_error(result: dict[str, Any]) -> None:
+    def _message_error_name(result: dict[str, Any]) -> str | None:
+        info = result.get("info")
+        if not isinstance(info, dict):
+            return None
+        error = info.get("error")
+        return (
+            error.get("name")
+            if isinstance(error, dict) and isinstance(error.get("name"), str)
+            else None
+        )
+
+    @classmethod
+    def _raise_message_error(cls, result: dict[str, Any]) -> None:
         info = result.get("info")
         if not isinstance(info, dict) or not isinstance(info.get("error"), dict):
             return
         error = info["error"]
+        name = error.get("name")
+        if name in {"MessageOutputLengthError", "ContentFilterError"}:
+            return
         data = error.get("data")
         message = error.get("message")
         if not isinstance(message, str) and isinstance(data, dict):
             message = data.get("message")
+        status_code = 502
+        error_type = "upstream_error"
+        code = "opencode_response_failed"
+        if name == "ProviderAuthError":
+            status_code = 401
+            error_type = "authentication_error"
+            code = "provider_authentication_failed"
+        elif name == "ContextOverflowError":
+            status_code = 400
+            error_type = "invalid_request_error"
+            code = "context_length_exceeded"
+        elif name == "StructuredOutputError":
+            code = "structured_output_failed"
+        elif name == "MessageAbortedError":
+            status_code = 408
+            code = "request_aborted"
+        elif name == "APIError" and isinstance(data, dict):
+            upstream_status = data.get("statusCode")
+            if isinstance(upstream_status, int) and 400 <= upstream_status <= 599:
+                status_code = upstream_status
+            if status_code in {401, 403}:
+                error_type = "authentication_error"
+            elif status_code == 429:
+                error_type = "rate_limit_error"
+            code = "upstream_api_error"
         raise RouterError(
             message if isinstance(message, str) else "OpenCode model request failed.",
-            type="upstream_error",
-            code="opencode_response_failed",
-            status_code=502,
+            type=error_type,
+            code=code,
+            status_code=status_code,
         )
+
+    @staticmethod
+    def _message_content(info: dict[str, Any], parts: list[Any]) -> str:
+        if "structured" in info and info.get("structured") is not None:
+            return json.dumps(
+                info["structured"],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            )
+        return "".join(
+            str(part.get("text", ""))
+            for part in parts
+            if isinstance(part, dict) and part.get("type") == "text" and not part.get("ignored")
+        )
+
+    @staticmethod
+    def _finish_reason(info: dict[str, Any]) -> str:
+        error = info.get("error")
+        error_name = error.get("name") if isinstance(error, dict) else None
+        if info.get("finish") == "length" or error_name == "MessageOutputLengthError":
+            return "length"
+        if error_name == "ContentFilterError":
+            return "content_filter"
+        return "stop"
 
     async def _disabled_tools(self) -> dict[str, bool]:
         try:
