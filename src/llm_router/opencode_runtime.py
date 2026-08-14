@@ -22,6 +22,7 @@ from llm_router.credentials.env_key import load_provider_env
 from llm_router.errors import RouterError
 from llm_router.http_client import prepare_extra_ca_file, resolve_environment_path
 from llm_router.models import Profile
+from llm_router.opencode_tool_bridge import OpenCodeToolBridge
 
 BinaryFinder = Callable[[str], str | None]
 BundledResolver = Callable[[], str | None]
@@ -121,6 +122,7 @@ class OpenCodeRuntime:
         self._profile_lock = asyncio.Lock()
         self._api_profile_configs: dict[str, dict[str, object]] = {}
         self._api_profile_signatures: dict[str, tuple[str, ...]] = {}
+        self.tool_bridge = OpenCodeToolBridge(self.directory)
 
     @property
     def binary_available(self) -> bool:
@@ -430,6 +432,7 @@ class OpenCodeRuntime:
             await self.ensure_started(client)
 
     async def close(self) -> None:
+        await self.tool_bridge.close()
         process = self.process
         self.process = None
         if process is None:

@@ -6,11 +6,11 @@ on:
       release_tag:
         description: Release tag to verify
         required: true
-        default: v0.1.14
+        default: v0.1.15
       expected_sha256:
         description: Expected wheel SHA-256
         required: true
-        default: fc7f8269b966f44dbc5c403f0af2ec83a74b5df88622e0a8aa8c55088f1f0ec7
+        default: 8f4ca5e71303d57a72824b0ff1b6cc8c5aabdb47e46ce30ed9f067586d06f2d4
       python_version:
         description: Python version used to install and run llm-router
         required: true
@@ -101,6 +101,7 @@ jobs:
           from pathlib import Path
 
           from llm_router.http_client import create_async_client
+          from llm_router.models import ToolDef
           from llm_router.opencode_runtime import OpenCodeRuntime
 
 
@@ -118,9 +119,50 @@ jobs:
                       response = await client.get(f"{runtime.base_url}/global/health")
                       response.raise_for_status()
                       health = response.json()
+                      session_response = await client.post(
+                          f"{runtime.base_url}/session",
+                          params={"directory": str(runtime.directory)},
+                          json={"title": "Windows MCP smoke"},
+                      )
+                      session_response.raise_for_status()
+                      session_id = session_response.json()["id"]
+                      context = await runtime.tool_bridge.create(
+                          [
+                              ToolDef.model_validate(
+                                  {
+                                      "type": "function",
+                                      "function": {
+                                          "name": "smoke_tool",
+                                          "description": "Windows MCP bridge smoke tool",
+                                          "parameters": {"type": "object", "properties": {}},
+                                      },
+                                  }
+                              )
+                          ],
+                          session_id=session_id,
+                          profile_name="smoke",
+                      )
+                      mcp_response = await client.post(
+                          f"{runtime.base_url}/mcp",
+                          params={"directory": str(runtime.directory)},
+                          json={
+                              "name": context.mcp_name,
+                              "config": runtime.tool_bridge.mcp_config(context),
+                          },
+                      )
+                      mcp_response.raise_for_status()
+                      mcp_status = mcp_response.json()[context.mcp_name]["status"]
                   finally:
                       await runtime.close()
-              print(json.dumps({"elapsed": time.monotonic() - started, "health": health}))
+              print(
+                  json.dumps(
+                      {
+                          "elapsed": time.monotonic() - started,
+                          "health": health,
+                          "mcp_status": mcp_status,
+                      }
+                  )
+              )
 
 
           asyncio.run(main())
@@ -129,6 +171,9 @@ jobs:
           $runtimeReport = $runtimeResult | ConvertFrom-Json
           if ($runtimeReport.health.healthy -ne $true) {
             throw "Router-managed OpenCode health check failed: $runtimeResult"
+          }
+          if ($runtimeReport.mcp_status -ne "connected") {
+            throw "Router-managed MCP bridge check failed: $runtimeResult"
           }
 
           $version = (& $binary --version).Trim()
@@ -142,4 +187,5 @@ jobs:
           "- SHA-256: $actualSha" >> $env:GITHUB_STEP_SUMMARY
           "- Python: ${{ inputs.python_version }}" >> $env:GITHUB_STEP_SUMMARY
           "- Bundled OpenCode: $version" >> $env:GITHUB_STEP_SUMMARY
+          "- Caller-tool MCP bridge: $($runtimeReport.mcp_status)" >> $env:GITHUB_STEP_SUMMARY
           "- Router-managed startup seconds: $($runtimeReport.elapsed)" >> $env:GITHUB_STEP_SUMMARY

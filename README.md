@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.14-<platform>.whl
+python3 -m pip install llm_router-0.1.15-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.14 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.14-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.14" `
+gh release download v0.1.15 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.15-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.15" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -232,6 +232,8 @@ FabriX의 SSE `CHUNK` 응답도 로컬 OpenAI Chat Completions 스트림으로 �
 
 Studio/SDK는 OpenAI Chat Completions 요청을 보내고, 라우터가 실제 업스트림 모델과 인증 방식을
 결정합니다. 따라서 Agent 프로젝트는 Claude/OpenAI 로그인 토큰이나 FabriX 키를 알 필요가 없습니다.
+OpenAI OAuth와 AI Pro 프로필도 표준 `tools`, assistant `tool_calls`, `role: tool` 왕복을 지원하므로
+Agent Factory가 함수를 실행하는 기존 구조를 변경하지 않습니다.
 
 배포 패키지에는 Endpoint와 model 프로필 이름만 포함합니다. 설치 런처는 다음 두 검사만 통과하면 같은
 Agent 코드를 그대로 실행할 수 있습니다.
@@ -256,7 +258,7 @@ SHA-256을 검증한 뒤 포함합니다. macOS arm64/x64, Linux glibc·musl arm
 사용할 수 있습니다.
 
 라우터가 시작한 OpenCode는 별도의 `~/.llm-router/opencode` 데이터 디렉터리를 사용합니다. 프로젝트
-설정은 읽지 않고 파일·쉘·웹 등 모든 OpenCode 도구 권한과 세션 공유를 차단합니다. 브라우저 로그인
+설정은 읽지 않고 파일·쉘·웹 등 OpenCode 내장 도구 권한과 세션 공유를 차단합니다. 브라우저 로그인
 자격증명도 같은 내부 런타임이 직접 소유하며, 로그와 API 응답에는 노출하지 않습니다. 로그인·토큰
 교환·refresh·추론 요청은 별도 Codex 런타임을 우회하지 않습니다.
 
@@ -264,9 +266,42 @@ SHA-256을 검증한 뒤 포함합니다. macOS arm64/x64, Linux glibc·musl arm
 내부 런타임에 전달하지 않습니다. 설치 환경의 우발적인 override가 공식 OpenCode OAuth·endpoint·식별
 동작을 바꾸지 않도록 하기 위한 격리이며, OpenCode 자체의 요청 헤더는 수정하지 않습니다.
 
-현재 내부 세션 API는 호출자 정의 `tool_calls`를 투명하게 전달하지 못하므로, `tools`가 포함된 요청은
-실행하지 않고 명시적인 400 오류를 반환합니다. `stream=true`는 OpenCode 응답 완료 후 유효한 SSE 청크로
+호출자가 보낸 함수 정의는 요청별 localhost MCP 브리지에만 등록합니다. OpenCode가 함수를 선택하면
+라우터는 함수를 직접 실행하지 않고 표준 `tool_calls` 응답을 호출자에게 반환합니다. 호출자가 같은
+`tool_call_id`의 `role: tool` 결과를 보내면 보관한 OpenCode 세션을 이어서 최종 답변을 생성합니다.
+병렬 호출 결과는 한 번에 모두 반환해야 하며, 대기 세션은 30분 후 만료됩니다. 라우터를 재시작하면
+대기 중인 호출도 만료됩니다. `stream=true`는 OpenCode 응답 또는 도구 선택 완료 후 유효한 SSE 청크로
 전달하는 버퍼링 방식입니다.
+
+표준 OpenAI Python 클라이언트의 도구 왕복 예시는 다음과 같습니다.
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="http://127.0.0.1:8787/v1", api_key="local")
+messages = [{"role": "user", "content": "서울 날씨를 확인해줘"}]
+tools = [{
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "description": "도시의 현재 날씨를 조회합니다.",
+        "parameters": {
+            "type": "object",
+            "properties": {"city": {"type": "string"}},
+            "required": ["city"],
+        },
+    },
+}]
+
+first = client.chat.completions.create(model="openai", messages=messages, tools=tools)
+call = first.choices[0].message.tool_calls[0]
+messages.extend([
+    first.choices[0].message,
+    {"role": "tool", "tool_call_id": call.id, "content": "22C, sunny"},
+])
+final = client.chat.completions.create(model="openai", messages=messages, tools=tools)
+print(final.choices[0].message.content)
+```
 
 ## 사용량
 

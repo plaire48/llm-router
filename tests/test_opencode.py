@@ -4,14 +4,12 @@ import time
 from pathlib import Path
 
 import httpx
-import pytest
 import respx
 from fastapi.testclient import TestClient
 
 from llm_router.adapters.opencode import OpenCodeAdapter, to_opencode_prompt
 from llm_router.config import ProfileRegistry, Settings
 from llm_router.credentials.openai_oauth import OpenAIAccountStore
-from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, Profile
 from llm_router.server import create_app
 
@@ -108,12 +106,11 @@ def test_aipro_model_reference_uses_the_router_managed_custom_provider():
     }
 
 
-def test_opencode_prompt_rejects_caller_tools_instead_of_executing_them():
-    with pytest.raises(RouterError) as error:
-        to_opencode_prompt(_request(tools=True), PROFILE)
+def test_opencode_prompt_allows_only_caller_registered_tools():
+    body = to_opencode_prompt(_request(tools=True), PROFILE)
 
-    assert error.value.code == "opencode_tools_unsupported"
-    assert error.value.status_code == 400
+    assert "Only use the caller-provided functions" in body["system"]
+    assert "do not access files" in body["system"].lower()
 
 
 @respx.mock
