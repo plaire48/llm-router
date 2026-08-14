@@ -20,6 +20,7 @@ from llm_router.http_client import resolve_environment_path
 OPENAI_ACCOUNT_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 OPENAI_TOKEN_URL = _OPENAI_TOKEN_URL
 OPENAI_OAUTH_CLIENT_ID = _OPENAI_OAUTH_CLIENT_ID
+OPENCODE_ACCOUNT_USER_AGENT = "opencode/1.18.18"
 CACHE_TTL_SECONDS = 300.0
 TOKEN_REFRESH_MARGIN_SECONDS = 60.0
 ClientGetter = Callable[[], Awaitable[httpx.AsyncClient]]
@@ -143,11 +144,15 @@ class OpenAIAccountSource:
             return await client.get(
                 OPENAI_ACCOUNT_USAGE_URL,
                 headers={
+                    "Accept": "application/json",
                     "Authorization": f"Bearer {access_token}",
                     "ChatGPT-Account-Id": account_id,
-                    "User-Agent": "llm-router/openai-account-usage",
+                    # Keep account reads attached to the same OpenCode OAuth client
+                    # identity that acquired and owns this browser-login session.
+                    "User-Agent": OPENCODE_ACCOUNT_USER_AGENT,
+                    "originator": "opencode",
                 },
-                timeout=5.0,
+                timeout=15.0,
             )
         except httpx.RequestError as exc:
             if self._is_certificate_error(exc):

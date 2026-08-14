@@ -6,11 +6,11 @@ on:
       release_tag:
         description: Release tag to verify
         required: true
-        default: v0.1.13
+        default: v0.1.14
       expected_sha256:
         description: Expected wheel SHA-256
         required: true
-        default: 1c40d73cc330aa19b4a32d5c99ffb1bbf65c1c748ffdeb445c49db1fb8b8c0fa
+        default: fc7f8269b966f44dbc5c403f0af2ec83a74b5df88622e0a8aa8c55088f1f0ec7
       python_version:
         description: Python version used to install and run llm-router
         required: true

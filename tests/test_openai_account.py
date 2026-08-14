@@ -12,6 +12,7 @@ from llm_router.errors import RouterError
 from llm_router.usage.openai_account import (
     OPENAI_ACCOUNT_USAGE_URL,
     OPENAI_TOKEN_URL,
+    OPENCODE_ACCOUNT_USER_AGENT,
     OpenAIAccountSource,
 )
 
@@ -81,6 +82,9 @@ async def test_reads_openai_credits_from_the_authenticated_account_api(tmp_path)
     assert request.method == "GET"
     assert request.headers["authorization"] == "Bearer openai-access"
     assert request.headers["chatgpt-account-id"] == "account_1"
+    assert request.headers["user-agent"] == OPENCODE_ACCOUNT_USER_AGENT
+    assert request.headers["originator"] == "opencode"
+    assert request.headers["accept"] == "application/json"
 
 
 @respx.mock

@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.13-<platform>.whl
+python3 -m pip install llm_router-0.1.14-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.13 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.13-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.13" `
+gh release download v0.1.14 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.14-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.14" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -272,7 +272,9 @@ SHA-256을 검증한 뒤 포함합니다. macOS arm64/x64, Linux glibc·musl arm
 
 라우터를 통과한 모든 호출은 프로필별 일일 입력·출력 토큰으로 SQLite에 기록됩니다. 요청·응답 본문은
 기본적으로 저장하지 않습니다. OpenAI Enterprise 카드의 잔여 크레딧·한도 사용률은 OpenCode 브라우저
-로그인 세션으로 OpenAI 계정 API에서 직접 조회하며 5분간 캐시합니다. 로컬 토큰을 크레딧이나 금액으로
+로그인 세션의 OAuth access token과 account ID로 OpenAI 계정 API에서 직접 조회하며 5분간 캐시합니다.
+별도 Codex 설치나 Admin API Key는 사용하지 않습니다. Windows에서는 네이티브 인증서 저장소로 TLS
+체인을 검증하고 `NODE_EXTRA_CA_CERTS`의 추가 CA도 함께 신뢰합니다. 로컬 토큰을 크레딧이나 금액으로
 환산하지 않습니다. 프로필·모델별 표에는 실제 요청 수와 입력·출력 토큰만 표시합니다.
 
 ## API

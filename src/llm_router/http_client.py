@@ -9,6 +9,7 @@ from pathlib import Path
 
 import certifi
 import httpx
+import truststore
 from dotenv import load_dotenv
 
 from llm_router.errors import RouterError
@@ -116,10 +117,11 @@ def create_ssl_context() -> ssl.SSLContext:
         elif ssl_cert_dir:
             context = ssl.create_default_context(capath=ssl_cert_dir)
         else:
-            # Keep the operating system trust store so corporate roots installed in
-            # Windows Certificate Manager remain available. Add certifi as a
-            # supplement for public roots instead of replacing the system store.
-            context = ssl.create_default_context()
+            # Use the platform-native verifier. On Windows this delegates chain
+            # building to CryptoAPI, so enterprise roots and intermediates from the
+            # Windows certificate stores behave the same way as browsers and the
+            # bundled OpenCode runtime. Add certifi as a supplement for public roots.
+            context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
             context.load_verify_locations(cafile=certifi.where())
     except (OSError, ssl.SSLError) as exc:
         variable = (

@@ -35,11 +35,12 @@ def test_node_extra_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     monkeypatch.delenv("SSL_CERT_DIR", raising=False)
     monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(extra_ca))
     monkeypatch.setattr(
-        "llm_router.http_client.ssl.create_default_context", fake_create_default_context
+        "llm_router.http_client.truststore.SSLContext",
+        lambda protocol: fake_create_default_context(protocol=protocol),
     )
 
     assert create_ssl_context() is context
-    assert created == {}
+    assert created == {"protocol": ssl.PROTOCOL_TLS_CLIENT}
     assert context.loaded == [certifi.where(), str(extra_ca)]
     assert context.verify_flags & ssl.VERIFY_X509_PARTIAL_CHAIN
 
@@ -53,7 +54,7 @@ def test_official_codex_ca_is_added_to_default_certifi_store(tmp_path, monkeypat
     monkeypatch.delenv("SSL_CERT_DIR", raising=False)
     monkeypatch.delenv("NODE_EXTRA_CA_CERTS", raising=False)
     monkeypatch.setenv("CODEX_CA_CERTIFICATE", str(extra_ca))
-    monkeypatch.setattr("llm_router.http_client.ssl.create_default_context", lambda **_: context)
+    monkeypatch.setattr("llm_router.http_client.truststore.SSLContext", lambda _: context)
 
     assert create_ssl_context() is context
     assert context.loaded == [certifi.where(), str(extra_ca)]
@@ -71,7 +72,7 @@ def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.delenv("SSL_CERT_FILE", raising=False)
     monkeypatch.delenv("SSL_CERT_DIR", raising=False)
-    monkeypatch.setattr("llm_router.http_client.ssl.create_default_context", lambda **_: context)
+    monkeypatch.setattr("llm_router.http_client.truststore.SSLContext", lambda _: context)
 
     previous = os.environ.pop("NODE_EXTRA_CA_CERTS", None)
     try:
@@ -124,11 +125,12 @@ def test_default_tls_context_keeps_system_store_and_adds_certifi(monkeypatch):
     ):
         monkeypatch.delenv(variable, raising=False)
     monkeypatch.setattr(
-        "llm_router.http_client.ssl.create_default_context", fake_create_default_context
+        "llm_router.http_client.truststore.SSLContext",
+        lambda protocol: fake_create_default_context(protocol=protocol),
     )
 
     assert create_ssl_context() is context
-    assert created == {}
+    assert created == {"protocol": ssl.PROTOCOL_TLS_CLIENT}
     assert context.loaded == [certifi.where()]
 
 
@@ -161,7 +163,7 @@ def test_binary_der_crt_is_automatically_converted_for_python_and_node(tmp_path,
     monkeypatch.delenv("SSL_CERT_DIR", raising=False)
     monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(certificate))
     monkeypatch.setattr("llm_router.http_client.tempfile.gettempdir", lambda: str(tmp_path))
-    monkeypatch.setattr("llm_router.http_client.ssl.create_default_context", lambda **_: context)
+    monkeypatch.setattr("llm_router.http_client.truststore.SSLContext", lambda _: context)
 
     assert create_ssl_context() is context
 
