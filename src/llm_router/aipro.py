@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 AI_PRO_ORIGIN = "https://aipro.sdsdev.co.kr"
 AI_PRO_BASE_URL = f"{AI_PRO_ORIGIN}/v1"
 AI_PRO_BROWSER_BASE_URL = f"{AI_PRO_ORIGIN}/api/v1"
-AI_PRO_LOGIN_URL = f"{AI_PRO_ORIGIN}/auth/login"
+AI_PRO_LOGIN_URL = f"{AI_PRO_ORIGIN}/auth/vscode/login"
 
 
 def is_aipro_base_url(value: str | None) -> bool:

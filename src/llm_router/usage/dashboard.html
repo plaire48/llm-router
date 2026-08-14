@@ -719,7 +719,7 @@
       const action=disabled?"":connected?`${iconButton("profileAdd","서빙 프로필 추가",`data-new-type="${type}"`,"primary connection-action")}${iconButton("disconnect","연결 해제",`data-disconnect="${item.provider}"`,"danger connection-action")}`:iconButton("browserLogin",loginLabel,`data-login="${item.provider}"`,"primary connection-action");
       const connectedNote=isOpenAI?(item.runtime_available?"격리된 ChatGPT 계정 OAuth · OpenCode 내부 실행":"ChatGPT OAuth 연결됨 · OpenCode 실행 파일 확인 필요"):isAIPro?"SAML JWT 연결됨 · OpenCode 내부 실행":"브라우저 로그인 세션 사용 중";
       const idleNote=isOpenAI?"내부 OpenCode가 전용 ChatGPT OAuth 세션을 생성합니다.":isAIPro?"임시 localhost 포트로 JWT를 안전하게 전달받습니다.":"계정을 연결하면 로컬 서빙에 바로 사용할 수 있습니다.";
-      const defaultNote=connected?connectedNote:pending?`브라우저에서 ${providerName} 로그인을 완료하세요.`:item.status==="error"?(item.message||"연결 상태를 확인하세요."):idleNote;
+      const defaultNote=connected?connectedNote:pending?(item.message||`브라우저에서 ${providerName} 로그인을 완료하세요.`):item.status==="error"?(item.message||"연결 상태를 확인하세요."):idleNote;
       const note=disabled?(item.message||"브라우저 OAuth를 시작할 수 없습니다."):defaultNote;
       const method=isOpenAI?"ChatGPT 계정 OAuth":isAIPro?"SAML · JWT":"브라우저 로그인";
       return `<article class="card connection-card" data-provider="${esc(item.provider)}"><div class="connection-head"><div class="provider-title"><div class="provider-logo">${providerGlyph(item.provider)}</div><div><h3>${esc(item.label)}</h3><p>${method}</p></div></div><div class="connection-controls">${connectionStatus(statusKind,statusLabel)}${action}</div></div><div class="connection-body"><span class="connection-note">${esc(note)}</span>${item.account?`<span class="account">${esc(item.account)}</span>`:""}</div></article>`;

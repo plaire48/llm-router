@@ -393,6 +393,14 @@ def build_control_router(
                 "endpoint": AI_PRO_BROWSER_BASE_URL,
             }
         )
+        callback_status = getattr(aipro_web_login, "callback_status", None)
+        if callable(callback_status):
+            aipro["callback"] = callback_status()
+        if aipro_web_login.is_pending():
+            aipro["message"] = (
+                aipro_web_login.last_error
+                or "브라우저 로그인 완료 후 localhost JWT callback을 기다리는 중입니다."
+            )
         if aipro_web_login.last_error and not aipro["connected"]:
             aipro.update(status="error", message=aipro_web_login.last_error)
         return {"object": "auth_status", "data": [anthropic, openai, aipro]}

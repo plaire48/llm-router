@@ -52,7 +52,7 @@ async def test_aipro_browser_login_receives_the_webview_jwt_header(tmp_path):
     started = await login.start()
     port = started["callback_port"]
     query = parse_qs(urlsplit(opened[0]).query)
-    assert opened[0].startswith("https://aipro.sdsdev.co.kr/auth/login?")
+    assert opened[0].startswith("https://aipro.sdsdev.co.kr/auth/vscode/login?")
     assert query == {"port": [str(port)]}
 
     async with httpx.AsyncClient() as client:
@@ -72,11 +72,37 @@ async def test_aipro_browser_login_receives_the_webview_jwt_header(tmp_path):
 
     assert preflight.status_code == 204
     assert preflight.headers["access-control-allow-origin"] == "https://aipro.sdsdev.co.kr"
+    assert preflight.headers["access-control-allow-credentials"] == "true"
     assert preflight.headers["access-control-allow-private-network"] == "true"
     assert callback.status_code == 200
     await login._task
     assert store.token() == token
     assert login.is_pending() is False
+    assert login.callback_status() == {
+        "preflight_received": True,
+        "request_received": True,
+        "error": None,
+    }
+
+
+async def test_aipro_browser_login_accepts_a_jwt_prefixed_header(tmp_path):
+    token = _jwt({"exp": time.time() + 3600})
+    store = AIProTokenStore(tmp_path / "aipro-auth.json")
+    login = AIProWebLogin(store, browser_opener=lambda _url: True, timeout=2)
+    started = await login.start()
+
+    async with httpx.AsyncClient() as client:
+        response = await client.put(
+            f"http://127.0.0.1:{started['callback_port']}/auth",
+            headers={
+                "origin": "https://aipro.sdsdev.co.kr",
+                "auth-jwt": f"jwt={token}",
+            },
+        )
+
+    assert response.status_code == 200
+    await login._task
+    assert store.token() == token
 
 
 async def test_aipro_browser_login_rejects_an_untrusted_origin(tmp_path):

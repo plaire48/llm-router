@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.3-<platform>.whl
+python3 -m pip install llm_router-0.1.4-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.3 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.3-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.3" `
+gh release download v0.1.4 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.4-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.4" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -111,7 +111,7 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
 AI Pro는 기존 API Key 연결과 별도로 **SAML 브라우저 로그인**도 지원합니다.
 
 - 라우터가 `127.0.0.1`의 임시 포트를 열고
-  `https://aipro.sdsdev.co.kr/auth/login?port=<port>`를 기본 브라우저로 엽니다.
+  `https://aipro.sdsdev.co.kr/auth/vscode/login?port=<port>`를 기본 브라우저로 엽니다.
 - 로그인 완료 페이지가 localhost로 보내는 `jwt` 헤더를 CORS와 Private Network preflight를 거쳐
   수신합니다. 쿼리·JSON의 `token`, `jwt`, `auth_jwt`도 호환합니다.
 - JWT는 `~/.llm-router/aipro-auth.json`에 0600 권한으로 저장하며 로그, 프로필 YAML 및 API 응답에

@@ -4,6 +4,7 @@ import asyncio
 import base64
 import json
 import os
+import socket
 import stat
 import tempfile
 import threading
@@ -165,7 +166,22 @@ class AIProTokenStore:
 class _CallbackState:
     def __init__(self) -> None:
         self.token: str | None = None
+        self.preflight_count = 0
+        self.request_count = 0
+        self.last_error: str | None = None
         self.event = threading.Event()
+
+
+def _normalize_token(value: str | None) -> str | None:
+    if not value:
+        return None
+    token = value.strip().strip('"').strip("'")
+    lowered = token.lower()
+    for prefix in ("jwt=", "token=", "jwt ", "bearer "):
+        if lowered.startswith(prefix):
+            token = token[len(prefix) :].strip().strip('"').strip("'")
+            break
+    return token or None
 
 
 def _token_from_authorization(value: str | None) -> str | None:
@@ -173,8 +189,8 @@ def _token_from_authorization(value: str | None) -> str | None:
         return None
     scheme, separator, token = value.strip().partition(" ")
     if separator and scheme.lower() in {"jwt", "bearer"} and token.strip():
-        return token.strip()
-    return None
+        return _normalize_token(token)
+    return _normalize_token(value)
 
 
 def _callback_handler(state: _CallbackState) -> type[BaseHTTPRequestHandler]:
@@ -193,25 +209,30 @@ def _callback_handler(state: _CallbackState) -> type[BaseHTTPRequestHandler]:
             if origin and origin.rstrip("/").lower() == AI_PRO_ORIGIN.lower():
                 self.send_header("Access-Control-Allow-Origin", origin)
                 self.send_header("Vary", "Origin")
-            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                self.send_header("Access-Control-Allow-Credentials", "true")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
             self.send_header(
                 "Access-Control-Allow-Headers",
-                "authorization, content-type, jwt",
+                "authorization, content-type, jwt, token, auth-jwt",
             )
             if self.headers.get("access-control-request-private-network") == "true":
                 self.send_header("Access-Control-Allow-Private-Network", "true")
+            self.send_header("Access-Control-Max-Age", "600")
 
         def _respond(self, status: int, message: str) -> None:
             body = json.dumps({"ok": status < 400, "message": message}).encode("utf-8")
             self.send_response(status)
             self._cors_headers()
+            self.send_header("Cache-Control", "no-store")
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
 
         def do_OPTIONS(self) -> None:
+            state.preflight_count += 1
             if not self._origin_allowed():
+                state.last_error = "AI Pro 로그인 페이지의 callback origin이 허용되지 않았습니다."
                 self._respond(403, "origin not allowed")
                 return
             self.send_response(204)
@@ -232,26 +253,34 @@ def _callback_handler(state: _CallbackState) -> type[BaseHTTPRequestHandler]:
                 except (UnicodeDecodeError, json.JSONDecodeError):
                     return None
                 if isinstance(payload, dict):
-                    return next(
-                        (
-                            payload.get(key)
-                            for key in ("jwt", "token", "auth_jwt")
-                            if isinstance(payload.get(key), str) and payload.get(key)
-                        ),
-                        None,
+                    return _normalize_token(
+                        next(
+                            (
+                                payload.get(key)
+                                for key in ("jwt", "token", "auth_jwt")
+                                if isinstance(payload.get(key), str) and payload.get(key)
+                            ),
+                            None,
+                        )
                     )
             values = parse_qs(body.decode("utf-8", errors="ignore"))
-            return next(
-                (values[key][0] for key in ("jwt", "token", "auth_jwt") if values.get(key)), None
+            parsed = next(
+                (values[key][0] for key in ("jwt", "token", "auth_jwt") if values.get(key)),
+                None,
             )
+            return _normalize_token(parsed or body.decode("utf-8", errors="ignore"))
 
         def _receive(self, body_token: str | None = None) -> None:
+            state.request_count += 1
             if not self._origin_allowed():
+                state.last_error = "AI Pro 로그인 페이지의 callback origin이 허용되지 않았습니다."
                 self._respond(403, "origin not allowed")
                 return
             query = parse_qs(urlsplit(self.path).query)
-            token = (
+            token = _normalize_token(
                 self.headers.get("jwt")
+                or self.headers.get("token")
+                or self.headers.get("auth-jwt")
                 or _token_from_authorization(self.headers.get("authorization"))
                 or body_token
                 or next(
@@ -259,10 +288,12 @@ def _callback_handler(state: _CallbackState) -> type[BaseHTTPRequestHandler]:
                     None,
                 )
             )
-            if not isinstance(token, str) or not jwt_claims(token.strip()):
+            if not token or not jwt_claims(token):
+                state.last_error = "localhost callback은 도착했지만 유효한 JWT가 없었습니다."
                 self._respond(400, "valid jwt is required")
                 return
-            state.token = token.strip()
+            state.token = token
+            state.last_error = None
             state.event.set()
             self._respond(200, "AI Pro login completed")
 
@@ -272,7 +303,19 @@ def _callback_handler(state: _CallbackState) -> type[BaseHTTPRequestHandler]:
         def do_POST(self) -> None:
             self._receive(self._body_token())
 
+        def do_PUT(self) -> None:
+            self._receive(self._body_token())
+
     return Handler
+
+
+class _IPv6ThreadingHTTPServer(ThreadingHTTPServer):
+    address_family = socket.AF_INET6
+
+    def server_bind(self) -> None:
+        if hasattr(socket, "IPV6_V6ONLY"):
+            self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 1)
+        super().server_bind()
 
 
 class AIProWebLogin:
@@ -292,6 +335,8 @@ class AIProWebLogin:
         self.timeout = timeout
         self._task: asyncio.Task[None] | None = None
         self._server: ThreadingHTTPServer | None = None
+        self._servers: list[ThreadingHTTPServer] = []
+        self._callback_state: _CallbackState | None = None
         self._last_error: str | None = None
 
     @property
@@ -305,6 +350,7 @@ class AIProWebLogin:
             return {"provider": "aipro", "status": "pending", "opened_browser": True}
         self._last_error = None
         state = _CallbackState()
+        self._callback_state = state
         try:
             server = ThreadingHTTPServer(("127.0.0.1", 0), _callback_handler(state))
         except OSError as exc:
@@ -314,8 +360,17 @@ class AIProWebLogin:
                 code="aipro_callback_unavailable",
                 status_code=503,
             ) from exc
+        servers = [server]
+        try:
+            servers.append(
+                _IPv6ThreadingHTTPServer(("::1", server.server_port), _callback_handler(state))
+            )
+        except OSError:
+            pass
         self._server = server
-        threading.Thread(target=server.serve_forever, daemon=True).start()
+        self._servers = servers
+        for callback_server in servers:
+            threading.Thread(target=callback_server.serve_forever, daemon=True).start()
         login_url = f"{AI_PRO_LOGIN_URL}?{urlencode({'port': server.server_port})}"
         opened = await asyncio.to_thread(self.browser_opener, login_url)
         if opened is False:
@@ -333,6 +388,7 @@ class AIProWebLogin:
             "status": "pending",
             "opened_browser": True,
             "callback_port": server.server_port,
+            "callback_hosts": ["127.0.0.1", *(["::1"] if len(servers) > 1 else [])],
         }
 
     async def _wait_for_token(self, state: _CallbackState) -> None:
@@ -340,11 +396,14 @@ class AIProWebLogin:
             loop = asyncio.get_running_loop()
             deadline = loop.time() + self.timeout
             while not state.event.is_set() and loop.time() < deadline:
+                if state.last_error:
+                    self._last_error = state.last_error
                 await asyncio.sleep(0.1)
             if not state.event.is_set() or not state.token:
                 self._last_error = "AI Pro 브라우저 로그인 시간이 초과되었습니다."
                 return
             self.store.save(state.token)
+            self._last_error = None
             if self.runtime is not None:
                 await self.runtime.close()
         except asyncio.CancelledError:
@@ -373,12 +432,12 @@ class AIProWebLogin:
         await asyncio.to_thread(self._close_server)
 
     def _close_server(self) -> None:
-        server = self._server
+        servers = self._servers or ([self._server] if self._server is not None else [])
         self._server = None
-        if server is None:
-            return
-        server.shutdown()
-        server.server_close()
+        self._servers = []
+        for server in servers:
+            server.shutdown()
+            server.server_close()
 
     def is_pending(self) -> bool:
         return self._task is not None and not self._task.done()
@@ -386,3 +445,13 @@ class AIProWebLogin:
     @property
     def last_error(self) -> str | None:
         return self._last_error
+
+    def callback_status(self) -> dict[str, Any] | None:
+        state = self._callback_state
+        if state is None:
+            return None
+        return {
+            "preflight_received": state.preflight_count > 0,
+            "request_received": state.request_count > 0,
+            "error": state.last_error,
+        }
