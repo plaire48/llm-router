@@ -200,7 +200,7 @@ class OpenAIChatGPTOAuth:
     @staticmethod
     def _login_required() -> RouterError:
         return RouterError(
-            "OpenAI browser login is required. Connect OpenAI from the dashboard.",
+            "ChatGPT account OAuth login is required. Connect OpenAI from the dashboard.",
             type="authentication_error",
             code="openai_oauth_required",
             status_code=401,

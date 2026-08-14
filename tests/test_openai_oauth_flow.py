@@ -9,6 +9,7 @@ from llm_router.openai_runtime import (
     OpenAIAccountClient,
     OpenAIAppServerSession,
     bundled_openai_runtime,
+    openai_account_home,
 )
 
 
@@ -102,6 +103,23 @@ def test_official_sdk_provides_the_account_runtime():
 
     assert executable.is_file()
     assert path_dir is None or path_dir.is_dir()
+
+
+def test_account_home_reuses_standard_codex_session(tmp_path, monkeypatch):
+    codex_home = tmp_path / "codex"
+    monkeypatch.delenv("LLM_ROUTER_OPENAI_HOME", raising=False)
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+
+    assert openai_account_home() == codex_home
+
+
+def test_router_account_home_override_keeps_isolated_session(tmp_path, monkeypatch):
+    codex_home = tmp_path / "codex"
+    router_home = tmp_path / "router-openai"
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    monkeypatch.setenv("LLM_ROUTER_OPENAI_HOME", str(router_home))
+
+    assert openai_account_home() == router_home
 
 
 async def test_account_runtime_creates_codex_home_before_launch(tmp_path, monkeypatch):

@@ -140,9 +140,9 @@ def _openai_oauth_status(store: OpenAIAccountStore) -> dict[str, Any]:
         "refreshable": bool(tokens and tokens.get("refresh_token")),
         "account": email if isinstance(email, str) else None,
         "message": (
-            "OpenAI 계정의 브라우저 로그인 세션을 사용합니다."
+            "공유된 ChatGPT 계정 OAuth 세션을 사용합니다."
             if connected
-            else "OpenAI 브라우저 로그인이 필요합니다."
+            else "ChatGPT 계정 OAuth 로그인이 필요합니다."
         ),
     }
 
@@ -158,8 +158,8 @@ def _profile_status(
         if profile.provider == "openai":
             oauth = _openai_oauth_status(openai_store)
             if oauth["connected"]:
-                return "ready", "OpenAI 브라우저 로그인 연결됨"
-            return "login_required", "OpenAI 로그인이 필요합니다"
+                return "ready", "ChatGPT 계정 OAuth 연결됨"
+            return "login_required", "ChatGPT 계정 로그인이 필요합니다"
         if anthropic_connected:
             return "ready", "Claude 브라우저 로그인 연결됨"
         return "login_required", "Claude 로그인이 필요합니다"

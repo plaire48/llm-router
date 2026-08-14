@@ -18,7 +18,10 @@ RuntimeResolver = Callable[[], tuple[Path, Path | None]]
 
 def openai_account_home() -> Path:
     configured = os.environ.get("LLM_ROUTER_OPENAI_HOME", "").strip()
-    return Path(configured).expanduser() if configured else Path.home() / ".llm-router" / "openai"
+    if configured:
+        return Path(configured).expanduser()
+    codex_home = os.environ.get("CODEX_HOME", "").strip()
+    return Path(codex_home).expanduser() if codex_home else Path.home() / ".codex"
 
 
 def bundled_openai_runtime() -> tuple[Path, Path | None]:

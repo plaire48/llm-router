@@ -5,7 +5,7 @@ OpenAI, FabriX, 사내 OpenAI 호환 LLM을 localhost의 OpenAI 호환 API로 �
 
 ## 화면 구성
 
-- **연결** — OpenAI 브라우저 로그인과 사내 API 연결
+- **연결** — ChatGPT 계정 OAuth와 사내 API 연결
 - **LLM 서빙** — 단일 로컬 Gateway와 model 기반 프로필 라우팅
 - **대시보드** — 계정 한도, 프로필·모델별 비용, 일별 입력·출력 토큰
 
@@ -14,7 +14,7 @@ OpenAI, FabriX, 사내 OpenAI 호환 LLM을 localhost의 OpenAI 호환 API로 �
 
 ## 설치와 실행
 
-Python 3.11 이상이 필요합니다. OpenAI 브라우저 로그인에 필요한 공식 런타임은 Python 의존성에
+Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth에 필요한 공식 런타임은 Python 의존성에
 포함되므로 별도 OpenAI CLI는 필요하지 않습니다. OpenAI 추론은 내부 OpenCode 서버에서 실행되므로
 `opencode` 명령은 설치되어 있어야 합니다.
 
@@ -32,7 +32,6 @@ LLM_ROUTER_HOST=127.0.0.1
 LLM_ROUTER_PORT=8787
 LLM_ROUTER_USAGE_DB=~/.llm-router/usage.db
 LLM_ROUTER_LOG_BODIES=false
-LLM_ROUTER_OPENAI_HOME=~/.llm-router/openai
 LLM_ROUTER_OPENCODE_URL=http://127.0.0.1:4097
 LLM_ROUTER_OPENCODE_BINARY=opencode
 LLM_ROUTER_OPENCODE_DIRECTORY=~/.llm-router/opencode
@@ -54,9 +53,15 @@ llm-router serve --profiles profiles.yaml
 
 ## 브라우저 로그인
 
-화면의 `연결` 메뉴에서 OpenAI 로그인을 사용할 수 있습니다.
+화면의 `연결` 메뉴에서 **Sign in with ChatGPT** 계정 OAuth를 사용할 수 있습니다.
 
-- OpenAI: 공식 계정 서비스가 ChatGPT 브랜드의 브라우저 로그인, localhost 콜백, 앱 전용 계정 저장소의 토큰 저장·갱신을 담당
+- 기본적으로 `CODEX_HOME` 또는 `~/.codex/auth.json`의 기존 `auth_mode=chatgpt` 세션을 공유합니다.
+- 유효한 세션이 없을 때만 공식 계정 서비스가 브라우저 OAuth와 localhost 콜백을 시작합니다.
+- 별도 계정 저장소가 필요하면 `LLM_ROUTER_OPENAI_HOME=~/.llm-router/openai`처럼 명시합니다.
+
+공유 세션은 Codex CLI와 같은 공식 계정 캐시를 사용하므로 대시보드에서 연결을 해제하면 Codex
+CLI/IDE의 ChatGPT 로그인도 함께 해제될 수 있습니다. `codex login`이라는 명령 이름과 무관하게
+인증 방식은 API 키가 아닌 ChatGPT 계정 OAuth입니다.
 
 Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로그인, 프로필 생성, 추론 요청을 모두
 거부합니다. 기존 자격증명 파일은 자동 삭제하지 않지만 라우터가 사용하지 않습니다.
@@ -74,7 +79,7 @@ OpenAI OAuth 프로필의 추론은 내부 OpenCode 세션에서 실행한 뒤 C
 
 `LLM 서빙` 메뉴에서 다음 연결 방식을 선택할 수 있습니다.
 
-1. OpenAI 브라우저 로그인
+1. ChatGPT 계정 OAuth
 2. FabriX 사내 API
 3. OpenAI 호환 LLM Endpoint
 
@@ -87,7 +92,7 @@ Models:           http://127.0.0.1:8787/v1/models
 ```
 
 프로필마다 별도 포트를 시작하거나 중지하지 않습니다. 요청의 `model`에 프로필 이름을 넣으면 Gateway가
-OpenAI 브라우저 로그인, FabriX, OpenAI 호환 LLM 중 알맞은 연결로 라우팅합니다.
+ChatGPT 계정 OAuth, FabriX, OpenAI 호환 LLM 중 알맞은 연결로 라우팅합니다.
 
 ```bash
 curl http://127.0.0.1:8787/v1/chat/completions \
@@ -137,7 +142,7 @@ Agent 코드를 그대로 실행할 수 있습니다.
 
 ## 내부 OpenCode 실행
 
-OpenAI 브라우저 로그인 프로필의 실제 호출 경로는 `사용자/IDE → llm-router → OpenCode → OpenAI`입니다.
+ChatGPT 계정 OAuth 프로필의 실제 호출 경로는 `사용자/IDE → llm-router → OpenCode → OpenAI`입니다.
 라우터가 OpenCode의 headless 서버를 localhost에서 지연 시작하고, 요청마다 임시 세션을 만든 뒤 응답을
 OpenAI Chat Completions 형식으로 변환합니다. 사용자가 `opencode.json`을 복사하거나 OpenCode를 별도로
 실행할 필요는 없습니다.
