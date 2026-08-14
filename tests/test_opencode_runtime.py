@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 import time
@@ -123,6 +124,41 @@ async def test_runtime_reports_missing_opencode_binary(tmp_path):
     assert error.value.status_code == 503
 
 
+async def test_runtime_reports_opencode_exit_code_and_stderr(tmp_path, monkeypatch):
+    def handler(_request):
+        return httpx.Response(503)
+
+    stderr = asyncio.StreamReader()
+    stderr.feed_data(b"startup failed because execution was blocked\n")
+    stderr.feed_eof()
+
+    class FailedProcess:
+        returncode = 5
+
+        def __init__(self):
+            self.stderr = stderr
+
+    async def create_process(*_args, **_kwargs):
+        return FailedProcess()
+
+    monkeypatch.setattr(
+        "llm_router.opencode_runtime.asyncio.create_subprocess_exec",
+        create_process,
+    )
+    monkeypatch.setattr("llm_router.opencode_runtime._loopback_port_available", lambda *_: True)
+    runtime = OpenCodeRuntime(
+        directory=tmp_path,
+        bundled_resolver=lambda: "C:/package/opencode.exe",
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(RouterError) as error:
+            await runtime.ensure_started(client)
+
+    assert error.value.code == "opencode_runtime_unavailable"
+    assert "종료 코드 5" in error.value.message
+    assert "execution was blocked" in error.value.message
+
+
 async def test_runtime_runs_openai_oauth_entirely_through_opencode(tmp_path):
     calls = []
 
@@ -219,6 +255,36 @@ def test_runtime_prefers_bundled_opencode_over_path_install(tmp_path):
     )
 
     assert runtime._resolve_binary() == str(bundled)
+
+
+def test_runtime_prefers_bundle_for_windows_executable_name(tmp_path):
+    bundled = tmp_path / "package" / "opencode.exe"
+    bundled.parent.mkdir()
+    bundled.write_text("binary")
+    runtime = OpenCodeRuntime(
+        binary="opencode.exe",
+        binary_finder=lambda _: None,
+        bundled_resolver=lambda: str(bundled),
+    )
+
+    assert runtime._resolve_binary() == str(bundled)
+
+
+def test_runtime_prefers_bundle_when_binary_setting_is_empty(tmp_path):
+    bundled = tmp_path / "package" / "opencode.exe"
+    bundled.parent.mkdir()
+    bundled.write_text("binary")
+    runtime = OpenCodeRuntime(
+        binary="   ",
+        binary_finder=lambda _: None,
+        bundled_resolver=lambda: str(bundled),
+    )
+
+    assert runtime._resolve_binary() == str(bundled)
+
+
+def test_runtime_allows_slow_windows_first_start_by_default():
+    assert OpenCodeRuntime().startup_timeout == 30.0
 
 
 def test_runtime_honors_explicit_opencode_binary_over_bundle(tmp_path):

@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.9-<platform>.whl
+python3 -m pip install llm_router-0.1.10-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.9 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.9-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.9" `
+gh release download v0.1.10 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.10-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.10" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -105,6 +105,11 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
 `certificate verify failed`가 계속 표시되면 `.env`의 경로가 실제 PEM 파일을 가리키는지 확인한 뒤
 라우터를 완전히 종료하고 다시 시작합니다. 이미 실행 중인 프로세스에는 변경된 환경 변수가 반영되지
 않습니다.
+
+번들 OpenCode 경로가 출력되는데도 내부 서버 연결 오류가 발생하면 v0.1.10 이상으로 업데이트합니다.
+Windows의 첫 실행 보안 검사를 고려해 최대 30초간 준비를 기다리며, 프로세스가 종료되면 종료 코드와
+OpenCode의 시작 오류를 대시보드에 표시합니다. 오류에 실행 차단이 명시된 경우에만 Windows 보안의
+보호 기록 또는 사내 AppLocker 정책을 확인합니다.
 
 서버 실행 후 [http://localhost:8787/dashboard](http://localhost:8787/dashboard)를 엽니다.
 

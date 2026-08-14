@@ -8,7 +8,9 @@ import shutil
 import socket
 import stat
 import tempfile
+from collections import deque
 from collections.abc import Callable
+from contextlib import suppress
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -79,7 +81,7 @@ class OpenCodeRuntime:
         auto_start: bool = True,
         binary_finder: BinaryFinder = shutil.which,
         bundled_resolver: BundledResolver = bundled_opencode_path,
-        startup_timeout: float = 8.0,
+        startup_timeout: float = 30.0,
         aipro_token_store: AIProTokenStore | None = None,
     ) -> None:
         configured_base_url = base_url.rstrip("/")
@@ -111,6 +113,8 @@ class OpenCodeRuntime:
         self.startup_timeout = startup_timeout
         self.aipro_token_store = aipro_token_store or AIProTokenStore.default()
         self.process: asyncio.subprocess.Process | None = None
+        self._stderr_task: asyncio.Task[None] | None = None
+        self._stderr_lines: deque[str] = deque(maxlen=20)
         self._lock = asyncio.Lock()
         self._profile_lock = asyncio.Lock()
         self._api_profile_configs: dict[str, dict[str, object]] = {}
@@ -148,10 +152,13 @@ class OpenCodeRuntime:
                 self._relocate_from_conflict()
             if not self.auto_start:
                 raise self._unavailable_error()
+            if self.process is not None and self.process.returncode is not None:
+                await self.close()
             executable = self._resolve_binary()
             if executable is None:
                 raise RouterError(
                     "배포 패키지에 포함된 OpenCode 실행 파일을 찾을 수 없습니다. "
+                    f"설정값: {self.binary!r}. "
                     "현재 플랫폼용 llm-router wheel을 다시 설치하거나 "
                     "LLM_ROUTER_OPENCODE_BINARY에 실행 파일의 절대 경로를 설정하세요.",
                     type="configuration_error",
@@ -177,6 +184,7 @@ class OpenCodeRuntime:
                     raise self._port_in_use_error()
             self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             environment = self._isolated_environment()
+            self._stderr_lines.clear()
             try:
                 self.process = await asyncio.create_subprocess_exec(
                     executable,
@@ -189,11 +197,17 @@ class OpenCodeRuntime:
                     cwd=self.directory,
                     env=environment,
                     stdout=asyncio.subprocess.DEVNULL,
-                    stderr=asyncio.subprocess.DEVNULL,
+                    stderr=asyncio.subprocess.PIPE,
                     **background_process_options(),
                 )
             except OSError as exc:
-                raise self._unavailable_error() from exc
+                raise self._unavailable_error(
+                    f"실행 파일: {executable}. 운영체제 오류: {exc}"
+                ) from exc
+
+            process_stderr = getattr(self.process, "stderr", None)
+            if process_stderr is not None:
+                self._stderr_task = asyncio.create_task(self._capture_stderr(process_stderr))
 
             loop = asyncio.get_running_loop()
             deadline = loop.time() + self.startup_timeout
@@ -203,8 +217,16 @@ class OpenCodeRuntime:
                 if await self.ready(client):
                     return
                 await asyncio.sleep(0.1)
+            return_code = self.process.returncode
             await self.close()
-            raise self._unavailable_error()
+            if return_code is not None:
+                detail = f"OpenCode가 준비 전에 종료되었습니다(종료 코드 {return_code})."
+            else:
+                detail = f"{self.startup_timeout:g}초 안에 준비 상태가 되지 않았습니다."
+            stderr = self._startup_stderr()
+            if stderr:
+                detail = f"{detail} OpenCode 오류: {stderr}"
+            raise self._unavailable_error(f"실행 파일: {executable}. {detail}")
 
     async def ensure_profile(self, client: httpx.AsyncClient, profile: Profile) -> None:
         """Start OpenCode with an AI Pro API key or browser JWT custom provider."""
@@ -396,17 +418,42 @@ class OpenCodeRuntime:
     async def close(self) -> None:
         process = self.process
         self.process = None
-        if process is None or process.returncode is not None:
+        if process is None:
+            await self._finish_stderr_capture()
+            return
+        if process.returncode is None:
+            try:
+                process.terminate()
+            except ProcessLookupError:
+                pass
+            else:
+                try:
+                    await asyncio.wait_for(process.wait(), timeout=2.0)
+                except TimeoutError:
+                    process.kill()
+                    await process.wait()
+        await self._finish_stderr_capture()
+
+    async def _capture_stderr(self, stream: asyncio.StreamReader) -> None:
+        while line := await stream.readline():
+            decoded = line.decode("utf-8", errors="replace").strip()
+            if decoded:
+                self._stderr_lines.append(decoded)
+
+    async def _finish_stderr_capture(self) -> None:
+        task = self._stderr_task
+        self._stderr_task = None
+        if task is None:
             return
         try:
-            process.terminate()
-        except ProcessLookupError:
-            return
-        try:
-            await asyncio.wait_for(process.wait(), timeout=2.0)
+            await asyncio.wait_for(task, timeout=1.0)
         except TimeoutError:
-            process.kill()
-            await process.wait()
+            task.cancel()
+            with suppress(asyncio.CancelledError):
+                await task
+
+    def _startup_stderr(self) -> str:
+        return " | ".join(self._stderr_lines)[-1200:]
 
     def remove_openai_auth(self) -> None:
         """Remove only the router-owned OpenAI credential from OpenCode storage."""
@@ -503,14 +550,20 @@ class OpenCodeRuntime:
         return environment
 
     def _resolve_binary(self) -> str | None:
-        candidate = Path(self.binary).expanduser()
-        if candidate.parent != Path("."):
-            return str(candidate) if candidate.is_file() else None
-        if self.binary == "opencode":
+        configured = self.binary.strip()
+        if not configured or configured.casefold() in {"opencode", "opencode.exe"}:
             bundled = self.bundled_resolver()
             if bundled is not None:
                 return bundled
-        return self.binary_finder(self.binary)
+            lookup = configured or "opencode"
+            found = self.binary_finder(lookup)
+            if found is None and lookup.casefold() == "opencode.exe":
+                found = self.binary_finder("opencode")
+            return found
+        candidate = Path(configured).expanduser()
+        if candidate.parent != Path("."):
+            return str(candidate) if candidate.is_file() else None
+        return self.binary_finder(configured)
 
     def _relocate_from_conflict(self) -> None:
         parsed = urlsplit(self.base_url)
@@ -532,9 +585,9 @@ class OpenCodeRuntime:
         )
 
     @staticmethod
-    def _unavailable_error() -> RouterError:
+    def _unavailable_error(detail: str | None = None) -> RouterError:
         return RouterError(
-            "OpenCode 내부 서버에 연결할 수 없습니다.",
+            "OpenCode 내부 서버에 연결할 수 없습니다." + (f" {detail}" if detail else ""),
             type="upstream_error",
             code="opencode_runtime_unavailable",
             status_code=503,
