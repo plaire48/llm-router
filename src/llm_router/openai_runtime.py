@@ -75,9 +75,19 @@ class OpenAIAppServerSession:
             environment["PATH"] = os.pathsep.join(
                 part for part in (str(path_dir), current_path) if part
             )
-        extra_ca = environment.get("NODE_EXTRA_CA_CERTS", "").strip()
-        if extra_ca and not environment.get("SSL_CERT_FILE", "").strip():
-            environment["SSL_CERT_FILE"] = self._merged_ca_bundle(extra_ca)
+        codex_ca = environment.get("CODEX_CA_CERTIFICATE", "").strip()
+        node_ca = environment.get("NODE_EXTRA_CA_CERTS", "").strip()
+        configured_ca = codex_ca or node_ca
+        ca_variable = "CODEX_CA_CERTIFICATE" if codex_ca else "NODE_EXTRA_CA_CERTS"
+        if configured_ca:
+            bundle = self._merged_ca_bundle(configured_ca, variable=ca_variable)
+            # Codex login uses its dedicated variable. Keep the generic Rust and
+            # Python variables aligned for token exchange and subsequent requests.
+            environment["CODEX_CA_CERTIFICATE"] = bundle
+            if not environment.get("SSL_CERT_FILE", "").strip():
+                environment["SSL_CERT_FILE"] = bundle
+        elif environment.get("SSL_CERT_FILE", "").strip():
+            environment["CODEX_CA_CERTIFICATE"] = environment["SSL_CERT_FILE"]
         if environment.get("SSL_CERT_FILE") and not environment.get("CARGO_HTTP_CAINFO"):
             environment["CARGO_HTTP_CAINFO"] = environment["SSL_CERT_FILE"]
         try:
@@ -141,14 +151,19 @@ class OpenAIAppServerSession:
         finally:
             self._remove_ca_bundle()
 
-    def _merged_ca_bundle(self, extra_ca: str) -> str:
+    def _merged_ca_bundle(
+        self,
+        extra_ca: str,
+        *,
+        variable: str = "NODE_EXTRA_CA_CERTS",
+    ) -> str:
         extra_path = Path(extra_ca).expanduser()
         try:
             public_certificates = Path(certifi.where()).read_bytes()
             extra_certificates = extra_path.read_bytes()
         except OSError as exc:
             raise RouterError(
-                f"NODE_EXTRA_CA_CERTS 인증서를 읽을 수 없습니다: {exc}",
+                f"{variable} 인증서를 읽을 수 없습니다: {exc}",
                 type="configuration_error",
                 code="tls_ca_bundle_invalid",
                 status_code=500,

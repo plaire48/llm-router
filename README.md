@@ -47,14 +47,36 @@ LLM_ROUTER_OPENCODE_DIRECTORY=~/.llm-router/opencode
 LLM_ROUTER_OPENCODE_AUTO_START=true
 ```
 
-사내 HTTPS 프록시가 자체 CA로 인증서를 서명하는 환경에서는 기존 Node.js 설정을 그대로 사용할 수
-있습니다. 라우터는 기본 공개 CA에 `NODE_EXTRA_CA_CERTS`의 인증서를 추가해 로그인, 토큰 갱신, 추론
-요청 모두에 적용합니다.
+사내 HTTPS 프록시가 자체 CA로 인증서를 서명하는 환경에서는 PEM 인증서 파일을 설정합니다. 라우터는
+기본 공개 CA에 인증서를 추가하고 공식 Codex 로그인 변수 `CODEX_CA_CERTIFICATE`에도 전달하여 로그인,
+토큰 교환·갱신, 추론 요청에 동일하게 적용합니다. `NODE_EXTRA_CA_CERTS`만 설정해도 라우터가 Codex
+변수로 변환합니다.
 
 ```bash
 export NODE_EXTRA_CA_CERTS=/absolute/path/company-ca.pem
 llm-router serve --profiles profiles.yaml
 ```
+
+Windows 11에서는 프로젝트의 `.env`에 실제 파일 경로를 넣는 방식이 가장 확실합니다. 변수 이름 자체가
+인증서 위치는 아니며, 값이 `-----BEGIN CERTIFICATE-----`로 시작하는 PEM 파일이어야 합니다. 경로에
+공백이 있으면 따옴표로 감쌉니다.
+
+```dotenv
+NODE_EXTRA_CA_CERTS=C:/certs/company-ca.pem
+CODEX_CA_CERTIFICATE=C:/certs/company-ca.pem
+```
+
+PowerShell에서 현재 프로세스에만 적용하려면 다음처럼 설정한 뒤 같은 창에서 라우터를 실행합니다.
+
+```powershell
+$env:NODE_EXTRA_CA_CERTS = 'C:\certs\company-ca.pem'
+$env:CODEX_CA_CERTIFICATE = $env:NODE_EXTRA_CA_CERTS
+python -m llm_router serve --profiles profiles.yaml
+```
+
+Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저 PEM으로 내보내거나
+`certutil -encode company.cer company-ca.pem`으로 변환합니다. 사내 프록시 체인에 중간 CA가 있으면
+같은 PEM 파일에 루트와 중간 인증서를 모두 포함합니다.
 
 인증서 검증을 끄는 방식(`verify=False`)은 지원하지 않습니다.
 

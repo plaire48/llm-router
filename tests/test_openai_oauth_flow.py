@@ -124,6 +124,8 @@ def test_router_account_home_override_keeps_isolated_session(tmp_path, monkeypat
 
 async def test_account_runtime_creates_codex_home_before_launch(tmp_path, monkeypatch):
     account_home = tmp_path / "missing" / "openai"
+    company_ca = tmp_path / "company.pem"
+    company_ca.write_text("-----BEGIN CERTIFICATE-----\ncompany\n-----END CERTIFICATE-----\n")
     launched = False
 
     class FakeStdin:
@@ -152,10 +154,18 @@ async def test_account_runtime_creates_codex_home_before_launch(tmp_path, monkey
         nonlocal launched
         launched = True
         assert Path(kwargs["env"]["CODEX_HOME"]) == account_home
+        certificate = Path(kwargs["env"]["CODEX_CA_CERTIFICATE"])
+        assert kwargs["env"]["SSL_CERT_FILE"] == str(certificate)
+        assert kwargs["env"]["CARGO_HTTP_CAINFO"] == str(certificate)
+        assert "company" in certificate.read_text(encoding="utf-8")
         assert account_home.is_dir()
         return FakeProcess()
 
     monkeypatch.setenv("LLM_ROUTER_OPENAI_HOME", str(account_home))
+    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(company_ca))
+    monkeypatch.delenv("CODEX_CA_CERTIFICATE", raising=False)
+    monkeypatch.delenv("SSL_CERT_FILE", raising=False)
+    monkeypatch.delenv("CARGO_HTTP_CAINFO", raising=False)
     monkeypatch.setattr(openai_runtime.asyncio, "create_subprocess_exec", fake_subprocess_exec)
     session = OpenAIAppServerSession(runtime_resolver=lambda: (tmp_path / "codex", None))
 
@@ -175,3 +185,16 @@ def test_account_runtime_merges_node_extra_ca_with_public_roots(tmp_path):
     assert "company" in Path(bundle).read_text(encoding="utf-8")
     session._remove_ca_bundle()
     assert not session._ca_bundle_path
+
+
+def test_account_runtime_reports_invalid_official_codex_ca(tmp_path):
+    session = OpenAIAppServerSession()
+
+    with pytest.raises(RouterError) as error:
+        session._merged_ca_bundle(
+            str(tmp_path / "missing.pem"),
+            variable="CODEX_CA_CERTIFICATE",
+        )
+
+    assert error.value.code == "tls_ca_bundle_invalid"
+    assert "CODEX_CA_CERTIFICATE" in error.value.message

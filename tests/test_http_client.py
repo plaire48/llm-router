@@ -37,6 +37,21 @@ def test_node_extra_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     assert context.loaded == [str(extra_ca)]
 
 
+def test_official_codex_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
+    extra_ca = tmp_path / "company.pem"
+    extra_ca.write_text("test certificate", encoding="utf-8")
+    context = FakeSSLContext()
+
+    monkeypatch.delenv("SSL_CERT_FILE", raising=False)
+    monkeypatch.delenv("SSL_CERT_DIR", raising=False)
+    monkeypatch.delenv("NODE_EXTRA_CA_CERTS", raising=False)
+    monkeypatch.setenv("CODEX_CA_CERTIFICATE", str(extra_ca))
+    monkeypatch.setattr("llm_router.http_client.ssl.create_default_context", lambda **_: context)
+
+    assert create_ssl_context() is context
+    assert context.loaded == [str(extra_ca)]
+
+
 def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
     extra_ca = tmp_path / "company.pem"
     extra_ca.write_text("test certificate", encoding="utf-8")

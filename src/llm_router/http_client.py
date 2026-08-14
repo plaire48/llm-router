@@ -26,7 +26,7 @@ def _tls_configuration_error(variable: str, exc: BaseException) -> RouterError:
 
 
 def create_ssl_context() -> ssl.SSLContext:
-    """Build the shared TLS trust store, including Node's corporate CA setting."""
+    """Build the shared TLS trust store, including configured corporate CAs."""
     load_dotenv(dotenv_path=Path.cwd() / ".env", override=False)
     ssl_cert_file = _environment_path("SSL_CERT_FILE")
     ssl_cert_dir = _environment_path("SSL_CERT_DIR")
@@ -42,12 +42,20 @@ def create_ssl_context() -> ssl.SSLContext:
         variable = "SSL_CERT_FILE" if ssl_cert_file else "SSL_CERT_DIR"
         raise _tls_configuration_error(variable, exc) from exc
 
-    extra_ca_file = _environment_path("NODE_EXTRA_CA_CERTS")
-    if extra_ca_file and extra_ca_file != ssl_cert_file:
+    extra_ca_files = [
+        (name, path)
+        for name in ("CODEX_CA_CERTIFICATE", "NODE_EXTRA_CA_CERTS")
+        if (path := _environment_path(name))
+    ]
+    loaded: set[str] = set()
+    for variable, extra_ca_file in extra_ca_files:
+        if extra_ca_file == ssl_cert_file or extra_ca_file in loaded:
+            continue
         try:
             context.load_verify_locations(cafile=extra_ca_file)
         except (OSError, ssl.SSLError) as exc:
-            raise _tls_configuration_error("NODE_EXTRA_CA_CERTS", exc) from exc
+            raise _tls_configuration_error(variable, exc) from exc
+        loaded.add(extra_ca_file)
     return context
 
 
