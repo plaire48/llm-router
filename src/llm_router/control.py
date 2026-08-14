@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import time
 import webbrowser
 from collections.abc import Awaitable, Callable
 from contextlib import suppress
@@ -21,7 +22,7 @@ from llm_router.aipro_auth import AIProTokenStore, AIProWebLogin
 from llm_router.config import ProfileFile, ProfileRegistry, Settings
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.env_key import load_provider_env
-from llm_router.credentials.openai_oauth import OpenAIAccountStore
+from llm_router.credentials.openai_oauth import OpenAIAccountStore, refresh_openai_tokens
 from llm_router.errors import RouterError
 from llm_router.models import Profile
 from llm_router.opencode_runtime import OpenCodeRuntime
@@ -88,6 +89,7 @@ class OpenAIWebLogin:
         self.logout_runner = logout_runner
         self._task: asyncio.Task[None] | None = None
         self._last_error: str | None = None
+        self._status_lock = asyncio.Lock()
 
     @property
     def available(self) -> bool:
@@ -97,7 +99,7 @@ class OpenAIWebLogin:
         return True
 
     async def start(self) -> dict[str, Any]:
-        if _openai_oauth_status(self.store)["connected"]:
+        if (await self.status())["connected"]:
             return {"provider": "openai", "status": "connected", "opened_browser": False}
         if self.is_pending():
             return {"provider": "openai", "status": "pending", "opened_browser": True}
@@ -105,6 +107,42 @@ class OpenAIWebLogin:
         self._task = asyncio.create_task(self._run())
         await asyncio.sleep(0)
         return {"provider": "openai", "status": "pending", "opened_browser": True}
+
+    async def status(self) -> dict[str, Any]:
+        """Validate and refresh the stored browser token before reporting it connected."""
+        current = _openai_oauth_status(self.store)
+        expires_at = current.get("expires_at")
+        if (
+            current.get("status") not in {"connected", "expired"}
+            or not current.get("refreshable")
+            or not isinstance(expires_at, (int, float))
+            or expires_at > time.time() + 60
+        ):
+            return current
+        async with self._status_lock:
+            current = _openai_oauth_status(self.store)
+            expires_at = current.get("expires_at")
+            if (
+                current.get("status") not in {"connected", "expired"}
+                or not current.get("refreshable")
+                or not isinstance(expires_at, (int, float))
+                or expires_at > time.time() + 60
+            ):
+                return current
+            tokens = self.store.tokens()
+            if not tokens or not tokens.get("refresh_token") or self.client_getter is None:
+                return current
+            try:
+                client = await self.client_getter()
+                await refresh_openai_tokens(self.store, client, tokens)
+            except RouterError as exc:
+                return {
+                    **current,
+                    "connected": False,
+                    "status": "expired",
+                    "message": f"ChatGPT OAuth 토큰 자동 갱신에 실패했습니다. 다시 로그인하세요. ({exc.code})",
+                }
+            return _openai_oauth_status(self.store)
 
     async def _run(self) -> None:
         try:
@@ -160,18 +198,22 @@ def _openai_oauth_status(store: OpenAIAccountStore) -> dict[str, Any]:
     access_token = tokens.get("access_token") if tokens else None
     account_id = store.account_id(tokens)
     expires_at = store.expires_at(tokens)
-    connected = bool(isinstance(access_token, str) and access_token and account_id)
+    token_present = bool(isinstance(access_token, str) and access_token and account_id)
+    expired = bool(token_present and expires_at is not None and expires_at <= time.time())
+    connected = token_present and not expired
     claims = store.claims(tokens)
     email = claims.get("email")
     return {
         "connected": connected,
-        "status": "connected" if connected else "disconnected",
+        "status": "connected" if connected else "expired" if expired else "disconnected",
         "expires_at": expires_at,
         "refreshable": bool(tokens and tokens.get("refresh_token")),
         "account": email if isinstance(email, str) else None,
         "message": (
             "OpenCode가 관리하는 ChatGPT 계정 OAuth 세션을 사용합니다."
             if connected
+            else "ChatGPT 계정 OAuth 토큰이 만료되었습니다. 다시 로그인하세요."
+            if expired
             else "ChatGPT 계정 OAuth 로그인이 필요합니다."
         ),
     }
@@ -198,6 +240,8 @@ def _profile_status(
         if anthropic_connected:
             return "ready", "Claude 브라우저 로그인 연결됨"
         return "login_required", "Claude 로그인이 필요합니다"
+    if profile.auth == "none":
+        return "ready", "인증 헤더 없이 연결됨"
 
     load_provider_env()
     api_key_ready = bool(profile.api_key_env and os.environ.get(profile.api_key_env, "").strip())
@@ -277,7 +321,7 @@ def _gateway_data(settings: Settings) -> dict[str, str]:
 class ProfileWrite(BaseModel):
     name: str
     provider: Literal["anthropic", "openai", "aipro", "openai_compatible", "fabrix"]
-    auth: Literal["oauth", "api_key"]
+    auth: Literal["oauth", "api_key", "none"]
     model: str
     base_url: str | None = None
     aliases: list[str] = Field(default_factory=list)
@@ -292,7 +336,7 @@ class ProfileWrite(BaseModel):
 
 class ModelDiscovery(BaseModel):
     provider: Literal["anthropic", "openai", "aipro", "openai_compatible", "fabrix"]
-    auth: Literal["oauth", "api_key"]
+    auth: Literal["oauth", "api_key", "none"]
     base_url: str | None = None
     api_key: str | None = None
 
@@ -363,7 +407,7 @@ def build_control_router(
                 "login_pending": False,
             }
         )
-        openai = _openai_oauth_status(codex_store)
+        openai = await openai_web_login.status()
         client = await client_getter()
         runtime_ready = await active_opencode_runtime.usable(client)
         openai.update(
@@ -472,9 +516,18 @@ def build_control_router(
                 code="browser_login_required",
                 status_code=400,
             )
+        effective_auth = payload.auth
+        if (
+            payload.provider == "openai_compatible"
+            and payload.auth == "api_key"
+            and not (payload.api_key and payload.api_key.strip())
+            and not (existing is not None and existing.auth == "api_key" and existing.api_key_env)
+            and not secrets_store.has(payload.name)
+        ):
+            effective_auth = "none"
         api_key_env = None
         client_key_env = None
-        if payload.auth == "api_key":
+        if effective_auth == "api_key":
             if payload.api_key and payload.api_key.strip():
                 api_key_env = secrets_store.set(payload.name, payload.api_key)
             elif existing is not None and existing.api_key_env:
@@ -510,14 +563,14 @@ def build_control_router(
             return Profile(
                 name=payload.name,
                 provider=payload.provider,
-                auth=payload.auth,
+                auth=effective_auth,
                 model=payload.model.strip(),
                 api_key_env=api_key_env,
                 client_key_env=client_key_env,
                 base_url=(
                     payload.base_url.strip()
                     if payload.base_url
-                    else (AI_PRO_BROWSER_BASE_URL if payload.auth == "oauth" else AI_PRO_BASE_URL)
+                    else (AI_PRO_BROWSER_BASE_URL if effective_auth == "oauth" else AI_PRO_BASE_URL)
                     if payload.provider == "aipro"
                     else None
                 ),
@@ -542,6 +595,13 @@ def build_control_router(
                 "OpenAI and Anthropic profiles require browser login.",
                 type="invalid_request_error",
                 code="browser_login_required",
+                status_code=400,
+            )
+        if payload.auth == "none" and payload.provider != "openai_compatible":
+            raise RouterError(
+                "Authentication can be omitted only for OpenAI-compatible endpoints.",
+                type="invalid_request_error",
+                code="invalid_auth_mode",
                 status_code=400,
             )
         if payload.provider == "aipro" or (
@@ -590,7 +650,7 @@ def build_control_router(
                 status_code=400,
             )
         key = (payload.api_key or "").strip()
-        if not key:
+        if payload.auth == "api_key" and not key:
             raise RouterError(
                 "enter an API key before loading models",
                 type="invalid_request_error",
@@ -603,7 +663,7 @@ def build_control_router(
         else:
             base_url = payload.base_url or "https://api.openai.com/v1"
             url = f"{base_url.rstrip('/')}/models"
-            headers = {"authorization": f"Bearer {key}"}
+            headers = {"authorization": f"Bearer {key}"} if key else {}
         client = await client_getter()
         try:
             upstream = await client.get(url, headers=headers, timeout=10)
@@ -665,6 +725,7 @@ def build_control_router(
                 status_code=409,
             )
         profile = profile_from_payload(payload, existing)
+        remove_stored_api_key = existing.auth == "api_key" and profile.auth == "none"
         if is_aipro_profile(existing) and not is_aipro_profile(profile):
             await active_opencode_runtime.remove_profile(existing)
         if profile.provider == "openai" and profile.auth == "oauth":
@@ -677,6 +738,8 @@ def build_control_router(
             await active_opencode_runtime.ensure_profile(client, profile)
         registry.upsert(profile, previous_name=profile_name)
         profiles_file.save(registry)
+        if remove_stored_api_key:
+            secrets_store.delete(profile_name)
         return {
             "profile": profile.name,
             "inference_engine": (

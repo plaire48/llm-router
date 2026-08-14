@@ -134,6 +134,13 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'providerGlyph("openai")' in body
         assert "사내 LLM" in body
         assert "OpenAI 호환 LLM" in body
+        assert 'id="profile-auth-mode"' in body
+        assert '<option value="none">인증 없음</option>' in body
+        assert "API Key를 요구하지 않는 내부 Endpoint" in body
+        assert 'profile.auth==="none"?"인증 없음"' in body
+        assert 'const auth=await api("/v1/auth/status")' in body
+        assert 'statusLabel=policyDisabled?"정책상 중단"' in body
+        assert 'expired?"토큰 만료"' in body
         assert 'data-new-type="${type}"' in body
         assert 'apiConnectionCard("fabrix","FabriX","사내 API","fabrix")' in body
         assert 'apiConnectionCard("openai_compatible","OpenAI 호환 LLM"' in body

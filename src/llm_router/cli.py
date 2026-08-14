@@ -73,6 +73,8 @@ def oauth_login(provider: str) -> None:
 
 
 def _credential_status(provider: str, auth: str, api_key_env: str | None) -> str:
+    if auth == "none":
+        return "not_required"
     if auth == "api_key":
         from llm_router.credentials.env_key import load_provider_env
 

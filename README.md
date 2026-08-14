@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.7-<platform>.whl
+python3 -m pip install llm_router-0.1.8-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.7 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.7-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.7" `
+gh release download v0.1.8 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.8-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.8" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -165,7 +165,8 @@ curl http://127.0.0.1:8787/v1/chat/completions \
   -d '{"model":"openai","messages":[{"role":"user","content":"안녕"}]}'
 ```
 
-API 키는 AI Pro, FabriX와 OpenAI 호환 사내 LLM 프로필에서 입력할 수 있습니다. 키는 `profiles.yaml`에 기록하지 않고
+API 키는 AI Pro, FabriX와 OpenAI 호환 사내 LLM 프로필에서 입력할 수 있습니다. OpenAI 호환 Endpoint가
+인증을 요구하지 않으면 `인증 없음`을 선택하고 API Key를 비워 둡니다. 키는 `profiles.yaml`에 기록하지 않고
 `~/.llm-router/profile-secrets.json`에 0600 권한으로 저장하며 API 응답에도 반환하지 않습니다.
 AI Pro API Key 연결은 기본 Endpoint `https://aipro.sdsdev.co.kr/open/api/v1`과 발급받은 모델 ID를
 사용하며 `Authorization: Bearer <token>`으로 인증합니다. 라우터는
@@ -181,7 +182,11 @@ OpenAI 호환 LLM은 다음 계약을 지원하면 연결됩니다.
 
 - `GET {base_url}/models`
 - `POST {base_url}/chat/completions`
-- Bearer API key
+- Bearer API key 또는 인증 헤더 없음
+
+브라우저 인증은 대시보드가 처음 열릴 때 `/v1/auth/status`에서 먼저 점검합니다. OpenAI OAuth 토큰이
+만료되었거나 60초 안에 만료되면 refresh token으로 자동 갱신한 뒤 프로필 상태를 불러옵니다. 자동 갱신에
+실패하거나 갱신할 수 없는 AI Pro JWT가 만료되면 `토큰 만료`로 표시하고 재로그인을 안내합니다.
 
 FabriX 프로필은 Endpoint, 모델 ID, Client Key, API Token을 입력합니다. `next_langgraph`와 같은
 FabriX 계약으로 업스트림을 호출합니다.

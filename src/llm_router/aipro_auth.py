@@ -137,7 +137,8 @@ class AIProTokenStore:
         token = payload.get("access_token") if payload else None
         claims = jwt_claims(token if isinstance(token, str) else None)
         expires_at = self.expires_at(payload)
-        connected = bool(token) and (expires_at is None or time.time() < expires_at)
+        expired = bool(token) and expires_at is not None and time.time() >= expires_at
+        connected = bool(token) and not expired
         account = next(
             (
                 claims.get(key)
@@ -148,13 +149,15 @@ class AIProTokenStore:
         )
         return {
             "connected": connected,
-            "status": "connected" if connected else "disconnected",
+            "status": "connected" if connected else "expired" if expired else "disconnected",
             "expires_at": expires_at,
             "account": account,
             "refreshable": False,
             "message": (
                 "SAML 브라우저 로그인으로 받은 AI Pro JWT를 사용합니다."
                 if connected
+                else "AI Pro 브라우저 JWT가 만료되었습니다. 다시 로그인하세요."
+                if expired
                 else "AI Pro SAML 브라우저 로그인이 필요합니다."
             ),
         }

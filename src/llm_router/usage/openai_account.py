@@ -8,12 +8,16 @@ from typing import Any
 
 import httpx
 
-from llm_router.credentials.openai_oauth import OpenAIAccountStore
+from llm_router.credentials.openai_oauth import (
+    OPENAI_OAUTH_CLIENT_ID as _OPENAI_OAUTH_CLIENT_ID,
+)
+from llm_router.credentials.openai_oauth import OPENAI_TOKEN_URL as _OPENAI_TOKEN_URL
+from llm_router.credentials.openai_oauth import OpenAIAccountStore, refresh_openai_tokens
 from llm_router.errors import RouterError
 
 OPENAI_ACCOUNT_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
-OPENAI_TOKEN_URL = "https://auth.openai.com/oauth/token"
-OPENAI_OAUTH_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
+OPENAI_TOKEN_URL = _OPENAI_TOKEN_URL
+OPENAI_OAUTH_CLIENT_ID = _OPENAI_OAUTH_CLIENT_ID
 CACHE_TTL_SECONDS = 300.0
 TOKEN_REFRESH_MARGIN_SECONDS = 60.0
 ClientGetter = Callable[[], Awaitable[httpx.AsyncClient]]
@@ -156,55 +160,12 @@ class OpenAIAccountSource:
         client: httpx.AsyncClient,
         tokens: dict[str, Any],
     ) -> dict[str, Any]:
-        refresh_token = tokens.get("refresh_token")
-        if not isinstance(refresh_token, str) or not refresh_token:
-            raise self._login_required()
-        try:
-            response = await client.post(
-                OPENAI_TOKEN_URL,
-                data={
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                    "client_id": OPENAI_OAUTH_CLIENT_ID,
-                },
-                timeout=10.0,
-            )
-        except httpx.RequestError as exc:
-            raise RouterError(
-                f"OpenAI login refresh failed: {exc}",
-                type="authentication_error",
-                code="oauth_refresh_failed",
-                status_code=401,
-            ) from exc
-        if response.status_code in {400, 401, 403}:
-            raise self._login_required()
-        try:
-            response.raise_for_status()
-            payload = response.json()
-        except (httpx.HTTPStatusError, ValueError) as exc:
-            raise RouterError(
-                "OpenAI login refresh failed. Log in again.",
-                type="authentication_error",
-                code="oauth_refresh_failed",
-                status_code=401,
-            ) from exc
-        if not isinstance(payload, dict):
-            raise self._login_required()
-        access_token = payload.get("access_token")
-        if not isinstance(access_token, str) or not access_token:
-            raise self._login_required()
-        expires_in = payload.get("expires_in")
-        expires_at = (
-            self.wall_clock() + float(expires_in) if isinstance(expires_in, (int, float)) else None
+        return await refresh_openai_tokens(
+            self.store,
+            client,
+            tokens,
+            wall_clock=self.wall_clock,
         )
-        refreshed_tokens = {
-            "access_token": access_token,
-            "refresh_token": payload.get("refresh_token") or refresh_token,
-            "account_id": OpenAIAccountStore.account_id(tokens),
-            "expires_at": expires_at,
-        }
-        self.store.update_opencode_oauth(refreshed_tokens)
-        return {key: value for key, value in refreshed_tokens.items() if value is not None}
 
     def _require_tokens(self) -> dict[str, Any]:
         tokens = self.store.tokens()

@@ -58,6 +58,42 @@ def test_profile_requires_base_url_for_compat():
         )
 
 
+def test_openai_compatible_profile_can_explicitly_disable_authentication():
+    profile = Profile.model_validate(
+        {
+            "name": "local",
+            "provider": "openai_compatible",
+            "auth": "none",
+            "base_url": "http://127.0.0.1:11434/v1",
+            "model": "local-model",
+        }
+    )
+
+    assert profile.auth == "none"
+    assert profile.api_key_env is None
+
+    with pytest.raises(ValidationError):
+        Profile.model_validate(
+            {
+                "name": "aipro",
+                "provider": "aipro",
+                "auth": "none",
+                "model": "company-model",
+            }
+        )
+
+    with pytest.raises(ValidationError):
+        Profile.model_validate(
+            {
+                "name": "aipro-compatible",
+                "provider": "openai_compatible",
+                "auth": "none",
+                "base_url": "https://aipro.sdsdev.co.kr/api/v1",
+                "model": "company-model",
+            }
+        )
+
+
 def test_fabrix_profile_requires_endpoint_and_both_credentials():
     profile = Profile.model_validate(
         {

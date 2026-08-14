@@ -57,7 +57,7 @@ class ChatCompletionRequest(BaseModel):
 class Profile(BaseModel):
     name: str
     provider: Literal["anthropic", "openai", "aipro", "openai_compatible", "fabrix"]
-    auth: Literal["oauth", "api_key"]
+    auth: Literal["oauth", "api_key", "none"]
     model: str
     api_key_env: str | None = None
     client_key_env: str | None = None
@@ -82,14 +82,16 @@ class Profile(BaseModel):
             raise ValueError(f"{self.provider} requires base_url")
         if self.auth == "api_key" and not self.api_key_env:
             raise ValueError("auth=api_key requires api_key_env")
+        if self.auth == "none" and self.provider != "openai_compatible":
+            raise ValueError("auth=none is only supported for provider=openai_compatible")
         if self.provider == "fabrix" and not self.client_key_env:
             raise ValueError("fabrix requires client_key_env")
         if self.provider != "fabrix" and self.client_key_env:
             raise ValueError("client_key_env is only supported for provider=fabrix")
         if self.auth == "oauth" and self.provider not in ("anthropic", "openai", "aipro"):
             raise ValueError("auth=oauth is only supported for browser-login providers")
-        if self.auth == "oauth" and (self.api_key_env or self.client_key_env):
-            raise ValueError("auth=oauth does not allow credential environment variables")
+        if self.auth in {"oauth", "none"} and (self.api_key_env or self.client_key_env):
+            raise ValueError(f"auth={self.auth} does not allow credential environment variables")
         if self.provider in {"anthropic", "openai"} and self.auth == "oauth" and self.base_url:
             raise ValueError("browser login profiles do not allow base_url")
         if self.provider == "aipro":
@@ -102,5 +104,7 @@ class Profile(BaseModel):
             and self.base_url
             and is_aipro_base_url(self.base_url)
         ):
+            if self.auth == "none":
+                raise ValueError("AI Pro endpoints require API key or browser authentication")
             self.base_url = effective_aipro_base_url(self.base_url, self.auth)
         return self

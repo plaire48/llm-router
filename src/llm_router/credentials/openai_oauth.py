@@ -5,13 +5,19 @@ import json
 import os
 import stat
 import tempfile
+import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
+
+import httpx
 
 from llm_router.errors import RouterError
 
 OPENAI_AUTH_CLAIM = "https://api.openai.com/auth"
 CHATGPT_ACCOUNT_CLAIM = "https://api.openai.com/auth.chatgpt_account_id"
+OPENAI_TOKEN_URL = "https://auth.openai.com/oauth/token"
+OPENAI_OAUTH_CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
 
 
 def _jwt_claims(token: str | None) -> dict[str, Any]:
@@ -152,6 +158,26 @@ class OpenAIAccountStore:
         new_payload["openai"] = updated
         self.save(new_payload)
 
+    def update_oauth_tokens(self, tokens: dict[str, Any]) -> None:
+        """Persist refreshed OAuth fields without discarding provider metadata."""
+        if self.opencode:
+            self.update_opencode_oauth(tokens)
+            return
+        payload = self.load() or {}
+        existing = payload.get("tokens")
+        updated = dict(existing) if isinstance(existing, dict) else {}
+        updated.update(
+            {
+                key: value
+                for key, value in tokens.items()
+                if value is not None
+                and key in {"access_token", "refresh_token", "account_id", "expires_at"}
+            }
+        )
+        new_payload = dict(payload)
+        new_payload["tokens"] = updated
+        self.save(new_payload)
+
     @staticmethod
     def claims(tokens: dict[str, Any] | None) -> dict[str, Any]:
         if not tokens:
@@ -192,3 +218,71 @@ class OpenAIAccountStore:
             return float(direct)
         value = cls.claims(tokens).get("exp")
         return float(value) if isinstance(value, (int, float)) else None
+
+
+async def refresh_openai_tokens(
+    store: OpenAIAccountStore,
+    client: httpx.AsyncClient,
+    tokens: dict[str, Any] | None = None,
+    *,
+    wall_clock: Callable[[], float] = time.time,
+) -> dict[str, Any]:
+    """Refresh and persist the browser OAuth session shared with OpenCode."""
+    current = tokens or store.tokens()
+    refresh_token = current.get("refresh_token") if current else None
+    if not isinstance(refresh_token, str) or not refresh_token:
+        raise _openai_login_required()
+    try:
+        response = await client.post(
+            OPENAI_TOKEN_URL,
+            data={
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+                "client_id": OPENAI_OAUTH_CLIENT_ID,
+            },
+            timeout=10.0,
+        )
+    except httpx.RequestError as exc:
+        raise RouterError(
+            f"OpenAI login refresh failed: {exc}",
+            type="authentication_error",
+            code="oauth_refresh_failed",
+            status_code=401,
+        ) from exc
+    if response.status_code in {400, 401, 403}:
+        raise _openai_login_required()
+    try:
+        response.raise_for_status()
+        payload = response.json()
+    except (httpx.HTTPStatusError, ValueError) as exc:
+        raise RouterError(
+            "OpenAI login refresh failed. Log in again.",
+            type="authentication_error",
+            code="oauth_refresh_failed",
+            status_code=401,
+        ) from exc
+    if not isinstance(payload, dict):
+        raise _openai_login_required()
+    access_token = payload.get("access_token")
+    if not isinstance(access_token, str) or not access_token:
+        raise _openai_login_required()
+    expires_in = payload.get("expires_in")
+    expires_at = wall_clock() + float(expires_in) if isinstance(expires_in, (int, float)) else None
+    refreshed = {
+        "access_token": access_token,
+        "refresh_token": payload.get("refresh_token") or refresh_token,
+        "account_id": OpenAIAccountStore.account_id(current),
+        "expires_at": expires_at,
+    }
+    normalized = {key: value for key, value in refreshed.items() if value is not None}
+    store.update_oauth_tokens(normalized)
+    return normalized
+
+
+def _openai_login_required() -> RouterError:
+    return RouterError(
+        "OpenAI browser login is required.",
+        type="authentication_error",
+        code="oauth_required",
+        status_code=401,
+    )

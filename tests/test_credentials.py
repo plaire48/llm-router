@@ -7,6 +7,7 @@ import pytest
 import respx
 
 from llm_router.credentials.anthropic_oauth import AnthropicOAuth, TokenStore
+from llm_router.credentials.base import NoAuthCredential
 from llm_router.credentials.env_key import EnvApiKey
 from llm_router.errors import RouterError
 from llm_router.oauth import constants
@@ -23,6 +24,10 @@ async def test_env_key_styles(monkeypatch):
         "anthropic-version": "2023-06-01",
         "content-type": "application/json",
     }
+
+
+async def test_no_auth_credential_sends_no_authentication_headers():
+    assert await NoAuthCredential().headers() == {}
 
 
 async def test_env_key_missing_raises_401(monkeypatch):

@@ -41,6 +41,8 @@ def test_aipro_token_store_rejects_invalid_and_expired_jwts(tmp_path):
     store.save(_jwt({"exp": time.time() - 10}))
     assert store.token() is None
     assert store.status()["connected"] is False
+    assert store.status()["status"] == "expired"
+    assert "다시 로그인" in store.status()["message"]
 
 
 async def test_aipro_browser_login_receives_the_webview_jwt_header(tmp_path):

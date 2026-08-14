@@ -153,6 +153,28 @@ async def test_openai_compatible_uses_profile_base_url(monkeypatch):
 
 
 @respx.mock
+async def test_openai_compatible_can_call_a_keyless_upstream_without_authorization():
+    profile = Profile(
+        name="keyless",
+        provider="openai_compatible",
+        auth="none",
+        base_url="http://localhost:11434/v1",
+        model="local-model",
+    )
+    captured = {}
+
+    def handler(request):
+        captured["authorization"] = request.headers.get("authorization")
+        return httpx.Response(200, json={"choices": []})
+
+    respx.post("http://localhost:11434/v1/chat/completions").mock(side_effect=handler)
+    async with httpx.AsyncClient() as client:
+        await build_adapter(profile, client).complete(_request("keyless"), profile)
+
+    assert captured["authorization"] is None
+
+
+@respx.mock
 async def test_fabrix_adapter_uses_reference_protocol_and_headers(monkeypatch):
     monkeypatch.setenv("FABRIX_CLIENT_KEY", "client-key-123")
     monkeypatch.setenv("FABRIX_API_TOKEN", "token-abc")

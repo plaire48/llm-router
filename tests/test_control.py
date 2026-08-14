@@ -11,7 +11,7 @@ from llm_router.aipro_auth import AIProTokenStore
 from llm_router.config import ProfileRegistry, Settings
 from llm_router.control import ClaudeWebLogin, OpenAIWebLogin
 from llm_router.credentials.anthropic_oauth import TokenStore
-from llm_router.credentials.openai_oauth import OpenAIAccountStore
+from llm_router.credentials.openai_oauth import OPENAI_TOKEN_URL, OpenAIAccountStore
 from llm_router.models import Profile
 from llm_router.profile_secrets import ProfileSecretStore
 from llm_router.server import create_app
@@ -106,6 +106,7 @@ def _client(
     aipro_connected=False,
     aipro_login=None,
     opencode_runtime=None,
+    openai_expires_in=3600,
 ):
     registry = ProfileRegistry([profile.model_copy(deep=True) for profile in REGISTRY.profiles()])
     claude_store = TokenStore(tmp_path / "claude.json")
@@ -114,7 +115,7 @@ def _client(
         {
             "auth_mode": "chatgpt",
             "tokens": {
-                "access_token": _jwt({"exp": time.time() + 3600}),
+                "access_token": _jwt({"exp": time.time() + openai_expires_in}),
                 "refresh_token": "openai-refresh-secret",
                 "account_id": "account_1",
             },
@@ -156,6 +157,53 @@ def test_auth_status_reports_browser_providers_without_exposing_tokens(tmp_path)
     assert response.headers["cache-control"] == "private, no-store"
     assert "openai-refresh-secret" not in response.text
     assert "access_token" not in response.text
+
+
+@respx.mock
+def test_initial_auth_status_refreshes_an_expired_openai_browser_token(tmp_path):
+    refresh = respx.post(OPENAI_TOKEN_URL).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "access_token": _jwt({"exp": time.time() + 7200}),
+                "refresh_token": "openai-refresh-new",
+                "expires_in": 7200,
+            },
+        )
+    )
+
+    with _client(
+        tmp_path,
+        openai_expires_in=-60,
+        opencode_runtime=FakeOpenCodeRuntime(),
+    ) as client:
+        response = client.get("/v1/auth/status", headers=AUTH)
+
+    openai = next(item for item in response.json()["data"] if item["provider"] == "openai")
+    saved = json.loads((tmp_path / "auth.json").read_text())["tokens"]
+    assert response.status_code == 200
+    assert refresh.call_count == 1
+    assert openai["connected"] is True
+    assert openai["status"] == "connected"
+    assert saved["refresh_token"] == "openai-refresh-new"
+    assert saved["expires_at"] > time.time()
+
+
+@respx.mock
+def test_initial_auth_status_requires_login_when_openai_refresh_fails(tmp_path):
+    respx.post(OPENAI_TOKEN_URL).mock(return_value=httpx.Response(400, json={"error": "x"}))
+
+    with _client(
+        tmp_path,
+        openai_expires_in=-60,
+        opencode_runtime=FakeOpenCodeRuntime(),
+    ) as client:
+        response = client.get("/v1/auth/status", headers=AUTH)
+
+    openai = next(item for item in response.json()["data"] if item["provider"] == "openai")
+    assert openai["connected"] is False
+    assert openai["status"] == "expired"
+    assert "다시 로그인" in openai["message"]
 
 
 def test_profiles_are_routes_on_one_shared_gateway(tmp_path):
@@ -246,6 +294,28 @@ def test_openai_model_discovery_comes_from_internal_opencode(tmp_path):
     assert response.status_code == 200
     assert response.json()["data"] == ["gpt-a", "gpt-z"]
     assert provider.called
+
+
+@respx.mock
+def test_keyless_model_discovery_omits_authorization(tmp_path):
+    models = respx.get("https://llm.company.test/v1/models").mock(
+        return_value=httpx.Response(200, json={"data": [{"id": "local-model"}]})
+    )
+
+    with _client(tmp_path) as client:
+        response = client.post(
+            "/v1/profiles/discover-models",
+            headers=AUTH,
+            json={
+                "provider": "openai_compatible",
+                "auth": "none",
+                "base_url": "https://llm.company.test/v1",
+            },
+        )
+
+    assert response.status_code == 200
+    assert response.json()["data"] == ["local-model"]
+    assert "authorization" not in models.calls.last.request.headers
 
 
 def test_aipro_model_discovery_requires_a_manual_model_id(tmp_path):
@@ -379,6 +449,64 @@ def test_api_key_profile_is_added_as_a_gateway_route_without_exposing_key(tmp_pa
     assert "company-secret" not in listed.text
     assert "company-secret" not in (tmp_path / "profiles.yaml").read_text()
     assert "company-secret" in (tmp_path / "secrets.json").read_text()
+
+
+def test_openai_compatible_profile_can_leave_api_key_blank(tmp_path):
+    with _client(tmp_path) as client:
+        created = client.post(
+            "/v1/profiles",
+            headers=AUTH,
+            json={
+                "name": "keyless-llm",
+                "provider": "openai_compatible",
+                "auth": "api_key",
+                "model": "local-model",
+                "base_url": "http://127.0.0.1:11434/v1",
+                "api_key": "",
+            },
+        )
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    profile = next(item for item in listed.json()["data"] if item["name"] == "keyless-llm")
+    assert created.status_code == 200
+    assert profile["auth"] == "none"
+    assert profile["status"] == "ready"
+    assert profile["has_api_key"] is False
+    assert "api_key_env" not in (tmp_path / "profiles.yaml").read_text()
+
+
+def test_openai_compatible_profile_can_switch_from_api_key_to_no_auth(tmp_path):
+    secrets_path = tmp_path / "secrets.json"
+    with _client(tmp_path) as client:
+        client.post(
+            "/v1/profiles",
+            headers=AUTH,
+            json={
+                "name": "switchable",
+                "provider": "openai_compatible",
+                "auth": "api_key",
+                "model": "local-model",
+                "base_url": "http://127.0.0.1:11434/v1",
+                "api_key": "remove-me",
+            },
+        )
+        updated = client.put(
+            "/v1/profiles/switchable",
+            headers=AUTH,
+            json={
+                "name": "switchable",
+                "provider": "openai_compatible",
+                "auth": "none",
+                "model": "local-model",
+                "base_url": "http://127.0.0.1:11434/v1",
+            },
+        )
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    profile = next(item for item in listed.json()["data"] if item["name"] == "switchable")
+    assert updated.status_code == 200
+    assert profile["auth"] == "none"
+    assert "remove-me" not in secrets_path.read_text()
 
 
 def test_browser_login_profiles_reject_api_key_auth(tmp_path):
