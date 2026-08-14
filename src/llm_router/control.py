@@ -84,7 +84,10 @@ class OpenAIWebLogin:
 
     @property
     def available(self) -> bool:
-        return self.runtime is None or not self.runtime.auto_start or self.runtime.binary_available
+        # Keep browser OAuth actionable even when the runtime preflight cannot
+        # resolve OpenCode yet. Starting the flow performs the authoritative
+        # runtime check and reports an actionable error through auth status.
+        return True
 
     async def start(self) -> dict[str, Any]:
         if _openai_oauth_status(self.store)["connected"]:

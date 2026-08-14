@@ -243,6 +243,33 @@ async def test_openai_browser_login_controller_tracks_opencode_completion(tmp_pa
     assert (await openai.start())["status"] == "connected"
 
 
+async def test_openai_browser_login_is_not_blocked_by_runtime_preflight(tmp_path):
+    class MissingRuntime:
+        auto_start = True
+        binary_available = False
+
+    attempted = False
+
+    async def login_openai():
+        nonlocal attempted
+        attempted = True
+
+    openai = OpenAIWebLogin(
+        OpenAIAccountStore(tmp_path / "openai.json"),
+        runtime=MissingRuntime(),
+        login_runner=login_openai,
+    )
+
+    assert openai.available is True
+    assert (await openai.start()) == {
+        "provider": "openai",
+        "status": "pending",
+        "opened_browser": True,
+    }
+    await openai._task
+    assert attempted is True
+
+
 async def test_claude_browser_login_controller_is_policy_disabled(tmp_path):
     claude = ClaudeWebLogin(TokenStore(tmp_path / "claude.json"))
 
