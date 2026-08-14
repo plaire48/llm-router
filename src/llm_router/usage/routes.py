@@ -8,7 +8,6 @@ from fastapi import APIRouter, Depends, Query, Response
 from fastapi.responses import HTMLResponse
 
 from llm_router.errors import RouterError
-from llm_router.usage.pricing import estimate_api_cost
 
 
 def _require_store(store: Any | None) -> Any:
@@ -34,15 +33,6 @@ def build_usage_router(
     @router.get("/summary")
     async def summary(days: int = Query(default=7, ge=1, le=365)) -> dict:
         rows = await _require_store(store).summary(days=days)
-        for row in rows:
-            row.update(
-                estimate_api_cost(
-                    row["provider"],
-                    row["upstream_model"],
-                    row["prompt_tokens"],
-                    row["completion_tokens"],
-                )
-            )
         return {"object": "list", "days": days, "data": rows}
 
     @router.get("/calls")
@@ -93,7 +83,22 @@ def build_usage_router(
                 "rate_limits": {},
                 "token_usage": {"summary": {}, "daily_usage_buckets": []},
             }
-        return (await openai_account_source.report()).to_dict()
+        try:
+            return (await openai_account_source.report()).to_dict()
+        except RouterError as exc:
+            if exc.status_code < 500:
+                raise
+            return {
+                "object": "openai_account_usage",
+                "status": "temporarily_unavailable",
+                "source": "openai_chatgpt_usage_api",
+                "configured": True,
+                "stale": False,
+                "message": exc.message,
+                "error_code": exc.code,
+                "rate_limits": {},
+                "token_usage": {"summary": {}, "daily_usage_buckets": []},
+            }
 
     return router
 
@@ -101,10 +106,7 @@ def build_usage_router(
 def build_dashboard_router(dashboard_session: str) -> APIRouter:
     router = APIRouter()
 
-    @router.get("/dashboard", response_class=HTMLResponse)
-    async def dashboard() -> HTMLResponse:
-        html = resources.files("llm_router.usage").joinpath("dashboard.html").read_text("utf-8")
-        response = HTMLResponse(html)
+    def issue_dashboard_session(response: Response) -> None:
         response.headers["Cache-Control"] = "private, no-store"
         response.set_cookie(
             key="llm_router_dashboard",
@@ -114,6 +116,18 @@ def build_dashboard_router(dashboard_session: str) -> APIRouter:
             samesite="strict",
             path="/",
         )
+
+    @router.get("/dashboard", response_class=HTMLResponse)
+    async def dashboard() -> HTMLResponse:
+        html = resources.files("llm_router.usage").joinpath("dashboard.html").read_text("utf-8")
+        response = HTMLResponse(html)
+        issue_dashboard_session(response)
+        return response
+
+    @router.post("/v1/dashboard/session", status_code=204)
+    async def refresh_dashboard_session() -> Response:
+        response = Response(status_code=204)
+        issue_dashboard_session(response)
         return response
 
     @router.get("/favicon.svg", include_in_schema=False)

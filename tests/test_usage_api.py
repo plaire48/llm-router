@@ -1,12 +1,15 @@
 import asyncio
 import time
 
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from llm_router.config import ProfileRegistry, Settings
+from llm_router.errors import RouterError
 from llm_router.models import Profile
 from llm_router.server import create_app
 from llm_router.usage import UsageStore
+from llm_router.usage.routes import build_usage_router
 from llm_router.usage.store import CallRecord
 
 SETTINGS = Settings(master_key="sk-local", host="127.0.0.1", port=8787, _env_file=None)
@@ -66,7 +69,7 @@ def test_summary_and_calls_and_detail(tmp_path):
             assert summary["data"][0]["total_tokens"] == 10
             assert summary["data"][0]["provider"] == "anthropic"
             assert summary["data"][0]["upstream_model"] == "claude-sonnet-4-5"
-            assert summary["data"][0]["estimated_usd"] == 0.000054
+            assert "estimated_usd" not in summary["data"][0]
 
             listed = client.get("/v1/usage/calls", headers=AUTH).json()
             assert listed["data"][0]["duration_ms"] == 42
@@ -200,13 +203,19 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'id="start-after-save"' not in body
         assert "data-start=" not in body
         assert "data-stop=" not in body
-        assert "로컬 호출 예상 비용" in body
+        assert "로컬 호출 예상 비용" not in body
+        assert "예상 $" not in body
+        assert 'id="sum-cost"' not in body
+        assert "pricing-note" not in body
         assert "moneyFromMinor" in body
         assert "creditMarkup" in body
         assert "creditBalanceMarkup" in body
         assert 'class="credit-unit">크레딧</span>' in body
         assert "OpenAI 계정 API에서 직접 조회" in body
         assert "로컬 추정값 아님" in body
+        assert 'fetch("/v1/dashboard/session"' in body
+        assert "response.status===401&&retrySession" in body
+        assert 'credentials:"same-origin"' in body
         assert "/v1/usage/summary?days=365" in body
         assert 'id="usage-profile"' in body
         assert 'id="usage-model"' in body
@@ -267,3 +276,67 @@ def test_dashboard_issues_automatic_http_only_session(tmp_path):
         assert dashboard.headers["cache-control"] == "private, no-store"
     finally:
         store.close()
+
+
+def test_dashboard_session_can_be_refreshed_after_router_restart(tmp_path):
+    first_store = UsageStore(tmp_path / "first.db")
+    second_store = UsageStore(tmp_path / "second.db")
+    keyless_settings = Settings(host="127.0.0.1", port=8787, _env_file=None)
+    try:
+        with TestClient(create_app(keyless_settings, REGISTRY, store=first_store)) as first_client:
+            first_client.get("/dashboard")
+            stale_cookie = first_client.cookies["llm_router_dashboard"]
+
+        with TestClient(
+            create_app(keyless_settings, REGISTRY, store=second_store)
+        ) as second_client:
+            second_client.cookies.set("llm_router_dashboard", stale_cookie)
+            stale = second_client.get("/v1/auth/status")
+            refreshed = second_client.post("/v1/dashboard/session")
+            recovered = second_client.get("/v1/auth/status")
+
+        assert stale.status_code == 401
+        assert refreshed.status_code == 204
+        assert "llm_router_dashboard=" in refreshed.headers["set-cookie"]
+        assert "HttpOnly" in refreshed.headers["set-cookie"]
+        assert recovered.status_code == 200
+    finally:
+        first_store.close()
+        second_store.close()
+
+
+def test_openai_account_gateway_failure_becomes_available_status():
+    class FailingOpenAIAccountSource:
+        async def report(self):
+            raise RouterError(
+                "OpenAI account credits request failed.",
+                type="upstream_error",
+                code="openai_account_upstream_error",
+                status_code=502,
+            )
+
+    app = FastAPI()
+    app.include_router(
+        build_usage_router(
+            None,
+            lambda: None,
+            openai_account_source=FailingOpenAIAccountSource(),
+        )
+    )
+
+    with TestClient(app) as client:
+        response = client.get("/v1/usage/account/openai")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "private, no-store"
+    assert response.json() == {
+        "object": "openai_account_usage",
+        "status": "temporarily_unavailable",
+        "source": "openai_chatgpt_usage_api",
+        "configured": True,
+        "stale": False,
+        "message": "OpenAI account credits request failed.",
+        "error_code": "openai_account_upstream_error",
+        "rate_limits": {},
+        "token_usage": {"summary": {}, "daily_usage_buckets": []},
+    }

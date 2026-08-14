@@ -151,6 +151,45 @@ async def test_openai_account_usage_rejects_invalid_credit_shape(tmp_path):
     assert error.value.code == "invalid_openai_account_response"
 
 
+@respx.mock
+async def test_enterprise_credit_response_can_omit_rate_limit_and_credit_flags(tmp_path):
+    respx.get(OPENAI_ACCOUNT_USAGE_URL).mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "plan_type": "enterprise",
+                "rate_limit": None,
+                "credits": {"balance": "9000"},
+                "spend_control": None,
+            },
+        )
+    )
+    async with httpx.AsyncClient() as client:
+        report = await OpenAIAccountSource(store=_store(tmp_path), client=client).report()
+
+    assert report.rate_limits["primary"] is None
+    assert report.rate_limits["credits"] == {
+        "hasCredits": True,
+        "unlimited": False,
+        "balance": "9000",
+    }
+
+
+@respx.mock
+async def test_openai_account_usage_retries_a_bad_gateway_once(tmp_path):
+    route = respx.get(OPENAI_ACCOUNT_USAGE_URL).mock(
+        side_effect=[
+            httpx.Response(502, json={}),
+            httpx.Response(200, json=_usage_payload()),
+        ]
+    )
+    async with httpx.AsyncClient() as client:
+        report = await OpenAIAccountSource(store=_store(tmp_path), client=client).report()
+
+    assert route.call_count == 2
+    assert report.rate_limits["credits"]["balance"] == "4500"
+
+
 async def test_openai_account_usage_requires_browser_login(tmp_path):
     async with httpx.AsyncClient() as client:
         with pytest.raises(RouterError) as error:

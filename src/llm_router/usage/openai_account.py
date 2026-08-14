@@ -91,6 +91,9 @@ class OpenAIAccountSource:
         if response.status_code == 401 and not refreshed and tokens.get("refresh_token"):
             tokens = await self._refresh(client, tokens)
             response = await self._request(client, tokens)
+        if response.status_code in {500, 502, 503, 504}:
+            await asyncio.sleep(0.2)
+            response = await self._request(client, tokens)
 
         if response.status_code in {401, 403}:
             raise RouterError(
@@ -225,11 +228,11 @@ class OpenAIAccountSource:
     def _normalize(cls, payload: Any) -> dict[str, Any]:
         if not isinstance(payload, dict):
             raise cls._invalid_response("response is not an object")
-        rate_limit = payload.get("rate_limit")
+        rate_limit = payload.get("rate_limit") or {}
         credits = payload.get("credits")
         spend_control = payload.get("spend_control")
         if not isinstance(rate_limit, dict):
-            raise cls._invalid_response("rate_limit is missing")
+            raise cls._invalid_response("rate_limit is invalid")
         if credits is not None and not isinstance(credits, dict):
             raise cls._invalid_response("credits is invalid")
         if spend_control is not None and not isinstance(spend_control, dict):
@@ -264,16 +267,18 @@ class OpenAIAccountSource:
     def _normalize_credits(cls, value: Any) -> dict[str, Any] | None:
         if value is None:
             return None
-        if not isinstance(value.get("has_credits"), bool) or not isinstance(
-            value.get("unlimited"), bool
-        ):
-            raise cls._invalid_response("credits flags are invalid")
+        has_credits = value.get("has_credits")
+        unlimited = value.get("unlimited")
+        if has_credits is not None and not isinstance(has_credits, bool):
+            raise cls._invalid_response("credits.has_credits is invalid")
+        if unlimited is not None and not isinstance(unlimited, bool):
+            raise cls._invalid_response("credits.unlimited is invalid")
         balance = value.get("balance")
         if balance is not None and not isinstance(balance, (str, int, float)):
             raise cls._invalid_response("credits balance is invalid")
         return {
-            "hasCredits": value["has_credits"],
-            "unlimited": value["unlimited"],
+            "hasCredits": has_credits if has_credits is not None else balance is not None,
+            "unlimited": unlimited is True,
             "balance": balance,
         }
 
