@@ -25,6 +25,15 @@ cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
 ```
 
+`llm-router`는 설치 후 생성되는 콘솔 명령입니다. Python 모듈로 직접 실행할 때는 하이픈 대신
+밑줄을 사용합니다.
+
+```bash
+python3 -m llm_router serve --profiles profiles.yaml
+```
+
+`python3 -m llm-router`는 유효한 Python 모듈명이 아니므로 사용할 수 없습니다.
+
 기본 localhost 실행에는 로컬 API 키가 필요하지 않습니다.
 
 ```dotenv

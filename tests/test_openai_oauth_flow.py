@@ -157,9 +157,7 @@ async def test_account_runtime_creates_codex_home_before_launch(tmp_path, monkey
 
     monkeypatch.setenv("LLM_ROUTER_OPENAI_HOME", str(account_home))
     monkeypatch.setattr(openai_runtime.asyncio, "create_subprocess_exec", fake_subprocess_exec)
-    session = OpenAIAppServerSession(
-        runtime_resolver=lambda: (tmp_path / "codex", None)
-    )
+    session = OpenAIAppServerSession(runtime_resolver=lambda: (tmp_path / "codex", None))
 
     async with session:
         pass

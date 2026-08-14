@@ -1,3 +1,6 @@
+import subprocess
+import sys
+
 from typer.testing import CliRunner
 
 from llm_router.cli import app
@@ -29,6 +32,18 @@ def test_profiles_list(tmp_path):
     assert "gpt-4o" in result.stdout
     assert "openai" in result.stdout
     assert "api_key" in result.stdout
+
+
+def test_package_module_exposes_cli_entrypoint():
+    result = subprocess.run(
+        [sys.executable, "-m", "llm_router", "--help"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0
+    assert "local OpenAI-compatible LLM gateway" in result.stdout
 
 
 def test_serve_without_master_key_starts_on_localhost(tmp_path, monkeypatch):
