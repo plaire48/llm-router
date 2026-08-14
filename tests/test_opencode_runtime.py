@@ -5,7 +5,11 @@ import pytest
 
 from llm_router.errors import RouterError
 from llm_router.models import Profile
-from llm_router.opencode_runtime import OpenCodeRuntime
+from llm_router.opencode_runtime import (
+    WINDOWS_CREATE_NO_WINDOW,
+    OpenCodeRuntime,
+    background_process_options,
+)
 
 
 async def test_runtime_uses_an_already_running_opencode_server(tmp_path):
@@ -166,6 +170,11 @@ def test_runtime_honors_explicit_opencode_binary_over_bundle(tmp_path):
     assert runtime._resolve_binary() == str(explicit)
 
 
+def test_runtime_hides_the_bundled_console_process_only_on_windows():
+    assert background_process_options("nt") == {"creationflags": WINDOWS_CREATE_NO_WINDOW}
+    assert background_process_options("posix") == {}
+
+
 async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypatch):
     health_checks = 0
     captured = {}
@@ -221,6 +230,7 @@ async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypa
     assert environment["OPENCODE_DISABLE_PROJECT_CONFIG"] == "true"
     config = json.loads(environment["OPENCODE_CONFIG_CONTENT"])
     assert config["permission"] == "deny"
+    assert config["autoupdate"] is False
     assert "provider" not in config
     assert environment["XDG_DATA_HOME"] == str(tmp_path / "data")
     assert "BUN_OPTIONS" not in environment
@@ -229,6 +239,8 @@ async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypa
     assert "OPENCODE_AUTH_CONTENT" not in environment
     assert "OPENCODE_DISABLE_DEFAULT_PLUGINS" not in environment
     assert "OPENCODE_SERVER_PASSWORD" not in environment
+    assert environment["OPENCODE_DISABLE_AUTOUPDATE"] == "true"
+    assert environment["OPENCODE_DISABLE_TERMINAL_TITLE"] == "true"
     assert environment["NODE_EXTRA_CA_CERTS"] == "/company/ca.pem"
 
     await runtime.close()

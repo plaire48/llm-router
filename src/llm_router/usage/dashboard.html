@@ -784,7 +784,35 @@
 
     async function loadAll() { $("#refresh").disabled=true; try { const [auth,profiles,summary,activity]=await Promise.all([api("/v1/auth/status"),api("/v1/profiles"),api(`/v1/usage/summary?days=${state.usageDays}`),api("/v1/usage/summary?days=365")]); state.auth=auth.data||[]; state.profiles=profiles.data||[]; state.gateway=profiles.gateway||null; state.summary=summary.data||[]; state.activitySummary=activity.data||[]; if(state.auth.find(item=>item.provider==="anthropic")?.connected){try{state.claude=await api("/v1/usage/account/claude");}catch(_){state.claude=null;}} if(state.auth.find(item=>item.provider==="openai")?.connected){try{state.openai=await api("/v1/usage/account/openai");}catch(_){state.openai=null;}} renderConnections(); renderProfiles(); renderUsageFilters(); renderDashboard(); } catch(error){notify(error.message);} finally{$("#refresh").disabled=false;} }
     async function loadUsage() { try { const summary=await api(`/v1/usage/summary?days=${state.usageDays}`); state.summary=summary.data||[]; renderUsageFilters(); renderDashboard(); } catch(error){notify(error.message);} }
-    async function login(provider){try{const result=await api(`/v1/auth/${provider}/login`,{method:"POST"});const message=provider==="openai"?(result.status==="connected"?"OpenCode ChatGPT 계정 OAuth 세션이 연결되어 있습니다.":"OpenCode가 ChatGPT 계정 OAuth 창을 열었습니다."):"Claude 로그인 창을 열었습니다.";notify(message);setTimeout(loadAll,1500);}catch(error){notify(error.message);}}
+    const pause = milliseconds => new Promise(resolve=>setTimeout(resolve,milliseconds));
+    async function pollLogin(provider) {
+      if(state.loginPolling?.[provider]) return;
+      state.loginPolling={...(state.loginPolling||{}),[provider]:true};
+      try {
+        for(let attempt=0;attempt<180;attempt+=1) {
+          await pause(1000);
+          const status=await api("/v1/auth/status");
+          state.auth=status.data||[];
+          renderConnections();
+          const connection=state.auth.find(item=>item.provider===provider);
+          if(connection?.connected) {
+            await loadAll();
+            notify("OpenAI 로그인이 완료되어 프로필에 자동 반영했습니다.");
+            return;
+          }
+          if(connection&&!connection.login_pending) {
+            notify(connection.message||"로그인을 완료하지 못했습니다.");
+            return;
+          }
+        }
+        notify("로그인 확인 시간이 초과되었습니다. 연결 상태를 새로고침하세요.");
+      } catch(error) {
+        notify(error.message);
+      } finally {
+        const polling={...(state.loginPolling||{})}; delete polling[provider]; state.loginPolling=polling;
+      }
+    }
+    async function login(provider){try{const result=await api(`/v1/auth/${provider}/login`,{method:"POST"});if(result.status==="connected"){await loadAll();notify("OpenCode ChatGPT 계정 OAuth 세션이 연결되어 있습니다.");return;}notify(provider==="openai"?"OpenCode가 ChatGPT 계정 OAuth 창을 열었습니다.":"Claude 로그인 창을 열었습니다.");await pollLogin(provider);}catch(error){notify(error.message);}}
     async function disconnect(provider){const message=provider==="openai"?"라우터 전용 OpenCode ChatGPT 계정 연결을 해제할까요?":"Claude 연결을 해제할까요?";if(!confirm(message))return;try{await api(`/v1/auth/${provider}`,{method:"DELETE"});await loadAll();}catch(error){notify(error.message);}}
     async function deleteProfile(name){if(!confirm(`프로필 '${name}'을 삭제할까요?`))return;try{await api(`/v1/profiles/${encodeURIComponent(name)}`,{method:"DELETE"});notify("프로필을 삭제했습니다.");await loadAll();}catch(error){notify(error.message);}}
 

@@ -21,6 +21,12 @@ from llm_router.models import Profile
 BinaryFinder = Callable[[str], str | None]
 BundledResolver = Callable[[], str | None]
 BrowserOpener = Callable[[str], object]
+WINDOWS_CREATE_NO_WINDOW = 0x08000000
+
+
+def background_process_options(platform: str | None = None) -> dict[str, int]:
+    """Keep the bundled console executable invisible when launched on Windows."""
+    return {"creationflags": WINDOWS_CREATE_NO_WINDOW} if (platform or os.name) == "nt" else {}
 
 
 def bundled_opencode_path() -> str | None:
@@ -141,6 +147,7 @@ class OpenCodeRuntime:
                     env=environment,
                     stdout=asyncio.subprocess.DEVNULL,
                     stderr=asyncio.subprocess.DEVNULL,
+                    **background_process_options(),
                 )
             except OSError as exc:
                 raise self._unavailable_error() from exc
@@ -375,13 +382,16 @@ class OpenCodeRuntime:
             "OPENCODE_CONFIG_DIR",
             "OPENCODE_CONFIG_CONTENT",
             "OPENCODE_DISABLE_DEFAULT_PLUGINS",
+            "OPENCODE_DISABLE_AUTOUPDATE",
             "OPENCODE_EXPERIMENTAL_WEBSOCKETS",
             "OPENCODE_SERVER_PASSWORD",
             "OPENCODE_SERVER_USERNAME",
+            "OPENCODE_DISABLE_TERMINAL_TITLE",
         ):
             environment.pop(name, None)
         config: dict[str, object] = {
             "$schema": "https://opencode.ai/config.json",
+            "autoupdate": False,
             "permission": "deny",
             "share": "disabled",
         }
@@ -390,6 +400,8 @@ class OpenCodeRuntime:
         environment.update(
             {
                 "OPENCODE_DISABLE_PROJECT_CONFIG": "true",
+                "OPENCODE_DISABLE_AUTOUPDATE": "true",
+                "OPENCODE_DISABLE_TERMINAL_TITLE": "true",
                 "OPENCODE_CONFIG_CONTENT": json.dumps(config),
                 "XDG_CACHE_HOME": str(self.directory / "cache"),
                 "XDG_CONFIG_HOME": str(self.directory / "config"),
