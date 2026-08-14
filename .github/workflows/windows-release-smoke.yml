@@ -11,6 +11,10 @@ on:
         description: Expected wheel SHA-256
         required: true
         default: a6b5783e30d1abcbef1906c26e17011d44d889e1124eb56daecd5b9c340088dd
+      python_version:
+        description: Python version used to install and run llm-router
+        required: true
+        default: "3.14"
 
 permissions:
   contents: read
@@ -21,7 +25,7 @@ jobs:
     steps:
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "${{ inputs.python_version }}"
 
       - name: Download Windows wheel from GitHub Release
         shell: pwsh
@@ -83,48 +87,55 @@ jobs:
           if (-not (Test-Path $binary -PathType Leaf)) {
             throw "Bundled opencode.exe was not found: $binary"
           }
+
+          $env:LLM_ROUTER_SMOKE_RUNTIME_DIR = Join-Path $PWD "router-managed-opencode"
+          $runtimeScript = @'
+          import asyncio
+          import json
+          import os
+          import time
+          from pathlib import Path
+
+          import httpx
+
+          from llm_router.opencode_runtime import OpenCodeRuntime
+
+
+          async def main():
+              runtime = OpenCodeRuntime(
+                  base_url="http://127.0.0.1:0",
+                  directory=Path(os.environ["LLM_ROUTER_SMOKE_RUNTIME_DIR"]),
+                  startup_timeout=30.0,
+              )
+              started = time.monotonic()
+              async with httpx.AsyncClient() as client:
+                  try:
+                      await runtime.ensure_started(client)
+                      response = await client.get(f"{runtime.base_url}/global/health")
+                      response.raise_for_status()
+                      health = response.json()
+                  finally:
+                      await runtime.close()
+              print(json.dumps({"elapsed": time.monotonic() - started, "health": health}))
+
+
+          asyncio.run(main())
+          '@
+          $runtimeResult = ($runtimeScript | py -).Trim()
+          $runtimeReport = $runtimeResult | ConvertFrom-Json
+          if ($runtimeReport.health.healthy -ne $true) {
+            throw "Router-managed OpenCode health check failed: $runtimeResult"
+          }
+
           $version = (& $binary --version).Trim()
           if ($version -ne "1.18.18") {
             throw "Unexpected OpenCode version: $version"
-          }
-
-          $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback, 0)
-          $listener.Start()
-          $port = $listener.LocalEndpoint.Port
-          $listener.Stop()
-          $stdoutLog = Join-Path $PWD "opencode-serve.stdout.log"
-          $stderrLog = Join-Path $PWD "opencode-serve.stderr.log"
-          $serverProcess = Start-Process -FilePath $binary `
-            -ArgumentList @("--pure", "serve", "--hostname", "127.0.0.1", "--port", "$port") `
-            -RedirectStandardOutput $stdoutLog -RedirectStandardError $stderrLog -PassThru
-          $healthy = $false
-          try {
-            foreach ($attempt in 1..60) {
-              if ($serverProcess.HasExited) {
-                break
-              }
-              try {
-                $health = Invoke-RestMethod "http://127.0.0.1:$port/global/health" -TimeoutSec 1
-                if ($health.healthy -eq $true -and $health.version -eq "1.18.18") {
-                  $healthy = $true
-                  break
-                }
-              } catch {
-                Start-Sleep -Milliseconds 500
-              }
-            }
-            if (-not $healthy) {
-              $detail = Get-Content $stderrLog -Raw -ErrorAction SilentlyContinue
-              throw "Bundled OpenCode server did not become healthy: $detail"
-            }
-          } finally {
-            if (-not $serverProcess.HasExited) {
-              Stop-Process -Id $serverProcess.Id -Force
-            }
           }
           py -m llm_router --help
 
           "### Windows release smoke passed" >> $env:GITHUB_STEP_SUMMARY
           "- Wheel: $($wheel.Name)" >> $env:GITHUB_STEP_SUMMARY
           "- SHA-256: $actualSha" >> $env:GITHUB_STEP_SUMMARY
+          "- Python: ${{ inputs.python_version }}" >> $env:GITHUB_STEP_SUMMARY
           "- Bundled OpenCode: $version" >> $env:GITHUB_STEP_SUMMARY
+          "- Router-managed startup seconds: $($runtimeReport.elapsed)" >> $env:GITHUB_STEP_SUMMARY
