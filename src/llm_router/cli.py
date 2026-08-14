@@ -9,10 +9,7 @@ from llm_router.config import Settings, load_profiles
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.errors import RouterError
-from llm_router.http_client import create_async_client
 from llm_router.oauth.openai_flow import login as login_openai
-from llm_router.opencode_organizations import AI_PRO_ORIGIN
-from llm_router.opencode_runtime import OpenCodeRuntime
 from llm_router.provider_policy import ANTHROPIC_OAUTH_DISABLED_MESSAGE
 
 app = typer.Typer(help="llm-router: local OpenAI-compatible LLM gateway")
@@ -61,32 +58,14 @@ def serve(
 
 @oauth_app.command("login")
 def oauth_login(provider: str) -> None:
-    if provider not in {"openai", "anthropic", "aipro"}:
+    if provider not in {"openai", "anthropic"}:
         typer.echo(f"unsupported provider: {provider}")
         raise typer.Exit(code=1)
     if provider == "anthropic":
         typer.echo(ANTHROPIC_OAUTH_DISABLED_MESSAGE)
         raise typer.Exit(code=1)
     try:
-        if provider == "openai":
-            asyncio.run(login_openai())
-        else:
-            settings = Settings()
-            runtime = OpenCodeRuntime(
-                base_url=settings.opencode_url,
-                binary=settings.opencode_binary,
-                directory=settings.opencode_directory,
-                auto_start=settings.opencode_auto_start,
-            )
-
-            async def login_aipro() -> None:
-                async with create_async_client(timeout=600.0) as client:
-                    try:
-                        await runtime.login_organization(client, AI_PRO_ORIGIN)
-                    finally:
-                        await runtime.close()
-
-            asyncio.run(login_aipro())
+        asyncio.run(login_openai())
     except (RouterError, OSError) as exc:
         detail = exc.message if isinstance(exc, RouterError) else str(exc)
         typer.echo(f"{provider} browser login failed: {detail}")
@@ -112,16 +91,6 @@ def _credential_status(provider: str, auth: str, api_key_env: str | None) -> str
             )
         except RouterError:
             return "invalid_store"
-    if provider == "aipro":
-        try:
-            settings = Settings()
-            runtime = OpenCodeRuntime(directory=settings.opencode_directory)
-            return (
-                "logged_in" if runtime.organization_connected(AI_PRO_ORIGIN) else "login_required"
-            )
-        except (RouterError, ValueError):
-            return "invalid_store"
-
     try:
         tokens = TokenStore.default().load()
         connected = bool(

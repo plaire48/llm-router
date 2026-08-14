@@ -35,8 +35,17 @@ FABRIX_PROFILE = Profile(
 AIPRO_PROFILE = Profile(
     name="aipro",
     provider="aipro",
-    auth="oauth",
-    model="sds-aipro/company-model",
+    auth="api_key",
+    api_key_env="AIPRO_API_KEY",
+    model="company-model",
+)
+LEGACY_AIPRO_PROFILE = Profile(
+    name="aipro-legacy",
+    provider="openai_compatible",
+    auth="api_key",
+    api_key_env="AIPRO_LEGACY_API_KEY",
+    base_url="https://aipro.sdsdev.co.kr/v1/",
+    model="company-model",
 )
 
 
@@ -50,9 +59,17 @@ def _request(model: str, *, stream: bool = False) -> ChatCompletionRequest:
     )
 
 
-def test_aipro_oauth_routes_through_the_managed_opencode_adapter():
+def test_aipro_api_key_routes_through_the_managed_opencode_adapter():
     runtime = object()
     adapter = build_adapter(AIPRO_PROFILE, object(), opencode_runtime=runtime)
+
+    assert adapter.__class__.__name__ == "OpenCodeAdapter"
+    assert adapter.runtime is runtime
+
+
+def test_legacy_aipro_endpoint_profile_also_routes_through_opencode():
+    runtime = object()
+    adapter = build_adapter(LEGACY_AIPRO_PROFILE, object(), opencode_runtime=runtime)
 
     assert adapter.__class__.__name__ == "OpenCodeAdapter"
     assert adapter.runtime is runtime

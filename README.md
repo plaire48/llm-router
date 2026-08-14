@@ -84,7 +84,7 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
 
 ## 브라우저 로그인
 
-화면의 `연결` 메뉴에서 **Sign in with ChatGPT**와 **AI Pro 조직 로그인**을 사용할 수 있습니다.
+화면의 `연결` 메뉴에서 **Sign in with ChatGPT**를 사용할 수 있습니다.
 
 - wheel에 포함된 OpenCode가 브라우저 OAuth 시작, localhost callback, token exchange와 refresh를
   직접 처리합니다.
@@ -92,9 +92,6 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
   변경하지 않습니다.
 - OpenAI 추론 요청의 `User-Agent`와 `originator`는 번들 OpenCode의 공식 내장 플러그인이 직접 생성하며,
   라우터는 해당 헤더를 덮어쓰거나 다른 클라이언트로 위장하지 않습니다.
-- AI Pro는 API 키나 수동 Endpoint 대신 번들 OpenCode가
-  `https://aipro.sdsdev.co.kr/.well-known/opencode`의 조직 인증·provider 설정을 읽습니다. 로그인 후 모델은
-  `provider/model` 형식으로 불러오고, 추론도 같은 격리된 OpenCode 런타임에서 실행합니다.
 
 Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로그인, 프로필 생성, 추론 요청을 모두
 거부합니다. 기존 자격증명 파일은 자동 삭제하지 않지만 라우터가 사용하지 않습니다.
@@ -103,11 +100,10 @@ Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로�
 
 ```bash
 llm-router oauth login openai
-llm-router oauth login aipro
 ```
 
-OpenAI 및 AI Pro OAuth 프로필의 추론은 내부 OpenCode 세션에서 실행한 뒤 Chat Completions로 변환합니다.
-OAuth 프로필을 등록하거나 수정할 때 번들 OpenCode를 즉시 기동해 사용 가능 여부를 확인하며,
+OpenAI OAuth 프로필의 추론은 내부 OpenCode 세션에서 실행한 뒤 Chat Completions로 변환합니다.
+프로필을 등록하거나 수정할 때 번들 OpenCode를 즉시 기동해 사용 가능 여부를 확인하며,
 프로필 API에는 `inference_engine: opencode`가 표시됩니다.
 
 ## LLM 서빙 프로필
@@ -115,7 +111,7 @@ OAuth 프로필을 등록하거나 수정할 때 번들 OpenCode를 즉시 기�
 `LLM 서빙` 메뉴에서 다음 연결 방식을 선택할 수 있습니다.
 
 1. ChatGPT 계정 OAuth
-2. AI Pro 조직 OAuth
+2. AI Pro API Key
 3. FabriX 사내 API
 4. OpenAI 호환 LLM Endpoint
 
@@ -128,7 +124,7 @@ Models:           http://127.0.0.1:8787/v1/models
 ```
 
 프로필마다 별도 포트를 시작하거나 중지하지 않습니다. 요청의 `model`에 프로필 이름을 넣으면 Gateway가
-ChatGPT 계정 OAuth, AI Pro 조직 OAuth, FabriX, OpenAI 호환 LLM 중 알맞은 연결로 라우팅합니다.
+ChatGPT 계정 OAuth, AI Pro API Key, FabriX, OpenAI 호환 LLM 중 알맞은 연결로 라우팅합니다.
 
 ```bash
 curl http://127.0.0.1:8787/v1/chat/completions \
@@ -136,8 +132,13 @@ curl http://127.0.0.1:8787/v1/chat/completions \
   -d '{"model":"openai","messages":[{"role":"user","content":"안녕"}]}'
 ```
 
-API 키는 FabriX와 OpenAI 호환 사내 LLM 프로필에서만 입력할 수 있습니다. 키는 `profiles.yaml`에 기록하지 않고
+API 키는 AI Pro, FabriX와 OpenAI 호환 사내 LLM 프로필에서 입력할 수 있습니다. 키는 `profiles.yaml`에 기록하지 않고
 `~/.llm-router/profile-secrets.json`에 0600 권한으로 저장하며 API 응답에도 반환하지 않습니다.
+AI Pro는 기본 Endpoint `https://aipro.sdsdev.co.kr/v1`과 발급받은 모델 ID를 사용합니다. 라우터는
+`@ai-sdk/openai-compatible` custom provider에 Endpoint, 모델, API Key 환경변수 참조만 등록하고 모든 추론을
+번들 OpenCode 세션으로 실행합니다. `User-Agent`를 설정하는 코드는 없으며 실제 OpenCode가 생성한 헤더를
+그대로 사용합니다.
+
 OpenAI 호환 LLM은 다음 계약을 지원하면 연결됩니다.
 
 - `GET {base_url}/models`

@@ -8,11 +8,10 @@ import respx
 from fastapi.testclient import TestClient
 
 from llm_router.config import ProfileRegistry, Settings
-from llm_router.control import AIProWebLogin, ClaudeWebLogin, OpenAIWebLogin
+from llm_router.control import ClaudeWebLogin, OpenAIWebLogin
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.models import Profile
-from llm_router.opencode_organizations import AI_PRO_ORIGIN
 from llm_router.profile_secrets import ProfileSecretStore
 from llm_router.server import create_app
 
@@ -64,25 +63,6 @@ class FakeClaudeLogin:
         return self.started and not self.connected
 
 
-class FakeAIProLogin:
-    available = True
-    last_error = None
-
-    def __init__(self, connected=False):
-        self.connected = connected
-        self.started = False
-
-    async def start(self):
-        self.started = True
-        return {"provider": "aipro", "status": "pending", "opened_browser": True}
-
-    async def logout(self):
-        self.connected = False
-
-    def is_pending(self):
-        return self.started and not self.connected
-
-
 def _jwt(payload):
     encoded = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
     return f"header.{encoded}.signature"
@@ -96,7 +76,6 @@ def _client(
     tmp_path,
     *,
     claude_connected=False,
-    aipro_connected=False,
     opencode_runtime=None,
 ):
     registry = ProfileRegistry([profile.model_copy(deep=True) for profile in REGISTRY.profiles()])
@@ -120,7 +99,6 @@ def _client(
         profiles_path=tmp_path / "profiles.yaml",
         profile_secret_store=ProfileSecretStore(tmp_path / "secrets.json"),
         claude_login=FakeClaudeLogin(connected=claude_connected),
-        aipro_login=FakeAIProLogin(connected=aipro_connected),
         opencode_runtime=opencode_runtime,
     )
     return TestClient(app)
@@ -137,9 +115,7 @@ def test_auth_status_reports_browser_providers_without_exposing_tokens(tmp_path)
     assert providers["anthropic"]["status"] == "disabled"
     assert providers["openai"]["connected"] is True
     assert providers["openai"]["experimental"] is False
-    assert providers["aipro"]["connected"] is False
-    assert providers["aipro"]["auth_method"] == "opencode_wellknown"
-    assert providers["aipro"]["inference_engine"] == "opencode"
+    assert set(providers) == {"anthropic", "openai"}
     assert response.headers["cache-control"] == "private, no-store"
     assert "openai-refresh-secret" not in response.text
     assert "access_token" not in response.text
@@ -186,7 +162,7 @@ class FakeOpenCodeRuntime:
     auto_start = True
 
     def __init__(self):
-        self.organizations = set()
+        self.profiles = []
 
     async def ready(self, _client):
         return True
@@ -197,14 +173,14 @@ class FakeOpenCodeRuntime:
     async def ensure_started(self, _client):
         return None
 
+    async def ensure_profile(self, _client, profile):
+        self.profiles.append(profile)
+
     async def close(self):
         return None
 
-    def organization_connected(self, origin):
-        return origin in self.organizations
-
-    def remove_organization_auth(self, origin):
-        self.organizations.discard(origin)
+    async def remove_profile(self, profile):
+        self.profiles = [item for item in self.profiles if item.name != profile.name]
 
 
 @respx.mock
@@ -235,61 +211,16 @@ def test_openai_model_discovery_comes_from_internal_opencode(tmp_path):
     assert provider.called
 
 
-@respx.mock
-def test_aipro_model_discovery_uses_organization_provider_config(tmp_path):
-    runtime = FakeOpenCodeRuntime()
-    config = respx.get(f"{runtime.base_url}/config").mock(
-        return_value=httpx.Response(
-            200,
-            json={"provider": {"sds-aipro": {"name": "AI Pro"}}},
-        )
-    )
-    provider = respx.get(f"{runtime.base_url}/provider").mock(
-        return_value=httpx.Response(
-            200,
-            json={
-                "all": [
-                    {"id": "openai", "models": {"gpt-public": {}}},
-                    {
-                        "id": "sds-aipro",
-                        "models": {"company-z": {}, "company-a": {}},
-                    },
-                ],
-                "connected": ["sds-aipro"],
-            },
-        )
-    )
-
-    with _client(
-        tmp_path,
-        aipro_connected=True,
-        opencode_runtime=runtime,
-    ) as client:
-        response = client.post(
-            "/v1/profiles/discover-models",
-            headers=AUTH,
-            json={"provider": "aipro", "auth": "oauth"},
-        )
-
-    assert response.status_code == 200
-    assert response.json()["data"] == [
-        "sds-aipro/company-a",
-        "sds-aipro/company-z",
-    ]
-    assert config.called
-    assert provider.called
-
-
-def test_aipro_model_discovery_requires_browser_login(tmp_path):
+def test_aipro_model_discovery_requires_a_manual_model_id(tmp_path):
     with _client(tmp_path) as client:
         response = client.post(
             "/v1/profiles/discover-models",
             headers=AUTH,
-            json={"provider": "aipro", "auth": "oauth"},
+            json={"provider": "aipro", "auth": "api_key", "api_key": "secret"},
         )
 
-    assert response.status_code == 401
-    assert response.json()["error"]["code"] == "aipro_oauth_required"
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "aipro_model_id_required"
 
 
 def test_openai_login_endpoint_recognizes_existing_browser_session(tmp_path):
@@ -312,16 +243,12 @@ def test_claude_login_endpoint_is_policy_disabled(tmp_path):
     assert started.json()["error"]["code"] == "anthropic_oauth_policy_disabled"
 
 
-def test_aipro_login_endpoint_starts_opencode_organization_oauth(tmp_path):
+def test_aipro_has_no_browser_login_endpoint(tmp_path):
     with _client(tmp_path) as client:
         started = client.post("/v1/auth/aipro/login", headers=AUTH)
 
-    assert started.status_code == 200
-    assert started.json() == {
-        "provider": "aipro",
-        "status": "pending",
-        "opened_browser": True,
-    }
+    assert started.status_code == 404
+    assert started.json()["error"]["code"] == "unsupported_provider"
 
 
 async def test_openai_browser_login_controller_tracks_opencode_completion(tmp_path):
@@ -385,29 +312,6 @@ async def test_claude_browser_login_controller_is_policy_disabled(tmp_path):
     assert (await claude.status())["status"] == "disabled"
 
 
-async def test_aipro_browser_login_controller_tracks_opencode_completion():
-    runtime = FakeOpenCodeRuntime()
-    runtime.binary_available = False
-
-    async def get_client():
-        return object()
-
-    async def login_aipro():
-        runtime.organizations.add(AI_PRO_ORIGIN)
-
-    aipro = AIProWebLogin(
-        runtime,
-        client_getter=get_client,
-        login_runner=login_aipro,
-    )
-
-    assert aipro.available is True
-    assert aipro.connected is False
-    assert (await aipro.start())["status"] == "pending"
-    await aipro._task
-    assert aipro.connected is True
-
-
 def test_api_key_profile_is_added_as_a_gateway_route_without_exposing_key(tmp_path):
     with _client(tmp_path) as client:
         created = client.post(
@@ -435,7 +339,7 @@ def test_api_key_profile_is_added_as_a_gateway_route_without_exposing_key(tmp_pa
 
 def test_browser_login_profiles_reject_api_key_auth(tmp_path):
     with _client(tmp_path) as client:
-        for provider in ("openai", "anthropic", "aipro"):
+        for provider in ("openai", "anthropic"):
             response = client.post(
                 "/v1/profiles",
                 headers=AUTH,
@@ -455,21 +359,18 @@ def test_browser_login_profiles_reject_api_key_auth(tmp_path):
     assert not secrets_path.exists() or "must-not-be-stored" not in secrets_path.read_text()
 
 
-def test_aipro_oauth_profile_is_an_opencode_gateway_route(tmp_path):
+def test_aipro_api_key_profile_is_an_opencode_gateway_route(tmp_path):
     runtime = FakeOpenCodeRuntime()
-    with _client(
-        tmp_path,
-        aipro_connected=True,
-        opencode_runtime=runtime,
-    ) as client:
+    with _client(tmp_path, opencode_runtime=runtime) as client:
         created = client.post(
             "/v1/profiles",
             headers=AUTH,
             json={
                 "name": "aipro-team",
                 "provider": "aipro",
-                "auth": "oauth",
-                "model": "sds-aipro/company-model",
+                "auth": "api_key",
+                "model": "company-model",
+                "api_key": "aipro-secret",
             },
         )
         listed = client.get("/v1/profiles", headers=AUTH)
@@ -479,7 +380,51 @@ def test_aipro_oauth_profile_is_an_opencode_gateway_route(tmp_path):
     profile = next(item for item in listed.json()["data"] if item["name"] == "aipro-team")
     assert profile["status"] == "ready"
     assert profile["inference_engine"] == "opencode"
-    assert "base_url" not in profile
+    assert profile["base_url"] == "https://aipro.sdsdev.co.kr/v1"
+    assert profile["has_api_key"] is True
+    assert runtime.profiles[0].name == "aipro-team"
+    assert "aipro-secret" not in listed.text
+
+
+def test_aipro_profile_cannot_use_browser_oauth(tmp_path):
+    with _client(tmp_path) as client:
+        created = client.post(
+            "/v1/profiles",
+            headers=AUTH,
+            json={
+                "name": "aipro-oauth",
+                "provider": "aipro",
+                "auth": "oauth",
+                "model": "company-model",
+            },
+        )
+
+    assert created.status_code == 400
+    assert created.json()["error"]["code"] == "aipro_api_key_required"
+
+
+def test_legacy_aipro_endpoint_profile_is_migrated_to_opencode_at_runtime(tmp_path):
+    runtime = FakeOpenCodeRuntime()
+    with _client(tmp_path, opencode_runtime=runtime) as client:
+        created = client.post(
+            "/v1/profiles",
+            headers=AUTH,
+            json={
+                "name": "aipro-legacy",
+                "provider": "openai_compatible",
+                "auth": "api_key",
+                "model": "company-model",
+                "base_url": "https://aipro.sdsdev.co.kr/v1/",
+                "api_key": "legacy-secret",
+            },
+        )
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    assert created.status_code == 200
+    assert created.json()["inference_engine"] == "opencode"
+    profile = next(item for item in listed.json()["data"] if item["name"] == "aipro-legacy")
+    assert profile["inference_engine"] == "opencode"
+    assert runtime.profiles[0].name == "aipro-legacy"
 
 
 def test_anthropic_oauth_profile_creation_and_serving_are_disabled(tmp_path):

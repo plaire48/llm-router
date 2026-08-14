@@ -25,8 +25,9 @@ PROFILE = Profile(
 AIPRO_PROFILE = Profile(
     name="aipro",
     provider="aipro",
-    auth="oauth",
-    model="sds-aipro/company-model",
+    auth="api_key",
+    api_key_env="AIPRO_API_KEY",
+    model="company-model",
 )
 
 
@@ -69,6 +70,9 @@ class FakeRuntime:
     async def ensure_started(self, _client):
         self.started = True
 
+    async def ensure_profile(self, _client, _profile):
+        self.started = True
+
     async def close(self):
         return None
 
@@ -95,11 +99,11 @@ def test_chat_completion_request_translates_to_opencode_session_prompt():
     assert body["parts"] == [{"type": "text", "text": "Final question"}]
 
 
-def test_aipro_model_reference_is_passed_to_opencode_without_rewriting_provider():
+def test_aipro_model_reference_uses_the_router_managed_custom_provider():
     body = to_opencode_prompt(_request(), AIPRO_PROFILE)
 
     assert body["model"] == {
-        "providerID": "sds-aipro",
+        "providerID": "llm-router-aipro-aipro",
         "modelID": "company-model",
     }
 

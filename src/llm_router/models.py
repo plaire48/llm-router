@@ -4,6 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from llm_router.aipro import AI_PRO_BASE_URL
+
 
 class FunctionCall(BaseModel):
     name: str
@@ -79,22 +81,16 @@ class Profile(BaseModel):
             raise ValueError("fabrix requires client_key_env")
         if self.provider != "fabrix" and self.client_key_env:
             raise ValueError("client_key_env is only supported for provider=fabrix")
-        if self.auth == "oauth" and self.provider not in ("anthropic", "openai", "aipro"):
-            raise ValueError(
-                "auth=oauth is only supported for provider in {anthropic, openai, aipro}"
-            )
+        if self.auth == "oauth" and self.provider not in ("anthropic", "openai"):
+            raise ValueError("auth=oauth is only supported for provider in {anthropic, openai}")
         if self.auth == "oauth" and (self.api_key_env or self.client_key_env):
             raise ValueError("auth=oauth does not allow credential environment variables")
-        if (
-            self.provider in {"anthropic", "openai", "aipro"}
-            and self.auth == "oauth"
-            and self.base_url
-        ):
+        if self.provider in {"anthropic", "openai"} and self.auth == "oauth" and self.base_url:
             raise ValueError("browser login profiles do not allow base_url")
-        if self.provider == "aipro" and self.auth != "oauth":
-            raise ValueError("aipro requires browser OAuth")
+        if self.provider == "aipro" and self.auth != "api_key":
+            raise ValueError("aipro requires API key authentication")
         if self.provider == "aipro":
-            provider_id, separator, model_id = self.model.strip().partition("/")
-            if not separator or not provider_id or not model_id:
-                raise ValueError("aipro model must use the OpenCode provider/model form")
+            self.base_url = (self.base_url or AI_PRO_BASE_URL).rstrip("/")
+            if not self.model.strip():
+                raise ValueError("aipro requires a model ID")
         return self

@@ -4,7 +4,7 @@ import httpx
 import pytest
 
 from llm_router.errors import RouterError
-from llm_router.opencode_organizations import AI_PRO_ORIGIN, normalize_organization_origin
+from llm_router.models import Profile
 from llm_router.opencode_runtime import OpenCodeRuntime
 
 
@@ -259,101 +259,63 @@ def test_runtime_logout_removes_only_openai_from_its_isolated_store(tmp_path):
     assert oct(runtime.auth_path.stat().st_mode & 0o777) == "0o600"
 
 
-def test_organization_origin_accepts_only_https_origins():
-    assert normalize_organization_origin("https://AIPro.SDSDev.co.kr/") == AI_PRO_ORIGIN
-    assert normalize_organization_origin("https://example.test:8443") == (
-        "https://example.test:8443"
-    )
-
-    for value in (
-        "http://aipro.sdsdev.co.kr",
-        "https://aipro.sdsdev.co.kr/v1",
-        "https://user@example.test",
-        "https://example.test?token=secret",
-    ):
-        with pytest.raises(ValueError):
-            normalize_organization_origin(value)
-
-
-def test_runtime_reads_and_removes_only_one_organization_credential(tmp_path):
-    runtime = OpenCodeRuntime(directory=tmp_path)
-    runtime.auth_path.parent.mkdir(parents=True)
-    runtime.auth_path.write_text(
-        json.dumps(
-            {
-                AI_PRO_ORIGIN: {
-                    "type": "wellknown",
-                    "key": "AIPRO_TOKEN",
-                    "token": "organization-secret",
-                },
-                "openai": {"type": "oauth", "access": "keep"},
-            }
-        )
-    )
-
-    assert runtime.organization_connected(AI_PRO_ORIGIN) is True
-    runtime.remove_organization_auth(AI_PRO_ORIGIN)
-
-    assert runtime.organization_connected(AI_PRO_ORIGIN) is False
-    assert json.loads(runtime.auth_path.read_text()) == {
-        "openai": {"type": "oauth", "access": "keep"}
-    }
-
-
-async def test_runtime_runs_organization_login_with_isolated_bundled_opencode(
-    tmp_path, monkeypatch
-):
+async def test_runtime_configures_aipro_as_an_opencode_custom_provider(tmp_path, monkeypatch):
     captured = {}
 
-    class FakeLoginProcess:
-        returncode = None
-
-        async def communicate(self):
-            runtime.auth_path.parent.mkdir(parents=True)
-            runtime.auth_path.write_text(
-                json.dumps(
-                    {
-                        AI_PRO_ORIGIN: {
-                            "type": "wellknown",
-                            "key": "AIPRO_TOKEN",
-                            "token": "organization-secret",
-                        }
-                    }
-                )
-            )
-            self.returncode = 0
-            return b"organization-secret", b""
-
-    async def create_process(*args, **kwargs):
-        captured["args"] = args
-        captured["kwargs"] = kwargs
-        return FakeLoginProcess()
-
-    class LoginRuntime(OpenCodeRuntime):
+    class ConfigRuntime(OpenCodeRuntime):
         async def ensure_started(self, _client):
-            captured["started"] = True
+            captured["environment"] = self._isolated_environment()
 
-    monkeypatch.setattr(
-        "llm_router.opencode_runtime.asyncio.create_subprocess_exec",
-        create_process,
-    )
+    monkeypatch.setenv("AIPRO_API_KEY", "company-secret")
     monkeypatch.setenv("BUN_OPTIONS", "--user-agent=forced-client")
-    runtime = LoginRuntime(
-        directory=tmp_path,
-        binary_finder=lambda _: "/opt/bin/opencode",
-        bundled_resolver=lambda: None,
+    profile = Profile(
+        name="aipro-team",
+        provider="aipro",
+        auth="api_key",
+        api_key_env="AIPRO_API_KEY",
+        base_url="https://aipro.company.test/v1/",
+        model="company-model",
     )
-    async with httpx.AsyncClient() as client:
-        await runtime.login_organization(client, AI_PRO_ORIGIN, timeout=5)
+    runtime = ConfigRuntime(directory=tmp_path)
 
-    assert captured["args"] == (
-        "/opt/bin/opencode",
-        "--pure",
-        "auth",
-        "login",
-        AI_PRO_ORIGIN,
+    await runtime.ensure_profile(object(), profile)
+
+    environment = captured["environment"]
+    config = json.loads(environment["OPENCODE_CONFIG_CONTENT"])
+    provider = config["provider"]["llm-router-aipro-aipro-team"]
+    assert provider == {
+        "npm": "@ai-sdk/openai-compatible",
+        "name": "AI Pro (aipro-team)",
+        "options": {
+            "baseURL": "https://aipro.company.test/v1",
+            "apiKey": "{env:AIPRO_API_KEY}",
+        },
+        "models": {"company-model": {"name": "company-model"}},
+    }
+    assert "headers" not in provider
+    assert "User-Agent" not in environment["OPENCODE_CONFIG_CONTENT"]
+    assert "company-secret" not in environment["OPENCODE_CONFIG_CONTENT"]
+    assert environment["AIPRO_API_KEY"] == "company-secret"
+    assert "BUN_OPTIONS" not in environment
+
+
+async def test_removing_aipro_profile_drops_its_runtime_config(tmp_path, monkeypatch):
+    class ConfigRuntime(OpenCodeRuntime):
+        async def ensure_started(self, _client):
+            return None
+
+    monkeypatch.setenv("AIPRO_API_KEY", "company-secret")
+    profile = Profile(
+        name="aipro-team",
+        provider="aipro",
+        auth="api_key",
+        api_key_env="AIPRO_API_KEY",
+        model="company-model",
     )
-    assert captured["kwargs"]["cwd"] == tmp_path
-    assert "BUN_OPTIONS" not in captured["kwargs"]["env"]
-    assert captured["kwargs"]["env"]["XDG_DATA_HOME"] == str(tmp_path / "data")
-    assert captured["started"] is True
+    runtime = ConfigRuntime(directory=tmp_path)
+    await runtime.ensure_profile(object(), profile)
+
+    await runtime.remove_profile(profile)
+
+    config = json.loads(runtime._isolated_environment()["OPENCODE_CONFIG_CONTENT"])
+    assert "provider" not in config

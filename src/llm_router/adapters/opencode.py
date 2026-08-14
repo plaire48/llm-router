@@ -8,6 +8,7 @@ from typing import Any
 
 import httpx
 
+from llm_router.aipro import is_aipro_profile
 from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, ChatMessage, Profile
 from llm_router.opencode_runtime import OpenCodeRuntime
@@ -39,17 +40,9 @@ def _history_line(message: ChatMessage) -> str:
 
 
 def _model_reference(profile: Profile) -> tuple[str, str]:
-    if profile.provider != "aipro":
+    if not is_aipro_profile(profile):
         return "openai", profile.model
-    provider_id, separator, model_id = profile.model.partition("/")
-    if not separator or not provider_id or not model_id:
-        raise RouterError(
-            "AI Pro model must use the OpenCode provider/model form.",
-            type="configuration_error",
-            code="invalid_opencode_model",
-            status_code=422,
-        )
-    return provider_id, model_id
+    return OpenCodeRuntime.provider_id(profile), profile.model
 
 
 def to_opencode_prompt(request: ChatCompletionRequest, profile: Profile) -> dict[str, Any]:
@@ -130,7 +123,7 @@ class OpenCodeAdapter:
 
     async def complete(self, request: ChatCompletionRequest, profile: Profile) -> dict[str, Any]:
         body = to_opencode_prompt(request, profile)
-        await self.runtime.ensure_started(self.client)
+        await self.runtime.ensure_profile(self.client, profile)
         body["tools"] = await self._disabled_tools()
 
         session_id: str | None = None

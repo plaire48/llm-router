@@ -85,30 +85,31 @@ def test_fabrix_profile_requires_endpoint_and_both_credentials():
         )
 
 
-def test_aipro_profile_requires_oauth_and_opencode_model_reference():
+def test_aipro_profile_requires_api_key_and_defaults_the_endpoint():
     profile = Profile.model_validate(
         {
             "name": "aipro",
             "provider": "aipro",
-            "auth": "oauth",
-            "model": "sds-aipro/company-model",
+            "auth": "api_key",
+            "api_key_env": "AIPRO_KEY",
+            "model": "company-model",
         }
     )
-    assert profile.base_url is None
+    assert profile.base_url == "https://aipro.sdsdev.co.kr/v1"
 
     for overrides in (
-        {"auth": "api_key", "api_key_env": "AIPRO_KEY"},
-        {"model": "company-model"},
-        {"model": "/company-model"},
-        {"base_url": "https://aipro.sdsdev.co.kr/v1"},
+        {"auth": "oauth", "api_key_env": None},
+        {"api_key_env": None},
+        {"model": ""},
     ):
         with pytest.raises(ValidationError):
             Profile.model_validate(
                 {
                     "name": "aipro",
                     "provider": "aipro",
-                    "auth": "oauth",
-                    "model": "sds-aipro/company-model",
+                    "auth": "api_key",
+                    "api_key_env": "AIPRO_KEY",
+                    "model": "company-model",
                     **overrides,
                 }
             )

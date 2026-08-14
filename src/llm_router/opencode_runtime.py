@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import json
 import os
 import shutil
@@ -12,8 +13,10 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from llm_router.aipro import is_aipro_profile
+from llm_router.credentials.env_key import load_provider_env
 from llm_router.errors import RouterError
-from llm_router.opencode_organizations import normalize_organization_origin
+from llm_router.models import Profile
 
 BinaryFinder = Callable[[str], str | None]
 BundledResolver = Callable[[], str | None]
@@ -54,6 +57,9 @@ class OpenCodeRuntime:
         self.startup_timeout = startup_timeout
         self.process: asyncio.subprocess.Process | None = None
         self._lock = asyncio.Lock()
+        self._profile_lock = asyncio.Lock()
+        self._api_profile_configs: dict[str, dict[str, object]] = {}
+        self._api_profile_signatures: dict[str, tuple[str, ...]] = {}
 
     @property
     def binary_available(self) -> bool:
@@ -150,6 +156,70 @@ class OpenCodeRuntime:
             await self.close()
             raise self._unavailable_error()
 
+    async def ensure_profile(self, client: httpx.AsyncClient, profile: Profile) -> None:
+        """Start OpenCode with an AI Pro custom provider backed by an environment key."""
+        if not is_aipro_profile(profile):
+            await self.ensure_started(client)
+            return
+        if profile.auth != "api_key" or not profile.api_key_env or not profile.base_url:
+            raise RouterError(
+                "AI Pro requires an API key and endpoint.",
+                type="configuration_error",
+                code="invalid_aipro_profile",
+                status_code=422,
+            )
+        if not self.auto_start:
+            raise RouterError(
+                "AI Pro requires the router-managed OpenCode runtime.",
+                type="configuration_error",
+                code="aipro_managed_opencode_required",
+                status_code=503,
+            )
+        load_provider_env()
+        api_key = os.environ.get(profile.api_key_env, "").strip()
+        if not api_key:
+            raise RouterError(
+                f"missing credential: set {profile.api_key_env} in .env",
+                type="authentication_error",
+                code="missing_credential",
+                status_code=401,
+            )
+
+        provider_id = self.provider_id(profile)
+        config: dict[str, object] = {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": f"AI Pro ({profile.name})",
+            "options": {
+                "baseURL": profile.base_url.rstrip("/"),
+                "apiKey": f"{{env:{profile.api_key_env}}}",
+            },
+            "models": {profile.model: {"name": profile.model}},
+        }
+        signature = (
+            profile.base_url.rstrip("/"),
+            profile.model,
+            profile.api_key_env,
+            hashlib.sha256(api_key.encode("utf-8")).hexdigest(),
+        )
+        async with self._profile_lock:
+            if self._api_profile_signatures.get(profile.name) != signature:
+                self._api_profile_configs[provider_id] = config
+                self._api_profile_signatures[profile.name] = signature
+                await self.close()
+            await self.ensure_started(client)
+
+    async def remove_profile(self, profile: Profile) -> None:
+        if not is_aipro_profile(profile):
+            return
+        async with self._profile_lock:
+            self._api_profile_configs.pop(self.provider_id(profile), None)
+            self._api_profile_signatures.pop(profile.name, None)
+            await self.close()
+
+    @staticmethod
+    def provider_id(profile: Profile) -> str:
+        return f"llm-router-aipro-{profile.name}"
+
     async def login_openai(
         self,
         client: httpx.AsyncClient,
@@ -231,62 +301,6 @@ class OpenCodeRuntime:
             await self.close()
             await self.ensure_started(client)
 
-    async def login_organization(
-        self,
-        client: httpx.AsyncClient,
-        origin: str,
-        *,
-        timeout: float = 300.0,
-    ) -> None:
-        """Let OpenCode run an organization's declared browser authentication flow."""
-        normalized = normalize_organization_origin(origin)
-        executable = self._resolve_binary()
-        if executable is None:
-            raise self._unavailable_error()
-        self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-        try:
-            process = await asyncio.create_subprocess_exec(
-                executable,
-                "--pure",
-                "auth",
-                "login",
-                normalized,
-                cwd=self.directory,
-                env=self._isolated_environment(),
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE,
-            )
-            async with asyncio.timeout(timeout):
-                stdout, stderr = await process.communicate()
-        except TimeoutError as exc:
-            if "process" in locals() and process.returncode is None:
-                process.kill()
-                await process.wait()
-            raise RouterError(
-                "AI Pro 브라우저 로그인 시간이 초과되었습니다.",
-                type="authentication_error",
-                code="aipro_login_timeout",
-                status_code=408,
-            ) from exc
-        except OSError as exc:
-            raise self._unavailable_error() from exc
-        if process.returncode != 0 or not self.organization_connected(normalized):
-            # stdout is the credential channel declared by the organization's
-            # well-known metadata. Never surface it in an error response.
-            detail = stderr.decode("utf-8", errors="replace").strip()
-            raise RouterError(
-                detail[-500:] or "OpenCode에서 AI Pro 브라우저 로그인을 완료하지 못했습니다.",
-                type="authentication_error",
-                code="opencode_organization_login_failed",
-                status_code=401,
-            )
-
-        # The server resolves the organization's remote provider config at startup.
-        # Restart even when it was already running so the newly stored connection is used.
-        if self.process is not None:
-            await self.close()
-        await self.ensure_started(client)
-
     async def close(self) -> None:
         process = self.process
         self.process = None
@@ -305,21 +319,6 @@ class OpenCodeRuntime:
     def remove_openai_auth(self) -> None:
         """Remove only the router-owned OpenAI credential from OpenCode storage."""
         self._remove_auth_entries("openai")
-
-    def organization_connected(self, origin: str) -> bool:
-        normalized = normalize_organization_origin(origin)
-        payload = self._read_auth_payload()
-        credential = payload.get(normalized) or payload.get(f"{normalized}/")
-        return bool(
-            isinstance(credential, dict)
-            and credential.get("type") == "wellknown"
-            and isinstance(credential.get("token"), str)
-            and credential["token"]
-        )
-
-    def remove_organization_auth(self, origin: str) -> None:
-        """Remove one organization connection without touching other OpenCode accounts."""
-        self._remove_auth_entries(normalize_organization_origin(origin))
 
     def _read_auth_payload(self) -> dict[str, object]:
         try:
@@ -381,16 +380,17 @@ class OpenCodeRuntime:
             "OPENCODE_SERVER_USERNAME",
         ):
             environment.pop(name, None)
+        config: dict[str, object] = {
+            "$schema": "https://opencode.ai/config.json",
+            "permission": "deny",
+            "share": "disabled",
+        }
+        if self._api_profile_configs:
+            config["provider"] = self._api_profile_configs
         environment.update(
             {
                 "OPENCODE_DISABLE_PROJECT_CONFIG": "true",
-                "OPENCODE_CONFIG_CONTENT": json.dumps(
-                    {
-                        "$schema": "https://opencode.ai/config.json",
-                        "permission": "deny",
-                        "share": "disabled",
-                    }
-                ),
+                "OPENCODE_CONFIG_CONTENT": json.dumps(config),
                 "XDG_CACHE_HOME": str(self.directory / "cache"),
                 "XDG_CONFIG_HOME": str(self.directory / "config"),
                 "XDG_DATA_HOME": str(self.directory / "data"),
