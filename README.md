@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.2-<platform>.whl
+python3 -m pip install llm_router-0.1.3-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,15 +29,15 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.2 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.2-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.2" `
+gh release download v0.1.3 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.3-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.3" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
 
 실행 후 [http://localhost:8787/dashboard](http://localhost:8787/dashboard)를 열어 OpenAI 브라우저
-로그인 또는 AI Pro API Key 프로필을 추가합니다.
+로그인, AI Pro SAML 브라우저 로그인 또는 AI Pro API Key 프로필을 추가합니다.
 
 소스에서 개발할 때만 `python3 -m pip install -e '.[dev]'`를 사용합니다. editable 설치는 wheel 빌드가
 아니므로 시스템 `PATH`의 OpenCode를 개발용 fallback으로 사용합니다.
@@ -108,6 +108,17 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
 - OpenAI 추론 요청의 `User-Agent`와 `originator`는 번들 OpenCode의 공식 내장 플러그인이 직접 생성하며,
   라우터는 해당 헤더를 덮어쓰거나 다른 클라이언트로 위장하지 않습니다.
 
+AI Pro는 기존 API Key 연결과 별도로 **SAML 브라우저 로그인**도 지원합니다.
+
+- 라우터가 `127.0.0.1`의 임시 포트를 열고
+  `https://aipro.sdsdev.co.kr/auth/login?port=<port>`를 기본 브라우저로 엽니다.
+- 로그인 완료 페이지가 localhost로 보내는 `jwt` 헤더를 CORS와 Private Network preflight를 거쳐
+  수신합니다. 쿼리·JSON의 `token`, `jwt`, `auth_jwt`도 호환합니다.
+- JWT는 `~/.llm-router/aipro-auth.json`에 0600 권한으로 저장하며 로그, 프로필 YAML 및 API 응답에
+  노출하지 않습니다.
+- 브라우저 프로필은 `https://aipro.sdsdev.co.kr/api/v1/chat/completions`에
+  `Authorization: JWT <token>`으로 요청합니다. 만료된 JWT는 다시 로그인해야 합니다.
+
 Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로그인, 프로필 생성, 추론 요청을 모두
 거부합니다. 기존 자격증명 파일은 자동 삭제하지 않지만 라우터가 사용하지 않습니다.
 
@@ -126,9 +137,10 @@ OpenAI OAuth 프로필의 추론은 내부 OpenCode 세션에서 실행한 뒤 C
 `LLM 서빙` 메뉴에서 다음 연결 방식을 선택할 수 있습니다.
 
 1. ChatGPT 계정 OAuth
-2. AI Pro API Key
-3. FabriX 사내 API
-4. OpenAI 호환 LLM Endpoint
+2. AI Pro SAML 브라우저 JWT
+3. AI Pro API Key
+4. FabriX 사내 API
+5. OpenAI 호환 LLM Endpoint
 
 라우터가 실행되면 모든 프로필은 다음 하나의 OpenAI 호환 Gateway에서 바로 사용할 수 있습니다.
 
@@ -139,7 +151,8 @@ Models:           http://127.0.0.1:8787/v1/models
 ```
 
 프로필마다 별도 포트를 시작하거나 중지하지 않습니다. 요청의 `model`에 프로필 이름을 넣으면 Gateway가
-ChatGPT 계정 OAuth, AI Pro API Key, FabriX, OpenAI 호환 LLM 중 알맞은 연결로 라우팅합니다.
+ChatGPT 계정 OAuth, AI Pro SAML JWT, AI Pro API Key, FabriX, OpenAI 호환 LLM 중 알맞은 연결로
+라우팅합니다.
 
 ```bash
 curl http://127.0.0.1:8787/v1/chat/completions \
@@ -153,6 +166,9 @@ AI Pro는 기본 Endpoint `https://aipro.sdsdev.co.kr/v1`과 발급받은 모델
 `@ai-sdk/openai-compatible` custom provider에 Endpoint, 모델, API Key 환경변수 참조만 등록하고 모든 추론을
 번들 OpenCode 세션으로 실행합니다. `User-Agent`를 설정하는 코드는 없으며 실제 OpenCode가 생성한 헤더를
 그대로 사용합니다.
+
+AI Pro 브라우저 프로필은 API Key 프로필과 함께 사용할 수 있으며 Endpoint는
+`https://aipro.sdsdev.co.kr/api/v1`입니다. 두 방식 모두 추론은 번들 OpenCode 세션으로 실행됩니다.
 
 OpenAI 호환 LLM은 다음 계약을 지원하면 연결됩니다.
 
@@ -231,7 +247,8 @@ SHA-256을 검증한 뒤 포함합니다. macOS arm64/x64, Linux glibc·musl arm
 - `POST /v1/chat/completions`
 - `GET /v1/auth/status`
 - `POST /v1/auth/openai/login`
-- `DELETE /v1/auth/{anthropic|openai}` (`anthropic`은 기존 로컬 토큰 삭제 전용)
+- `POST /v1/auth/aipro/login`
+- `DELETE /v1/auth/{anthropic|openai|aipro}` (`anthropic`은 기존 로컬 토큰 삭제 전용)
 - `GET /v1/profiles`
 - `POST /v1/profiles`
 - `PUT /v1/profiles/{name}`

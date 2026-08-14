@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from llm_router.aipro import is_aipro_profile
+from llm_router.aipro_auth import AI_PRO_JWT_ENV, AIProTokenStore
 from llm_router.credentials.env_key import load_provider_env
 from llm_router.errors import RouterError
 from llm_router.models import Profile
@@ -49,6 +50,7 @@ class OpenCodeRuntime:
         binary_finder: BinaryFinder = shutil.which,
         bundled_resolver: BundledResolver = bundled_opencode_path,
         startup_timeout: float = 8.0,
+        aipro_token_store: AIProTokenStore | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.binary = binary
@@ -61,6 +63,7 @@ class OpenCodeRuntime:
         self.binary_finder = binary_finder
         self.bundled_resolver = bundled_resolver
         self.startup_timeout = startup_timeout
+        self.aipro_token_store = aipro_token_store or AIProTokenStore.default()
         self.process: asyncio.subprocess.Process | None = None
         self._lock = asyncio.Lock()
         self._profile_lock = asyncio.Lock()
@@ -164,13 +167,13 @@ class OpenCodeRuntime:
             raise self._unavailable_error()
 
     async def ensure_profile(self, client: httpx.AsyncClient, profile: Profile) -> None:
-        """Start OpenCode with an AI Pro custom provider backed by an environment key."""
+        """Start OpenCode with an AI Pro API key or browser JWT custom provider."""
         if not is_aipro_profile(profile):
             await self.ensure_started(client)
             return
-        if profile.auth != "api_key" or not profile.api_key_env or not profile.base_url:
+        if not profile.base_url:
             raise RouterError(
-                "AI Pro requires an API key and endpoint.",
+                "AI Pro requires an endpoint.",
                 type="configuration_error",
                 code="invalid_aipro_profile",
                 status_code=422,
@@ -182,31 +185,57 @@ class OpenCodeRuntime:
                 code="aipro_managed_opencode_required",
                 status_code=503,
             )
-        load_provider_env()
-        api_key = os.environ.get(profile.api_key_env, "").strip()
-        if not api_key:
+        if profile.auth == "api_key":
+            load_provider_env()
+            credential_env = profile.api_key_env
+            credential = os.environ.get(credential_env or "", "").strip()
+            if not credential_env or not credential:
+                raise RouterError(
+                    f"missing credential: set {credential_env or 'AI Pro API key'} in .env",
+                    type="authentication_error",
+                    code="missing_credential",
+                    status_code=401,
+                )
+            options: dict[str, object] = {
+                "baseURL": profile.base_url.rstrip("/"),
+                "apiKey": f"{{env:{credential_env}}}",
+            }
+        elif profile.auth == "oauth":
+            credential_env = AI_PRO_JWT_ENV
+            credential = self.aipro_token_store.token()
+            if not credential:
+                raise RouterError(
+                    "AI Pro SAML 브라우저 로그인이 필요합니다.",
+                    type="authentication_error",
+                    code="aipro_browser_login_required",
+                    status_code=401,
+                )
+            options = {
+                "baseURL": profile.base_url.rstrip("/"),
+                "apiKey": f"{{env:{credential_env}}}",
+                "headers": {"Authorization": f"JWT {{env:{credential_env}}}"},
+            }
+        else:
             raise RouterError(
-                f"missing credential: set {profile.api_key_env} in .env",
-                type="authentication_error",
-                code="missing_credential",
-                status_code=401,
+                "AI Pro 인증 방식이 올바르지 않습니다.",
+                type="configuration_error",
+                code="invalid_aipro_profile",
+                status_code=422,
             )
 
         provider_id = self.provider_id(profile)
         config: dict[str, object] = {
             "npm": "@ai-sdk/openai-compatible",
             "name": f"AI Pro ({profile.name})",
-            "options": {
-                "baseURL": profile.base_url.rstrip("/"),
-                "apiKey": f"{{env:{profile.api_key_env}}}",
-            },
+            "options": options,
             "models": {profile.model: {"name": profile.model}},
         }
         signature = (
+            profile.auth,
             profile.base_url.rstrip("/"),
             profile.model,
-            profile.api_key_env,
-            hashlib.sha256(api_key.encode("utf-8")).hexdigest(),
+            credential_env,
+            hashlib.sha256(credential.encode("utf-8")).hexdigest(),
         )
         async with self._profile_lock:
             if self._api_profile_signatures.get(profile.name) != signature:
@@ -221,6 +250,19 @@ class OpenCodeRuntime:
         async with self._profile_lock:
             self._api_profile_configs.pop(self.provider_id(profile), None)
             self._api_profile_signatures.pop(profile.name, None)
+            await self.close()
+
+    async def clear_aipro_browser_profiles(self) -> None:
+        """Drop browser-JWT configs after logout so future starts contain no stale auth refs."""
+        async with self._profile_lock:
+            browser_profiles = [
+                name
+                for name, signature in self._api_profile_signatures.items()
+                if signature and signature[0] == "oauth"
+            ]
+            for name in browser_profiles:
+                self._api_profile_configs.pop(f"llm-router-aipro-{name}", None)
+                self._api_profile_signatures.pop(name, None)
             await self.close()
 
     @staticmethod
@@ -389,6 +431,7 @@ class OpenCodeRuntime:
             "OPENCODE_DISABLE_TERMINAL_TITLE",
         ):
             environment.pop(name, None)
+        environment.pop(AI_PRO_JWT_ENV, None)
         config: dict[str, object] = {
             "$schema": "https://opencode.ai/config.json",
             "autoupdate": False,
@@ -408,6 +451,12 @@ class OpenCodeRuntime:
                 "XDG_DATA_HOME": str(self.directory / "data"),
             }
         )
+        aipro_jwt = self.aipro_token_store.token()
+        if aipro_jwt and any(
+            signature and signature[0] == "oauth"
+            for signature in self._api_profile_signatures.values()
+        ):
+            environment[AI_PRO_JWT_ENV] = aipro_jwt
         return environment
 
     def _resolve_binary(self) -> str | None:

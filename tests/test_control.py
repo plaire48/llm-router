@@ -7,6 +7,7 @@ import httpx
 import respx
 from fastapi.testclient import TestClient
 
+from llm_router.aipro_auth import AIProTokenStore
 from llm_router.config import ProfileRegistry, Settings
 from llm_router.control import ClaudeWebLogin, OpenAIWebLogin
 from llm_router.credentials.anthropic_oauth import TokenStore
@@ -63,6 +64,32 @@ class FakeClaudeLogin:
         return self.started and not self.connected
 
 
+class FakeAIProLogin:
+    available = True
+    last_error = None
+
+    def __init__(self):
+        self.started = False
+
+    async def start(self):
+        self.started = True
+        return {
+            "provider": "aipro",
+            "status": "pending",
+            "opened_browser": True,
+            "callback_port": 32123,
+        }
+
+    async def logout(self):
+        self.started = False
+
+    async def close(self):
+        return None
+
+    def is_pending(self):
+        return self.started
+
+
 def _jwt(payload):
     encoded = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
     return f"header.{encoded}.signature"
@@ -76,6 +103,8 @@ def _client(
     tmp_path,
     *,
     claude_connected=False,
+    aipro_connected=False,
+    aipro_login=None,
     opencode_runtime=None,
 ):
     registry = ProfileRegistry([profile.model_copy(deep=True) for profile in REGISTRY.profiles()])
@@ -91,6 +120,9 @@ def _client(
             },
         }
     )
+    aipro_store = AIProTokenStore(tmp_path / "aipro-auth.json")
+    if aipro_connected:
+        aipro_store.save(_jwt({"exp": time.time() + 3600, "email": "aipro@example.com"}))
     app = create_app(
         SETTINGS,
         registry,
@@ -99,6 +131,8 @@ def _client(
         profiles_path=tmp_path / "profiles.yaml",
         profile_secret_store=ProfileSecretStore(tmp_path / "secrets.json"),
         claude_login=FakeClaudeLogin(connected=claude_connected),
+        aipro_token_store=aipro_store,
+        aipro_login=aipro_login,
         opencode_runtime=opencode_runtime,
     )
     return TestClient(app)
@@ -115,7 +149,10 @@ def test_auth_status_reports_browser_providers_without_exposing_tokens(tmp_path)
     assert providers["anthropic"]["status"] == "disabled"
     assert providers["openai"]["connected"] is True
     assert providers["openai"]["experimental"] is False
-    assert set(providers) == {"anthropic", "openai"}
+    assert providers["aipro"]["connected"] is False
+    assert providers["aipro"]["auth_method"] == "saml_jwt"
+    assert providers["aipro"]["endpoint"] == "https://aipro.sdsdev.co.kr/api/v1"
+    assert set(providers) == {"anthropic", "openai", "aipro"}
     assert response.headers["cache-control"] == "private, no-store"
     assert "openai-refresh-secret" not in response.text
     assert "access_token" not in response.text
@@ -243,12 +280,19 @@ def test_claude_login_endpoint_is_policy_disabled(tmp_path):
     assert started.json()["error"]["code"] == "anthropic_oauth_policy_disabled"
 
 
-def test_aipro_has_no_browser_login_endpoint(tmp_path):
-    with _client(tmp_path) as client:
+def test_aipro_browser_login_endpoint_starts_the_local_jwt_handoff(tmp_path):
+    login = FakeAIProLogin()
+    with _client(tmp_path, aipro_login=login) as client:
         started = client.post("/v1/auth/aipro/login", headers=AUTH)
 
-    assert started.status_code == 404
-    assert started.json()["error"]["code"] == "unsupported_provider"
+    assert started.status_code == 200
+    assert started.json() == {
+        "provider": "aipro",
+        "status": "pending",
+        "opened_browser": True,
+        "callback_port": 32123,
+    }
+    assert login.started is True
 
 
 async def test_openai_browser_login_controller_tracks_opencode_completion(tmp_path):
@@ -386,8 +430,9 @@ def test_aipro_api_key_profile_is_an_opencode_gateway_route(tmp_path):
     assert "aipro-secret" not in listed.text
 
 
-def test_aipro_profile_cannot_use_browser_oauth(tmp_path):
-    with _client(tmp_path) as client:
+def test_aipro_browser_jwt_profile_is_available_alongside_api_key(tmp_path):
+    runtime = FakeOpenCodeRuntime()
+    with _client(tmp_path, aipro_connected=True, opencode_runtime=runtime) as client:
         created = client.post(
             "/v1/profiles",
             headers=AUTH,
@@ -399,8 +444,15 @@ def test_aipro_profile_cannot_use_browser_oauth(tmp_path):
             },
         )
 
-    assert created.status_code == 400
-    assert created.json()["error"]["code"] == "aipro_api_key_required"
+        listed = client.get("/v1/profiles", headers=AUTH)
+
+    assert created.status_code == 200
+    profile = next(item for item in listed.json()["data"] if item["name"] == "aipro-oauth")
+    assert profile["auth"] == "oauth"
+    assert profile["status"] == "ready"
+    assert profile["base_url"] == "https://aipro.sdsdev.co.kr/api/v1"
+    assert profile["has_api_key"] is False
+    assert runtime.profiles[0].auth == "oauth"
 
 
 def test_legacy_aipro_endpoint_profile_is_migrated_to_opencode_at_runtime(tmp_path):

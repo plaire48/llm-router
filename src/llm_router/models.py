@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from llm_router.aipro import AI_PRO_BASE_URL
+from llm_router.aipro import AI_PRO_BASE_URL, AI_PRO_BROWSER_BASE_URL
 
 
 class FunctionCall(BaseModel):
@@ -81,16 +81,15 @@ class Profile(BaseModel):
             raise ValueError("fabrix requires client_key_env")
         if self.provider != "fabrix" and self.client_key_env:
             raise ValueError("client_key_env is only supported for provider=fabrix")
-        if self.auth == "oauth" and self.provider not in ("anthropic", "openai"):
-            raise ValueError("auth=oauth is only supported for provider in {anthropic, openai}")
+        if self.auth == "oauth" and self.provider not in ("anthropic", "openai", "aipro"):
+            raise ValueError("auth=oauth is only supported for browser-login providers")
         if self.auth == "oauth" and (self.api_key_env or self.client_key_env):
             raise ValueError("auth=oauth does not allow credential environment variables")
         if self.provider in {"anthropic", "openai"} and self.auth == "oauth" and self.base_url:
             raise ValueError("browser login profiles do not allow base_url")
-        if self.provider == "aipro" and self.auth != "api_key":
-            raise ValueError("aipro requires API key authentication")
         if self.provider == "aipro":
-            self.base_url = (self.base_url or AI_PRO_BASE_URL).rstrip("/")
+            default_url = AI_PRO_BROWSER_BASE_URL if self.auth == "oauth" else AI_PRO_BASE_URL
+            self.base_url = (self.base_url or default_url).rstrip("/")
             if not self.model.strip():
                 raise ValueError("aipro requires a model ID")
         return self

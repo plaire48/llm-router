@@ -11,7 +11,13 @@ import httpx
 from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, Field
 
-from llm_router.aipro import AI_PRO_BASE_URL, is_aipro_base_url, is_aipro_profile
+from llm_router.aipro import (
+    AI_PRO_BASE_URL,
+    AI_PRO_BROWSER_BASE_URL,
+    is_aipro_base_url,
+    is_aipro_profile,
+)
+from llm_router.aipro_auth import AIProTokenStore, AIProWebLogin
 from llm_router.config import ProfileFile, ProfileRegistry, Settings
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.env_key import load_provider_env
@@ -175,6 +181,7 @@ def _profile_status(
     profile: Profile,
     anthropic_connected: bool,
     openai_store: OpenAIAccountStore,
+    aipro_store: AIProTokenStore,
 ) -> tuple[str, str]:
     if is_policy_disabled(profile):
         return "policy_disabled", ANTHROPIC_OAUTH_DISABLED_MESSAGE
@@ -184,6 +191,10 @@ def _profile_status(
             if oauth["connected"]:
                 return "ready", "ChatGPT 계정 OAuth 연결됨"
             return "login_required", "ChatGPT 계정 로그인이 필요합니다"
+        if profile.provider == "aipro":
+            if aipro_store.status()["connected"]:
+                return "ready", "AI Pro SAML 브라우저 JWT 연결됨"
+            return "login_required", "AI Pro SAML 브라우저 로그인이 필요합니다"
         if anthropic_connected:
             return "ready", "Claude 브라우저 로그인 연결됨"
         return "login_required", "Claude 로그인이 필요합니다"
@@ -206,6 +217,7 @@ def _profile_data(
     profile: Profile,
     anthropic_connected: bool,
     openai_store: OpenAIAccountStore,
+    aipro_store: AIProTokenStore,
     secret_store: ProfileSecretStore,
     settings: Settings,
 ) -> dict[str, Any]:
@@ -213,6 +225,7 @@ def _profile_data(
         profile,
         anthropic_connected,
         openai_store,
+        aipro_store,
     )
     return {
         **profile.model_dump(
@@ -297,6 +310,8 @@ def build_control_router(
     serving_manager: ProfileServingManager | None = None,
     claude_login: ClaudeWebLogin | None = None,
     openai_login: OpenAIWebLogin | None = None,
+    aipro_token_store: AIProTokenStore | None = None,
+    aipro_login: AIProWebLogin | None = None,
     opencode_runtime: OpenCodeRuntime | None = None,
 ) -> APIRouter:
     router = APIRouter()
@@ -304,12 +319,14 @@ def build_control_router(
     profiles_file = profile_file or ProfileFile(None)
     secrets_store = secret_store or ProfileSecretStore.default()
     secrets_store.hydrate()
+    active_aipro_store = aipro_token_store or AIProTokenStore.default()
     claude_web_login = claude_login or ClaudeWebLogin(router_claude_store)
     active_opencode_runtime = opencode_runtime or OpenCodeRuntime(
         base_url=settings.opencode_url,
         binary=settings.opencode_binary,
         directory=settings.opencode_directory,
         auto_start=settings.opencode_auto_start,
+        aipro_token_store=active_aipro_store,
     )
     codex_store = codex_token_store or OpenAIAccountStore.from_opencode(
         active_opencode_runtime.auth_path
@@ -319,6 +336,10 @@ def build_control_router(
         codex_store,
         runtime=active_opencode_runtime,
         client_getter=client_getter,
+    )
+    aipro_web_login = aipro_login or AIProWebLogin(
+        active_aipro_store,
+        runtime=active_opencode_runtime,
     )
     protected = [Depends(auth_dependency)]
 
@@ -359,13 +380,30 @@ def build_control_router(
         )
         if openai_web_login.last_error and not openai["connected"]:
             openai.update(status="error", message=openai_web_login.last_error)
-        return {"object": "auth_status", "data": [anthropic, openai]}
+        aipro = active_aipro_store.status()
+        aipro.update(
+            {
+                "provider": "aipro",
+                "label": "AI Pro",
+                "available": aipro_web_login.available,
+                "experimental": False,
+                "login_pending": aipro_web_login.is_pending(),
+                "inference_engine": "opencode",
+                "auth_method": "saml_jwt",
+                "endpoint": AI_PRO_BROWSER_BASE_URL,
+            }
+        )
+        if aipro_web_login.last_error and not aipro["connected"]:
+            aipro.update(status="error", message=aipro_web_login.last_error)
+        return {"object": "auth_status", "data": [anthropic, openai, aipro]}
 
     @router.post("/v1/auth/{provider}/login", dependencies=protected)
     async def start_login(provider: str, response: Response) -> dict[str, Any]:
         response.headers["Cache-Control"] = "private, no-store"
         if provider == "openai":
             return await openai_web_login.start()
+        if provider == "aipro":
+            return await aipro_web_login.start()
         if provider == "anthropic":
             raise anthropic_oauth_disabled_error()
         raise RouterError(
@@ -380,6 +418,9 @@ def build_control_router(
         response.headers["Cache-Control"] = "private, no-store"
         if provider == "openai":
             await openai_web_login.logout()
+            return {"provider": provider, "status": "disconnected"}
+        if provider == "aipro":
+            await aipro_web_login.logout()
             return {"provider": provider, "status": "disconnected"}
         if provider != "anthropic":
             raise RouterError(
@@ -405,6 +446,7 @@ def build_control_router(
                     profile,
                     anthropic_connected,
                     codex_store,
+                    active_aipro_store,
                     secrets_store,
                     settings,
                 )
@@ -420,13 +462,6 @@ def build_control_router(
                 "OpenAI and Anthropic profiles require browser login.",
                 type="invalid_request_error",
                 code="browser_login_required",
-                status_code=400,
-            )
-        if payload.provider == "aipro" and payload.auth != "api_key":
-            raise RouterError(
-                "AI Pro profiles require an API key.",
-                type="invalid_request_error",
-                code="aipro_api_key_required",
                 status_code=400,
             )
         api_key_env = None
@@ -474,7 +509,7 @@ def build_control_router(
                 base_url=(
                     payload.base_url.strip()
                     if payload.base_url
-                    else AI_PRO_BASE_URL
+                    else (AI_PRO_BROWSER_BASE_URL if payload.auth == "oauth" else AI_PRO_BASE_URL)
                     if payload.provider == "aipro"
                     else None
                 ),
@@ -504,13 +539,6 @@ def build_control_router(
         if payload.provider == "aipro" or (
             payload.provider == "openai_compatible" and is_aipro_base_url(payload.base_url)
         ):
-            if payload.auth != "api_key":
-                raise RouterError(
-                    "AI Pro profiles require an API key.",
-                    type="invalid_request_error",
-                    code="aipro_api_key_required",
-                    status_code=400,
-                )
             raise RouterError(
                 "AI Pro model ID는 발급받은 값을 직접 입력하세요.",
                 type="invalid_request_error",
@@ -600,7 +628,9 @@ def build_control_router(
         if profile.provider == "openai" and profile.auth == "oauth":
             client = await client_getter()
             await active_opencode_runtime.ensure_started(client)
-        if is_aipro_profile(profile):
+        if is_aipro_profile(profile) and (
+            profile.auth == "api_key" or active_aipro_store.status()["connected"]
+        ):
             client = await client_getter()
             await active_opencode_runtime.ensure_profile(client, profile)
         registry.upsert(profile)
@@ -632,7 +662,9 @@ def build_control_router(
         if profile.provider == "openai" and profile.auth == "oauth":
             client = await client_getter()
             await active_opencode_runtime.ensure_started(client)
-        if is_aipro_profile(profile):
+        if is_aipro_profile(profile) and (
+            profile.auth == "api_key" or active_aipro_store.status()["connected"]
+        ):
             client = await client_getter()
             await active_opencode_runtime.ensure_profile(client, profile)
         registry.upsert(profile, previous_name=profile_name)
@@ -663,6 +695,7 @@ def build_control_router(
             profile,
             False,
             codex_store,
+            active_aipro_store,
         )
         if status != "ready":
             raise RouterError(

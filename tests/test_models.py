@@ -85,7 +85,7 @@ def test_fabrix_profile_requires_endpoint_and_both_credentials():
         )
 
 
-def test_aipro_profile_requires_api_key_and_defaults_the_endpoint():
+def test_aipro_profiles_support_api_key_and_browser_jwt_endpoints():
     profile = Profile.model_validate(
         {
             "name": "aipro",
@@ -97,11 +97,18 @@ def test_aipro_profile_requires_api_key_and_defaults_the_endpoint():
     )
     assert profile.base_url == "https://aipro.sdsdev.co.kr/v1"
 
-    for overrides in (
-        {"auth": "oauth", "api_key_env": None},
-        {"api_key_env": None},
-        {"model": ""},
-    ):
+    browser = Profile.model_validate(
+        {
+            "name": "aipro-browser",
+            "provider": "aipro",
+            "auth": "oauth",
+            "model": "company-model",
+        }
+    )
+    assert browser.base_url == "https://aipro.sdsdev.co.kr/api/v1"
+    assert browser.api_key_env is None
+
+    for overrides in ({"api_key_env": None}, {"model": ""}):
         with pytest.raises(ValidationError):
             Profile.model_validate(
                 {

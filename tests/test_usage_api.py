@@ -136,14 +136,17 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'apiConnectionCard("openai_compatible","OpenAI 호환 LLM"' in body
         assert 'apiConnectionCard("aipro","AI Pro"' in body
         assert 'const AI_PRO_ENDPOINT = "https://aipro.sdsdev.co.kr/v1"' in body
+        assert 'const AI_PRO_BROWSER_ENDPOINT = "https://aipro.sdsdev.co.kr/api/v1"' in body
         assert "state.auth.map(browserConnectionCard)" in body
         assert "async function pollLogin(provider)" in body
-        assert "OpenAI 로그인이 완료되어 프로필에 자동 반영했습니다." in body
+        assert "로그인이 완료되어 프로필에 자동 반영했습니다." in body
         assert "await pollLogin(provider)" in body
-        assert 'isAIPro?"API 키 · OpenCode"' in body
+        assert 'profile.auth==="oauth"?"SAML JWT · OpenCode":"API 키 · OpenCode"' in body
+        assert 'aipro_browser:{model:"",baseUrl:AI_PRO_BROWSER_ENDPOINT}' in body
         assert 'aipro:{model:"",baseUrl:AI_PRO_ENDPOINT}' in body
+        assert 'aipro_browser:["aipro","oauth"]' in body
         assert 'aipro:["aipro","api_key"]' in body
-        assert 'type==="internal"||type==="fabrix"||type==="aipro"' in body
+        assert 'const isAIProBrowser=type==="aipro_browser"' in body
         assert '$("#top-add")' not in body
         assert 'id="page-add"' not in body
         assert 'showPage("connections")' in body

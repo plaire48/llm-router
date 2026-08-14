@@ -18,6 +18,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from llm_router.adapters import build_adapter
+from llm_router.aipro_auth import AIProTokenStore, AIProWebLogin
 from llm_router.config import ProfileFile, ProfileRegistry, Settings, is_loopback_host
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.openai_oauth import OpenAIAccountStore
@@ -65,6 +66,8 @@ def create_app(
     serving_manager: ProfileServingManager | None = None,
     claude_login: Any | None = None,
     openai_login: Any | None = None,
+    aipro_token_store: AIProTokenStore | None = None,
+    aipro_login: AIProWebLogin | None = None,
     opencode_runtime: OpenCodeRuntime | None = None,
 ) -> FastAPI:
     if settings.master_key is None and not is_loopback_host(settings.host):
@@ -76,11 +79,19 @@ def create_app(
         )
 
     owns_client = client is None
+    active_aipro_store = aipro_token_store or AIProTokenStore.default()
     active_opencode_runtime = opencode_runtime or OpenCodeRuntime(
         base_url=settings.opencode_url,
         binary=settings.opencode_binary,
         directory=settings.opencode_directory,
         auto_start=settings.opencode_auto_start,
+        aipro_token_store=active_aipro_store,
+    )
+    if isinstance(active_opencode_runtime, OpenCodeRuntime):
+        active_opencode_runtime.aipro_token_store = active_aipro_store
+    active_aipro_login = aipro_login or AIProWebLogin(
+        active_aipro_store,
+        runtime=active_opencode_runtime,
     )
     active_openai_store = codex_token_store or OpenAIAccountStore.from_opencode(
         active_opencode_runtime.auth_path
@@ -93,6 +104,7 @@ def create_app(
         active_serving_manager = getattr(application.state, "serving_manager", None)
         if active_serving_manager is not None:
             await active_serving_manager.stop_all()
+        await active_aipro_login.close()
         await active_opencode_runtime.close()
         active_client = application.state.client
         if owns_client and active_client is not None:
@@ -307,6 +319,8 @@ def create_app(
             serving_manager=active_serving_manager,
             claude_login=claude_login,
             openai_login=openai_login,
+            aipro_token_store=active_aipro_store,
+            aipro_login=active_aipro_login,
             opencode_runtime=active_opencode_runtime,
         )
     )

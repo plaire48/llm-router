@@ -1,8 +1,11 @@
+import base64
 import json
+import time
 
 import httpx
 import pytest
 
+from llm_router.aipro_auth import AI_PRO_JWT_ENV, AIProTokenStore
 from llm_router.errors import RouterError
 from llm_router.models import Profile
 from llm_router.opencode_runtime import (
@@ -10,6 +13,11 @@ from llm_router.opencode_runtime import (
     OpenCodeRuntime,
     background_process_options,
 )
+
+
+def _jwt(payload: dict) -> str:
+    encoded = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
+    return f"header.{encoded}.signature"
 
 
 async def test_runtime_uses_an_already_running_opencode_server(tmp_path):
@@ -309,6 +317,76 @@ async def test_runtime_configures_aipro_as_an_opencode_custom_provider(tmp_path,
     assert "company-secret" not in environment["OPENCODE_CONFIG_CONTENT"]
     assert environment["AIPRO_API_KEY"] == "company-secret"
     assert "BUN_OPTIONS" not in environment
+
+
+async def test_runtime_configures_aipro_browser_jwt_without_putting_it_in_config(tmp_path):
+    captured = {}
+
+    class ConfigRuntime(OpenCodeRuntime):
+        async def ensure_started(self, _client):
+            captured["environment"] = self._isolated_environment()
+
+    token = _jwt({"exp": time.time() + 3600})
+    store = AIProTokenStore(tmp_path / "aipro-auth.json")
+    store.save(token)
+    profile = Profile(
+        name="aipro-browser",
+        provider="aipro",
+        auth="oauth",
+        model="company-model",
+    )
+    runtime = ConfigRuntime(directory=tmp_path / "runtime", aipro_token_store=store)
+
+    await runtime.ensure_profile(object(), profile)
+
+    environment = captured["environment"]
+    config = json.loads(environment["OPENCODE_CONFIG_CONTENT"])
+    provider = config["provider"]["llm-router-aipro-aipro-browser"]
+    assert provider == {
+        "npm": "@ai-sdk/openai-compatible",
+        "name": "AI Pro (aipro-browser)",
+        "options": {
+            "baseURL": "https://aipro.sdsdev.co.kr/api/v1",
+            "apiKey": f"{{env:{AI_PRO_JWT_ENV}}}",
+            "headers": {"Authorization": f"JWT {{env:{AI_PRO_JWT_ENV}}}"},
+        },
+        "models": {"company-model": {"name": "company-model"}},
+    }
+    assert token not in environment["OPENCODE_CONFIG_CONTENT"]
+    assert environment[AI_PRO_JWT_ENV] == token
+
+
+async def test_clearing_aipro_browser_profiles_keeps_api_key_profiles(tmp_path, monkeypatch):
+    class ConfigRuntime(OpenCodeRuntime):
+        async def ensure_started(self, _client):
+            return None
+
+    monkeypatch.setenv("AIPRO_API_KEY", "company-secret")
+    store = AIProTokenStore(tmp_path / "aipro-auth.json")
+    store.save(_jwt({"exp": time.time() + 3600}))
+    runtime = ConfigRuntime(directory=tmp_path / "runtime", aipro_token_store=store)
+    api_key_profile = Profile(
+        name="aipro-key",
+        provider="aipro",
+        auth="api_key",
+        api_key_env="AIPRO_API_KEY",
+        model="key-model",
+    )
+    browser_profile = Profile(
+        name="aipro-browser",
+        provider="aipro",
+        auth="oauth",
+        model="browser-model",
+    )
+    await runtime.ensure_profile(object(), api_key_profile)
+    await runtime.ensure_profile(object(), browser_profile)
+
+    await runtime.clear_aipro_browser_profiles()
+
+    environment = runtime._isolated_environment()
+    config = json.loads(environment["OPENCODE_CONFIG_CONTENT"])
+    assert set(config["provider"]) == {"llm-router-aipro-aipro-key"}
+    assert AI_PRO_JWT_ENV not in environment
 
 
 async def test_removing_aipro_profile_drops_its_runtime_config(tmp_path, monkeypatch):
