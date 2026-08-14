@@ -95,7 +95,7 @@ def test_aipro_profiles_support_api_key_and_browser_jwt_endpoints():
             "model": "company-model",
         }
     )
-    assert profile.base_url == "https://aipro.sdsdev.co.kr/v1"
+    assert profile.base_url == "https://aipro.sdsdev.co.kr/open/api/v1"
 
     browser = Profile.model_validate(
         {
@@ -107,6 +107,18 @@ def test_aipro_profiles_support_api_key_and_browser_jwt_endpoints():
     )
     assert browser.base_url == "https://aipro.sdsdev.co.kr/api/v1"
     assert browser.api_key_env is None
+
+    migrated = Profile.model_validate(
+        {
+            "name": "aipro-legacy",
+            "provider": "aipro",
+            "auth": "api_key",
+            "api_key_env": "AIPRO_API_KEY",
+            "base_url": "https://aipro.sdsdev.co.kr/v1/",
+            "model": "company-model",
+        }
+    )
+    assert migrated.base_url == "https://aipro.sdsdev.co.kr/open/api/v1"
 
     for overrides in ({"api_key_env": None}, {"model": ""}):
         with pytest.raises(ValidationError):

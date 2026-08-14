@@ -6,11 +6,11 @@ on:
       release_tag:
         description: Release tag to verify
         required: true
-        default: v0.1.4
+        default: v0.1.5
       expected_sha256:
         description: Expected wheel SHA-256
         required: true
-        default: 07cf5ea5843387d6db03c685079373da6b41463f662de4f36b6c9a893fafbd43
+        default: 0ece83654134216c5583a9f478917bd8c6d450a51166f9ea18dd827b59e9dc2c
 
 permissions:
   contents: read

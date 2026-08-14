@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.4-<platform>.whl
+python3 -m pip install llm_router-0.1.5-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.4 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.4-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.4" `
+gh release download v0.1.5 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.5-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.5" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -117,7 +117,7 @@ AI Pro는 기존 API Key 연결과 별도로 **SAML 브라우저 로그인**도 
 - JWT는 `~/.llm-router/aipro-auth.json`에 0600 권한으로 저장하며 로그, 프로필 YAML 및 API 응답에
   노출하지 않습니다.
 - 브라우저 프로필은 `https://aipro.sdsdev.co.kr/api/v1/chat/completions`에
-  `Authorization: JWT <token>`으로 요청합니다. 만료된 JWT는 다시 로그인해야 합니다.
+  `Authorization: <JWT>`로 요청합니다. 만료된 JWT는 다시 로그인해야 합니다.
 
 Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로그인, 프로필 생성, 추론 요청을 모두
 거부합니다. 기존 자격증명 파일은 자동 삭제하지 않지만 라우터가 사용하지 않습니다.
@@ -162,13 +162,15 @@ curl http://127.0.0.1:8787/v1/chat/completions \
 
 API 키는 AI Pro, FabriX와 OpenAI 호환 사내 LLM 프로필에서 입력할 수 있습니다. 키는 `profiles.yaml`에 기록하지 않고
 `~/.llm-router/profile-secrets.json`에 0600 권한으로 저장하며 API 응답에도 반환하지 않습니다.
-AI Pro는 기본 Endpoint `https://aipro.sdsdev.co.kr/v1`과 발급받은 모델 ID를 사용합니다. 라우터는
+AI Pro API Key 연결은 기본 Endpoint `https://aipro.sdsdev.co.kr/open/api/v1`과 발급받은 모델 ID를
+사용하며 `Authorization: Bearer <token>`으로 인증합니다. 라우터는
 `@ai-sdk/openai-compatible` custom provider에 Endpoint, 모델, API Key 환경변수 참조만 등록하고 모든 추론을
 번들 OpenCode 세션으로 실행합니다. `User-Agent`를 설정하는 코드는 없으며 실제 OpenCode가 생성한 헤더를
 그대로 사용합니다.
 
 AI Pro 브라우저 프로필은 API Key 프로필과 함께 사용할 수 있으며 Endpoint는
-`https://aipro.sdsdev.co.kr/api/v1`입니다. 두 방식 모두 추론은 번들 OpenCode 세션으로 실행됩니다.
+`https://aipro.sdsdev.co.kr/api/v1`입니다. 두 방식 모두 추론은 번들 OpenCode 세션으로 실행되므로
+공식 OpenCode `User-Agent`가 그대로 전송됩니다.
 
 OpenAI 호환 LLM은 다음 계약을 지원하면 연결됩니다.
 

@@ -4,7 +4,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from llm_router.aipro import AI_PRO_BASE_URL, AI_PRO_BROWSER_BASE_URL
+from llm_router.aipro import (
+    AI_PRO_BASE_URL,
+    AI_PRO_BROWSER_BASE_URL,
+    effective_aipro_base_url,
+    is_aipro_base_url,
+)
 
 
 class FunctionCall(BaseModel):
@@ -89,7 +94,13 @@ class Profile(BaseModel):
             raise ValueError("browser login profiles do not allow base_url")
         if self.provider == "aipro":
             default_url = AI_PRO_BROWSER_BASE_URL if self.auth == "oauth" else AI_PRO_BASE_URL
-            self.base_url = (self.base_url or default_url).rstrip("/")
+            self.base_url = effective_aipro_base_url(self.base_url or default_url, self.auth)
             if not self.model.strip():
                 raise ValueError("aipro requires a model ID")
+        elif (
+            self.provider == "openai_compatible"
+            and self.base_url
+            and is_aipro_base_url(self.base_url)
+        ):
+            self.base_url = effective_aipro_base_url(self.base_url, self.auth)
         return self

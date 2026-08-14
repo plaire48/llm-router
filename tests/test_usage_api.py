@@ -135,7 +135,7 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'apiConnectionCard("fabrix","FabriX","사내 API","fabrix")' in body
         assert 'apiConnectionCard("openai_compatible","OpenAI 호환 LLM"' in body
         assert 'apiConnectionCard("aipro","AI Pro"' in body
-        assert 'const AI_PRO_ENDPOINT = "https://aipro.sdsdev.co.kr/v1"' in body
+        assert 'const AI_PRO_ENDPOINT = "https://aipro.sdsdev.co.kr/open/api/v1"' in body
         assert 'const AI_PRO_BROWSER_ENDPOINT = "https://aipro.sdsdev.co.kr/api/v1"' in body
         assert "state.auth.map(browserConnectionCard)" in body
         assert "async function pollLogin(provider)" in body

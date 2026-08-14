@@ -424,7 +424,7 @@ def test_aipro_api_key_profile_is_an_opencode_gateway_route(tmp_path):
     profile = next(item for item in listed.json()["data"] if item["name"] == "aipro-team")
     assert profile["status"] == "ready"
     assert profile["inference_engine"] == "opencode"
-    assert profile["base_url"] == "https://aipro.sdsdev.co.kr/v1"
+    assert profile["base_url"] == "https://aipro.sdsdev.co.kr/open/api/v1"
     assert profile["has_api_key"] is True
     assert runtime.profiles[0].name == "aipro-team"
     assert "aipro-secret" not in listed.text

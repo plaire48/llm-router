@@ -309,10 +309,10 @@ async def test_runtime_configures_aipro_as_an_opencode_custom_provider(tmp_path,
         "options": {
             "baseURL": "https://aipro.company.test/v1",
             "apiKey": "{env:AIPRO_API_KEY}",
+            "headers": {"Authorization": "Bearer {env:AIPRO_API_KEY}"},
         },
         "models": {"company-model": {"name": "company-model"}},
     }
-    assert "headers" not in provider
     assert "User-Agent" not in environment["OPENCODE_CONFIG_CONTENT"]
     assert "company-secret" not in environment["OPENCODE_CONFIG_CONTENT"]
     assert environment["AIPRO_API_KEY"] == "company-secret"
@@ -348,7 +348,7 @@ async def test_runtime_configures_aipro_browser_jwt_without_putting_it_in_config
         "options": {
             "baseURL": "https://aipro.sdsdev.co.kr/api/v1",
             "apiKey": f"{{env:{AI_PRO_JWT_ENV}}}",
-            "headers": {"Authorization": f"JWT {{env:{AI_PRO_JWT_ENV}}}"},
+            "headers": {"Authorization": f"{{env:{AI_PRO_JWT_ENV}}}"},
         },
         "models": {"company-model": {"name": "company-model"}},
     }

@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
-from llm_router.aipro import is_aipro_profile
+from llm_router.aipro import effective_aipro_base_url, is_aipro_profile
 from llm_router.aipro_auth import AI_PRO_JWT_ENV, AIProTokenStore
 from llm_router.credentials.env_key import load_provider_env
 from llm_router.errors import RouterError
@@ -196,9 +196,11 @@ class OpenCodeRuntime:
                     code="missing_credential",
                     status_code=401,
                 )
+            base_url = effective_aipro_base_url(profile.base_url, profile.auth)
             options: dict[str, object] = {
-                "baseURL": profile.base_url.rstrip("/"),
+                "baseURL": base_url,
                 "apiKey": f"{{env:{credential_env}}}",
+                "headers": {"Authorization": f"Bearer {{env:{credential_env}}}"},
             }
         elif profile.auth == "oauth":
             credential_env = AI_PRO_JWT_ENV
@@ -210,10 +212,11 @@ class OpenCodeRuntime:
                     code="aipro_browser_login_required",
                     status_code=401,
                 )
+            base_url = effective_aipro_base_url(profile.base_url, profile.auth)
             options = {
-                "baseURL": profile.base_url.rstrip("/"),
+                "baseURL": base_url,
                 "apiKey": f"{{env:{credential_env}}}",
-                "headers": {"Authorization": f"JWT {{env:{credential_env}}}"},
+                "headers": {"Authorization": f"{{env:{credential_env}}}"},
             }
         else:
             raise RouterError(
@@ -232,7 +235,7 @@ class OpenCodeRuntime:
         }
         signature = (
             profile.auth,
-            profile.base_url.rstrip("/"),
+            base_url,
             profile.model,
             credential_env,
             hashlib.sha256(credential.encode("utf-8")).hexdigest(),
