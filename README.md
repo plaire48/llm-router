@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.8-<platform>.whl
+python3 -m pip install llm_router-0.1.9-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.8 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.8-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.8" `
+gh release download v0.1.9 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.9-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.9" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -70,9 +70,11 @@ LLM_ROUTER_OPENCODE_AUTO_START=true
 `4097`이 `.env`에 남아 있어도 다른 프로세스가 사용 중이면 자동으로 빈 포트로 이동합니다. 사용자가
 지정한 고정 포트는 충돌 시 자동 변경하지 않습니다.
 
-사내 HTTPS 프록시가 자체 CA로 인증서를 서명하는 환경에서는 PEM 인증서 파일을 설정합니다. 라우터의
-Python HTTP 클라이언트와 내부 OpenCode 프로세스가 `NODE_EXTRA_CA_CERTS`를 상속하므로 로그인, 토큰
-교환·갱신, 추론 요청에 동일하게 적용됩니다.
+Python HTTP 클라이언트는 운영체제 인증서 저장소와 공개 CA 묶음을 함께 사용합니다. 따라서 회사 루트
+인증서가 Windows의 신뢰할 수 있는 루트 인증 기관에 설치돼 있으면 OpenAI 크레딧 조회에도 자동으로
+적용됩니다. 사내 HTTPS 프록시의 CA가 저장소에 없으면 PEM 인증서 파일을 설정합니다. 라우터의 Python
+HTTP 클라이언트와 내부 OpenCode 프로세스가 `NODE_EXTRA_CA_CERTS`를 함께 사용하므로 로그인, 토큰
+교환·갱신, 크레딧 조회와 추론 요청에 동일하게 적용됩니다.
 
 ```bash
 export NODE_EXTRA_CA_CERTS=/absolute/path/company-ca.pem
@@ -99,6 +101,10 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
 같은 PEM 파일에 루트와 중간 인증서를 모두 포함합니다.
 
 인증서 검증을 끄는 방식(`verify=False`)은 지원하지 않습니다.
+
+`certificate verify failed`가 계속 표시되면 `.env`의 경로가 실제 PEM 파일을 가리키는지 확인한 뒤
+라우터를 완전히 종료하고 다시 시작합니다. 이미 실행 중인 프로세스에는 변경된 환경 변수가 반영되지
+않습니다.
 
 서버 실행 후 [http://localhost:8787/dashboard](http://localhost:8787/dashboard)를 엽니다.
 

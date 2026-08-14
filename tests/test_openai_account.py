@@ -1,4 +1,5 @@
 import json
+import ssl
 import time
 from urllib.parse import parse_qs
 
@@ -198,3 +199,23 @@ async def test_openai_account_usage_requires_browser_login(tmp_path):
                 client=client,
             ).report()
     assert error.value.code == "oauth_required"
+
+
+async def test_openai_account_usage_explains_tls_certificate_failure(tmp_path):
+    class CertificateFailingClient:
+        async def get(self, *args, **kwargs):
+            request = httpx.Request("GET", OPENAI_ACCOUNT_USAGE_URL)
+            ssl_error = ssl.SSLCertVerificationError(
+                1, "certificate verify failed: unable to get local issuer certificate"
+            )
+            raise httpx.ConnectError("certificate verify failed", request=request) from ssl_error
+
+    source = OpenAIAccountSource(
+        store=_store(tmp_path),
+        client=CertificateFailingClient(),
+    )
+    with pytest.raises(RouterError) as error:
+        await source.report()
+
+    assert error.value.code == "tls_certificate_verify_failed"
+    assert "NODE_EXTRA_CA_CERTS" in error.value.message

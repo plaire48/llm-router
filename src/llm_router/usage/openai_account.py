@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import ssl
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, replace
@@ -148,12 +149,32 @@ class OpenAIAccountSource:
                 timeout=5.0,
             )
         except httpx.RequestError as exc:
+            if self._is_certificate_error(exc):
+                raise RouterError(
+                    "OpenAI account credits TLS certificate verification failed. "
+                    "Trust the company CA in Windows or set NODE_EXTRA_CA_CERTS to its "
+                    "PEM file path, then restart llm-router.",
+                    type="upstream_error",
+                    code="tls_certificate_verify_failed",
+                    status_code=502,
+                ) from exc
             raise RouterError(
                 f"OpenAI account credits connection failed: {exc}",
                 type="upstream_error",
                 code="openai_account_connection_error",
                 status_code=502,
             ) from exc
+
+    @staticmethod
+    def _is_certificate_error(exc: BaseException) -> bool:
+        current: BaseException | None = exc
+        visited: set[int] = set()
+        while current is not None and id(current) not in visited:
+            if isinstance(current, ssl.SSLCertVerificationError):
+                return True
+            visited.add(id(current))
+            current = current.__cause__ or current.__context__
+        return "certificate verify failed" in str(exc).lower()
 
     async def _refresh(
         self,

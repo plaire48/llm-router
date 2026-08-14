@@ -21,8 +21,8 @@ def test_node_extra_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     context = FakeSSLContext()
     created = {}
 
-    def fake_create_default_context(*, cafile=None, capath=None):
-        created.update(cafile=cafile, capath=capath)
+    def fake_create_default_context(**kwargs):
+        created.update(kwargs)
         return context
 
     monkeypatch.delenv("SSL_CERT_FILE", raising=False)
@@ -33,8 +33,8 @@ def test_node_extra_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     )
 
     assert create_ssl_context() is context
-    assert created == {"cafile": certifi.where(), "capath": None}
-    assert context.loaded == [str(extra_ca)]
+    assert created == {}
+    assert context.loaded == [certifi.where(), str(extra_ca)]
 
 
 def test_official_codex_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
@@ -49,7 +49,7 @@ def test_official_codex_ca_is_added_to_default_certifi_store(tmp_path, monkeypat
     monkeypatch.setattr("llm_router.http_client.ssl.create_default_context", lambda **_: context)
 
     assert create_ssl_context() is context
-    assert context.loaded == [str(extra_ca)]
+    assert context.loaded == [certifi.where(), str(extra_ca)]
 
 
 def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
@@ -69,7 +69,7 @@ def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
     previous = os.environ.pop("NODE_EXTRA_CA_CERTS", None)
     try:
         assert create_ssl_context() is context
-        assert context.loaded == [str(extra_ca)]
+        assert context.loaded == [certifi.where(), str(extra_ca)]
     finally:
         if previous is None:
             os.environ.pop("NODE_EXTRA_CA_CERTS", None)
@@ -97,6 +97,30 @@ def test_ssl_cert_file_remains_the_base_and_node_ca_is_added(tmp_path, monkeypat
     assert create_ssl_context() is context
     assert created == {"cafile": str(base_ca), "capath": None}
     assert context.loaded == [str(extra_ca)]
+
+
+def test_default_tls_context_keeps_system_store_and_adds_certifi(monkeypatch):
+    context = FakeSSLContext()
+    created = {}
+
+    def fake_create_default_context(**kwargs):
+        created.update(kwargs)
+        return context
+
+    for variable in (
+        "SSL_CERT_FILE",
+        "SSL_CERT_DIR",
+        "CODEX_CA_CERTIFICATE",
+        "NODE_EXTRA_CA_CERTS",
+    ):
+        monkeypatch.delenv(variable, raising=False)
+    monkeypatch.setattr(
+        "llm_router.http_client.ssl.create_default_context", fake_create_default_context
+    )
+
+    assert create_ssl_context() is context
+    assert created == {}
+    assert context.loaded == [certifi.where()]
 
 
 def test_invalid_node_extra_ca_has_actionable_error(tmp_path, monkeypatch):
