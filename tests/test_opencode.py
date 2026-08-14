@@ -10,11 +10,10 @@ from fastapi.testclient import TestClient
 
 from llm_router.adapters.opencode import OpenCodeAdapter, to_opencode_prompt
 from llm_router.config import ProfileRegistry, Settings
-from llm_router.credentials.openai_oauth import OpenAIAccountStore, OpenAIChatGPTOAuth
+from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, Profile
 from llm_router.server import create_app
-from llm_router.usage.openai_account import OpenAIAccountSource
 
 PROFILE = Profile(
     name="openai",
@@ -52,17 +51,6 @@ def _request(*, stream=False, tools=False) -> ChatCompletionRequest:
             }
         ]
     return ChatCompletionRequest.model_validate(value)
-
-
-class StaticCredential:
-    async def opencode_auth(self):
-        return {
-            "type": "oauth",
-            "access": "access",
-            "refresh": "refresh",
-            "expires": 1_800_000_000_000,
-            "accountId": "account_1",
-        }
 
 
 class FakeRuntime:
@@ -114,15 +102,10 @@ async def test_non_stream_completion_runs_inside_temporary_opencode_session():
     runtime = FakeRuntime()
     captured = {}
 
-    def auth_handler(request):
-        captured["auth"] = json.loads(request.content)
-        return httpx.Response(200, json=True)
-
     def prompt_handler(request):
         captured["prompt"] = json.loads(request.content)
         return httpx.Response(200, json=_assistant_payload())
 
-    respx.put(f"{runtime.base_url}/auth/openai").mock(side_effect=auth_handler)
     respx.get(f"{runtime.base_url}/experimental/tool/ids").mock(
         return_value=httpx.Response(200, json=["bash", "read"])
     )
@@ -135,11 +118,10 @@ async def test_non_stream_completion_runs_inside_temporary_opencode_session():
     )
 
     async with httpx.AsyncClient() as client:
-        adapter = OpenCodeAdapter(client, StaticCredential(), runtime)
+        adapter = OpenCodeAdapter(client, runtime)
         output = await adapter.complete(_request(), PROFILE)
 
     assert runtime.started is True
-    assert captured["auth"]["refresh"] == "refresh"
     assert captured["prompt"]["tools"] == {"bash": False, "read": False}
     assert output["id"] == "msg_1"
     assert output["model"] == "openai"
@@ -155,7 +137,6 @@ async def test_non_stream_completion_runs_inside_temporary_opencode_session():
 @respx.mock
 async def test_streaming_contract_buffers_opencode_result_as_valid_sse():
     runtime = FakeRuntime()
-    respx.put(f"{runtime.base_url}/auth/openai").mock(return_value=httpx.Response(200, json=True))
     respx.get(f"{runtime.base_url}/experimental/tool/ids").mock(
         return_value=httpx.Response(200, json=[])
     )
@@ -170,7 +151,7 @@ async def test_streaming_contract_buffers_opencode_result_as_valid_sse():
     )
 
     async with httpx.AsyncClient() as client:
-        adapter = OpenCodeAdapter(client, StaticCredential(), runtime)
+        adapter = OpenCodeAdapter(client, runtime)
         chunks = [chunk async for chunk in adapter.stream(_request(stream=True), PROFILE)]
 
     payloads = [
@@ -183,7 +164,7 @@ async def test_streaming_contract_buffers_opencode_result_as_valid_sse():
 
 
 @respx.mock
-def test_chat_completions_endpoint_routes_the_actual_openai_call_through_opencode(tmp_path):
+def test_registered_openai_profile_routes_chat_completions_through_opencode(tmp_path):
     runtime = FakeRuntime()
     store = OpenAIAccountStore(tmp_path / "auth.json")
     store.save(
@@ -196,7 +177,6 @@ def test_chat_completions_endpoint_routes_the_actual_openai_call_through_opencod
             },
         }
     )
-    respx.put(f"{runtime.base_url}/auth/openai").mock(return_value=httpx.Response(200, json=True))
     respx.get(f"{runtime.base_url}/experimental/tool/ids").mock(
         return_value=httpx.Response(200, json=[])
     )
@@ -211,12 +191,27 @@ def test_chat_completions_endpoint_routes_the_actual_openai_call_through_opencod
     )
     app = create_app(
         Settings(host="127.0.0.1", _env_file=None),
-        ProfileRegistry([PROFILE]),
+        ProfileRegistry([]),
         codex_token_store=store,
         opencode_runtime=runtime,
+        profiles_path=tmp_path / "profiles.yaml",
     )
 
     with TestClient(app) as client:
+        client.get("/dashboard")
+        registered = client.post(
+            "/v1/profiles",
+            json={
+                "name": "openai",
+                "provider": "openai",
+                "auth": "oauth",
+                "model": "gpt-5.6-sol",
+                "params": {"reasoning_effort": "medium"},
+            },
+        )
+        assert registered.status_code == 200
+        assert registered.json()["inference_engine"] == "opencode"
+        assert runtime.started is True
         response = client.post(
             "/v1/chat/completions",
             json={"model": "openai", "messages": [{"role": "user", "content": "hello"}]},
@@ -227,46 +222,22 @@ def test_chat_completions_endpoint_routes_the_actual_openai_call_through_opencod
     assert prompt.called
 
 
-async def test_openai_oauth_exports_refreshed_credential_for_opencode(tmp_path):
-    store = OpenAIAccountStore(tmp_path / "auth.json")
+def test_openai_oauth_status_reads_router_owned_opencode_credential(tmp_path):
+    store = OpenAIAccountStore.from_opencode(tmp_path / "auth.json")
     store.save(
         {
-            "auth_mode": "chatgpt",
-            "tokens": {
-                "access_token": _jwt({"exp": time.time() + 3600}),
-                "refresh_token": "refresh-current",
-                "account_id": "account_1",
+            "openai": {
+                "type": "oauth",
+                "access": _jwt({"exp": time.time() + 3600}),
+                "refresh": "refresh-current",
+                "metadata": {"accountID": "account_1"},
+                "expires": int((time.time() + 3600) * 1000),
             },
         }
     )
 
-    payload = await OpenAIChatGPTOAuth(store).opencode_auth()
+    tokens = store.tokens()
 
-    assert payload["type"] == "oauth"
-    assert payload["refresh"] == "refresh-current"
-    assert payload["accountId"] == "account_1"
-    assert payload["expires"] > time.time() * 1000
-
-
-async def test_openai_account_source_reports_individual_limit_and_daily_tokens():
-    async def rpc(method):
-        if method == "account/rateLimits/read":
-            return {
-                "rateLimits": {
-                    "primary": {"usedPercent": 32},
-                    "individualLimit": {
-                        "limit": "6000",
-                        "used": "1500",
-                        "remainingPercent": 75,
-                    },
-                }
-            }
-        return {
-            "summary": {"lifetimeTokens": 123_456},
-            "dailyUsageBuckets": [{"startDate": "2026-08-11", "tokens": 12_345}],
-        }
-
-    payload = (await OpenAIAccountSource(rpc=rpc).report()).to_dict()
-
-    assert payload["rate_limits"]["individualLimit"]["remainingPercent"] == 75
-    assert payload["token_usage"]["daily_usage_buckets"][0]["tokens"] == 12_345
+    assert tokens["refresh_token"] == "refresh-current"
+    assert tokens["account_id"] == "account_1"
+    assert store.expires_at(tokens) > time.time()

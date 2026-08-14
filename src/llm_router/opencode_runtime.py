@@ -15,6 +15,16 @@ import httpx
 from llm_router.errors import RouterError
 
 BinaryFinder = Callable[[str], str | None]
+BundledResolver = Callable[[], str | None]
+BrowserOpener = Callable[[str], object]
+OPENCODE_USER_AGENT = "opencode/1.18.18"
+
+
+def bundled_opencode_path() -> str | None:
+    """Return the platform-specific OpenCode binary shipped in the wheel."""
+    executable = "opencode.exe" if os.name == "nt" else "opencode"
+    candidate = Path(__file__).resolve().parent / "_vendor" / "opencode" / executable
+    return str(candidate) if candidate.is_file() else None
 
 
 class OpenCodeRuntime:
@@ -28,6 +38,7 @@ class OpenCodeRuntime:
         directory: str | Path | None = None,
         auto_start: bool = True,
         binary_finder: BinaryFinder = shutil.which,
+        bundled_resolver: BundledResolver = bundled_opencode_path,
         startup_timeout: float = 8.0,
     ) -> None:
         self.base_url = base_url.rstrip("/")
@@ -39,6 +50,7 @@ class OpenCodeRuntime:
         )
         self.auto_start = auto_start
         self.binary_finder = binary_finder
+        self.bundled_resolver = bundled_resolver
         self.startup_timeout = startup_timeout
         self.process: asyncio.subprocess.Process | None = None
         self._lock = asyncio.Lock()
@@ -91,8 +103,9 @@ class OpenCodeRuntime:
             executable = self._resolve_binary()
             if executable is None:
                 raise RouterError(
-                    "OpenCode 실행 파일을 찾을 수 없습니다. OpenCode를 설치하거나 "
-                    "LLM_ROUTER_OPENCODE_BINARY를 설정하세요.",
+                    "배포 패키지에 포함된 OpenCode 실행 파일을 찾을 수 없습니다. "
+                    "현재 플랫폼용 llm-router wheel을 다시 설치하거나 "
+                    "LLM_ROUTER_OPENCODE_BINARY에 실행 파일의 절대 경로를 설정하세요.",
                     type="configuration_error",
                     code="opencode_runtime_unavailable",
                     status_code=503,
@@ -125,6 +138,13 @@ class OpenCodeRuntime:
                         {
                             "$schema": "https://opencode.ai/config.json",
                             "permission": "deny",
+                            "provider": {
+                                "openai": {
+                                    "options": {
+                                        "headers": {"User-Agent": OPENCODE_USER_AGENT},
+                                    }
+                                }
+                            },
                             "share": "disabled",
                         }
                     ),
@@ -160,6 +180,80 @@ class OpenCodeRuntime:
                 await asyncio.sleep(0.1)
             await self.close()
             raise self._unavailable_error()
+
+    async def login_openai(
+        self,
+        client: httpx.AsyncClient,
+        *,
+        browser_opener: BrowserOpener,
+        timeout: float = 300.0,
+    ) -> None:
+        """Run ChatGPT OAuth through the router-owned OpenCode server."""
+        await self.ensure_started(client)
+        params = {"directory": str(self.directory)}
+        try:
+            authorize = await client.post(
+                f"{self.base_url}/provider/openai/oauth/authorize",
+                params=params,
+                json={"method": 0},
+            )
+            authorize.raise_for_status()
+            payload = authorize.json()
+        except (httpx.HTTPError, ValueError) as exc:
+            raise RouterError(
+                "OpenCode에서 OpenAI 로그인을 시작할 수 없습니다.",
+                type="upstream_error",
+                code="opencode_login_start_failed",
+                status_code=502,
+            ) from exc
+        auth_url = payload.get("url") if isinstance(payload, dict) else None
+        method = payload.get("method") if isinstance(payload, dict) else None
+        if not isinstance(auth_url, str) or method != "auto":
+            raise RouterError(
+                "OpenCode가 올바른 OpenAI 로그인 주소를 반환하지 않았습니다.",
+                type="upstream_error",
+                code="invalid_opencode_login_response",
+                status_code=502,
+            )
+        opened = await asyncio.to_thread(browser_opener, auth_url)
+        if opened is False:
+            raise RouterError(
+                "OpenAI 로그인 창을 열 수 없습니다. 기본 브라우저 설정을 확인하세요.",
+                type="configuration_error",
+                code="openai_browser_unavailable",
+                status_code=503,
+            )
+        try:
+            async with asyncio.timeout(timeout):
+                callback = await client.post(
+                    f"{self.base_url}/provider/openai/oauth/callback",
+                    params=params,
+                    json={"method": 0},
+                    timeout=None,
+                )
+            callback.raise_for_status()
+            completed = callback.json()
+        except TimeoutError as exc:
+            raise RouterError(
+                "OpenAI 브라우저 로그인 시간이 초과되었습니다.",
+                type="authentication_error",
+                code="openai_login_timeout",
+                status_code=408,
+            ) from exc
+        except (httpx.HTTPError, ValueError) as exc:
+            raise RouterError(
+                "OpenCode에서 OpenAI 로그인을 완료하지 못했습니다.",
+                type="authentication_error",
+                code="opencode_login_failed",
+                status_code=401,
+            ) from exc
+        if completed is not True:
+            raise RouterError(
+                "OpenCode가 OpenAI 로그인 완료를 확인하지 못했습니다.",
+                type="authentication_error",
+                code="opencode_login_failed",
+                status_code=401,
+            )
 
     async def close(self) -> None:
         process = self.process
@@ -218,6 +312,10 @@ class OpenCodeRuntime:
         candidate = Path(self.binary).expanduser()
         if candidate.parent != Path("."):
             return str(candidate) if candidate.is_file() else None
+        if self.binary == "opencode":
+            bundled = self.bundled_resolver()
+            if bundled is not None:
+                return bundled
         return self.binary_finder(self.binary)
 
     @staticmethod

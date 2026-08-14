@@ -14,16 +14,18 @@ OpenAI, FabriX, 사내 OpenAI 호환 LLM을 localhost의 OpenAI 호환 API로 �
 
 ## 설치와 실행
 
-Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth에 필요한 공식 런타임은 Python 의존성에
-포함되므로 별도 OpenAI CLI는 필요하지 않습니다. OpenAI 추론은 내부 OpenCode 서버에서 실행되므로
-`opencode` 명령은 설치되어 있어야 합니다.
+Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 사용하는 플랫폼별 OpenCode 실행
+파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install -e '.[dev]'
+python3 -m pip install llm_router-0.1.0-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
 ```
+
+소스에서 개발할 때만 `python3 -m pip install -e '.[dev]'`를 사용합니다. editable 설치는 wheel 빌드가
+아니므로 시스템 `PATH`의 OpenCode를 개발용 fallback으로 사용합니다.
 
 `llm-router`는 설치 후 생성되는 콘솔 명령입니다. Python 모듈로 직접 실행할 때는 하이픈 대신
 밑줄을 사용합니다.
@@ -42,15 +44,15 @@ LLM_ROUTER_PORT=8787
 LLM_ROUTER_USAGE_DB=~/.llm-router/usage.db
 LLM_ROUTER_LOG_BODIES=false
 LLM_ROUTER_OPENCODE_URL=http://127.0.0.1:4097
+# 기본값은 배포 wheel에 포함된 OpenCode입니다. 외부 실행 파일을 강제할 때만 절대 경로로 바꿉니다.
 LLM_ROUTER_OPENCODE_BINARY=opencode
 LLM_ROUTER_OPENCODE_DIRECTORY=~/.llm-router/opencode
 LLM_ROUTER_OPENCODE_AUTO_START=true
 ```
 
-사내 HTTPS 프록시가 자체 CA로 인증서를 서명하는 환경에서는 PEM 인증서 파일을 설정합니다. 라우터는
-기본 공개 CA에 인증서를 추가하고 공식 Codex 로그인 변수 `CODEX_CA_CERTIFICATE`에도 전달하여 로그인,
-토큰 교환·갱신, 추론 요청에 동일하게 적용합니다. `NODE_EXTRA_CA_CERTS`만 설정해도 라우터가 Codex
-변수로 변환합니다.
+사내 HTTPS 프록시가 자체 CA로 인증서를 서명하는 환경에서는 PEM 인증서 파일을 설정합니다. 라우터의
+Python HTTP 클라이언트와 내부 OpenCode 프로세스가 `NODE_EXTRA_CA_CERTS`를 상속하므로 로그인, 토큰
+교환·갱신, 추론 요청에 동일하게 적용됩니다.
 
 ```bash
 export NODE_EXTRA_CA_CERTS=/absolute/path/company-ca.pem
@@ -63,14 +65,12 @@ Windows 11에서는 프로젝트의 `.env`에 실제 파일 경로를 넣는 방
 
 ```dotenv
 NODE_EXTRA_CA_CERTS=C:/certs/company-ca.pem
-CODEX_CA_CERTIFICATE=C:/certs/company-ca.pem
 ```
 
 PowerShell에서 현재 프로세스에만 적용하려면 다음처럼 설정한 뒤 같은 창에서 라우터를 실행합니다.
 
 ```powershell
 $env:NODE_EXTRA_CA_CERTS = 'C:\certs\company-ca.pem'
-$env:CODEX_CA_CERTIFICATE = $env:NODE_EXTRA_CA_CERTS
 python -m llm_router serve --profiles profiles.yaml
 ```
 
@@ -86,13 +86,11 @@ Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저
 
 화면의 `연결` 메뉴에서 **Sign in with ChatGPT** 계정 OAuth를 사용할 수 있습니다.
 
-- 기본적으로 `CODEX_HOME` 또는 `~/.codex/auth.json`의 기존 `auth_mode=chatgpt` 세션을 공유합니다.
-- 유효한 세션이 없을 때만 공식 계정 서비스가 브라우저 OAuth와 localhost 콜백을 시작합니다.
-- 별도 계정 저장소가 필요하면 `LLM_ROUTER_OPENAI_HOME=~/.llm-router/openai`처럼 명시합니다.
-
-공유 세션은 Codex CLI와 같은 공식 계정 캐시를 사용하므로 대시보드에서 연결을 해제하면 Codex
-CLI/IDE의 ChatGPT 로그인도 함께 해제될 수 있습니다. `codex login`이라는 명령 이름과 무관하게
-인증 방식은 API 키가 아닌 ChatGPT 계정 OAuth입니다.
+- wheel에 포함된 OpenCode가 브라우저 OAuth 시작, localhost callback, token exchange와 refresh를
+  직접 처리합니다.
+- 자격증명은 `~/.llm-router/opencode/data/opencode/auth.json`에 격리되며 Codex CLI/IDE 세션을 공유하거나
+  변경하지 않습니다.
+- OpenCode의 OpenAI 요청에는 `User-Agent: opencode/1.18.18`을 명시합니다.
 
 Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로그인, 프로필 생성, 추론 요청을 모두
 거부합니다. 기존 자격증명 파일은 자동 삭제하지 않지만 라우터가 사용하지 않습니다.
@@ -103,8 +101,9 @@ Claude 구독 OAuth는 정책 준수를 위해 비활성화되어 있으며 로�
 llm-router oauth login openai
 ```
 
-OpenAI OAuth 프로필의 추론은 내부 OpenCode 세션에서 실행한 뒤 Chat Completions로 변환합니다. 같은
-계정의 사용 창과 일별 토큰 버킷은 기존 `/dashboard`의 OpenAI 사용량 카드에 표시됩니다.
+OpenAI OAuth 프로필의 추론은 내부 OpenCode 세션에서 실행한 뒤 Chat Completions로 변환합니다.
+OpenAI OAuth 프로필을 등록하거나 수정할 때 번들 OpenCode를 즉시 기동해 사용 가능 여부를 확인하며,
+프로필 API에는 `inference_engine: opencode`가 표시됩니다.
 
 ## LLM 서빙 프로필
 
@@ -174,13 +173,20 @@ Agent 코드를 그대로 실행할 수 있습니다.
 ## 내부 OpenCode 실행
 
 ChatGPT 계정 OAuth 프로필의 실제 호출 경로는 `사용자/IDE → llm-router → OpenCode → OpenAI`입니다.
-라우터가 OpenCode의 headless 서버를 localhost에서 지연 시작하고, 요청마다 임시 세션을 만든 뒤 응답을
-OpenAI Chat Completions 형식으로 변환합니다. 사용자가 `opencode.json`을 복사하거나 OpenCode를 별도로
-실행할 필요는 없습니다.
+라우터가 wheel에 포함된 OpenCode의 headless 서버를 localhost에서 지연 시작하고, 요청마다 임시 세션을
+만든 뒤 응답을 OpenAI Chat Completions 형식으로 변환합니다. 사용자가 OpenCode를 설치하거나
+`opencode.json`을 복사하거나 OpenCode를 별도로 실행할 필요는 없습니다.
+
+배포 wheel은 빌드 호스트와 같은 플랫폼의 OpenCode `1.18.18` 공식 릴리스 바이너리를 내려받아
+SHA-256을 검증한 뒤 포함합니다. macOS arm64/x64, Linux glibc·musl arm64/x64, Windows arm64/x64를
+지원하며 x64는 CPU 호환성을 위해 baseline 바이너리를 사용합니다. 따라서 각 대상 플랫폼에서 wheel을
+각각 빌드해 배포합니다. 소스 editable 설치는 배포물이 아니므로 시스템 `opencode`를 fallback으로
+사용할 수 있습니다.
 
 라우터가 시작한 OpenCode는 별도의 `~/.llm-router/opencode` 데이터 디렉터리를 사용합니다. 프로젝트
 설정은 읽지 않고 파일·쉘·웹 등 모든 OpenCode 도구 권한과 세션 공유를 차단합니다. 브라우저 로그인
-자격증명은 호출 직전에 이 내부 런타임에 동기화되며, 로그와 API 응답에는 노출하지 않습니다.
+자격증명도 같은 내부 런타임이 직접 소유하며, 로그와 API 응답에는 노출하지 않습니다. 로그인·토큰
+교환·refresh·추론 요청은 별도 Codex 런타임을 우회하지 않습니다.
 
 현재 내부 세션 API는 호출자 정의 `tool_calls`를 투명하게 전달하지 못하므로, `tools`가 포함된 요청은
 실행하지 않고 명시적인 400 오류를 반환합니다. `stream=true`는 OpenCode 응답 완료 후 유효한 SSE 청크로
@@ -189,8 +195,8 @@ OpenAI Chat Completions 형식으로 변환합니다. 사용자가 `opencode.jso
 ## 사용량
 
 라우터를 통과한 모든 호출은 프로필별 일일 입력·출력 토큰으로 SQLite에 기록됩니다. 요청·응답 본문은
-기본적으로 저장하지 않습니다. OpenAI 로그인 계정의 개인 사용 창과 일별 토큰 버킷도 기존
-대시보드에 표시합니다.
+기본적으로 저장하지 않습니다. OpenCode가 계정 한도 API를 공개하지 않는 동안 OpenAI 계정 한도 카드는
+미구성 상태로 표시되고, 라우터를 통과한 로컬 토큰 사용량은 계속 집계됩니다.
 
 ## API
 

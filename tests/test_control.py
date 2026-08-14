@@ -129,6 +129,8 @@ def test_profiles_are_routes_on_one_shared_gateway(tmp_path):
     }
     statuses = {item["name"]: item["status"] for item in listed.json()["data"]}
     assert statuses == {"claude": "policy_disabled", "openai": "ready"}
+    openai = next(item for item in listed.json()["data"] if item["name"] == "openai")
+    assert openai["inference_engine"] == "opencode"
     assert {item["serving"]["base_url"] for item in listed.json()["data"]} == {
         "http://127.0.0.1:8787/v1"
     }
@@ -151,6 +153,7 @@ class FakeOpenCodeRuntime:
     base_url = "http://127.0.0.1:4097"
     directory = Path("/tmp/llm-router-opencode-control-test")
     binary_available = True
+    auto_start = True
 
     async def ready(self, _client):
         return True
@@ -168,7 +171,6 @@ class FakeOpenCodeRuntime:
 @respx.mock
 def test_openai_model_discovery_comes_from_internal_opencode(tmp_path):
     runtime = FakeOpenCodeRuntime()
-    respx.put(f"{runtime.base_url}/auth/openai").mock(return_value=httpx.Response(200, json=True))
     provider = respx.get(f"{runtime.base_url}/provider").mock(
         return_value=httpx.Response(
             200,
@@ -214,7 +216,7 @@ def test_claude_login_endpoint_is_policy_disabled(tmp_path):
     assert started.json()["error"]["code"] == "anthropic_oauth_policy_disabled"
 
 
-async def test_openai_browser_login_uses_managed_account_service(tmp_path):
+async def test_openai_browser_login_controller_tracks_opencode_completion(tmp_path):
     openai_store = OpenAIAccountStore(tmp_path / "openai.json")
 
     async def login_openai():

@@ -147,7 +147,7 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "OpenAI Codex" not in body
         assert "ChatGPT 계정 사용량" in body
         assert "ChatGPT 계정 OAuth" in body
-        assert "기존 Sign in with ChatGPT 세션이 있으면 바로 재사용합니다." in body
+        assert "내부 OpenCode가 전용 ChatGPT OAuth 세션을 생성합니다." in body
         assert "OpenAI와 Claude는 브라우저 로그인만 사용합니다." not in body
         assert "API 인증은 FabriX 또는 OpenAI 호환 사내 LLM 프로필에만 입력합니다." not in body
         assert "Anthropic · API 키" not in body
@@ -161,7 +161,7 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "state.connectionType=type" in body
         assert 'id="opencode-integration"' not in body
         assert "/v1/connect/opencode" not in body
-        assert "공유 ChatGPT 계정 OAuth · OpenCode 내부 실행" in body
+        assert "격리된 ChatGPT 계정 OAuth · OpenCode 내부 실행" in body
         assert 'rel="icon" href="/favicon.svg?v=arrow-v1"' in body
         assert "프로필·모델별 사용량" in body
         assert "<h2>대시보드</h2>" in body

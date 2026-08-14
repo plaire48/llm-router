@@ -6,12 +6,9 @@ import httpx
 import pytest
 import respx
 
-from llm_router.credentials import build_credential
 from llm_router.credentials.anthropic_oauth import AnthropicOAuth, TokenStore
 from llm_router.credentials.env_key import EnvApiKey
-from llm_router.credentials.openai_oauth import OpenAIChatGPTOAuth
 from llm_router.errors import RouterError
-from llm_router.models import Profile
 from llm_router.oauth import constants
 
 
@@ -148,10 +145,3 @@ async def test_oauth_no_tokens_raises(tmp_path):
         with pytest.raises(RouterError) as error:
             await oauth.headers()
     assert error.value.code == "oauth_required"
-
-
-async def test_openai_oauth_builder_uses_managed_browser_credentials():
-    profile = Profile(name="g", provider="openai", auth="oauth", model="gpt")
-    async with httpx.AsyncClient() as client:
-        credential = build_credential(profile, client)
-    assert isinstance(credential, OpenAIChatGPTOAuth)

@@ -1,24 +1,17 @@
 from __future__ import annotations
 
-import asyncio
 import base64
 import json
 import os
 import stat
 import tempfile
-import time
-from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
 from llm_router.errors import RouterError
-from llm_router.openai_runtime import OpenAIAccountClient, openai_account_home
 
 OPENAI_AUTH_CLAIM = "https://api.openai.com/auth"
 CHATGPT_ACCOUNT_CLAIM = "https://api.openai.com/auth.chatgpt_account_id"
-REFRESH_WINDOW_SECONDS = 300
-
-_refresh_locks: dict[Path, asyncio.Lock] = {}
 
 
 def _jwt_claims(token: str | None) -> dict[str, Any]:
@@ -34,14 +27,21 @@ def _jwt_claims(token: str | None) -> dict[str, Any]:
 
 
 class OpenAIAccountStore:
-    """Read the local credential cache managed by the official OpenAI account runtime."""
+    """Read either a Codex or router-owned OpenCode credential cache."""
 
-    def __init__(self, path: str | Path) -> None:
+    def __init__(self, path: str | Path, *, opencode: bool = False) -> None:
         self.path = Path(path).expanduser()
+        self.opencode = opencode
 
     @classmethod
     def default(cls) -> OpenAIAccountStore:
-        return cls(openai_account_home() / "auth.json")
+        return cls.from_opencode(
+            Path.home() / ".llm-router" / "opencode" / "data" / "opencode" / "auth.json"
+        )
+
+    @classmethod
+    def from_opencode(cls, path: str | Path) -> OpenAIAccountStore:
+        return cls(path, opencode=True)
 
     def load(self) -> dict[str, Any] | None:
         try:
@@ -90,6 +90,30 @@ class OpenAIAccountStore:
 
     def tokens(self) -> dict[str, Any] | None:
         payload = self.load()
+        if self.opencode:
+            credential = payload.get("openai") if payload else None
+            if not isinstance(credential, dict) or credential.get("type") != "oauth":
+                return None
+            tokens: dict[str, Any] = {}
+            mappings = {
+                "access": "access_token",
+                "refresh": "refresh_token",
+                "accountId": "account_id",
+            }
+            for source, target in mappings.items():
+                value = credential.get(source)
+                if isinstance(value, str) and value:
+                    tokens[target] = value
+            if "account_id" not in tokens:
+                metadata = credential.get("metadata")
+                if isinstance(metadata, dict):
+                    account_id = metadata.get("accountID") or metadata.get("accountId")
+                    if isinstance(account_id, str) and account_id:
+                        tokens["account_id"] = account_id
+            expires = credential.get("expires")
+            if isinstance(expires, (int, float)):
+                tokens["expires_at"] = float(expires) / 1000
+            return tokens or None
         tokens = payload.get("tokens") if payload else None
         return tokens if isinstance(tokens, dict) else None
 
@@ -128,80 +152,8 @@ class OpenAIAccountStore:
 
     @classmethod
     def expires_at(cls, tokens: dict[str, Any] | None) -> float | None:
+        direct = tokens.get("expires_at") if tokens else None
+        if isinstance(direct, (int, float)):
+            return float(direct)
         value = cls.claims(tokens).get("exp")
         return float(value) if isinstance(value, (int, float)) else None
-
-
-class OpenAIChatGPTOAuth:
-    """Authenticate ChatGPT requests with the OpenAI-managed browser session."""
-
-    def __init__(
-        self,
-        store: OpenAIAccountStore,
-        *,
-        refresh_runner: Callable[[], Awaitable[None]] | None = None,
-    ) -> None:
-        self.store = store
-        self.refresh_runner = refresh_runner or self._refresh_with_account_service
-        self._lock = _refresh_locks.setdefault(store.path.resolve(), asyncio.Lock())
-
-    async def headers(self) -> dict[str, str]:
-        tokens = self.store.tokens()
-        if self._needs_refresh(tokens):
-            async with self._lock:
-                tokens = self.store.tokens()
-                if self._needs_refresh(tokens):
-                    await self.refresh_runner()
-                    tokens = self.store.tokens()
-                    if self._needs_refresh(tokens):
-                        raise self._login_required()
-        access_token = tokens.get("access_token") if tokens else None
-        account_id = self.store.account_id(tokens)
-        if not isinstance(access_token, str) or not access_token or not account_id:
-            raise self._login_required()
-        return {
-            "authorization": f"Bearer {access_token}",
-            "chatgpt-account-id": account_id,
-            "content-type": "application/json",
-            "accept": "text/event-stream",
-            "originator": "llm-router",
-            "user-agent": "llm-router/0.1.0",
-        }
-
-    async def opencode_auth(self) -> dict[str, Any]:
-        """Return a refreshed OpenCode OAuth credential without exposing it to callers."""
-        await self.headers()
-        tokens = self.store.tokens()
-        access = tokens.get("access_token") if tokens else None
-        refresh = tokens.get("refresh_token") if tokens else None
-        expires_at = self.store.expires_at(tokens)
-        if not isinstance(access, str) or not isinstance(refresh, str):
-            raise self._login_required()
-        payload: dict[str, Any] = {
-            "type": "oauth",
-            "access": access,
-            "refresh": refresh,
-            "expires": int((expires_at or time.time() + 3600) * 1000),
-        }
-        account_id = self.store.account_id(tokens)
-        if account_id:
-            payload["accountId"] = account_id
-        return payload
-
-    def _needs_refresh(self, tokens: dict[str, Any] | None) -> bool:
-        if not tokens or not isinstance(tokens.get("access_token"), str):
-            return False
-        expires_at = self.store.expires_at(tokens)
-        return expires_at is not None and expires_at <= time.time() + REFRESH_WINDOW_SECONDS
-
-    async def _refresh_with_account_service(self) -> None:
-        await OpenAIAccountClient().account(refresh_token=True)
-
-    @staticmethod
-    def _login_required() -> RouterError:
-        return RouterError(
-            "ChatGPT account OAuth login is required. Connect OpenAI from the dashboard.",
-            type="authentication_error",
-            code="openai_oauth_required",
-            status_code=401,
-        )

@@ -80,7 +80,10 @@ def _credential_status(provider: str, auth: str, api_key_env: str | None) -> str
         return "set" if api_key_env and os.environ.get(api_key_env) else "missing"
     if provider == "openai":
         try:
-            tokens = OpenAIAccountStore.default().tokens()
+            settings = Settings()
+            tokens = OpenAIAccountStore.from_opencode(
+                settings.opencode_directory / "data" / "opencode" / "auth.json"
+            ).tokens()
             return (
                 "logged_in"
                 if tokens and OpenAIAccountStore.account_id(tokens)

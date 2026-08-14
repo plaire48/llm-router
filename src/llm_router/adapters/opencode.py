@@ -8,7 +8,6 @@ from typing import Any
 
 import httpx
 
-from llm_router.credentials.openai_oauth import OpenAIChatGPTOAuth
 from llm_router.errors import RouterError
 from llm_router.models import ChatCompletionRequest, ChatMessage, Profile
 from llm_router.opencode_runtime import OpenCodeRuntime
@@ -108,18 +107,15 @@ class OpenCodeAdapter:
     def __init__(
         self,
         client: httpx.AsyncClient,
-        credential: OpenAIChatGPTOAuth,
         runtime: OpenCodeRuntime,
     ) -> None:
         self.client = client
-        self.credential = credential
         self.runtime = runtime
         self.observed_usage: dict[str, int] | None = None
 
     async def complete(self, request: ChatCompletionRequest, profile: Profile) -> dict[str, Any]:
         body = to_opencode_prompt(request, profile)
         await self.runtime.ensure_started(self.client)
-        await self._sync_auth()
         body["tools"] = await self._disabled_tools()
 
         session_id: str | None = None
@@ -216,14 +212,6 @@ class OpenCodeAdapter:
         yield chunk({}, response["choices"][0]["finish_reason"])
         yield f"data: {json.dumps({**response, 'object': 'chat.completion.chunk', 'choices': []})}\n\n"
         yield "data: [DONE]\n\n"
-
-    async def _sync_auth(self) -> None:
-        payload = await self.credential.opencode_auth()
-        response = await self.client.put(
-            f"{self.runtime.base_url}/auth/openai",
-            json=payload,
-        )
-        response.raise_for_status()
 
     async def _disabled_tools(self) -> dict[str, bool]:
         try:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import webbrowser
 from collections.abc import Awaitable, Callable
 from contextlib import suppress
 from typing import Any, Literal
@@ -13,11 +14,9 @@ from pydantic import BaseModel, Field
 from llm_router.config import ProfileFile, ProfileRegistry, Settings
 from llm_router.credentials.anthropic_oauth import TokenStore
 from llm_router.credentials.env_key import load_provider_env
-from llm_router.credentials.openai_oauth import OpenAIAccountStore, OpenAIChatGPTOAuth
+from llm_router.credentials.openai_oauth import OpenAIAccountStore
 from llm_router.errors import RouterError
 from llm_router.models import Profile
-from llm_router.oauth.openai_flow import login as login_openai
-from llm_router.openai_runtime import OpenAIAccountClient
 from llm_router.opencode_runtime import OpenCodeRuntime
 from llm_router.profile_secrets import ProfileSecretStore
 from llm_router.provider_policy import (
@@ -62,24 +61,30 @@ class ClaudeWebLogin:
 
 
 class OpenAIWebLogin:
-    """Run the SDK-managed OpenAI browser login in the background."""
+    """Run the router-owned OpenCode browser login in the background."""
 
     def __init__(
         self,
         store: OpenAIAccountStore,
         *,
-        login_runner: Callable[[], Awaitable[None]] = login_openai,
+        runtime: OpenCodeRuntime | None = None,
+        client_getter: Callable[[], Awaitable[httpx.AsyncClient]] | None = None,
+        browser_opener: Callable[[str], object] = webbrowser.open,
+        login_runner: Callable[[], Awaitable[None]] | None = None,
         logout_runner: Callable[[], Awaitable[None]] | None = None,
     ) -> None:
         self.store = store
-        self.login_runner = login_runner
-        self.logout_runner = logout_runner or OpenAIAccountClient().logout
+        self.runtime = runtime
+        self.client_getter = client_getter
+        self.browser_opener = browser_opener
+        self.login_runner = login_runner or self._login_with_opencode
+        self.logout_runner = logout_runner
         self._task: asyncio.Task[None] | None = None
         self._last_error: str | None = None
 
     @property
     def available(self) -> bool:
-        return True
+        return self.runtime is None or not self.runtime.auto_start or self.runtime.binary_available
 
     async def start(self) -> dict[str, Any]:
         if _openai_oauth_status(self.store)["connected"]:
@@ -102,12 +107,27 @@ class OpenAIWebLogin:
         except Exception as exc:  # noqa: BLE001 - expose background login failures in status
             self._last_error = f"Could not complete OpenAI login: {exc}"
 
+    async def _login_with_opencode(self) -> None:
+        if self.runtime is None or self.client_getter is None:
+            raise RouterError(
+                "OpenCode 로그인 런타임이 구성되지 않았습니다.",
+                type="configuration_error",
+                code="opencode_login_runtime_unavailable",
+                status_code=503,
+            )
+        client = await self.client_getter()
+        await self.runtime.login_openai(client, browser_opener=self.browser_opener)
+
     async def logout(self) -> None:
         if self.is_pending() and self._task is not None:
             self._task.cancel()
             with suppress(asyncio.CancelledError):
                 await self._task
-        await self.logout_runner()
+        if self.logout_runner is not None:
+            await self.logout_runner()
+        elif self.runtime is not None:
+            self.runtime.remove_openai_auth()
+            await self.runtime.close()
 
     def is_pending(self) -> bool:
         return self._task is not None and not self._task.done()
@@ -140,7 +160,7 @@ def _openai_oauth_status(store: OpenAIAccountStore) -> dict[str, Any]:
         "refreshable": bool(tokens and tokens.get("refresh_token")),
         "account": email if isinstance(email, str) else None,
         "message": (
-            "공유된 ChatGPT 계정 OAuth 세션을 사용합니다."
+            "OpenCode가 관리하는 ChatGPT 계정 OAuth 세션을 사용합니다."
             if connected
             else "ChatGPT 계정 OAuth 로그인이 필요합니다."
         ),
@@ -191,6 +211,11 @@ def _profile_data(
             mode="json",
             exclude_none=True,
             exclude={"api_key_env", "client_key_env", "port"},
+        ),
+        **(
+            {"inference_engine": "opencode"}
+            if profile.provider == "openai" and profile.auth == "oauth"
+            else {}
         ),
         "status": status,
         "status_message": message,
@@ -267,7 +292,6 @@ def build_control_router(
 ) -> APIRouter:
     router = APIRouter()
     router_claude_store = token_store or TokenStore.default()
-    codex_store = codex_token_store or OpenAIAccountStore.default()
     profiles_file = profile_file or ProfileFile(None)
     secrets_store = secret_store or ProfileSecretStore.default()
     secrets_store.hydrate()
@@ -278,14 +302,14 @@ def build_control_router(
         directory=settings.opencode_directory,
         auto_start=settings.opencode_auto_start,
     )
-
-    async def logout_openai() -> None:
-        await OpenAIAccountClient().logout()
-        active_opencode_runtime.remove_openai_auth()
+    codex_store = codex_token_store or OpenAIAccountStore.from_opencode(
+        active_opencode_runtime.auth_path
+    )
 
     openai_web_login = openai_login or OpenAIWebLogin(
         codex_store,
-        logout_runner=logout_openai,
+        runtime=active_opencode_runtime,
+        client_getter=client_getter,
     )
     protected = [Depends(auth_dependency)]
 
@@ -458,13 +482,7 @@ def build_control_router(
         if payload.auth == "oauth":
             client = await client_getter()
             await active_opencode_runtime.ensure_started(client)
-            auth_payload = await OpenAIChatGPTOAuth(codex_store).opencode_auth()
             try:
-                auth_response = await client.put(
-                    f"{active_opencode_runtime.base_url}/auth/openai",
-                    json=auth_payload,
-                )
-                auth_response.raise_for_status()
                 provider_response = await client.get(
                     f"{active_opencode_runtime.base_url}/provider",
                     params={"directory": str(active_opencode_runtime.directory)},
@@ -541,9 +559,18 @@ def build_control_router(
                 status_code=409,
             )
         profile = profile_from_payload(payload)
+        if profile.provider == "openai" and profile.auth == "oauth":
+            client = await client_getter()
+            await active_opencode_runtime.ensure_started(client)
         registry.upsert(profile)
         profiles_file.save(registry)
-        return {"profile": profile.name, "gateway": _gateway_data(settings)}
+        return {
+            "profile": profile.name,
+            "inference_engine": (
+                "opencode" if profile.provider == "openai" and profile.auth == "oauth" else None
+            ),
+            "gateway": _gateway_data(settings),
+        }
 
     @router.put("/v1/profiles/{profile_name}", dependencies=protected)
     async def update_profile(profile_name: str, payload: ProfileWrite) -> dict[str, Any]:
@@ -556,9 +583,18 @@ def build_control_router(
                 status_code=409,
             )
         profile = profile_from_payload(payload, existing)
+        if profile.provider == "openai" and profile.auth == "oauth":
+            client = await client_getter()
+            await active_opencode_runtime.ensure_started(client)
         registry.upsert(profile, previous_name=profile_name)
         profiles_file.save(registry)
-        return {"profile": profile.name, "gateway": _gateway_data(settings)}
+        return {
+            "profile": profile.name,
+            "inference_engine": (
+                "opencode" if profile.provider == "openai" and profile.auth == "oauth" else None
+            ),
+            "gateway": _gateway_data(settings),
+        }
 
     @router.delete("/v1/profiles/{profile_name}", dependencies=protected)
     async def delete_profile(profile_name: str) -> dict[str, Any]:

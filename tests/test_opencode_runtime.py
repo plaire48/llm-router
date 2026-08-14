@@ -18,6 +18,7 @@ async def test_runtime_uses_an_already_running_opencode_server(tmp_path):
         directory=tmp_path,
         auto_start=False,
         binary_finder=lambda _: None,
+        bundled_resolver=lambda: None,
     )
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         await runtime.ensure_started(client)
@@ -45,6 +46,7 @@ async def test_runtime_reports_missing_opencode_binary(tmp_path):
     runtime = OpenCodeRuntime(
         directory=tmp_path,
         binary_finder=lambda _: None,
+        bundled_resolver=lambda: None,
     )
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         with pytest.raises(RouterError) as error:
@@ -52,6 +54,86 @@ async def test_runtime_reports_missing_opencode_binary(tmp_path):
 
     assert error.value.code == "opencode_runtime_unavailable"
     assert error.value.status_code == 503
+
+
+async def test_runtime_runs_openai_oauth_entirely_through_opencode(tmp_path):
+    calls = []
+
+    def handler(request):
+        calls.append((request.method, request.url.path, json.loads(request.content or b"{}")))
+        if request.url.path == "/global/health":
+            return httpx.Response(200, json={"healthy": True, "version": "1.18.18"})
+        if request.url.path.endswith("/oauth/authorize"):
+            return httpx.Response(
+                200,
+                json={
+                    "url": "https://auth.openai.com/oauth/authorize?originator=opencode",
+                    "method": "auto",
+                },
+            )
+        if request.url.path.endswith("/oauth/callback"):
+            return httpx.Response(200, json=True)
+        return httpx.Response(404)
+
+    opened = []
+    runtime = OpenCodeRuntime(directory=tmp_path, auto_start=False)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        await runtime.login_openai(
+            client,
+            browser_opener=lambda url: opened.append(url) or True,
+            timeout=5,
+        )
+
+    assert opened == ["https://auth.openai.com/oauth/authorize?originator=opencode"]
+    assert calls == [
+        ("GET", "/global/health", {}),
+        ("POST", "/provider/openai/oauth/authorize", {"method": 0}),
+        ("POST", "/provider/openai/oauth/callback", {"method": 0}),
+    ]
+
+
+async def test_runtime_stops_before_callback_when_browser_cannot_open(tmp_path):
+    paths = []
+
+    def handler(request):
+        paths.append(request.url.path)
+        if request.url.path == "/global/health":
+            return httpx.Response(200, json={"healthy": True})
+        return httpx.Response(
+            200,
+            json={"url": "https://auth.openai.com/authorize", "method": "auto"},
+        )
+
+    runtime = OpenCodeRuntime(directory=tmp_path, auto_start=False)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(RouterError) as error:
+            await runtime.login_openai(client, browser_opener=lambda _: False)
+
+    assert error.value.code == "openai_browser_unavailable"
+    assert paths == ["/global/health", "/provider/openai/oauth/authorize"]
+
+
+def test_runtime_prefers_bundled_opencode_over_path_install(tmp_path):
+    bundled = tmp_path / "package" / "opencode"
+    bundled.parent.mkdir()
+    bundled.write_text("binary")
+    runtime = OpenCodeRuntime(
+        binary_finder=lambda _: "/usr/local/bin/opencode",
+        bundled_resolver=lambda: str(bundled),
+    )
+
+    assert runtime._resolve_binary() == str(bundled)
+
+
+def test_runtime_honors_explicit_opencode_binary_over_bundle(tmp_path):
+    explicit = tmp_path / "custom-opencode"
+    explicit.write_text("binary")
+    runtime = OpenCodeRuntime(
+        binary=str(explicit),
+        bundled_resolver=lambda: "/package/opencode",
+    )
+
+    assert runtime._resolve_binary() == str(explicit)
 
 
 async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypatch):
@@ -93,6 +175,7 @@ async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypa
     runtime = OpenCodeRuntime(
         directory=tmp_path,
         binary_finder=lambda _: "/opt/bin/opencode",
+        bundled_resolver=lambda: None,
     )
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         await runtime.ensure_started(client)
@@ -102,7 +185,9 @@ async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypa
     assert captured["kwargs"]["cwd"] == tmp_path
     environment = captured["kwargs"]["env"]
     assert environment["OPENCODE_DISABLE_PROJECT_CONFIG"] == "true"
-    assert json.loads(environment["OPENCODE_CONFIG_CONTENT"])["permission"] == "deny"
+    config = json.loads(environment["OPENCODE_CONFIG_CONTENT"])
+    assert config["permission"] == "deny"
+    assert config["provider"]["openai"]["options"]["headers"]["User-Agent"] == ("opencode/1.18.18")
     assert environment["XDG_DATA_HOME"] == str(tmp_path / "data")
     assert "OPENCODE_AUTH_CONTENT" not in environment
     assert "OPENCODE_SERVER_PASSWORD" not in environment
