@@ -18,11 +18,26 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.0-<platform>.whl
+python3 -m pip install llm_router-0.1.1-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
 ```
+
+Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerShell에서 설치합니다.
+저장소가 Private이므로 GitHub CLI 로그인이 필요합니다.
+
+```powershell
+gh auth login
+gh release download v0.1.1 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.1-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.1" `
+  -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
+py -m llm_router serve --profiles profiles.yaml
+```
+
+실행 후 [http://localhost:8787/dashboard](http://localhost:8787/dashboard)를 열어 OpenAI 브라우저
+로그인 또는 AI Pro API Key 프로필을 추가합니다.
 
 소스에서 개발할 때만 `python3 -m pip install -e '.[dev]'`를 사용합니다. editable 설치는 wheel 빌드가
 아니므로 시스템 `PATH`의 OpenCode를 개발용 fallback으로 사용합니다.

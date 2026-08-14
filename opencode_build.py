@@ -82,6 +82,17 @@ _ASSETS: dict[tuple[str, str, bool], OpenCodeAsset] = {
     ),
 }
 
+_BUILD_TARGETS: dict[str, tuple[str, str, bool]] = {
+    "macos-arm64": ("darwin", "arm64", False),
+    "macos-x64": ("darwin", "x64", False),
+    "linux-arm64": ("linux", "arm64", False),
+    "linux-x64": ("linux", "x64", False),
+    "linux-musl-arm64": ("linux", "arm64", True),
+    "linux-musl-x64": ("linux", "x64", True),
+    "windows-arm64": ("windows", "arm64", False),
+    "windows-x64": ("windows", "x64", False),
+}
+
 
 def _normalized_machine(machine: str) -> str:
     normalized = machine.strip().lower()
@@ -115,6 +126,21 @@ def asset_for_platform(
             "OpenCode bundling is unsupported for "
             f"{normalized_system}/{normalized_machine}{'/musl' if uses_musl else ''}"
         ) from exc
+
+
+def asset_for_build_target(target: str | None = None) -> OpenCodeAsset:
+    """Select a release asset explicitly for cross-platform wheel packaging."""
+    selected = (target or os.environ.get("LLM_ROUTER_BUILD_TARGET", "")).strip().lower()
+    if not selected:
+        return asset_for_platform()
+    try:
+        system, machine, musl = _BUILD_TARGETS[selected]
+    except KeyError as exc:
+        supported = ", ".join(sorted(_BUILD_TARGETS))
+        raise RuntimeError(
+            f"Unsupported LLM_ROUTER_BUILD_TARGET '{selected}'. Supported: {supported}"
+        ) from exc
+    return asset_for_platform(system=system, machine=machine, musl=musl)
 
 
 def _sha256(path: Path) -> str:

@@ -4,7 +4,12 @@ import tarfile
 import zipfile
 
 import pytest
-from opencode_build import OpenCodeAsset, asset_for_platform, extract_binary
+from opencode_build import (
+    OpenCodeAsset,
+    asset_for_build_target,
+    asset_for_platform,
+    extract_binary,
+)
 
 
 def _asset(filename: str, executable: str = "opencode") -> OpenCodeAsset:
@@ -26,6 +31,25 @@ def test_asset_selection_uses_baseline_x64_and_native_arm64():
 def test_asset_selection_rejects_unsupported_platform():
     with pytest.raises(RuntimeError, match="unsupported"):
         asset_for_platform(system="Plan9", machine="mips")
+
+
+def test_explicit_windows_x64_build_target_selects_the_windows_wheel_asset():
+    asset = asset_for_build_target("windows-x64")
+
+    assert asset.filename == "opencode-windows-x64-baseline.zip"
+    assert asset.wheel_platform == "win_amd64"
+    assert asset.executable == "opencode.exe"
+
+
+def test_build_target_can_come_from_the_environment(monkeypatch):
+    monkeypatch.setenv("LLM_ROUTER_BUILD_TARGET", "windows-x64")
+
+    assert asset_for_build_target().wheel_platform == "win_amd64"
+
+
+def test_build_target_rejects_unknown_values():
+    with pytest.raises(RuntimeError, match="Unsupported LLM_ROUTER_BUILD_TARGET"):
+        asset_for_build_target("windows-itanium")
 
 
 def test_extract_binary_from_zip(tmp_path):

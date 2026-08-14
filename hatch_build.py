@@ -22,7 +22,7 @@ class CustomBuildHook(BuildHookInterface):
         if version == "editable":
             return
 
-        asset = _HELPER.asset_for_platform()
+        asset = _HELPER.asset_for_build_target()
         temporary = Path(tempfile.mkdtemp(prefix="llm-router-opencode-build-"))
         self._temporary = temporary
         try:
