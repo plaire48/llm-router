@@ -6,11 +6,11 @@ on:
       release_tag:
         description: Release tag to verify
         required: true
-        default: v0.1.11
+        default: v0.1.12
       expected_sha256:
         description: Expected wheel SHA-256
         required: true
-        default: 1c19b380e9f7c8115f1e3c74d89677c85ca93252f741f728e803a80becb7afa0
+        default: a6b5783e30d1abcbef1906c26e17011d44d889e1124eb56daecd5b9c340088dd
 
 permissions:
   contents: read
@@ -45,6 +45,40 @@ jobs:
           }
 
           py -m pip install --force-reinstall $wheel.FullName
+
+          $env:LLM_ROUTER_SMOKE_DER_CRT = Join-Path $PWD "sds.crt"
+          $derScript = @'
+          import os
+          import ssl
+          from pathlib import Path
+
+          import certifi
+
+          bundle = Path(certifi.where()).read_text(encoding="ascii")
+          pem = "-----BEGIN CERTIFICATE-----" + bundle.split(
+              "-----BEGIN CERTIFICATE-----", 1
+          )[1].split("-----END CERTIFICATE-----", 1)[0]
+          pem += "-----END CERTIFICATE-----\n"
+          source = Path(os.environ["LLM_ROUTER_SMOKE_DER_CRT"])
+          source.write_bytes(ssl.PEM_cert_to_DER_cert(pem))
+          os.environ["NODE_EXTRA_CA_CERTS"] = str(source)
+
+          from llm_router.http_client import create_ssl_context
+
+          create_ssl_context()
+          print(os.environ["NODE_EXTRA_CA_CERTS"])
+          '@
+          $convertedCa = ($derScript | py -).Trim()
+          if ($convertedCa -eq $env:LLM_ROUTER_SMOKE_DER_CRT) {
+            throw "Binary DER CRT was not converted for the embedded OpenCode runtime"
+          }
+          if (-not (Test-Path $convertedCa -PathType Leaf)) {
+            throw "Converted DER certificate cache was not created: $convertedCa"
+          }
+          if ((Get-Content $convertedCa -TotalCount 1) -ne "-----BEGIN CERTIFICATE-----") {
+            throw "Converted DER certificate cache is not PEM encoded"
+          }
+
           $binary = py -c "from llm_router.opencode_runtime import bundled_opencode_path; print(bundled_opencode_path())"
           if (-not (Test-Path $binary -PathType Leaf)) {
             throw "Bundled opencode.exe was not found: $binary"

@@ -1,6 +1,6 @@
 [project]
 name = "llm-router"
-version = "0.1.11"
+version = "0.1.12"
 requires-python = ">=3.11"
 dependencies = [
     "certifi>=2024.7.4",

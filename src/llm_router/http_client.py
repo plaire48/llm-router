@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
 import os
 import ssl
+import stat
+import tempfile
 from pathlib import Path
 
 import certifi
@@ -31,9 +34,8 @@ def _tls_configuration_error(
     hint = ""
     if variable in {"CODEX_CA_CERTIFICATE", "NODE_EXTRA_CA_CERTS"}:
         hint = (
-            f" Configured path: {configured_path}. The file must contain PEM certificates "
-            "with -----BEGIN CERTIFICATE-----. Convert a binary CRT with "
-            "'certutil -encode sds.crt sds.pem' if necessary."
+            f" Configured path: {configured_path}. A .crt file may contain either a PEM "
+            "certificate bundle or one DER-encoded X.509 certificate."
         )
     return RouterError(
         f"Could not load the TLS CA certificates configured by {variable}: {exc}.{hint}",
@@ -43,7 +45,41 @@ def _tls_configuration_error(
     )
 
 
-def _validate_extra_ca_file(variable: str, configured_path: str) -> None:
+def _cached_pem_path(payload: bytes) -> Path:
+    digest = hashlib.sha256(payload).hexdigest()
+    return Path(tempfile.gettempdir()) / "llm-router" / "ca-certificates" / f"{digest}.pem"
+
+
+def _write_cached_pem(payload: bytes, pem: str) -> str:
+    destination = _cached_pem_path(payload)
+    if destination.is_file():
+        return str(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=destination.parent,
+        prefix=f".{destination.name}.",
+    )
+    temporary = Path(temporary_name)
+    try:
+        if hasattr(os, "fchmod"):
+            os.fchmod(descriptor, stat.S_IRUSR | stat.S_IWUSR)
+        with os.fdopen(descriptor, "w", encoding="ascii", newline="\n") as handle:
+            handle.write(pem)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, destination)
+    except Exception:
+        try:
+            os.close(descriptor)
+        except OSError:
+            pass
+        temporary.unlink(missing_ok=True)
+        raise
+    return str(destination)
+
+
+def prepare_extra_ca_file(variable: str, configured_path: str) -> str:
+    """Return a PEM CA path, converting a binary DER CRT into a private cache."""
     try:
         payload = Path(configured_path).read_bytes()
     except OSError as exc:
@@ -52,12 +88,19 @@ def _validate_extra_ca_file(variable: str, configured_path: str) -> None:
             exc,
             configured_path=configured_path,
         ) from exc
-    if b"-----BEGIN CERTIFICATE-----" not in payload:
+    if b"-----BEGIN CERTIFICATE-----" in payload:
+        return configured_path
+    try:
+        pem = ssl.DER_cert_to_PEM_cert(payload)
+        validation_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        validation_context.load_verify_locations(cadata=pem)
+        return _write_cached_pem(payload, pem)
+    except (OSError, ValueError, ssl.SSLError) as exc:
         raise _tls_configuration_error(
             variable,
-            ValueError("the certificate file is not PEM encoded"),
+            ValueError("the file is neither a PEM bundle nor a DER X.509 certificate"),
             configured_path=configured_path,
-        )
+        ) from exc
 
 
 def create_ssl_context() -> ssl.SSLContext:
@@ -91,11 +134,15 @@ def create_ssl_context() -> ssl.SSLContext:
     ]
     loaded: set[str] = set()
     for variable, extra_ca_file in extra_ca_files:
-        if extra_ca_file == ssl_cert_file or extra_ca_file in loaded:
+        effective_ca_file = prepare_extra_ca_file(variable, extra_ca_file)
+        # OpenCode changes its working directory before starting and Node/Bun
+        # only accepts PEM through NODE_EXTRA_CA_CERTS. Preserve the resolved
+        # original path or the automatically converted DER cache path.
+        os.environ[variable] = effective_ca_file
+        if effective_ca_file == ssl_cert_file or effective_ca_file in loaded:
             continue
-        _validate_extra_ca_file(variable, extra_ca_file)
         try:
-            context.load_verify_locations(cafile=extra_ca_file)
+            context.load_verify_locations(cafile=effective_ca_file)
         except (OSError, ssl.SSLError) as exc:
             raise _tls_configuration_error(
                 variable,
@@ -108,10 +155,7 @@ def create_ssl_context() -> ssl.SSLContext:
         # verification enabled.
         if hasattr(ssl, "VERIFY_X509_PARTIAL_CHAIN"):
             context.verify_flags |= ssl.VERIFY_X509_PARTIAL_CHAIN
-        # OpenCode changes its working directory before starting. Preserve the
-        # already-resolved CA location so Node/Bun reads the same certificate.
-        os.environ[variable] = extra_ca_file
-        loaded.add(extra_ca_file)
+        loaded.add(effective_ca_file)
     return context
 
 

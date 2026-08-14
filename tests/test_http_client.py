@@ -1,5 +1,6 @@
 import os
 import ssl
+from pathlib import Path
 
 import certifi
 import pytest
@@ -140,13 +141,39 @@ def test_invalid_node_extra_ca_has_actionable_error(tmp_path, monkeypatch):
 
     assert error.value.code == "tls_ca_bundle_invalid"
     assert "NODE_EXTRA_CA_CERTS" in error.value.message
-    assert "BEGIN CERTIFICATE" in error.value.message
-    assert "certutil -encode sds.crt sds.pem" in error.value.message
+    assert "DER-encoded X.509" in error.value.message
 
 
-def test_binary_crt_has_an_actionable_pem_error(tmp_path, monkeypatch):
+def test_binary_der_crt_is_automatically_converted_for_python_and_node(tmp_path, monkeypatch):
     certificate = tmp_path / "sds.crt"
-    certificate.write_bytes(b"\x30\x82binary-der-certificate")
+    certifi_bundle = Path(certifi.where()).read_text(encoding="ascii")
+    first_pem = (
+        "-----BEGIN CERTIFICATE-----"
+        + certifi_bundle.split("-----BEGIN CERTIFICATE-----", 1)[1].split(
+            "-----END CERTIFICATE-----", 1
+        )[0]
+    )
+    first_pem += "-----END CERTIFICATE-----\n"
+    certificate.write_bytes(ssl.PEM_cert_to_DER_cert(first_pem))
+    context = FakeSSLContext()
+    monkeypatch.delenv("SSL_CERT_FILE", raising=False)
+    monkeypatch.delenv("SSL_CERT_DIR", raising=False)
+    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(certificate))
+    monkeypatch.setattr("llm_router.http_client.tempfile.gettempdir", lambda: str(tmp_path))
+    monkeypatch.setattr("llm_router.http_client.ssl.create_default_context", lambda **_: context)
+
+    assert create_ssl_context() is context
+
+    converted = Path(os.environ["NODE_EXTRA_CA_CERTS"])
+    assert converted != certificate
+    assert converted.suffix == ".pem"
+    assert converted.read_text(encoding="ascii").startswith("-----BEGIN CERTIFICATE-----")
+    assert context.loaded == [certifi.where(), str(converted)]
+
+
+def test_invalid_binary_crt_has_an_actionable_error(tmp_path, monkeypatch):
+    certificate = tmp_path / "sds.crt"
+    certificate.write_bytes(b"not-an-x509-certificate")
     monkeypatch.delenv("SSL_CERT_FILE", raising=False)
     monkeypatch.delenv("SSL_CERT_DIR", raising=False)
     monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(certificate))
@@ -155,7 +182,7 @@ def test_binary_crt_has_an_actionable_pem_error(tmp_path, monkeypatch):
         create_ssl_context()
 
     assert error.value.code == "tls_ca_bundle_invalid"
-    assert "not PEM encoded" in error.value.message
+    assert "neither a PEM bundle nor a DER X.509 certificate" in error.value.message
     assert str(certificate) in error.value.message
 
 

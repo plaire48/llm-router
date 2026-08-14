@@ -160,8 +160,9 @@ class OpenAIAccountSource:
                 raise RouterError(
                     "OpenAI account credits TLS certificate verification failed. "
                     + ca_detail
-                    + " The PEM must contain the SDS root and any required intermediate CA "
-                    "certificates. Restart llm-router after changing it.",
+                    + " The certificate must trust the SDS root and any required intermediate "
+                    "CA certificates. PEM bundles and binary DER .crt certificates are supported. "
+                    "Restart llm-router after changing it.",
                     type="upstream_error",
                     code="tls_certificate_verify_failed",
                     status_code=502,

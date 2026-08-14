@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.11-<platform>.whl
+python3 -m pip install llm_router-0.1.12-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.11 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.11-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.11" `
+gh release download v0.1.12 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.12-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.12" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -72,7 +72,7 @@ LLM_ROUTER_OPENCODE_AUTO_START=true
 
 Python HTTP 클라이언트는 운영체제 인증서 저장소와 공개 CA 묶음을 함께 사용합니다. 따라서 회사 루트
 인증서가 Windows의 신뢰할 수 있는 루트 인증 기관에 설치돼 있으면 OpenAI 크레딧 조회에도 자동으로
-적용됩니다. 사내 HTTPS 프록시의 CA가 저장소에 없으면 PEM 인증서 파일을 설정합니다. 라우터의 Python
+적용됩니다. 사내 HTTPS 프록시의 CA가 저장소에 없으면 CA 인증서 파일을 설정합니다. 라우터의 Python
 HTTP 클라이언트와 내부 OpenCode 프로세스가 `NODE_EXTRA_CA_CERTS`를 함께 사용하므로 로그인, 토큰
 교환·갱신, 크레딧 조회와 추론 요청에 동일하게 적용됩니다.
 
@@ -82,21 +82,21 @@ llm-router serve --profiles profiles.yaml
 ```
 
 Windows 11에서는 SDS 인증서의 절대경로를 `.env`에 지정합니다. 라우터가 이 경로를 정규화해 Python과
-OpenCode에 동일하게 전달합니다. 확장자가 `.crt`여도 내용은 `-----BEGIN CERTIFICATE-----`로 시작하는
-PEM이어야 하며, 사내 프록시가 중간 CA를 사용하면 같은 파일에 루트와 중간 인증서를 모두 포함합니다.
+OpenCode에 동일하게 전달합니다. `.crt`가 PEM 인증서 묶음이면 그대로 사용하고, 바이너리 DER X.509
+인증서이면 라우터가 내부 전용 캐시에 자동으로 PEM 변환하여 OpenCode에 전달합니다. 사용자가 파일을
+변환하거나 설정 경로를 바꿀 필요는 없습니다.
 
 ```dotenv
 NODE_EXTRA_CA_CERTS=C:/sds.crt
 ```
 
-PowerShell에서 파일과 PEM 헤더를 확인할 수 있습니다.
+PowerShell에서는 파일 경로만 확인하면 됩니다.
 
 ```powershell
 Test-Path C:\sds.crt
-Get-Content C:\sds.crt -TotalCount 1
 ```
 
-결과는 각각 `True`, `-----BEGIN CERTIFICATE-----`여야 합니다.
+결과가 `True`이면 됩니다. 인증서가 PEM인지 바이너리 DER인지는 라우터가 자동 판별합니다.
 
 PowerShell에서 현재 프로세스에만 적용하려면 다음처럼 설정한 뒤 같은 창에서 라우터를 실행합니다.
 
@@ -105,13 +105,12 @@ $env:NODE_EXTRA_CA_CERTS = 'C:\sds.crt'
 python -m llm_router serve --profiles profiles.yaml
 ```
 
-Windows 인증서 저장소에만 있는 `.cer`가 DER 바이너리라면 먼저 PEM으로 내보내거나
-`certutil -encode company.cer company-ca.pem`으로 변환합니다. 사내 프록시 체인에 중간 CA가 있으면
-같은 PEM 파일에 루트와 중간 인증서를 모두 포함합니다.
+Windows 인증서 저장소에서 내보낸 바이너리 DER `.crt`/`.cer`도 그대로 지정할 수 있습니다. 하나의
+PEM 파일에 여러 인증서가 들어 있다면 사내 프록시 체인에 필요한 루트와 중간 인증서를 모두 읽습니다.
 
 인증서 검증을 끄는 방식(`verify=False`)은 지원하지 않습니다.
 
-`certificate verify failed`가 계속 표시되면 `.env`의 경로가 실제 PEM 파일을 가리키는지 확인한 뒤
+`certificate verify failed`가 계속 표시되면 `.env`의 경로와 SDS 인증서 체인을 확인한 뒤
 라우터를 완전히 종료하고 다시 시작합니다. 이미 실행 중인 프로세스에는 변경된 환경 변수가 반영되지
 않습니다.
 

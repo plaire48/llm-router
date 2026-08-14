@@ -342,7 +342,9 @@ async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypa
     monkeypatch.setenv("BUN_OPTIONS", "--user-agent=spoofed-client")
     monkeypatch.setenv("OPENAI_API_KEY", "do-not-inherit")
     monkeypatch.setenv("OPENAI_BASE_URL", "https://wrong-upstream.test/v1")
-    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", "/company/ca.pem")
+    company_ca = tmp_path / "company.pem"
+    company_ca.write_text("-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----\n")
+    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(company_ca))
     runtime = OpenCodeRuntime(
         directory=tmp_path,
         binary_finder=lambda _: "/opt/bin/opencode",
@@ -369,7 +371,7 @@ async def test_runtime_starts_a_pure_isolated_headless_server(tmp_path, monkeypa
     assert "OPENCODE_SERVER_PASSWORD" not in environment
     assert environment["OPENCODE_DISABLE_AUTOUPDATE"] == "true"
     assert environment["OPENCODE_DISABLE_TERMINAL_TITLE"] == "true"
-    assert environment["NODE_EXTRA_CA_CERTS"] == "/company/ca.pem"
+    assert environment["NODE_EXTRA_CA_CERTS"] == str(company_ca)
 
     await runtime.close()
     assert process.terminated is True
@@ -384,6 +386,9 @@ def test_runtime_keeps_router_owned_opencode_credentials_isolated(tmp_path):
 def test_runtime_passes_relative_company_ca_as_an_absolute_path(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("NODE_EXTRA_CA_CERTS", "sds.crt")
+    (tmp_path / "sds.crt").write_text(
+        "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----\n"
+    )
     runtime = OpenCodeRuntime(directory=tmp_path / "runtime")
 
     environment = runtime._isolated_environment()
