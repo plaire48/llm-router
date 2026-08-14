@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from llm_router import openai_runtime
 from llm_router.errors import RouterError
 from llm_router.oauth.openai_flow import login
 from llm_router.openai_runtime import (
@@ -101,6 +102,51 @@ def test_official_sdk_provides_the_account_runtime():
 
     assert executable.is_file()
     assert path_dir is None or path_dir.is_dir()
+
+
+async def test_account_runtime_creates_codex_home_before_launch(tmp_path, monkeypatch):
+    account_home = tmp_path / "missing" / "openai"
+    launched = False
+
+    class FakeStdin:
+        def write(self, _: bytes) -> None:
+            return None
+
+        async def drain(self) -> None:
+            return None
+
+        def close(self) -> None:
+            return None
+
+    class FakeStdout:
+        async def readline(self) -> bytes:
+            return b'{"id": 1, "result": {}}\n'
+
+    class FakeProcess:
+        stdin = FakeStdin()
+        stdout = FakeStdout()
+        returncode = 0
+
+        async def wait(self) -> int:
+            return 0
+
+    async def fake_subprocess_exec(*args, **kwargs):
+        nonlocal launched
+        launched = True
+        assert Path(kwargs["env"]["CODEX_HOME"]) == account_home
+        assert account_home.is_dir()
+        return FakeProcess()
+
+    monkeypatch.setenv("LLM_ROUTER_OPENAI_HOME", str(account_home))
+    monkeypatch.setattr(openai_runtime.asyncio, "create_subprocess_exec", fake_subprocess_exec)
+    session = OpenAIAppServerSession(
+        runtime_resolver=lambda: (tmp_path / "codex", None)
+    )
+
+    async with session:
+        pass
+
+    assert launched
 
 
 def test_account_runtime_merges_node_extra_ca_with_public_roots(tmp_path):

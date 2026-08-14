@@ -122,15 +122,23 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'data-disconnect="${item.provider}"' in body
         assert 'class="connection-state ${kind}"' in body
         assert 'data-provider="${esc(item.provider)}"' in body
-        assert 'class="claude-glyph"' in body
-        assert 'class="openai-glyph"' in body
+        assert 'class="brand-glyph claude-glyph"' in body
+        assert 'class="brand-glyph openai-glyph"' in body
+        assert 'viewBox="0 0 125 125"' in body
+        assert 'viewBox="146 227 268 265"' in body
+        assert ".provider-logo .brand-glyph" in body
         assert 'providerGlyph("anthropic")' in body
         assert 'providerGlyph("openai")' in body
         assert "사내 LLM" in body
         assert "OpenAI 호환 LLM" in body
         assert 'data-new-type="${type}"' in body
         assert 'apiConnectionCard("fabrix","FabriX","사내 API","fabrix")' in body
+        assert 'apiConnectionCard("aipro","AI Pro","SDS 사내 API","aipro"' in body
         assert 'apiConnectionCard("openai_compatible","OpenAI 호환 LLM"' in body
+        assert 'const AI_PRO_ENDPOINT = "https://aipro.sdsdev.co.kr/v1"' in body
+        assert 'aipro:{model:"",baseUrl:AI_PRO_ENDPOINT}' in body
+        assert 'aipro:["openai_compatible","api_key"]' in body
+        assert 'profile.provider==="openai_compatible"&&!isAIProProfile(profile)' in body
         assert '$("#top-add")' not in body
         assert 'id="page-add"' not in body
         assert 'showPage("connections")' in body

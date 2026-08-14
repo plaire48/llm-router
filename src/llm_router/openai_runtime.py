@@ -65,7 +65,8 @@ class OpenAIAppServerSession:
         executable, path_dir = self.runtime_resolver()
         load_dotenv(dotenv_path=Path.cwd() / ".env", override=False)
         environment = os.environ.copy()
-        environment["CODEX_HOME"] = str(openai_account_home())
+        account_home = openai_account_home()
+        environment["CODEX_HOME"] = str(account_home)
         if path_dir is not None:
             current_path = environment.get("PATH", "")
             environment["PATH"] = os.pathsep.join(
@@ -77,6 +78,8 @@ class OpenAIAppServerSession:
         if environment.get("SSL_CERT_FILE") and not environment.get("CARGO_HTTP_CAINFO"):
             environment["CARGO_HTTP_CAINFO"] = environment["SSL_CERT_FILE"]
         try:
+            # The bundled runtime rejects a CODEX_HOME path that does not exist.
+            account_home.mkdir(mode=0o700, parents=True, exist_ok=True)
             self.process = await asyncio.create_subprocess_exec(
                 str(executable),
                 "--config",
