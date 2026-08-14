@@ -190,6 +190,7 @@ class OpenCodeRuntime:
     ) -> None:
         """Run ChatGPT OAuth through the router-owned OpenCode server."""
         await self.ensure_started(client)
+        restart_after_login = self.process is not None
         params = {"directory": str(self.directory)}
         try:
             authorize = await client.post(
@@ -254,6 +255,12 @@ class OpenCodeRuntime:
                 code="opencode_login_failed",
                 status_code=401,
             )
+        if restart_after_login:
+            # OpenCode caches provider options for the lifetime of an instance. If a
+            # request initialized the OpenAI provider before OAuth completed, that
+            # instance keeps the API-key-only options until the server restarts.
+            await self.close()
+            await self.ensure_started(client)
 
     async def close(self) -> None:
         process = self.process

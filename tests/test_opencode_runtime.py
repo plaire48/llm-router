@@ -92,6 +92,35 @@ async def test_runtime_runs_openai_oauth_entirely_through_opencode(tmp_path):
     ]
 
 
+async def test_runtime_restarts_owned_opencode_after_oauth_login(tmp_path):
+    lifecycle = []
+
+    class RestartTrackingRuntime(OpenCodeRuntime):
+        async def ensure_started(self, _client):
+            lifecycle.append("start")
+            self.process = object()
+
+        async def close(self):
+            lifecycle.append("close")
+            self.process = None
+
+    def handler(request):
+        if request.url.path.endswith("/oauth/authorize"):
+            return httpx.Response(
+                200,
+                json={"url": "https://auth.openai.com/oauth/authorize", "method": "auto"},
+            )
+        if request.url.path.endswith("/oauth/callback"):
+            return httpx.Response(200, json=True)
+        return httpx.Response(404)
+
+    runtime = RestartTrackingRuntime(directory=tmp_path)
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        await runtime.login_openai(client, browser_opener=lambda _: True)
+
+    assert lifecycle == ["start", "close", "start"]
+
+
 async def test_runtime_stops_before_callback_when_browser_cannot_open(tmp_path):
     paths = []
 
