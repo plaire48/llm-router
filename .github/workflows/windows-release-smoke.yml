@@ -1,0 +1,61 @@
+name: Windows release smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to verify
+        required: true
+        default: v0.1.1
+      expected_sha256:
+        description: Expected wheel SHA-256
+        required: true
+        default: d49d2d9c98095d35b0f91f9b57c619d11873428a099a0168fd01daecc2954298
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download Windows wheel from GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download "${{ inputs.release_tag }}" `
+            --repo "${{ github.repository }}" `
+            --pattern "*win_amd64.whl"
+
+      - name: Verify, install, and execute bundled OpenCode
+        shell: pwsh
+        run: |
+          $wheel = Get-ChildItem -File "*win_amd64.whl" | Select-Object -First 1
+          if (-not $wheel) {
+            throw "Windows wheel was not downloaded"
+          }
+          $actualSha = (Get-FileHash $wheel.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualSha -ne "${{ inputs.expected_sha256 }}") {
+            throw "Wheel SHA-256 mismatch: $actualSha"
+          }
+
+          py -m pip install --force-reinstall $wheel.FullName
+          $binary = py -c "from llm_router.opencode_runtime import bundled_opencode_path; print(bundled_opencode_path())"
+          if (-not (Test-Path $binary -PathType Leaf)) {
+            throw "Bundled opencode.exe was not found: $binary"
+          }
+          $version = (& $binary --version).Trim()
+          if ($version -ne "1.18.18") {
+            throw "Unexpected OpenCode version: $version"
+          }
+          py -m llm_router --help
+
+          "### Windows release smoke passed" >> $env:GITHUB_STEP_SUMMARY
+          "- Wheel: $($wheel.Name)" >> $env:GITHUB_STEP_SUMMARY
+          "- SHA-256: $actualSha" >> $env:GITHUB_STEP_SUMMARY
+          "- Bundled OpenCode: $version" >> $env:GITHUB_STEP_SUMMARY
