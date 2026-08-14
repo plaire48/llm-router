@@ -40,16 +40,70 @@ async def test_runtime_uses_an_already_running_opencode_server(tmp_path):
     assert runtime.process is None
 
 
-async def test_auto_start_does_not_reuse_an_unisolated_server_on_its_port(tmp_path):
+async def test_custom_opencode_port_does_not_reuse_an_unisolated_server(tmp_path):
     def handler(_request):
         return httpx.Response(200, json={"healthy": True, "version": "1.0.0"})
 
-    runtime = OpenCodeRuntime(directory=tmp_path, binary_finder=lambda _: "/opt/bin/opencode")
+    runtime = OpenCodeRuntime(
+        base_url="http://127.0.0.1:4100",
+        directory=tmp_path,
+        binary_finder=lambda _: "/opt/bin/opencode",
+    )
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         with pytest.raises(RouterError) as error:
             await runtime.ensure_started(client)
 
     assert error.value.code == "opencode_port_in_use"
+
+
+async def test_legacy_default_port_conflict_selects_a_free_port(tmp_path, monkeypatch):
+    started = False
+    captured = {}
+
+    def handler(request):
+        if request.url.port == 4097:
+            return httpx.Response(200, json={"healthy": True, "version": "other"})
+        if started:
+            return httpx.Response(200, json={"healthy": True, "version": "1.18.18"})
+        return httpx.Response(503)
+
+    class FakeProcess:
+        returncode = None
+
+        def terminate(self):
+            self.returncode = 0
+
+        async def wait(self):
+            return self.returncode
+
+    async def create_process(*args, **_kwargs):
+        nonlocal started
+        started = True
+        captured["args"] = args
+        return FakeProcess()
+
+    monkeypatch.setattr("llm_router.opencode_runtime._allocate_loopback_port", lambda _host: 49152)
+    monkeypatch.setattr("llm_router.opencode_runtime._loopback_port_available", lambda *_: True)
+    monkeypatch.setattr(
+        "llm_router.opencode_runtime.asyncio.create_subprocess_exec",
+        create_process,
+    )
+    runtime = OpenCodeRuntime(directory=tmp_path, binary_finder=lambda _: "/opt/bin/opencode")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        await runtime.ensure_started(client)
+
+    assert runtime.base_url == "http://127.0.0.1:49152"
+    assert captured["args"][-2:] == ("--port", "49152")
+    await runtime.close()
+
+
+def test_zero_port_is_resolved_when_the_runtime_is_created(monkeypatch):
+    monkeypatch.setattr("llm_router.opencode_runtime._allocate_loopback_port", lambda _host: 49153)
+
+    runtime = OpenCodeRuntime(base_url="http://127.0.0.1:0")
+
+    assert runtime.base_url == "http://127.0.0.1:49153"
 
 
 async def test_runtime_reports_missing_opencode_binary(tmp_path):

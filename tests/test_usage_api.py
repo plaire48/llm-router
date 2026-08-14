@@ -153,7 +153,7 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert 'id="page-serving" hidden' in body
         assert "연결 메뉴에서 계정이나 사내 LLM을 먼저 연결하세요." in body
         assert "OpenAI Codex" not in body
-        assert "ChatGPT 계정 사용량" in body
+        assert "Enterprise 계정 크레딧" in body
         assert "ChatGPT 계정 OAuth" in body
         assert "내부 OpenCode가 전용 ChatGPT OAuth 세션을 생성합니다." in body
         assert "OpenAI와 Claude는 브라우저 로그인만 사용합니다." not in body
@@ -176,6 +176,9 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "사용량 대시보드" not in body
         assert 'class="account-budget-grid"' in body
         assert "사용 금액" in body
+        assert "사용 크레딧" in body
+        assert "Enterprise 계정 크레딧" in body
+        assert "크레딧 사용률" in body
         assert "전체 한도" in body
         assert "사용률" in body
         assert "1년 토큰 활동" in body
@@ -199,8 +202,11 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "data-stop=" not in body
         assert "로컬 호출 예상 비용" in body
         assert "moneyFromMinor" in body
-        assert "moneyFromMajor" in body
-        assert 'individual.currency||"USD"' in body
+        assert "creditMarkup" in body
+        assert "creditBalanceMarkup" in body
+        assert 'class="credit-unit">크레딧</span>' in body
+        assert "OpenAI 계정 API에서 직접 조회" in body
+        assert "로컬 추정값 아님" in body
         assert "/v1/usage/summary?days=365" in body
         assert 'id="usage-profile"' in body
         assert 'id="usage-model"' in body

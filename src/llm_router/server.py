@@ -289,6 +289,7 @@ def create_app(
 
     from llm_router.control import build_control_router
     from llm_router.usage.claude_account import ClaudeAccountSource
+    from llm_router.usage.openai_account import OpenAIAccountSource
     from llm_router.usage.routes import build_dashboard_router, build_usage_router
 
     active_token_store = token_store or TokenStore.default()
@@ -301,9 +302,11 @@ def create_app(
                 client=client,
                 client_getter=get_client,
             ),
-            # OpenAI account traffic is owned by OpenCode. The router does not
-            # start a second Codex account runtime merely to populate this card.
-            openai_account_source=None,
+            openai_account_source=OpenAIAccountSource(
+                store=active_openai_store,
+                client=client,
+                client_getter=get_client,
+            ),
         )
     )
     app.include_router(

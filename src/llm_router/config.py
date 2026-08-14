@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     port: int = 8787
     usage_db: Path = Path.home() / ".llm-router" / "usage.db"
     log_bodies: bool = False
-    opencode_url: str = "http://127.0.0.1:4097"
+    opencode_url: str = "http://127.0.0.1:0"
     opencode_binary: str = "opencode"
     opencode_directory: Path = Path.home() / ".llm-router" / "opencode"
     opencode_auto_start: bool = True

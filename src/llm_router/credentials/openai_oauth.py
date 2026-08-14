@@ -117,6 +117,41 @@ class OpenAIAccountStore:
         tokens = payload.get("tokens") if payload else None
         return tokens if isinstance(tokens, dict) else None
 
+    def update_opencode_oauth(self, tokens: dict[str, Any]) -> None:
+        """Persist refreshed OAuth values without replacing other OpenCode credentials."""
+        if not self.opencode:
+            raise RouterError(
+                "OpenAI credentials are not stored in OpenCode format.",
+                type="authentication_error",
+                code="openai_oauth_store_error",
+                status_code=500,
+            )
+        payload = self.load()
+        credential = payload.get("openai") if payload else None
+        if not isinstance(payload, dict) or not isinstance(credential, dict):
+            raise RouterError(
+                "OpenAI account credentials are missing. Log in to OpenAI again.",
+                type="authentication_error",
+                code="openai_oauth_store_error",
+                status_code=401,
+            )
+        updated = dict(credential)
+        mappings = {
+            "access_token": "access",
+            "refresh_token": "refresh",
+            "account_id": "accountId",
+        }
+        for source, target in mappings.items():
+            value = tokens.get(source)
+            if isinstance(value, str) and value:
+                updated[target] = value
+        expires_at = tokens.get("expires_at")
+        if isinstance(expires_at, (int, float)):
+            updated["expires"] = int(float(expires_at) * 1000)
+        new_payload = dict(payload)
+        new_payload["openai"] = updated
+        self.save(new_payload)
+
     @staticmethod
     def claims(tokens: dict[str, Any] | None) -> dict[str, Any]:
         if not tokens:

@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.5-<platform>.whl
+python3 -m pip install llm_router-0.1.6-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.5 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.5-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.5" `
+gh release download v0.1.6 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.6-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.6" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -58,12 +58,17 @@ LLM_ROUTER_HOST=127.0.0.1
 LLM_ROUTER_PORT=8787
 LLM_ROUTER_USAGE_DB=~/.llm-router/usage.db
 LLM_ROUTER_LOG_BODIES=false
-LLM_ROUTER_OPENCODE_URL=http://127.0.0.1:4097
+# 포트 0은 실행할 때마다 사용 가능한 localhost 포트를 자동 선택합니다.
+LLM_ROUTER_OPENCODE_URL=http://127.0.0.1:0
 # 기본값은 배포 wheel에 포함된 OpenCode입니다. 외부 실행 파일을 강제할 때만 절대 경로로 바꿉니다.
 LLM_ROUTER_OPENCODE_BINARY=opencode
 LLM_ROUTER_OPENCODE_DIRECTORY=~/.llm-router/opencode
 LLM_ROUTER_OPENCODE_AUTO_START=true
 ```
+
+기본 포트 `0`은 라우터가 실행 시 빈 localhost 포트를 선택한다는 뜻입니다. 이전 버전의 기본값인
+`4097`이 `.env`에 남아 있어도 다른 프로세스가 사용 중이면 자동으로 빈 포트로 이동합니다. 사용자가
+지정한 고정 포트는 충돌 시 자동 변경하지 않습니다.
 
 사내 HTTPS 프록시가 자체 CA로 인증서를 서명하는 환경에서는 PEM 인증서 파일을 설정합니다. 라우터의
 Python HTTP 클라이언트와 내부 OpenCode 프로세스가 `NODE_EXTRA_CA_CERTS`를 상속하므로 로그인, 토큰
@@ -239,8 +244,9 @@ SHA-256을 검증한 뒤 포함합니다. macOS arm64/x64, Linux glibc·musl arm
 ## 사용량
 
 라우터를 통과한 모든 호출은 프로필별 일일 입력·출력 토큰으로 SQLite에 기록됩니다. 요청·응답 본문은
-기본적으로 저장하지 않습니다. OpenCode가 계정 한도 API를 공개하지 않는 동안 OpenAI 계정 한도 카드는
-미구성 상태로 표시되고, 라우터를 통과한 로컬 토큰 사용량은 계속 집계됩니다.
+기본적으로 저장하지 않습니다. OpenAI Enterprise 카드의 잔여 크레딧·한도 사용률은 OpenCode 브라우저
+로그인 세션으로 OpenAI 계정 API에서 직접 조회하며 5분간 캐시합니다. 로컬 토큰을 크레딧이나 금액으로
+환산하지 않습니다. 프로필·모델별 `예상 $`만 공개 API 단가에 따른 별도의 참고용 추정치입니다.
 
 ## API
 

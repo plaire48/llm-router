@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import shutil
+import socket
 import stat
 import tempfile
 from collections.abc import Callable
@@ -23,6 +24,7 @@ BinaryFinder = Callable[[str], str | None]
 BundledResolver = Callable[[], str | None]
 BrowserOpener = Callable[[str], object]
 WINDOWS_CREATE_NO_WINDOW = 0x08000000
+LEGACY_OPENCODE_PORT = 4097
 
 
 def background_process_options(platform: str | None = None) -> dict[str, int]:
@@ -35,6 +37,34 @@ def bundled_opencode_path() -> str | None:
     executable = "opencode.exe" if os.name == "nt" else "opencode"
     candidate = Path(__file__).resolve().parent / "_vendor" / "opencode" / executable
     return str(candidate) if candidate.is_file() else None
+
+
+def _loopback_socket_host(host: str) -> tuple[int, str]:
+    if host == "::1":
+        return socket.AF_INET6, host
+    return socket.AF_INET, "127.0.0.1" if host == "localhost" else host
+
+
+def _allocate_loopback_port(host: str) -> int:
+    family, bind_host = _loopback_socket_host(host)
+    with socket.socket(family, socket.SOCK_STREAM) as listener:
+        listener.bind((bind_host, 0))
+        return int(listener.getsockname()[1])
+
+
+def _loopback_port_available(host: str, port: int) -> bool:
+    family, bind_host = _loopback_socket_host(host)
+    try:
+        with socket.socket(family, socket.SOCK_STREAM) as listener:
+            listener.bind((bind_host, port))
+    except OSError:
+        return False
+    return True
+
+
+def _loopback_url(host: str, port: int) -> str:
+    display_host = f"[{host}]" if ":" in host else host
+    return f"http://{display_host}:{port}"
 
 
 class OpenCodeRuntime:
@@ -52,7 +82,23 @@ class OpenCodeRuntime:
         startup_timeout: float = 8.0,
         aipro_token_store: AIProTokenStore | None = None,
     ) -> None:
-        self.base_url = base_url.rstrip("/")
+        configured_base_url = base_url.rstrip("/")
+        parsed_base_url = urlsplit(configured_base_url)
+        configured_host = parsed_base_url.hostname
+        configured_port = parsed_base_url.port
+        self._allow_port_fallback = bool(
+            auto_start
+            and parsed_base_url.scheme == "http"
+            and configured_host in {"127.0.0.1", "localhost", "::1"}
+            and configured_port in {0, LEGACY_OPENCODE_PORT}
+        )
+        self._port_relocated = False
+        if configured_host and configured_port == 0:
+            configured_base_url = _loopback_url(
+                configured_host,
+                _allocate_loopback_port(configured_host),
+            )
+        self.base_url = configured_base_url
         self.binary = binary
         self.directory = (
             Path(directory).expanduser()
@@ -93,26 +139,13 @@ class OpenCodeRuntime:
         return healthy and (not self.auto_start or self.process is not None)
 
     async def ensure_started(self, client: httpx.AsyncClient) -> None:
-        if await self.ready(client):
-            if not self.auto_start or self.process is not None:
-                return
-            raise RouterError(
-                "내부 OpenCode 포트를 다른 서버가 사용 중입니다. "
-                "LLM_ROUTER_OPENCODE_URL을 변경하세요.",
-                type="configuration_error",
-                code="opencode_port_in_use",
-                status_code=503,
-            )
+        if await self.ready(client) and (not self.auto_start or self.process is not None):
+            return
         async with self._lock:
             if await self.ready(client):
                 if not self.auto_start or self.process is not None:
                     return
-                raise RouterError(
-                    "내부 OpenCode 포트를 다른 서버가 사용 중입니다.",
-                    type="configuration_error",
-                    code="opencode_port_in_use",
-                    status_code=503,
-                )
+                self._relocate_from_conflict()
             if not self.auto_start:
                 raise self._unavailable_error()
             executable = self._resolve_binary()
@@ -135,6 +168,13 @@ class OpenCodeRuntime:
                     status_code=500,
                 )
             port = parsed.port or 80
+            if not _loopback_port_available(host, port):
+                self._relocate_from_conflict()
+                parsed = urlsplit(self.base_url)
+                host = parsed.hostname
+                port = parsed.port or 80
+                if host is None or not _loopback_port_available(host, port):
+                    raise self._port_in_use_error()
             self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             environment = self._isolated_environment()
             try:
@@ -471,6 +511,25 @@ class OpenCodeRuntime:
             if bundled is not None:
                 return bundled
         return self.binary_finder(self.binary)
+
+    def _relocate_from_conflict(self) -> None:
+        parsed = urlsplit(self.base_url)
+        host = parsed.hostname
+        if not self._allow_port_fallback or self._port_relocated or host is None:
+            raise self._port_in_use_error()
+        self.base_url = _loopback_url(host, _allocate_loopback_port(host))
+        self._port_relocated = True
+
+    @staticmethod
+    def _port_in_use_error() -> RouterError:
+        return RouterError(
+            "내부 OpenCode 포트를 다른 서버가 사용 중입니다. "
+            "자동 포트 선택을 사용하려면 LLM_ROUTER_OPENCODE_URL을 "
+            "http://127.0.0.1:0으로 설정하세요.",
+            type="configuration_error",
+            code="opencode_port_in_use",
+            status_code=503,
+        )
 
     @staticmethod
     def _unavailable_error() -> RouterError:
