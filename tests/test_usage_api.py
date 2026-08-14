@@ -133,12 +133,14 @@ def test_dashboard_serves_self_contained_html(tmp_path):
         assert "OpenAI 호환 LLM" in body
         assert 'data-new-type="${type}"' in body
         assert 'apiConnectionCard("fabrix","FabriX","사내 API","fabrix")' in body
-        assert 'apiConnectionCard("aipro","AI Pro","SDS 사내 API","aipro"' in body
         assert 'apiConnectionCard("openai_compatible","OpenAI 호환 LLM"' in body
-        assert 'const AI_PRO_ENDPOINT = "https://aipro.sdsdev.co.kr/v1"' in body
-        assert 'aipro:{model:"",baseUrl:AI_PRO_ENDPOINT}' in body
-        assert 'aipro:["openai_compatible","api_key"]' in body
-        assert 'profile.provider==="openai_compatible"&&!isAIProProfile(profile)' in body
+        assert 'apiConnectionCard("aipro","AI Pro"' not in body
+        assert 'const AI_PRO_ORIGIN = "https://aipro.sdsdev.co.kr"' in body
+        assert "state.auth.map(browserConnectionCard)" in body
+        assert 'isAIPro?"OpenCode 조직 OAuth"' in body
+        assert 'aipro:{model:""}' in body
+        assert 'aipro:["aipro","oauth"]' in body
+        assert 'type==="internal"||type==="fabrix"' in body
         assert '$("#top-add")' not in body
         assert 'id="page-add"' not in body
         assert 'showPage("connections")' in body

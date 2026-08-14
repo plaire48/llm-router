@@ -36,7 +36,7 @@ def build_adapter(
         raise anthropic_oauth_disabled_error()
     if profile.provider == "fabrix":
         return FabrixAdapter(client)
-    if profile.provider == "openai" and profile.auth == "oauth":
+    if profile.provider in {"openai", "aipro"} and profile.auth == "oauth":
         return OpenCodeAdapter(client, opencode_runtime or OpenCodeRuntime())
     credential = build_credential(profile, client, openai_store=openai_store)
     if profile.provider == "anthropic":

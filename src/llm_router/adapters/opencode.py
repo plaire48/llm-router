@@ -38,6 +38,20 @@ def _history_line(message: ChatMessage) -> str:
     return f"{label}: {_text(message.content)}"
 
 
+def _model_reference(profile: Profile) -> tuple[str, str]:
+    if profile.provider != "aipro":
+        return "openai", profile.model
+    provider_id, separator, model_id = profile.model.partition("/")
+    if not separator or not provider_id or not model_id:
+        raise RouterError(
+            "AI Pro model must use the OpenCode provider/model form.",
+            type="configuration_error",
+            code="invalid_opencode_model",
+            status_code=422,
+        )
+    return provider_id, model_id
+
+
 def to_opencode_prompt(request: ChatCompletionRequest, profile: Profile) -> dict[str, Any]:
     if request.tools or any(
         message.tool_calls or message.role == "tool" for message in request.messages
@@ -79,8 +93,9 @@ def to_opencode_prompt(request: ChatCompletionRequest, profile: Profile) -> dict
     prompt = _text(current.content)
     if current.role != "user":
         prompt = _history_line(current)
+    provider_id, model_id = _model_reference(profile)
     return {
-        "model": {"providerID": "openai", "modelID": profile.model},
+        "model": {"providerID": provider_id, "modelID": model_id},
         "system": "\n\n".join(system_parts),
         "parts": [{"type": "text", "text": prompt}],
     }

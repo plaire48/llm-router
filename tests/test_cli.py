@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from contextlib import asynccontextmanager
 
 from typer.testing import CliRunner
 
@@ -124,3 +125,33 @@ def test_oauth_login_anthropic_is_policy_disabled():
     result = runner.invoke(app, ["oauth", "login", "anthropic"])
     assert result.exit_code == 1
     assert "disabled for policy compliance" in result.stdout
+
+
+def test_oauth_login_aipro_uses_opencode_organization_flow(monkeypatch):
+    called = {}
+
+    class FakeRuntime:
+        def __init__(self, **kwargs):
+            called["runtime"] = kwargs
+
+        async def login_organization(self, client, origin):
+            called["login"] = (client, origin)
+
+        async def close(self):
+            called["closed"] = True
+
+    client = object()
+
+    @asynccontextmanager
+    async def fake_client(**kwargs):
+        called["client_options"] = kwargs
+        yield client
+
+    monkeypatch.setattr("llm_router.cli.OpenCodeRuntime", FakeRuntime)
+    monkeypatch.setattr("llm_router.cli.create_async_client", fake_client)
+
+    result = runner.invoke(app, ["oauth", "login", "aipro"])
+
+    assert result.exit_code == 0
+    assert called["login"] == (client, "https://aipro.sdsdev.co.kr")
+    assert called["closed"] is True

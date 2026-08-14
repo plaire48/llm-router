@@ -32,6 +32,12 @@ FABRIX_PROFILE = Profile(
     base_url="https://fabrix.company.test/gateway/",
     model="019a-model-id",
 )
+AIPRO_PROFILE = Profile(
+    name="aipro",
+    provider="aipro",
+    auth="oauth",
+    model="sds-aipro/company-model",
+)
 
 
 def _request(model: str, *, stream: bool = False) -> ChatCompletionRequest:
@@ -42,6 +48,14 @@ def _request(model: str, *, stream: bool = False) -> ChatCompletionRequest:
             "messages": [{"role": "user", "content": "hi"}],
         }
     )
+
+
+def test_aipro_oauth_routes_through_the_managed_opencode_adapter():
+    runtime = object()
+    adapter = build_adapter(AIPRO_PROFILE, object(), opencode_runtime=runtime)
+
+    assert adapter.__class__.__name__ == "OpenCodeAdapter"
+    assert adapter.runtime is runtime
 
 
 @respx.mock

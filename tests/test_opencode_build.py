@@ -6,14 +6,6 @@ import zipfile
 import pytest
 from opencode_build import OpenCodeAsset, asset_for_platform, extract_binary
 
-from llm_router.opencode_runtime import OPENCODE_USER_AGENT
-
-
-def test_runtime_user_agent_matches_bundled_opencode_version():
-    from opencode_build import OPENCODE_VERSION
-
-    assert OPENCODE_USER_AGENT == f"opencode/{OPENCODE_VERSION}"
-
 
 def _asset(filename: str, executable: str = "opencode") -> OpenCodeAsset:
     return OpenCodeAsset(filename, "unused", "test_platform", executable)

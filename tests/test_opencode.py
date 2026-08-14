@@ -22,6 +22,12 @@ PROFILE = Profile(
     model="gpt-5.6-sol",
     params={"reasoning_effort": "medium"},
 )
+AIPRO_PROFILE = Profile(
+    name="aipro",
+    provider="aipro",
+    auth="oauth",
+    model="sds-aipro/company-model",
+)
 
 
 def _jwt(payload: dict) -> str:
@@ -87,6 +93,15 @@ def test_chat_completion_request_translates_to_opencode_session_prompt():
     assert "User: First question" in body["system"]
     assert "Assistant: First answer" in body["system"]
     assert body["parts"] == [{"type": "text", "text": "Final question"}]
+
+
+def test_aipro_model_reference_is_passed_to_opencode_without_rewriting_provider():
+    body = to_opencode_prompt(_request(), AIPRO_PROFILE)
+
+    assert body["model"] == {
+        "providerID": "sds-aipro",
+        "modelID": "company-model",
+    }
 
 
 def test_opencode_prompt_rejects_caller_tools_instead_of_executing_them():

@@ -65,6 +65,7 @@ def create_app(
     serving_manager: ProfileServingManager | None = None,
     claude_login: Any | None = None,
     openai_login: Any | None = None,
+    aipro_login: Any | None = None,
     opencode_runtime: OpenCodeRuntime | None = None,
 ) -> FastAPI:
     if settings.master_key is None and not is_loopback_host(settings.host):
@@ -307,6 +308,7 @@ def create_app(
             serving_manager=active_serving_manager,
             claude_login=claude_login,
             openai_login=openai_login,
+            aipro_login=aipro_login,
             opencode_runtime=active_opencode_runtime,
         )
     )
