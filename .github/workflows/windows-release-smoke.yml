@@ -6,11 +6,11 @@ on:
       release_tag:
         description: Release tag to verify
         required: true
-        default: v0.1.12
+        default: v0.1.13
       expected_sha256:
         description: Expected wheel SHA-256
         required: true
-        default: a6b5783e30d1abcbef1906c26e17011d44d889e1124eb56daecd5b9c340088dd
+        default: 1c40d73cc330aa19b4a32d5c99ffb1bbf65c1c748ffdeb445c49db1fb8b8c0fa
       python_version:
         description: Python version used to install and run llm-router
         required: true
@@ -88,6 +88,10 @@ jobs:
             throw "Bundled opencode.exe was not found: $binary"
           }
 
+          $env:HTTP_PROXY = "http://127.0.0.1:1"
+          $env:HTTPS_PROXY = "http://127.0.0.1:1"
+          $env:ALL_PROXY = "http://127.0.0.1:1"
+          Remove-Item Env:NO_PROXY -ErrorAction SilentlyContinue
           $env:LLM_ROUTER_SMOKE_RUNTIME_DIR = Join-Path $PWD "router-managed-opencode"
           $runtimeScript = @'
           import asyncio
@@ -96,8 +100,7 @@ jobs:
           import time
           from pathlib import Path
 
-          import httpx
-
+          from llm_router.http_client import create_async_client
           from llm_router.opencode_runtime import OpenCodeRuntime
 
 
@@ -105,10 +108,11 @@ jobs:
               runtime = OpenCodeRuntime(
                   base_url="http://127.0.0.1:0",
                   directory=Path(os.environ["LLM_ROUTER_SMOKE_RUNTIME_DIR"]),
-                  startup_timeout=30.0,
               )
+              if runtime.startup_timeout != 120.0:
+                  raise RuntimeError(f"Unexpected startup timeout: {runtime.startup_timeout}")
               started = time.monotonic()
-              async with httpx.AsyncClient() as client:
+              async with create_async_client(timeout=30.0) as client:
                   try:
                       await runtime.ensure_started(client)
                       response = await client.get(f"{runtime.base_url}/global/health")

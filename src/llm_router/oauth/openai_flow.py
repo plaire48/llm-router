@@ -25,6 +25,7 @@ async def login(
             binary=settings.opencode_binary,
             directory=settings.opencode_directory,
             auto_start=settings.opencode_auto_start,
+            startup_timeout=settings.opencode_startup_timeout,
         )
     else:
         active_runtime = runtime

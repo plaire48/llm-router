@@ -159,6 +159,43 @@ async def test_runtime_reports_opencode_exit_code_and_stderr(tmp_path, monkeypat
     assert "execution was blocked" in error.value.message
 
 
+async def test_runtime_distinguishes_a_started_process_from_a_missing_binary(tmp_path, monkeypatch):
+    def handler(_request):
+        return httpx.Response(502)
+
+    class SlowProcess:
+        returncode = None
+        pid = 31415
+        stderr = None
+
+        def terminate(self):
+            self.returncode = 0
+
+        async def wait(self):
+            return self.returncode
+
+    async def create_process(*_args, **_kwargs):
+        return SlowProcess()
+
+    monkeypatch.setattr(
+        "llm_router.opencode_runtime.asyncio.create_subprocess_exec",
+        create_process,
+    )
+    monkeypatch.setattr("llm_router.opencode_runtime._loopback_port_available", lambda *_: True)
+    runtime = OpenCodeRuntime(
+        directory=tmp_path,
+        bundled_resolver=lambda: "C:/package/opencode.exe",
+        startup_timeout=0.01,
+    )
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        with pytest.raises(RouterError) as error:
+            await runtime.ensure_started(client)
+
+    assert "실행 파일을 찾았고 OpenCode 프로세스(PID 31415)를 시작했지만" in error.value.message
+    assert "/global/health" in error.value.message
+    assert "마지막 확인 오류: HTTP 502" in error.value.message
+
+
 async def test_runtime_runs_openai_oauth_entirely_through_opencode(tmp_path):
     calls = []
 
@@ -284,7 +321,7 @@ def test_runtime_prefers_bundle_when_binary_setting_is_empty(tmp_path):
 
 
 def test_runtime_allows_slow_windows_first_start_by_default():
-    assert OpenCodeRuntime().startup_timeout == 30.0
+    assert OpenCodeRuntime().startup_timeout == 120.0
 
 
 def test_runtime_honors_explicit_opencode_binary_over_bundle(tmp_path):

@@ -1,3 +1,4 @@
+import asyncio
 import os
 import ssl
 from pathlib import Path
@@ -200,4 +201,38 @@ def test_async_client_uses_shared_ssl_context(monkeypatch):
     client = create_async_client(timeout=30.0)
 
     assert isinstance(client, FakeAsyncClient)
-    assert captured == {"timeout": 30.0, "verify": ssl_context}
+    assert captured["timeout"] == 30.0
+    assert captured["verify"] is ssl_context
+    assert set(captured["mounts"]) == {
+        "http://127.0.0.1",
+        "http://localhost",
+        "http://[::1]",
+    }
+
+
+async def test_async_client_bypasses_environment_proxy_for_loopback(monkeypatch):
+    async def respond(reader, writer):
+        await reader.read(4096)
+        writer.write(
+            b"HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
+            b'Content-Length: 16\r\nConnection: close\r\n\r\n{"healthy":true}'
+        )
+        await writer.drain()
+        writer.close()
+        await writer.wait_closed()
+
+    for name in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"):
+        monkeypatch.setenv(name, "http://127.0.0.1:1")
+    for name in ("NO_PROXY", "no_proxy"):
+        monkeypatch.delenv(name, raising=False)
+
+    server = await asyncio.start_server(respond, "127.0.0.1", 0)
+    port = server.sockets[0].getsockname()[1]
+    try:
+        async with create_async_client(timeout=2.0) as client:
+            response = await client.get(f"http://127.0.0.1:{port}/global/health")
+    finally:
+        server.close()
+        await server.wait_closed()
+
+    assert response.json() == {"healthy": True}

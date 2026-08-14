@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.12-<platform>.whl
+python3 -m pip install llm_router-0.1.13-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.12 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.12-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.12" `
+gh release download v0.1.13 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.13-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.13" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -64,6 +64,7 @@ LLM_ROUTER_OPENCODE_URL=http://127.0.0.1:0
 LLM_ROUTER_OPENCODE_BINARY=opencode
 LLM_ROUTER_OPENCODE_DIRECTORY=~/.llm-router/opencode
 LLM_ROUTER_OPENCODE_AUTO_START=true
+LLM_ROUTER_OPENCODE_STARTUP_TIMEOUT=120
 ```
 
 기본 포트 `0`은 라우터가 실행 시 빈 localhost 포트를 선택한다는 뜻입니다. 이전 버전의 기본값인
@@ -114,10 +115,12 @@ PEM 파일에 여러 인증서가 들어 있다면 사내 프록시 체인에 �
 라우터를 완전히 종료하고 다시 시작합니다. 이미 실행 중인 프로세스에는 변경된 환경 변수가 반영되지
 않습니다.
 
-번들 OpenCode 경로가 출력되는데도 내부 서버 연결 오류가 발생하면 v0.1.10 이상으로 업데이트합니다.
-Windows의 첫 실행 보안 검사를 고려해 최대 30초간 준비를 기다리며, 프로세스가 종료되면 종료 코드와
-OpenCode의 시작 오류를 대시보드에 표시합니다. 오류에 실행 차단이 명시된 경우에만 Windows 보안의
-보호 기록 또는 사내 AppLocker 정책을 확인합니다.
+번들 OpenCode 경로가 출력되는데도 내부 서버 연결 오류가 발생하면 최신 버전으로 업데이트합니다.
+Python 3.14를 포함한 Windows의 첫 실행 보안 검사를 고려해 기본 120초간 준비를 기다립니다. 또한
+사내 `HTTP_PROXY`/`ALL_PROXY`가 설정돼 있어도 localhost OpenCode 요청은 프록시를 우회합니다.
+프로세스가 종료되면 종료 코드와 시작 오류를, 프로세스가 살아 있으면 확인한 헬스 주소와 마지막 연결
+오류를 대시보드에 표시합니다. 필요하면 `LLM_ROUTER_OPENCODE_STARTUP_TIMEOUT`을 최대 600초로 조정할
+수 있습니다.
 
 서버 실행 후 [http://localhost:8787/dashboard](http://localhost:8787/dashboard)를 엽니다.
 

@@ -370,6 +370,7 @@ def build_control_router(
         binary=settings.opencode_binary,
         directory=settings.opencode_directory,
         auto_start=settings.opencode_auto_start,
+        startup_timeout=settings.opencode_startup_timeout,
         aipro_token_store=active_aipro_store,
     )
     codex_store = codex_token_store or OpenAIAccountStore.from_opencode(

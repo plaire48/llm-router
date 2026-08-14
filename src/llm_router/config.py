@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from llm_router.errors import RouterError
@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     opencode_binary: str = "opencode"
     opencode_directory: Path = Path.home() / ".llm-router" / "opencode"
     opencode_auto_start: bool = True
+    opencode_startup_timeout: float = Field(default=120.0, gt=0, le=600)
 
     @field_validator("master_key", mode="before")
     @classmethod

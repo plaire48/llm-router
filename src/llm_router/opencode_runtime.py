@@ -82,7 +82,7 @@ class OpenCodeRuntime:
         auto_start: bool = True,
         binary_finder: BinaryFinder = shutil.which,
         bundled_resolver: BundledResolver = bundled_opencode_path,
-        startup_timeout: float = 30.0,
+        startup_timeout: float = 120.0,
         aipro_token_store: AIProTokenStore | None = None,
     ) -> None:
         configured_base_url = base_url.rstrip("/")
@@ -116,6 +116,7 @@ class OpenCodeRuntime:
         self.process: asyncio.subprocess.Process | None = None
         self._stderr_task: asyncio.Task[None] | None = None
         self._stderr_lines: deque[str] = deque(maxlen=20)
+        self._last_health_error: str | None = None
         self._lock = asyncio.Lock()
         self._profile_lock = asyncio.Lock()
         self._api_profile_configs: dict[str, dict[str, object]] = {}
@@ -131,12 +132,16 @@ class OpenCodeRuntime:
 
     async def ready(self, client: httpx.AsyncClient) -> bool:
         try:
-            response = await client.get(f"{self.base_url}/global/health", timeout=0.5)
+            response = await client.get(f"{self.base_url}/global/health", timeout=1.0)
             if response.status_code != 200:
+                self._last_health_error = f"HTTP {response.status_code}"
                 return False
             payload = response.json()
-            return isinstance(payload, dict) and payload.get("healthy") is True
-        except (httpx.HTTPError, ValueError):
+            healthy = isinstance(payload, dict) and payload.get("healthy") is True
+            self._last_health_error = None if healthy else "invalid health response"
+            return healthy
+        except (httpx.HTTPError, ValueError) as exc:
+            self._last_health_error = f"{type(exc).__name__}: {exc}"
             return False
 
     async def usable(self, client: httpx.AsyncClient) -> bool:
@@ -219,11 +224,19 @@ class OpenCodeRuntime:
                     return
                 await asyncio.sleep(0.1)
             return_code = self.process.returncode
+            process_pid = getattr(self.process, "pid", None)
             await self.close()
             if return_code is not None:
                 detail = f"OpenCode가 준비 전에 종료되었습니다(종료 코드 {return_code})."
             else:
-                detail = f"{self.startup_timeout:g}초 안에 준비 상태가 되지 않았습니다."
+                process_detail = f"(PID {process_pid})" if process_pid is not None else ""
+                detail = (
+                    f"실행 파일을 찾았고 OpenCode 프로세스{process_detail}를 시작했지만 "
+                    f"{self.startup_timeout:g}초 안에 {self.base_url}/global/health가 "
+                    "응답하지 않았습니다."
+                )
+                if self._last_health_error:
+                    detail += f" 마지막 확인 오류: {self._last_health_error}."
             stderr = self._startup_stderr()
             if stderr:
                 detail = f"{detail} OpenCode 오류: {stderr}"

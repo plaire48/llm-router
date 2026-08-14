@@ -160,4 +160,17 @@ def create_ssl_context() -> ssl.SSLContext:
 
 
 def create_async_client(*, timeout: httpx.Timeout | float) -> httpx.AsyncClient:
-    return httpx.AsyncClient(timeout=timeout, verify=create_ssl_context())
+    # Corporate HTTP_PROXY/ALL_PROXY settings must never intercept the
+    # router-managed OpenCode health and inference requests on loopback.
+    # Explicit mounts override environment proxy mounts for these hosts while
+    # preserving normal proxy behavior for external upstream requests.
+    loopback_mounts = {
+        "http://127.0.0.1": httpx.AsyncHTTPTransport(),
+        "http://localhost": httpx.AsyncHTTPTransport(),
+        "http://[::1]": httpx.AsyncHTTPTransport(),
+    }
+    return httpx.AsyncClient(
+        timeout=timeout,
+        verify=create_ssl_context(),
+        mounts=loopback_mounts,
+    )
