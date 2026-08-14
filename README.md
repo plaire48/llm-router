@@ -18,7 +18,7 @@ Python 3.11 이상이 필요합니다. ChatGPT 계정 OAuth와 OpenAI 추론에 
 파일은 배포 wheel에 포함됩니다. 별도 OpenAI CLI나 OpenCode 설치는 필요하지 않습니다.
 
 ```bash
-python3 -m pip install llm_router-0.1.10-<platform>.whl
+python3 -m pip install llm_router-0.1.11-<platform>.whl
 cp .env.example .env
 cp profiles.example.yaml profiles.yaml
 llm-router serve --profiles profiles.yaml
@@ -29,9 +29,9 @@ Windows 11 x64에서는 GitHub Release의 `win_amd64.whl`을 내려받아 PowerS
 
 ```powershell
 gh auth login
-gh release download v0.1.10 --repo plaire48/llm-router --pattern "*win_amd64.whl"
-py -m pip install --force-reinstall .\llm_router-0.1.10-py3-none-win_amd64.whl
-gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.10" `
+gh release download v0.1.11 --repo plaire48/llm-router --pattern "*win_amd64.whl"
+py -m pip install --force-reinstall .\llm_router-0.1.11-py3-none-win_amd64.whl
+gh api "repos/plaire48/llm-router/contents/profiles.example.yaml?ref=v0.1.11" `
   -H "Accept: application/vnd.github.raw+json" | Out-File -Encoding utf8 profiles.yaml
 py -m llm_router serve --profiles profiles.yaml
 ```
@@ -81,18 +81,27 @@ export NODE_EXTRA_CA_CERTS=/absolute/path/company-ca.pem
 llm-router serve --profiles profiles.yaml
 ```
 
-Windows 11에서는 프로젝트의 `.env`에 실제 파일 경로를 넣는 방식이 가장 확실합니다. 변수 이름 자체가
-인증서 위치는 아니며, 값이 `-----BEGIN CERTIFICATE-----`로 시작하는 PEM 파일이어야 합니다. 경로에
-공백이 있으면 따옴표로 감쌉니다.
+Windows 11에서는 SDS 인증서의 절대경로를 `.env`에 지정합니다. 라우터가 이 경로를 정규화해 Python과
+OpenCode에 동일하게 전달합니다. 확장자가 `.crt`여도 내용은 `-----BEGIN CERTIFICATE-----`로 시작하는
+PEM이어야 하며, 사내 프록시가 중간 CA를 사용하면 같은 파일에 루트와 중간 인증서를 모두 포함합니다.
 
 ```dotenv
-NODE_EXTRA_CA_CERTS=C:/certs/company-ca.pem
+NODE_EXTRA_CA_CERTS=C:/sds.crt
 ```
+
+PowerShell에서 파일과 PEM 헤더를 확인할 수 있습니다.
+
+```powershell
+Test-Path C:\sds.crt
+Get-Content C:\sds.crt -TotalCount 1
+```
+
+결과는 각각 `True`, `-----BEGIN CERTIFICATE-----`여야 합니다.
 
 PowerShell에서 현재 프로세스에만 적용하려면 다음처럼 설정한 뒤 같은 창에서 라우터를 실행합니다.
 
 ```powershell
-$env:NODE_EXTRA_CA_CERTS = 'C:\certs\company-ca.pem'
+$env:NODE_EXTRA_CA_CERTS = 'C:\sds.crt'
 python -m llm_router serve --profiles profiles.yaml
 ```
 

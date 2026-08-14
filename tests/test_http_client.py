@@ -1,4 +1,5 @@
 import os
+import ssl
 
 import certifi
 import pytest
@@ -6,10 +7,13 @@ import pytest
 from llm_router.errors import RouterError
 from llm_router.http_client import create_async_client, create_ssl_context
 
+PEM_MARKER = "-----BEGIN CERTIFICATE-----\ntest\n-----END CERTIFICATE-----\n"
+
 
 class FakeSSLContext:
     def __init__(self) -> None:
         self.loaded: list[str] = []
+        self.verify_flags = 0
 
     def load_verify_locations(self, *, cafile: str) -> None:
         self.loaded.append(cafile)
@@ -17,7 +21,7 @@ class FakeSSLContext:
 
 def test_node_extra_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     extra_ca = tmp_path / "company.pem"
-    extra_ca.write_text("test certificate", encoding="utf-8")
+    extra_ca.write_text(PEM_MARKER, encoding="utf-8")
     context = FakeSSLContext()
     created = {}
 
@@ -35,11 +39,12 @@ def test_node_extra_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     assert create_ssl_context() is context
     assert created == {}
     assert context.loaded == [certifi.where(), str(extra_ca)]
+    assert context.verify_flags & ssl.VERIFY_X509_PARTIAL_CHAIN
 
 
 def test_official_codex_ca_is_added_to_default_certifi_store(tmp_path, monkeypatch):
     extra_ca = tmp_path / "company.pem"
-    extra_ca.write_text("test certificate", encoding="utf-8")
+    extra_ca.write_text(PEM_MARKER, encoding="utf-8")
     context = FakeSSLContext()
 
     monkeypatch.delenv("SSL_CERT_FILE", raising=False)
@@ -53,10 +58,10 @@ def test_official_codex_ca_is_added_to_default_certifi_store(tmp_path, monkeypat
 
 
 def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
-    extra_ca = tmp_path / "company.pem"
-    extra_ca.write_text("test certificate", encoding="utf-8")
+    extra_ca = tmp_path / "sds.crt"
+    extra_ca.write_text(PEM_MARKER, encoding="utf-8")
     (tmp_path / ".env").write_text(
-        f"NODE_EXTRA_CA_CERTS={extra_ca}\n",
+        "NODE_EXTRA_CA_CERTS=sds.crt\n",
         encoding="utf-8",
     )
     context = FakeSSLContext()
@@ -69,7 +74,8 @@ def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
     previous = os.environ.pop("NODE_EXTRA_CA_CERTS", None)
     try:
         assert create_ssl_context() is context
-        assert context.loaded == [certifi.where(), str(extra_ca)]
+        assert context.loaded == [certifi.where(), str(extra_ca.resolve())]
+        assert os.environ["NODE_EXTRA_CA_CERTS"] == str(extra_ca.resolve())
     finally:
         if previous is None:
             os.environ.pop("NODE_EXTRA_CA_CERTS", None)
@@ -80,6 +86,7 @@ def test_node_extra_ca_can_be_loaded_from_dotenv(tmp_path, monkeypatch):
 def test_ssl_cert_file_remains_the_base_and_node_ca_is_added(tmp_path, monkeypatch):
     base_ca = tmp_path / "base.pem"
     extra_ca = tmp_path / "company.pem"
+    extra_ca.write_text(PEM_MARKER, encoding="utf-8")
     context = FakeSSLContext()
     created = {}
 
@@ -133,6 +140,23 @@ def test_invalid_node_extra_ca_has_actionable_error(tmp_path, monkeypatch):
 
     assert error.value.code == "tls_ca_bundle_invalid"
     assert "NODE_EXTRA_CA_CERTS" in error.value.message
+    assert "BEGIN CERTIFICATE" in error.value.message
+    assert "certutil -encode sds.crt sds.pem" in error.value.message
+
+
+def test_binary_crt_has_an_actionable_pem_error(tmp_path, monkeypatch):
+    certificate = tmp_path / "sds.crt"
+    certificate.write_bytes(b"\x30\x82binary-der-certificate")
+    monkeypatch.delenv("SSL_CERT_FILE", raising=False)
+    monkeypatch.delenv("SSL_CERT_DIR", raising=False)
+    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(certificate))
+
+    with pytest.raises(RouterError) as error:
+        create_ssl_context()
+
+    assert error.value.code == "tls_ca_bundle_invalid"
+    assert "not PEM encoded" in error.value.message
+    assert str(certificate) in error.value.message
 
 
 def test_async_client_uses_shared_ssl_context(monkeypatch):

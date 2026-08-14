@@ -15,6 +15,7 @@ from llm_router.credentials.openai_oauth import (
 from llm_router.credentials.openai_oauth import OPENAI_TOKEN_URL as _OPENAI_TOKEN_URL
 from llm_router.credentials.openai_oauth import OpenAIAccountStore, refresh_openai_tokens
 from llm_router.errors import RouterError
+from llm_router.http_client import resolve_environment_path
 
 OPENAI_ACCOUNT_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage"
 OPENAI_TOKEN_URL = _OPENAI_TOKEN_URL
@@ -150,10 +151,17 @@ class OpenAIAccountSource:
             )
         except httpx.RequestError as exc:
             if self._is_certificate_error(exc):
+                configured_ca = resolve_environment_path("NODE_EXTRA_CA_CERTS")
+                ca_detail = (
+                    f" NODE_EXTRA_CA_CERTS is {configured_ca}."
+                    if configured_ca
+                    else " NODE_EXTRA_CA_CERTS is not configured."
+                )
                 raise RouterError(
                     "OpenAI account credits TLS certificate verification failed. "
-                    "Trust the company CA in Windows or set NODE_EXTRA_CA_CERTS to its "
-                    "PEM file path, then restart llm-router.",
+                    + ca_detail
+                    + " The PEM must contain the SDS root and any required intermediate CA "
+                    "certificates. Restart llm-router after changing it.",
                     type="upstream_error",
                     code="tls_certificate_verify_failed",
                     status_code=502,

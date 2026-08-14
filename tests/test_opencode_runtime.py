@@ -381,6 +381,16 @@ def test_runtime_keeps_router_owned_opencode_credentials_isolated(tmp_path):
     assert runtime.auth_path == tmp_path / "data" / "opencode" / "auth.json"
 
 
+def test_runtime_passes_relative_company_ca_as_an_absolute_path(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", "sds.crt")
+    runtime = OpenCodeRuntime(directory=tmp_path / "runtime")
+
+    environment = runtime._isolated_environment()
+
+    assert environment["NODE_EXTRA_CA_CERTS"] == str((tmp_path / "sds.crt").resolve())
+
+
 def test_runtime_logout_removes_only_openai_from_its_isolated_store(tmp_path):
     runtime = OpenCodeRuntime(directory=tmp_path)
     runtime.auth_path.parent.mkdir(parents=True)

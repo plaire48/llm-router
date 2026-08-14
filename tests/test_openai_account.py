@@ -201,7 +201,7 @@ async def test_openai_account_usage_requires_browser_login(tmp_path):
     assert error.value.code == "oauth_required"
 
 
-async def test_openai_account_usage_explains_tls_certificate_failure(tmp_path):
+async def test_openai_account_usage_explains_tls_certificate_failure(tmp_path, monkeypatch):
     class CertificateFailingClient:
         async def get(self, *args, **kwargs):
             request = httpx.Request("GET", OPENAI_ACCOUNT_USAGE_URL)
@@ -210,6 +210,8 @@ async def test_openai_account_usage_explains_tls_certificate_failure(tmp_path):
             )
             raise httpx.ConnectError("certificate verify failed", request=request) from ssl_error
 
+    certificate = tmp_path / "sds.crt"
+    monkeypatch.setenv("NODE_EXTRA_CA_CERTS", str(certificate))
     source = OpenAIAccountSource(
         store=_store(tmp_path),
         client=CertificateFailingClient(),
@@ -219,3 +221,5 @@ async def test_openai_account_usage_explains_tls_certificate_failure(tmp_path):
 
     assert error.value.code == "tls_certificate_verify_failed"
     assert "NODE_EXTRA_CA_CERTS" in error.value.message
+    assert str(certificate) in error.value.message
+    assert "root and any required intermediate" in error.value.message

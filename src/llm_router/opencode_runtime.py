@@ -20,6 +20,7 @@ from llm_router.aipro import effective_aipro_base_url, is_aipro_profile
 from llm_router.aipro_auth import AI_PRO_JWT_ENV, AIProTokenStore
 from llm_router.credentials.env_key import load_provider_env
 from llm_router.errors import RouterError
+from llm_router.http_client import resolve_environment_path
 from llm_router.models import Profile
 
 BinaryFinder = Callable[[str], str | None]
@@ -502,6 +503,9 @@ class OpenCodeRuntime:
 
     def _isolated_environment(self) -> dict[str, str]:
         environment = os.environ.copy()
+        for name in ("CODEX_CA_CERTIFICATE", "NODE_EXTRA_CA_CERTS"):
+            if resolved := resolve_environment_path(name):
+                environment[name] = resolved
         for name in (
             "BUN_OPTIONS",
             "OPENAI_API_KEY",
