@@ -35,7 +35,7 @@ jobs:
           New-Item verification -ItemType Directory -Force | Out-Null
           npm run compile
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node --test tests/computer-use.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs
+          node --test tests/computer-use.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs tests/voc.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/checkout@v4
         with:

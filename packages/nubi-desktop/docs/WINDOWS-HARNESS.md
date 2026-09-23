@@ -55,3 +55,16 @@ FlaUI나 OCR 전용 모델을 추가하면 배포와 유지보수 비용이 늘�
 계약 검사는 실제 Pi 모델 호출 경로에 합성 응답을 주입한다. Windows PNG가 두 분석 담당에게 전달되는지, 부모 대화와 native 권한이 격리되는지, 과거 관찰로 클릭 제안을 할 수 없는지 확인한다. 문맥 압축 뒤 미확정 영수증과 원래 완료 조건이 보존되는지, 반복 실패가 질문으로 전환되는지도 검사한다.
 
 UI 검사는 결과 분석 버튼, 중복 실행 방지, 좁은 레이아웃과 기존 로그인/작업 화면을 확인한다. 실제 Windows 11, DPI/다중 모니터, 사내 앱, 실모델의 화면 해석과 최종 업무 품질은 [COMPUTER-USE.md](COMPUTER-USE.md)의 Windows 검증 범위에 남아 있다.
+
+
+## 공통 창 관찰 개선 (2026-09-23)
+
+- `observe_computer({query:"검색",includeImage:false})`는 Microsoft winapp의 실제 UIA `search`를 연결된 HWND 안에서 호출한다. 기존 깊이 5/150개 조회에 없는 컨트롤을 최대 20개까지 찾는다. 검색은 입력을 실행하지 않는다. `coverage`와 `truncated`로 부분 조회임을 보존하며, 결과가 없다고 커스텀 화면에도 대상이 없다고 판단하지 않는다.
+- 공식 검색 명령의 `exit 1 + 빈 matches`만 정상적인 빈 결과로 처리한다. 액션 실패, 타임아웃, 중단과 오류 JSON에는 적용하지 않는다. 중복 selector와 잘못된 개수는 거부한다.
+- 클릭과 invoke 후 기존 요소가 사라져도 연결된 창 전체를 캡처하고 새 UIA 트리를 저장한다. 호버도 창 전체, 값 입력은 기존 요소 캡처와 정확한 값 대조를 유지한다. 창 정체성이 달라졌거나 관찰이 실패하면 미확정 상태를 유지한다.
+- `read_computer_result`는 새 화면의 historical UIA도 반환하므로 이미지 없는 모델도 결과 구조를 검토할 수 있다. UIA와 이미지는 순차 조회이므로 동시에 고정된 상태라고 주장하지 않는다. 저장된 근거에는 원래 창 연결이 필요하며 다음 행동 전 새 관찰이 필요하다.
+- 검색어 변경, 새 근거 ID, 요소 순서 변경은 진전으로 취급하지 않는다. 동일 범위의 UIA가 실제로 달라져야 반복 실패 횟수를 초기화한다. 비교 캐시는 16개 범위로 제한한다.
+
+구현 계약은 [winapp search 소스](https://github.com/microsoft/winappCli/blob/main/src/winapp-CLI/WinApp.Cli/Commands/UiSearchCommand.cs)와 공식 UIA 문서를 확인했다. [UFO의 AppAgent](https://github.com/microsoft/UFO/blob/main/documents/docs/ufo2/app_agent/overview.md)의 구조 관찰과 화면 관찰 조합을 기존 Pi에 적용했다. UFO 전체나 별도 하위 에이전트 런타임을 추가한 것은 아니다.
+
+회귀 시나리오는 첫 150개 밖의 검색 대상, 검색 0건과 오류 구분, 클릭한 요소가 사라진 새 화면, 연결 해제 후 근거 접근 차단, 쿼리/순서 변경을 통한 무한 재시도 방지다. 실제 Windows에서 앱을 움직인 결과는 별도 검증 대상이다.

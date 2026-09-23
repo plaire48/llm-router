@@ -86,7 +86,7 @@
 .nubi-field { display:grid; gap:8px; margin:16px 0; }
 .nubi-error { margin:0 24px; display:flex; align-items:center; gap:10px; }
 .nubi-error > :first-child { flex:1; }
-.nubi-toast { position:sticky; top:10px; width:fit-content; margin:0 auto; z-index:10; padding:10px 20px; color:var(--deck-blue-deep); background:var(--deck-card); border-radius:100px; box-shadow:var(--deck-shadow); font-size:14px; }
+.nubi-toast { position:fixed; top:16px; left:50%; transform:translateX(-50%); max-width:calc(100vw - 32px); width:fit-content; margin:0; z-index:10000; pointer-events:none; font-family:var(--cx-font-family); padding:10px 20px; color:var(--deck-blue-deep); background:var(--deck-card); border-radius:100px; box-shadow:var(--deck-shadow); font-size:14px; }
 .nubi-workbench .cx-kit-button { font-family:var(--cx-font-family); }
 .nubi-workbench .cx-kit-button:active:not(:disabled) { transform:scale(.97); }
 .nubi-workbench .cx-kit-button:focus-visible { outline:2px solid var(--deck-blue-deep); outline-offset:3px; }
@@ -187,3 +187,5 @@
 .nubi-workbench .nubi-followup textarea { font-size:var(--nubi-reading-size); line-height:1.65; font-weight:400; }
 .nubi-workbench .nubi-map-focus code,.nubi-workbench .nubi-map-relations small { font-size:12px; }
 .nubi-text-size[aria-pressed=true] { background:var(--brand-soft); color:var(--brand-ink); }
+
+.nubi-search-result.nubi-voc-result > span { font:var(--deck-font-body); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; }

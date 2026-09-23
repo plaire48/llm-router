@@ -37,3 +37,9 @@
 - Windows 관찰/결과 근거는 공유 Pi 분석 조정기에 호스트 opt-in으로 등록한다. 하위 분석은 동결된 근거만 읽고 native 도구/승인 권한을 받지 않는다. 과거 캡처와 요약은 새 조작 관찰을 대체하지 않는다. 결과 분석 재개는 원래 동작을 재실행하지 않으며, UIA 변화 없는 반복 실패는 기존 질문 폼으로 전환한다. 범위는 docs/WINDOWS-HARNESS.md를 따른다.
 
 - Windows 배포는 Windows x64에서 Theia native 모듈을 Electron ABI로 재빌드한 뒤 electron-builder NSIS로 만든다. 실제 설치 앱의 UI/worker/OpenWiki-SDS와 설치/재설치/제거 검사를 통과한 산출물만 게시한다. 러너 Windows 버전, 서명 상태, 실사용 Windows 11/실모델 미검증을 구분한다. Monaco의 내장 정제 코드는 저장소의 esbuild 플러그인으로 수정판에 연결하며 node_modules를 직접 수정하지 않는다. 상세 범위는 docs/WINDOWS-RELEASE.md를 따른다.
+
+- Windows 대상 검색은 연결된 HWND의 winapp UIA search를 사용하고 부분 조회 범위를 보존한다. 클릭/invoke 결과는 사라진 대상 대신 창 전체 캡처와 historical UIA로 읽는다. 검색어/요소 순서 변경은 실패 복구의 진전이 아니며 과거 결과는 새 조작 관찰을 대체하지 않는다.
+
+- VOC import는 호스트 UI가 선택한 nubi-voc-v1 JSON만 현재 Workspace에 새 revision으로 보관한다. 기존 AJV/MiniSearch/SQLite와 Pi 검색/구간 읽기를 재사용하며 변경된 원본을 덮어쓰지 않는다. imported/stored_bytes_only를 실제 JSM 수집이나 해결 검증으로 취급하지 않는다. A2A 파일 전송과 자동 JSM 수집은 아직 별도 미구현이며 docs/VOC-IMPORT.md를 따른다.
+
+- 사용자 요청에 따라 A2A 추가 구현은 보류한다. 향후 연결 가능성만 유지하며 현재 품질 개선과 배포에서 새 A2A 기능을 추가하지 않는다.

@@ -16,7 +16,10 @@ try{
  const target=observation.elements.find(v=>v.name==='Nubi value'&&['Edit','TextBox'].includes(v.type));assert(target,'Editable UIA element missing');
  await writeFile('verification/windows-uia-property.json',JSON.stringify(await adapter.call(['get-property',target.selector,'-w',String(window.hwnd)]),null,2));const property=await adapter.property(window.hwnd,target.selector);assert.equal(property.password,'False');const password=observation.elements.find(v=>v.name==='Nubi password');assert(password);assert.equal((await adapter.property(window.hwnd,password.selector)).password,'True');
  await adapter.act(window.hwnd,target.selector,'set_value','Nubi verified');assert.equal(await adapter.value(window.hwnd,target.selector),'Nubi verified');
+ const search=await adapter.search(window.hwnd,'Verify');const button=search.elements.find(v=>v.name==='Verify');assert(button,'UIA search did not find fixture button');
+ assert.equal((await adapter.search(window.hwnd,'NubiMissingElement987654')).elements.length,0);
+ await adapter.act(window.hwnd,button.selector,'invoke');assert.equal(await adapter.value(window.hwnd,target.selector),'clicked');
  await adapter.capture(window.hwnd);const screenshot=await adapter.capture(window.hwnd,target.selector);assert(screenshot.width>0&&screenshot.data.length>0);
- await mkdir('verification',{recursive:true});await writeFile('verification/windows-uia.json',JSON.stringify({passed:true,driver:manifest.version,status,checks:['window discovery','UIA observation','password metadata','literal value write and readback','PNG capture'],scope:'Owned WPF fixture only; not company apps or model quality'},null,2));
+ await mkdir('verification',{recursive:true});await writeFile('verification/windows-uia.json',JSON.stringify({passed:true,driver:manifest.version,status,checks:['window discovery','UIA observation','password metadata','literal value write and readback','target search and empty search','button invoke and value readback','PNG capture'],scope:'Owned WPF fixture only; not company apps or model quality'},null,2));
  await writeFile('verification/windows-uia.png',Buffer.from(screenshot.data,'base64'));console.log('Windows UIA fixture passed');
 }finally{child.kill();adapter.dispose();}

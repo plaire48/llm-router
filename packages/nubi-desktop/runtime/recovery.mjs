@@ -4,7 +4,7 @@ import {safeError} from '../../nubi-office/worker/connection-errors.mjs';
 import {hash,fail} from './files.mjs';
 import {shellProfiles} from './processes.mjs';
 
-export const READ_TOOLS=new Set(['computer_checkpoint','read_computer_result','list_computer_apps','inspect_path','code_outline','source_search','read_source','wiki_query','knowledge_query','recovery_snapshot']);
+export const READ_TOOLS=new Set(['search_voc','read_voc','computer_checkpoint','read_computer_result','list_computer_apps','inspect_path','code_outline','source_search','read_source','wiki_query','knowledge_query','recovery_snapshot']);
 const recoverableProcesses=new Set(['failed','timed_out','interrupted']);
 const now=()=>new Date().toISOString();
 export const recoveryCode=error=>safeError(error);

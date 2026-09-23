@@ -25,9 +25,18 @@ try{
    const worker=fork(path.join(app.getAppPath(),'lib/backend/service-entry.mjs'),[],{stdio:['ignore','pipe','pipe','ipc'],env:{...process.env,NUBI_STORAGE_ROOT:path.join(root,'..','worker-state')}});
    let next=0;const pending=new Map();worker.on('message',m=>{const p=pending.get(m.id);if(p){pending.delete(m.id);m.error?p.reject(Error(m.error)):p.resolve(m.result);}});
    const invoke=(method,args)=>new Promise((resolve,reject)=>{const id=String(++next),timer=setTimeout(()=>reject(Error('worker_timeout_'+method)),30000);pending.set(id,{resolve:value=>{clearTimeout(timer);resolve(value);},reject:error=>{clearTimeout(timer);reject(error);}});worker.send({id,method,args});});
-   try{await invoke('open',{root});const read=await invoke('read',{path:'app.txt'});const wiki=await invoke('wikiQuery',{query:'Release verification'});return {content:read.content,wiki:wiki.results.length};}finally{worker.disconnect();}
+   try{
+     await invoke('open',{root});const read=await invoke('read',{path:'app.txt'});const wiki=await invoke('wikiQuery',{query:'Release verification'});
+     const json=JSON.stringify({contract:'nubi-voc-v1',sourceUrl:'https://jira.example/browse/QA-1',key:'QA-1',title:'로그인 검증',updatedAt:'2026-09-23T00:00:00Z',body:'확인🐦'.repeat(8000)});
+     const saved=await invoke('importVoc',{json}),duplicate=await invoke('importVoc',{json}),found=await invoke('queryVoc',{query:'로그인'});
+     let cursor={id:saved.id},text='',pages=0;
+     do{const part=await invoke('readVoc',cursor);text+=part.content;if(++pages>30)throw Error('voc_cursor_did_not_advance');if(part.content.length>16000||!part.content.isWellFormed())throw Error('voc_invalid_chunk');if(part.nextStart===null)break;if(part.nextOffset===0)text+='\n';cursor={id:saved.id,start:part.nextStart,offset:part.nextOffset};}while(true);
+     const actual=process.getBuiltinModule('node:fs').readFileSync(path.join(root,saved.path),'utf8');
+     return {content:read.content,wiki:wiki.results.length,voc:{imported:!!saved.id,duplicate:duplicate.noChange,found:found.results.some(v=>v.id===saved.id),exactRead:text===actual,pages}};
+   }finally{worker.disconnect();}
  },root);
  assert.match(receipt.content,/release verification/);assert(receipt.wiki>0);
+ assert.deepEqual({...receipt.voc,pages:undefined},{imported:true,duplicate:true,found:true,exactRead:true,pages:undefined});assert(receipt.voc.pages>1);
  const result={passed:true,platform:process.platform,...facts,receipt,scope:'Electron launch, UI, compiled worker IPC, SQLite, source read and OpenWiki-SDS retrieval. No live model or company app.'};
  await writeFile('verification/electron-release.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{await app.close();await writeFile('verification/electron-release-stderr.log',errors.join(''));}
