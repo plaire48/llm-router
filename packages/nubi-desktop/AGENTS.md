@@ -49,3 +49,5 @@
 - 사용자 최신 결정에 따라 UIA를 기본으로 하고 같은 연결과 대상에서 새로운 관찰로 확인한 UIA 패턴 부재가 3회 쌓인 경우에만 실제 Windows 마우스 제어를 동작별 HITL로 제안한다. 중복 관찰, 대상 변경과 미확정 실행은 실패 횟수에 넣지 않는다. 정상 조작, 연결 변경, 취소와 2분 경과로 조건을 해제한다. pointer_click/pointer_double_click/pointer_right_click/hover/drag는 shared_pointer 제안과 명시적 pointerConsent가 모두 필요하다. 기존 hover 승인이나 질문 답변을 재사용하지 않는다. 드래그는 같은 창에서 관찰한 두 대상을 검증한다. 가상 커서는 검정색과 흰 테두리의 둥근 화살표이며 배지를 붙이지 않는다. 미리보기와 실제 도구 실행 표시, 실제 마우스 입력을 구분한다. 물리 입력으로 자동 폴백하거나 포괄 승인을 저장하지 않는다. 중지는 이미 시작한 짧은 동작의 취소/복원을 보장하지 않으며 결과 확인 후에도 자동 재개하지 않는다.
 
 - Windows UIA 상태 동작은 명시적 select/toggle_on/toggle_off/expand/collapse만 허용한다. 목표 상태를 재조회하고 상태 일치와 업무 완료를 구분한다. OpenWiki-SDS 근거 ID는 주 실행기의 현재 조회에서만 가져오며 제안과 승인 시 다시 검증한다. 변경된 근거와 미확정 쓰기를 우회하거나 재전송하지 않는다. 상세 판단은 `../../docs/research/2026-09-23-nubi-local-windows-uia.md`를 따른다.
+
+- 프로젝트 스킬은 작업 Workspace 루트의 `.agents/skills`, `.claude/skills`, `.opencode/skills`에서 메타데이터만 검색하고 필요한 본문/참조만 해시 확인 후 읽는다. 기존 YAML/MiniSearch와 Pi 도구 루프를 재사용한다. 스킬의 allowed-tools와 스크립트는 승인이나 소스 수정 관찰이 아니며 자동 실행하지 않는다. 홈/외부 경로와 심볼릭 링크는 자동 로드하지 않는다. 도구 선택 안내는 실제 등록된 도구만 제공하며 실행 가능 여부와 성공은 호스트 상태/결과로 별도 확인한다. 상세 범위는 docs/AGENT-SKILLS-AND-TOOLS.md를 따른다.

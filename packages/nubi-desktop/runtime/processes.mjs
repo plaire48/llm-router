@@ -4,8 +4,19 @@ import {mkdirSync,appendFileSync} from 'node:fs';
 import {access} from 'node:fs/promises';
 import path from 'node:path';
 import {promisify} from 'node:util';
+import {StringDecoder} from 'node:string_decoder';
 import {startElevated,stopElevated} from './elevated-process.mjs';
 const executeFile=promisify(execFile);
+
+export function shellArguments(shell, profile, script) {
+  if(profile!=='powershell')return [...shell.args,script];
+  // Windows PowerShell otherwise emits the console code page into UTF-8 pipes.
+  // EncodedCommand also preserves Korean paths and literal quotes in argv.
+  const content='[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false); $OutputEncoding = [Console]::OutputEncoding;\n'+script;
+  const encoded=Buffer.from(content,'utf16le').toString('base64');
+  if(encoded.length>28000)throw Object.assign(new Error('shell_command_limit'),{code:'shell_command_limit'});
+  return ['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded];
+}
 
 export async function shellProfiles() {
   if (process.platform !== 'win32') return [{id: 'bash', label: 'Bash', executable: '/bin/bash', args: ['--noprofile', '--norc', '-c']}];
@@ -28,25 +39,27 @@ export class Processes {
     mkdirSync(path.join(this.store.directory,'logs'),{recursive:true}); record.logPath=path.join(this.store.directory,'logs',id+'.log');
     // Credentials belonging to the host are not inherited by development commands.
     const env = Object.fromEntries(Object.entries(process.env).filter(([name]) => !/(TOKEN|SECRET|PASSWORD|API_KEY|AUTHORIZATION|CREDENTIAL)/i.test(name)));
-    const preflight=new AbortController();this.preflights.set(id,preflight);this.pending.add(id);this.records.set(id,record);persist();let shell;
+    const preflight=new AbortController();this.preflights.set(id,preflight);this.pending.add(id);this.records.set(id,record);persist();let shell,args;
     try{
       shell=(await this.profiles()).find(p=>p.id===profile);if(!shell)throw Object.assign(new Error(),{code:'shell_unavailable'});
+      args=shellArguments(shell,profile,script);
       if(preflight.signal.aborted)throw new Error('cancelled');
       // Parse only: even a syntactically broken script with a valid prefix
       // must not partially execute before the model diagnoses it.
       if(profile==='bash')await executeFile(shell.executable,['--noprofile','--norc','-n','-c',script],{cwd,env,signal:preflight.signal,timeout:3000,maxBuffer:16000,windowsHide:true});
       if(preflight.signal.aborted)throw new Error('cancelled');
-    }catch(error){record.state=preflight.signal.aborted?'cancelled':'failed';if(record.state==='failed'){record.fault=error.code==='shell_unavailable'?'shell_unavailable':error.code==='ENOENT'?'shell_executable_missing':typeof error.code==='number'?'shell_syntax':'shell_preflight_failed';record.output=typeof error.stderr==='string'?error.stderr.slice(-16000):record.fault;}this.records.delete(id);finish();return {...record};}
+    }catch(error){record.state=preflight.signal.aborted?'cancelled':'failed';if(record.state==='failed'){record.fault=['shell_unavailable','shell_command_limit'].includes(error.code)?error.code:error.code==='ENOENT'?'shell_executable_missing':typeof error.code==='number'?'shell_syntax':'shell_preflight_failed';record.output=typeof error.stderr==='string'?error.stderr.slice(-16000):record.fault;}this.records.delete(id);finish();return {...record};}
     finally{this.pending.delete(id);this.preflights.delete(id);}
     record.state='running';record.execution='started';record.lastOutputAt=Date.now();
-    const child = spawn(shell.executable, [...shell.args, script], {cwd, env, detached: process.platform !== 'win32', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe']});
+    const child = spawn(shell.executable, args, {cwd, env, detached: process.platform !== 'win32', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe']});
     this.active.set(id, child); this.records.set(id, record); this.store.set('process:' + id, record);
-    const append = data => { try {appendFileSync(record.logPath,data);} catch {record.logIncomplete=true;} record.lastOutputAt=Date.now();record.output = (record.output + data.toString()).slice(-128000); this.store.set('process:' + id, record); };
-    child.stdout.on('data', append); child.stderr.on('data', append);
+    const decoders=[new StringDecoder('utf8'),new StringDecoder('utf8')];
+    const append = (data,decoder) => { try {appendFileSync(record.logPath,data);} catch {record.logIncomplete=true;} record.lastOutputAt=Date.now();record.output = (record.output + decoder.write(data)).slice(-128000); this.store.set('process:' + id, record); };
+    child.stdout.on('data', data=>append(data,decoders[0])); child.stderr.on('data', data=>append(data,decoders[1]));
     let timer;
     if (timeoutMs > 0) timer = setTimeout(() => this.stop(id,'timeout'), timeoutMs);
     child.on('error', error => { record.state = 'failed';record.execution='not_started';record.fault='shell_spawn_failed'; record.output += '\n' + error.code; this.store.set('process:' + id, record); });
-    child.on('close', (code, signal) => { clearTimeout(timer); record.exitCode = code; record.signal = signal; if (record.stopReason==='timeout'){record.state='timed_out';record.fault='process_timeout';}else if (record.cancellationRequested) record.state='cancelled'; else if (record.state === 'running') record.state = code === 0 ? 'completed' : 'failed';if(record.state==='failed')record.fault ||= code===127?'command_not_found':'command_failed';this.active.delete(id); this.records.delete(id);finish(); });
+    child.on('close', (code, signal) => { clearTimeout(timer);record.output=(record.output+decoders.map(d=>d.end()).join('')).slice(-128000); record.exitCode = code; record.signal = signal; if (record.stopReason==='timeout'){record.state='timed_out';record.fault='process_timeout';}else if (record.cancellationRequested) record.state='cancelled'; else if (record.state === 'running') record.state = code === 0 ? 'completed' : 'failed';if(record.state==='failed')record.fault ||= code===127?'command_not_found':'command_failed';this.active.delete(id); this.records.delete(id);finish(); });
     this.store.event('process_started', {id, taskId}); return {...record};
   }
   poll(id) { const item = this.store.get('process:' + id); if (!item) throw new Error('process_missing'); return {...item,...(item.state==='running'?{quietForMs:Date.now()-item.lastOutputAt}:{})}; }
