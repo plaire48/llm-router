@@ -14,7 +14,7 @@
 
 [OpenCode의 스킬](https://opencode.ai/docs/skills/)과 [실제 skill 도구](https://github.com/anomalyco/opencode/blob/dev/packages/opencode/src/tool/skill.ts)의 필요 시 로딩 방식을 참고했다. OpenCode 런타임 전체를 새로 넣거나 코드를 복제하지 않았다. [Agent Skills 명세](https://agentskills.io/specification)의 이름과 설명, 상대 참조 구조를 채택했다. Python 기반 참조 검사기를 제품에 넣으면 설치 의존성이 늘어 기존 YAML 파서를 사용했다.
 
-[Anthropic의 도구 설계](https://www.anthropic.com/engineering/writing-tools-for-agents)에 따라 도구의 목적, 선행 조건, 결과 해석과 실패 후 행동을 명시했다. 검색 점수는 적합성의 후보 순위이며 모델 판단이나 업무 정확도를 대신하지 않는다. MiniSearch와 YAML은 기존 MIT 의존성으로 잠금 파일을 유지한다.
+[Anthropic의 도구 설계](https://www.anthropic.com/engineering/writing-tools-for-agents)에 따라 도구의 목적, 선행 조건, 결과 해석과 실패 후 행동을 명시했다. 검색 점수는 적합성의 후보 순위이며 모델 판단이나 업무 정확도를 대신하지 않는다. MiniSearch는 MIT, YAML은 ISC 라이선스이며 기존 잠금 파일과 라이선스 고지를 유지한다.
 
 ## 범위와 검증
 
