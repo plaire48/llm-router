@@ -64,3 +64,6 @@
 .nubi-workbench .message-body a { text-decoration: underline; text-underline-offset: .18em; }
 .nubi-workbench .message-body :is(img,video) { max-width: 100%; height: auto; }
 .nubi-workbench .message-body img { border-radius: var(--deck-control-radius); }
+
+/* Chromium sizes the shared composer without a manual resize handle. */
+.nubi-workbench .composer textarea.aipro-message-input { width:100%; field-sizing:content; resize:none; max-height:180px; overflow-y:auto; }

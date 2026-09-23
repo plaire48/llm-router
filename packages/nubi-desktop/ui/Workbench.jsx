@@ -4,7 +4,7 @@ import {VocLibrary} from './VocLibrary.jsx';
 import {ComputerUse} from './ComputerUse.jsx';
 import {SetupActions} from './SetupActions.jsx';
 import React, {useEffect, useRef, useState, useCallback} from 'react';
-import {CxButton, CxInput, CxTextarea, CxSelect, CxNotice, DetailPanel, ActionButton, Icon} from '@e2e/cx-design-system';
+import {CxButton, CxInput, CxSelect, CxNotice, DetailPanel, ActionButton, Icon} from '@e2e/cx-design-system';
 import {AgentMark, NubiLogo} from '../../../extensions/aipro-chat/src/AgentMark.jsx';
 import {NubiLogin, NubiComposerInput, NubiComposerBar} from '../../../extensions/aipro-chat/src/NubiSurfaces.jsx';
 import {DeckDisclosure, DeckStatus, DeckEmpty} from '../../../extensions/aipro-chat/src/DeckSurfaces.jsx';
@@ -33,7 +33,7 @@ export function Workbench({api,openCurrent,chooseFolder,openPath,review,apply,op
   }
   const [largeText,setLargeText]=useState(()=>{try{return localStorage.getItem('nubi-workspace-large-text')==='true';}catch{return false;}});
   function toggleText(){setLargeText(value=>{const next=!value;try{localStorage.setItem('nubi-workspace-large-text',String(next));}catch{}return next;});}
-  const [project,setProject]=useState(null),[taskId,setTaskId]=useState(null),[request,setRequest]=useState(''),[criteria,setCriteria]=useState('');
+  const [project,setProject]=useState(null),[taskId,setTaskId]=useState(null),[request,setRequest]=useState('');
   const [busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[panel,setPanel]=useState(null),[tab,setTab]=useState('work');
   const [provider,setProvider]=useState(null),[query,setQuery]=useState(''),[search,setSearch]=useState(null),[wikiSearch,setWikiSearch]=useState(null),[processResult,setProcessResult]=useState(null);
   const [script,setScript]=useState(''),[shell,setShell]=useState('bash'),[beforeUrl,setBeforeUrl]=useState(''),[afterUrl,setAfterUrl]=useState(''),[comparison,setComparison]=useState(null),[overlay,setOverlay]=useState(false);
@@ -64,7 +64,7 @@ export function Workbench({api,openCurrent,chooseFolder,openPath,review,apply,op
   useEffect(()=>{let current=true;setKnowledge(null);if(taskId&&tab==='library')api('knowledgeStatus',{taskId}).then(value=>{if(current)setKnowledge(value);}).catch(e=>{if(current)setError(errors[e.message]||'Wiki 기록을 확인하지 못했어요.');});return()=>{current=false;};},[taskId,tab]);
   useEffect(()=>{searchRun.current++;setSearch(null);setWikiSearch(null);},[project?.projectId,taskId]);
   useEffect(()=>{if(!notice)return;const timer=setTimeout(()=>setNotice(''),3500);return()=>clearTimeout(timer);},[notice]);
-  async function submit(event){event.preventDefault();await perform(async()=>{if(task){await api('startAgent',{taskId,answer:request});setRequest('');await refresh();return;}const created=await api('createTask',{request,criteria:criteria.split('\n').filter(Boolean)});await refresh();setTaskId(created.id);setRequest('');setCriteria('');setTab('work');if(provider?.connected){await api('startAgent',{taskId:created.id});await refresh();}});}
+  async function submit(event){event.preventDefault();await perform(async()=>{if(task){await api('startAgent',{taskId,answer:request});setRequest('');await refresh();return;}const created=await api('createTask',{request});await refresh();setTaskId(created.id);setRequest('');setTab('work');if(provider?.connected){await api('startAgent',{taskId:created.id});await refresh();}});}
   async function modelAction(action,input={}){return perform(async()=>{await refreshProvider({action,input});return true;});}
   async function login(selected){if(selected==='fabrix'){setPanel('fabrix');return;}await modelAction('login',{provider:selected});}
   const modelPicker=<ModelPicker data={modelData} providerLabels={providerLabels} disabled={running||busy} open={panel==='models'} onOpen={()=>setPanel('models')} onRefresh={()=>modelAction('refresh')}/>;
@@ -83,7 +83,6 @@ export function Workbench({api,openCurrent,chooseFolder,openPath,review,apply,op
         {!project?<CxButton onClick={()=>perform(chooseFolder)}>프로젝트 열기</CxButton>:<form className="composer nubi-compose-card" onSubmit={submit}>
           <NubiComposerInput inputRef={composer} value={request} onChange={e=>setRequest(e.target.value)} placeholder="무엇을 바꾸고 싶으세요?" aria-label="작업 요청" onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing&&e.keyCode!==229){e.preventDefault();if(request.trim()&&!busy)submit(e);}}}/>
           <NubiComposerBar leading={<>{iconButton('code','프로젝트 소스와 Wiki',()=>setPanel('library'))}{modelPicker}</>} tools={<CxButton type="submit" variant="primary" aria-label="전송" title="전송" disabled={!request.trim()||busy}><Icon name="arrowUp" size={20}/></CxButton>}/>
-          <details className="nubi-criteria-input"><summary>완료 조건 추가</summary><label htmlFor="criteria">한 줄에 하나씩 입력해 주세요</label><CxTextarea id="criteria" value={criteria} onChange={e=>setCriteria(e.target.value)} rows={3}/></details>
         </form>}
       </section>}
       {!task&&project&&<div className="nubi-home-links"><CxButton onClick={()=>setPanel('library')}>소스와 Wiki 살펴보기</CxButton><span>{project.name}</span><span>{project.branch}</span></div>}
@@ -110,7 +109,7 @@ export function Workbench({api,openCurrent,chooseFolder,openPath,review,apply,op
           {!!task.questionHistory?.length&&<DeckDisclosure title="확인한 요구사항">{task.questionHistory.map((q,i)=><div className="nubi-decided-question" key={q.id||i}><p>{q.text}</p><strong>{q.answer.text}</strong></div>)}</DeckDisclosure>}
           {task.error&&<CxNotice tone="danger">{errors[task.error]||'분석이 멈췄어요. 연결을 확인한 뒤 다시 시도해 주세요.'}</CxNotice>}
           {proposals.length>0&&<section className="nubi-results"><h2>변경 제안</h2>{proposals.map(p=><article className="nubi-file-card" key={p.id}><Icon name="file" size={22}/><div><strong>{p.path}</strong>{' '}{p.kind==='create'&&<small>새 파일</small>}<p>{p.reason}</p><small>{stateLabel[p.state]}{p.stats?.state==='counted'?` (+${p.stats.added} / −${p.stats.removed}줄)`:''}</small><br/><small title="문법 검사 결과입니다. 타입 검사와 실행 테스트는 별도로 확인합니다.">{qualityLabel(p.quality)}</small></div><CxButton onClick={()=>perform(()=>review(p.id))}>비교</CxButton>{p.state==='proposed'&&<>{p.kind!=='create'&&<CxButton onClick={()=>perform(async()=>{const result=await api('mergeProposal',{proposalId:p.id});if(result.conflicted){setError('같은 부분이 바뀌었어요. 현재 파일과 제안을 비교해 주세요.');return;}await refresh();setNotice('현재 파일에 맞춰 새 제안을 만들었어요.');})}>다시 맞추기</CxButton>}<CxButton onClick={()=>perform(async()=>{await apply(p.id);await refresh();setNotice('파일 반영을 확인했어요.');})}>반영</CxButton></>}</article>)}</section>}
-          <DeckDisclosure title="완료 조건과 근거"><ul className="nubi-checks">{task.criteria.length?task.criteria.map(c=><li key={c.id}><span>{c.text}</span><DeckStatus>{c.state==='unknown'?'미확인':c.state}</DeckStatus></li>):<li>아직 완료 조건을 정하지 않았어요.</li>}</ul><CxButton onClick={()=>perform(async()=>{const report=await api('exportReport',{taskId});await openURI(report.uri);})}>검증 요약 열기</CxButton></DeckDisclosure>
+          <DeckDisclosure title="검증 기록">{task.criteria.length>0&&<ul className="nubi-checks">{task.criteria.map(c=><li key={c.id}><span>{c.text}</span><DeckStatus>{c.state==='unknown'?'미확인':c.state}</DeckStatus></li>)}</ul>}<CxButton onClick={()=>perform(async()=>{const report=await api('exportReport',{taskId});await openURI(report.uri);})}>검증 요약 열기</CxButton></DeckDisclosure>
           <AgentTrace steps={(task.trace||[]).map(event=>({...event,label:event.label||actionLabel[event.tool]||event.tool}))} captures={[]} live={running} completed={task.state==='review'}/>
           {provider?.connected&&<form className="composer nubi-followup" onSubmit={submit}><NubiComposerInput id="followup" value={request} onChange={e=>setRequest(e.target.value)} placeholder="이어서 요청해 주세요" aria-label="추가 요청" disabled={running||!!task.question} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing&&e.keyCode!==229){e.preventDefault();if(request.trim()&&!busy&&!running)submit(e);}}}/><NubiComposerBar leading={modelPicker} tools={<CxButton type="submit" variant="primary" aria-label="전송" disabled={!request.trim()||busy||running||!!task.question}><Icon name="arrowUp" size={20}/></CxButton>}/></form>}
 

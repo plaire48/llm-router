@@ -15,12 +15,9 @@
 .nubi-welcome h1 span { color: var(--deck-blue); }
 .nubi-welcome > p { color: var(--deck-sub); font-size: clamp(15px,1.75vw,19px); line-height:1.6; margin:0 0 12px; }
 .nubi-compose-card { width: min(760px,100%); background: var(--deck-card); border-radius:24px; box-shadow:var(--deck-shadow); padding:20px 24px; }
-.nubi-compose-card textarea.cx-kit-textarea { min-height:76px; padding:10px 0; border:0; border-radius:0; resize:vertical; background:transparent; box-shadow:none; font:500 16px/1.5 var(--cx-font-family); }
+.nubi-compose-card textarea.cx-kit-textarea { min-height:76px; padding:10px 0; border:0; border-radius:0; resize:none; background:transparent; box-shadow:none; font:500 16px/1.5 var(--cx-font-family); }
 .nubi-compose-card .composer-bottom { display:flex; align-items:center; justify-content:space-between; gap:16px; }
 .nubi-model-choice.cx-kit-button { border:0; background:var(--deck-tint); color:var(--deck-sub); }
-.nubi-criteria-input { font-size:var(--cx-type-body); margin-top:12px; color:var(--deck-sub); }
-.nubi-criteria-input summary { cursor:pointer; }
-.nubi-criteria-input label { display:block; padding:12px 0 6px; }
 .nubi-home-links { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:var(--cx-type-caption); color:var(--deck-sub); }
 .nubi-home-links .cx-kit-button { border:0; background:transparent; }
 .nubi-enter { animation:nubi-rise 450ms var(--deck-ease) both; }

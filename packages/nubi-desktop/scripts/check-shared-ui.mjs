@@ -13,7 +13,14 @@ let browser,p;const errors=[],checks=[];
 const record=checks.push.bind(checks);checks.push=(...items)=>{console.log(items.join('\n'));return record(...items);};
 try{
  browser=await chromium.launch({channel:process.platform==='win32'?'msedge':'chrome',headless:true});p=await browser.newPage({viewport:{width:1280,height:950}});p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:'+server.address().port);
- await p.locator('.aipro-login').getByRole('button',{name:'AI Pro',exact:true}).click();await p.getByRole('textbox',{name:'작업 요청'}).waitFor();assert.equal(await p.locator('.aipro-login').count(),0);checks.push('login state transitions to shared Welcome and composer');await p.screenshot({path:'verification/ui-connected-fixture.png'});
+ await p.locator('.aipro-login').getByRole('button',{name:'AI Pro',exact:true}).click();await p.getByRole('textbox',{name:'작업 요청'}).waitFor();assert.equal(await p.locator('.aipro-login').count(),0);checks.push('login state transitions to shared Welcome and composer');
+ const requestBox=p.getByRole('textbox',{name:'작업 요청'}),smallHeight=await requestBox.evaluate(e=>e.clientHeight);
+ assert.equal(await p.getByText('완료 조건 추가',{exact:true}).count(),0);
+ assert.equal(await requestBox.evaluate(e=>getComputedStyle(e).resize),'none');
+ await requestBox.fill('한글로 확인할 결과를 설명합니다.\n'.repeat(30));
+ assert.equal(await requestBox.evaluate(e=>e.clientHeight>76&&e.clientHeight<=180&&e.scrollHeight>e.clientHeight&&getComputedStyle(e).overflowY==='auto'),true);
+ await requestBox.fill('');assert.equal(await requestBox.evaluate(e=>e.clientHeight),smallHeight);
+ checks.push('request-only composer grows for long Korean text, scrolls within its cap and shrinks without a resize handle');await p.screenshot({path:'verification/ui-connected-fixture.png'});
  await p.getByRole('button',{name:'모델 변경',exact:true}).click();await p.getByRole('textbox',{name:'모델 검색'}).fill('Second');await p.getByRole('button',{name:'Second fixture',exact:true}).click();await p.getByRole('button',{name:'모델 변경',exact:true}).getByText('Second fixture').waitFor();checks.push('shared searchable model selection preserves exact model ID');
  await p.getByRole('textbox',{name:'작업 요청'}).fill('문구를 간결하게 해 주세요.');await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('article',{name:'누비 답변'}).getByText(/합성 응답/).waitFor();await p.getByRole('textbox',{name:'추가 요청'}).fill('기존 조건도 유지해 주세요.');await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('article',{name:'내 메시지'}).getByText('기존 조건도 유지해 주세요.').waitFor();checks.push('original request and follow-up use shared messages and composer');
  const emphasis=p.getByRole('article',{name:'누비 답변'}).first().locator('.message-body strong');assert.deepEqual(await emphasis.evaluateAll(es=>es.map(e=>({color:getComputedStyle(e).color,weight:getComputedStyle(e).fontWeight}))),[{color:'rgb(27, 100, 218)',weight:'700'},{color:'rgb(25, 31, 40)',weight:'700'}]);checks.push('key conclusion uses deep blue and bold while supporting emphasis remains ink and bold');await p.screenshot({path:'verification/ui-workspace-fixture.png'});
