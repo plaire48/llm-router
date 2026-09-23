@@ -50,7 +50,7 @@ jobs:
         id: driver-cache
         with:
           path: packages/nubi-desktop/generated/winapp
-          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825-password-v1
       - name: Prepare verified Windows driver
         if: steps.driver-cache.outputs.cache-hit != 'true'
         shell: pwsh
@@ -60,7 +60,7 @@ jobs:
         if: steps.driver-cache.outputs.cache-hit != 'true'
         with:
           path: packages/nubi-desktop/generated/winapp
-          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825-password-v1
       - name: Verify real Windows UIA
         run: |
           node scripts/check-winapp.mjs
