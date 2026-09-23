@@ -9,3 +9,6 @@ __pycache__/
 *.egg-info/
 dist/
 profiles.yaml
+
+# Dependencies may be linked during isolated local verification.
+node_modules
