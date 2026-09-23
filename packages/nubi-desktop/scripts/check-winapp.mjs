@@ -17,6 +17,13 @@ const directory=await mkdtemp(path.join(os.tmpdir(),'nubi-winapp-')),script=path
 await writeFile(script,await readFile(new URL('./fixtures/windows-controls.ps1',import.meta.url)));
 const child=spawn('powershell.exe',['-NoProfile','-STA','-File',script],{stdio:['ignore','pipe','pipe'],windowsHide:false});let stderr='';child.stderr.on('data',d=>stderr+=d);
 try{
+ await new Promise((resolve,reject)=>{
+   const timer=setTimeout(()=>{cleanup();reject(Error('fixture_start_timeout: '+stderr));},45000);
+   const ready=chunk=>{if(chunk.toString().includes('NUBI_FIXTURE_READY')){cleanup();resolve();}};
+   const exit=()=>{cleanup();reject(Error('fixture_start_failed: '+stderr));};
+   function cleanup(){clearTimeout(timer);child.stdout.off('data',ready);child.off('exit',exit);}
+   child.stdout.on('data',ready);child.once('exit',exit);
+ });
  let window;for(let i=0;i<20;i++){window=(await adapter.windows()).find(v=>v.processId===child.pid);if(window)break;if(child.exitCode!==null)throw Error(stderr||'fixture exited');await new Promise(r=>setTimeout(r,500));}
  assert(window,'Fixture window not found');await mkdir('verification',{recursive:true});await writeFile('verification/windows-uia-status.json',JSON.stringify(await adapter.call(['status','-w',String(window.hwnd)]),null,2));const status=await adapter.status(window.hwnd);await writeFile('verification/windows-uia-inspect.json',JSON.stringify(await adapter.call(['inspect','-w',String(window.hwnd),'--depth','5']),null,2));const observation=await adapter.inspect(window.hwnd);
  const target=observation.elements.find(v=>v.name==='Nubi value'&&['Edit','TextBox'].includes(v.type));assert(target,'Editable UIA element missing');
@@ -28,7 +35,7 @@ try{
  const cursorScript=path.join(directory,'cursor.ps1');await writeFile(cursorScript,'Add-Type -AssemblyName System.Windows.Forms\n$p=[System.Windows.Forms.Cursor]::Position\n@{x=$p.X;y=$p.Y}|ConvertTo-Json -Compress');
  const cursor=async()=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-File',cursorScript],{windowsHide:true})).stdout);
  const beforeVisualCursor=await cursor(),visualBinding={id:'windows-uia-fixture'};
- const firstVisual=await visualPointer.move(visualBinding,await adapter.property(window.hwnd,button.selector));assert.equal(firstVisual.available,true,'visual pointer helper started');assert.equal(firstVisual.animated,false,'first location is immediate');
+ const firstVisual=await visualPointer.move(visualBinding,await adapter.property(window.hwnd,button.selector));assert.equal(firstVisual.available,true,'visual pointer helper started: '+(visualPointer.diagnostic||''));assert.equal(firstVisual.animated,false,'first location is immediate');
  const visual=await visualPointer.move(visualBinding,property);assert.equal(visual.available,true);await visualPointer.pulse();
  const overlayImage=await adapter.capture(window.hwnd);await writeFile('verification/windows-uia-visual-pointer.png',Buffer.from(overlayImage.data,'base64'));
  const visualScript=path.join(directory,'visual.ps1');await writeFile(visualScript,`Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class V {[DllImport("user32.dll")] public static extern int GetWindowLong(IntPtr h,int i);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);}'\n@{style=[V]::GetWindowLong([IntPtr]${visual.hwnd},-20);foreground=[V]::GetForegroundWindow().ToInt64();visible=[V]::IsWindowVisible([IntPtr]${visual.hwnd})}|ConvertTo-Json -Compress`);

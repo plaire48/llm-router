@@ -14,7 +14,7 @@ export class ComputerPointer {
       buffer+=chunk;if(buffer.length>16000){this.dispose();return;}
       let end;while((end=buffer.indexOf('\n'))>=0){const line=buffer.slice(0,end);buffer=buffer.slice(end+1);try{const reply=JSON.parse(line),pending=this.pending.get(reply.id);if(pending){clearTimeout(pending.timer);this.pending.delete(reply.id);pending.resolve(reply);}}catch{}}
     });
-    this.child.stderr.on('data',()=>{});
+    this.child.stderr.on('data',chunk=>{this.diagnostic=((this.diagnostic||'')+chunk.toString()).slice(-8000);});
     this.child.stdin.on('error',()=>this.dispose());
     this.child.on('error',()=>this.dispose());this.child.on('exit',()=>this.dispose());
   }

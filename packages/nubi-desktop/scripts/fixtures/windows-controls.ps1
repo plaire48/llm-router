@@ -1,4 +1,5 @@
 # Owned test window only. No company application or account access.
+$ErrorActionPreference='Stop'
 Add-Type -AssemblyName PresentationFramework
 $w=New-Object System.Windows.Window
 $w.Title='Nubi UIA Verification'
@@ -74,4 +75,5 @@ $dragTo.Add_Drop({param($sender,$event)
 })
 $p.Children.Add($dragTo) | Out-Null
 $w.Content=$p
+$w.Add_ContentRendered({[Console]::Out.WriteLine('NUBI_FIXTURE_READY');[Console]::Out.Flush()})
 $w.ShowDialog() | Out-Null

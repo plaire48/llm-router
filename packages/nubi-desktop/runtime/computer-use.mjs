@@ -229,8 +229,10 @@ export async function proposeComputerAction(service,taskId,args,observations){
     const seen=o.elements.filter(v=>v.selector===args.selector);if(seen.length!==1)fail('computer_target_unavailable');
     const a=adapter(service),current=await a.property(b.identity.hwnd,args.selector);usable(current.element);
     if(!same(current.element,seen[0])||!same(await a.status(b.identity.hwnd),b.identity))fail('computer_target_changed');
+    taskReady(service,taskId,{agent:true});
     const sharedPointer=POINTER_ACTIONS.includes(args.action);
     if(!sharedPointer&&!supportsControlAction(current,args.action)){
+      if(current.password!=='False')fail('computer_input_unavailable');
       const error=new Error('computer_target_unavailable');error.pointerFallback=recordUiaFailure(service,b,current,o);throw error;
     }
     const pointerFallback=sharedPointer?fallbackStatus(service,b,current):undefined;
@@ -304,8 +306,11 @@ export async function computer({method='status',taskId,window,id,fingerprint,dec
           }
           taskReady(this,taskId);issued=true;this.computerFallback=null;
           if(!alreadyMatched)await a.act(v.identity.hwnd,v.target.resolvedSelector,v.action,v.value,{pointerConsent:sharedPointer&&pointerConsent===true,destinationSelector:v.destination?.resolvedSelector});
-        }finally{await pointer?.hide();}
-        v.execution=alreadyMatched?'already_at_target':'command_returned';
+          v.execution=alreadyMatched?'already_at_target':'command_returned';
+        }finally{
+          const hidden=await pointer?.hide();
+          if(v.pointerDisplay?.available&&hidden?.available!==true)fail('computer_pointer_hide_failed');
+        }
         taskReady(this,taskId);
         if(!same(v.identity,await a.status(v.identity.hwnd)))fail('computer_target_changed');
         if(v.action==='set_value')v.verification=await a.value(v.identity.hwnd,v.selector)===v.value?'value_matched':'value_mismatch';

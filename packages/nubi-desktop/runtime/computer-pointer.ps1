@@ -30,7 +30,7 @@ public static class NubiVisualPointer {
   static void Command(string line){
     string[] p=line.Split(' ');int id;if(p.Length<2||!int.TryParse(p[0],out id))return;
     activity=DateTime.UtcNow;
-    if(p[1]=="hide") { moving=false;ring.Opacity=0;window.Hide();DwmFlush();Reply(id,false);return; }
+    if(p[1]=="hide") { if(moving)Reply(moveId,false);moving=false;ring.Opacity=0;window.Hide();DwmFlush();Reply(id,false);return; }
     if(p[1]=="pulse") { pulseAt=activity;ring.Opacity=1;Reply(id,false);return; }
     int nx,ny;
     if(p[1]!="move"||p.Length!=5||!int.TryParse(p[2],out nx)||!int.TryParse(p[3],out ny)||Math.Abs((long)nx)>100000||Math.Abs((long)ny)>100000)return;
