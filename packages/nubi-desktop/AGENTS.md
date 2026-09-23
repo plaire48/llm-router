@@ -37,3 +37,5 @@
 - Windows 관찰/결과 근거는 공유 Pi 분석 조정기에 호스트 opt-in으로 등록한다. 하위 분석은 동결된 근거만 읽고 native 도구/승인 권한을 받지 않는다. 과거 캡처와 요약은 새 조작 관찰을 대체하지 않는다. 결과 분석 재개는 원래 동작을 재실행하지 않으며, UIA 변화 없는 반복 실패는 기존 질문 폼으로 전환한다. 범위는 docs/WINDOWS-HARNESS.md를 따른다.
 
 - Windows 배포는 Windows x64에서 Theia native 모듈을 Electron ABI로 재빌드한 뒤 electron-builder NSIS로 만든다. 실제 설치 앱의 UI/worker/OpenWiki-SDS와 설치/재설치/제거 검사를 통과한 산출물만 게시한다. 러너 Windows 버전, 서명 상태, 실사용 Windows 11/실모델 미검증을 구분한다. Monaco의 내장 정제 코드는 저장소의 esbuild 플러그인으로 수정판에 연결하며 node_modules를 직접 수정하지 않는다. 상세 범위는 docs/WINDOWS-RELEASE.md를 따른다.
+
+- 사용자 커서는 NEVER 이동시키거나 입력을 주입하지 않는다. 누비 커서는 별도 시각 표시이며 클릭은 지원되는 UIA InvokePattern, 입력은 ValuePattern으로만 연결한다. 물리 click/hover/drag/send-keys로 폴백하지 않는다. 실제 포인터 의미가 필요한 작업은 격리된 실행 환경 도입 전까지 미지원이다. 기존 hover 승인은 재사용하지 않는다.

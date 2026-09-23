@@ -33,3 +33,7 @@ The desktop omits peer controls and polling, excludes the A2A server/client/SDK 
 After deferral, the isolated release snapshot passed 112 runtime tests, 45 actual Theia UI checks, 14 shared UI checks and a macOS Electron UI/worker/SQLite/OpenWiki-SDS smoke. These are not Windows installer or real model results.
 
 Pinned winapp promotes unique automation IDs during tree inspection but returns canonical UIA selectors for property/value queries. The adapter validates the returned selector and exact automation ID, retains the canonical identity for before/after comparisons, and reads the value by that canonical selector. Mismatched aliases remain rejected. This follows the pinned upstream `UiGetPropertyCommand`, `UiGetValueCommand` and `PromoteUniqueAutomationIds` implementations.
+
+## Deployment hold after cursor clarification
+
+The earlier installer candidate does not meet the newly clarified virtual-only cursor requirement and must not be published. Host pointer injection has been removed from source; the full isolated Windows work view is not implemented. Previous native UIA/packaging results do not validate this subsequent cursor-policy change.

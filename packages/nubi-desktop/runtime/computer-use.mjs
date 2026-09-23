@@ -13,7 +13,7 @@ import {reviewComputerResult} from './computer-harness.mjs';
 
 const exec=promisify(execFile), TTL=120000;
 const text=maxLength=>({type:'string',minLength:1,maxLength});
-export const COMPUTER_ACTION_SCHEMA={type:'object',additionalProperties:false,properties:{observationId:text(80),selector:text(300),action:{enum:['invoke','click','hover','set_value'],type:'string'},value:{type:'string',maxLength:4000},reason:text(500)},required:['observationId','selector','action','reason']};
+export const COMPUTER_ACTION_SCHEMA={type:'object',additionalProperties:false,properties:{observationId:text(80),selector:text(300),action:{enum:['invoke','click','set_value'],type:'string'},value:{type:'string',maxLength:4000},reason:text(500)},required:['observationId','selector','action','reason']};
 const validate=new Ajv().compile(COMPUTER_ACTION_SCHEMA);
 let desktopOwner=null;
 const stamp=()=>new Date().toISOString();
@@ -86,7 +86,9 @@ export class WinappComputer {
     }finally{await rm(directory,{recursive:true,force:true});}
   }
   async act(window,selector,action,value){
-    const args=action==='set_value'?['set-value',selector,value]:action==='invoke'?['invoke',selector,'--action','invoke']:action==='hover'?['hover',selector,'--dwell-time','800']:['click',selector];
+    if(!['invoke','click','set_value'].includes(action))fail('computer_virtual_only');
+    // Click is a UIA InvokePattern request. Never emit OS mouse or keyboard input.
+    const args=action==='set_value'?['set-value',selector,value]:['invoke',selector,'--action','invoke'];
     await this.call([...args,'-w',String(window)]);
   }
 }
@@ -194,7 +196,7 @@ export async function proposeComputerAction(service,taskId,args){
     const seen=o.elements.filter(v=>v.selector===args.selector);if(seen.length!==1)fail('computer_target_unavailable');
     const a=adapter(service),current=await a.property(b.identity.hwnd,args.selector);usable(current.element);
     if(!same(current.element,seen[0])||!same(await a.status(b.identity.hwnd),b.identity))fail('computer_target_changed');
-    if(args.action==='invoke'&&!current.element.isInvokable)fail('computer_target_unavailable');
+    if(['invoke','click'].includes(args.action)&&!current.element.isInvokable)fail('computer_target_unavailable');
     let previousValueHash;
     if(args.action==='set_value'){
       if(current.password!=='False'||current.readOnly==='True'||!['Edit','TextBox','Document'].includes(current.element.type))fail('computer_input_unavailable');
@@ -225,6 +227,7 @@ export async function computer({method='status',taskId,window,id,fingerprint,dec
     taskReady(this,taskId);if(this.unsettledOperations?.size)fail('tool_unsettled');
     if(decision==='acknowledge')fail('computer_invalid');
     if(decision==='reject'){v.state='rejected';this.store.set('computer-action:'+id,v);return computerState(this);}
+    if(!['launch','invoke','click','set_value'].includes(v.action)||(v.action==='click'&&!v.target?.element?.isInvokable))fail('computer_virtual_only');
     return exclusive(this,async()=>{
       v.state='starting';this.store.set('computer-action:'+id,v);let issued=false;
       if(v.action==='launch'){await executeLaunch(this,v);return computerState(this);}

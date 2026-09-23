@@ -1,12 +1,21 @@
 # Computer use and readable desktop UI
 
+## Current cursor policy
+
+The user requires a virtual Nubi cursor that does not move the user's OS pointer. Host actions use explicit UIA InvokePattern or value setters. `click` is a supported-control InvokePattern alias; it never emits winapp click. Physical hover, drag and raw pointer/keyboard injection are not supported. Existing stored hover approvals are rejected before execution. Cursor graphics remain annotations, not a second Windows input device or a live independent Windows session.
+
+Recommended product surface: a separate work view inside Nubi with agent-controlled browser/app output and a visually distinct cursor. Playwright provides page-local mouse events for web work. General Windows pointer interaction requires a separately isolated execution environment; a host overlay alone does not isolate focus or keyboard input. That environment and a live remote view are not implemented in this release. A2A remains deferred.
+
+Sources: [Playwright Mouse](https://playwright.dev/docs/api/class-mouse), [UI Automation patterns](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-controlpatternsoverview), [Windows Sandbox](https://learn.microsoft.com/en-us/windows/security/application-security/application-isolation/windows-sandbox/). No VM package or new agent framework has been adopted by this change.
+
+
 Status: implemented experimental Windows adapter and approval UI. No Windows native execution, installed winapp binary or real model accuracy has been verified on this macOS host. This is not a bundled Windows automation release.
 
 ## Interaction
 
 Use the existing task view. Open `컴퓨터로 확인`, choose `열린 앱 찾기`, select a visible window, then `이 창 연결`. The disclosure explicitly explains that window contents and images reach the selected model and capture may foreground the app. The grant belongs to this task and host session. Project change/restart removes it.
 
-The existing Pi runtime can call `observe_computer` and `propose_computer_action`. It receives actual PNG content through the shared image pipeline; visual interpretation requires a vision-capable selected model. One proposed click, UIA invoke, hover or literal text replacement appears as a review card. The model cannot approve it. The user approves one exact operation, followed by a screenshot and, for input, exact value readback. The next agent run receives the host receipt. It does not automatically chain desktop actions after approval.
+The existing Pi runtime can call `observe_computer` and `propose_computer_action`. It receives actual PNG content through the shared image pipeline; visual interpretation requires a vision-capable selected model. One proposed UIA button activation or literal text replacement appears as a review card. The model cannot approve it. The user approves one exact operation, followed by a screenshot and, for input, exact value readback. The next agent run receives the host receipt. It does not automatically chain desktop actions after approval.
 
 `대상 위치 보기` shows the observed element crop. A small cursor marks its center. Click has one expanding ring, hover one brief emphasis, input an I-beam. These are **target annotations, not a recording of the OS pointer or proof of execution**. An explicit `표시 예시` is available without Windows and never calls an input tool. After images have no cursor overlay, avoiding an old target marker on a changed screen. Animation ends without looping, can be disabled, and respects reduced motion. SVG/CSS requires no extra runtime library and does not intercept pointer events.
 
@@ -16,7 +25,7 @@ The desktop reading scale retains the supplied deck font family, adds Malgun Got
 
 | Source | Applied | Boundary |
 | --- | --- | --- |
-| [Microsoft winapp CLI](https://github.com/microsoft/winappCli/blob/f047f86761d880bf850148744a1ddacecf00bc65/docs/ui-automation.md) (MIT) | Actual `execFile` adapter for JSON UIA inspection, element capture, invoke/click/hover/set-value and readback. Its workflow ID coordinates cooperating native clients. | External preview dependency, not installed or redistributed here. Typed DPI/element envelopes require the reviewed API shape (docs say v0.6.3+); installed binary compatibility still requires Windows testing. |
+| [Microsoft winapp CLI](https://github.com/microsoft/winappCli/blob/f047f86761d880bf850148744a1ddacecf00bc65/docs/ui-automation.md) (MIT) | Actual `execFile` adapter for JSON UIA inspection, element capture, invoke/set-value and readback. Its workflow ID coordinates cooperating native clients. | External preview dependency, not installed or redistributed here. Typed DPI/element envelopes require the reviewed API shape (docs say v0.6.3+); installed binary compatibility still requires Windows testing. |
 | [Playwright actionability](https://playwright.dev/docs/actionability) and [Trace Viewer](https://playwright.dev/docs/trace-viewer) (Apache-2.0) | Adopted observe → validate → one action → inspect outcome, before/after snapshots, visible target marks. Existing Playwright executes browser UX checks. | Windows UIA checks are not equivalent to Playwright DOM stability, hit testing or auto-wait guarantees. No copying of the Trace Viewer UI. |
 | Existing Nubi Pi core and image transport | Reused agent loop, model adapters, isolated analysis and image blocks; no new model runtime. | Source code and screenshots remain evidence, not instructions. Subagents cannot access these desktop tools. |
 | Existing pngjs and pixelmatch (MIT) | Bounded PNG decoding and real pixel difference counts after operation. | A changed pixel or successful command does not prove the requested business outcome. |
@@ -29,7 +38,7 @@ On a test Windows 11 host, an administrator of the Nubi application can configur
 
 The app still needs foreground, unlocked desktop access for mouse injection. Do not infer support for elevation, UAC, locked sessions, RDP delivery, all applications or company security policies. A dedicated Windows session is the appropriate next validation environment. Existing Chrome and Office ports remain the preferred tools for those applications.
 
-Supported now: observed UIA selectors, invoke with explicit action (no ancestor fallback), single click, hover with an 800ms dwell, literal `set-value`, screenshot and value readback. No raw coordinates, arbitrary keystrokes, double/right click, drag, system shortcuts, OCR-only targeting, MSIX activation or automated installation. Local Win32 EXE launch is described below. Text requires explicit non-password metadata and an editable control type; input beginning with `-` is currently rejected to avoid positional-option ambiguity. Unknown fields fail closed.
+Supported now: observed UIA selectors, invoke with explicit action (no ancestor fallback), click as an alias for UIA InvokePattern only, literal `set-value`, screenshot and value readback. No raw coordinates, arbitrary keystrokes, double/right click, drag, system shortcuts, OCR-only targeting, MSIX activation or automated installation. Local Win32 EXE launch is described below. Text requires explicit non-password metadata and an editable control type; input beginning with `-` is currently rejected to avoid positional-option ambiguity. Unknown fields fail closed.
 
 Each observation/approval expires after two minutes. Window HWND/PID/name/title/DPI, selected element geometry and flags, and input value hash are compared again before execution. Any drift requires a fresh proposal. PID/HWND reuse and changes between the last validation and the native action remain platform-level limits; this wrapper is not an isolation sandbox. Full-window observations use an explicit HWND with `--capture-screen`, including visible overlays inside that window region. Hover readback also uses this full region so an in-window tooltip is not lost by cropping the original control; different capture scopes are not pixel-compared. These images never authorize coordinates. Cursor overlay is only shown for an element crop matching its physical dimensions, so DPI or multi-monitor positions are not guessed.
 
@@ -41,7 +50,7 @@ Contract tests execute the adapter with an injected JSON/PNG runner, covering du
 
 Actual Chrome tests cover Nubi login/workflow regression, cursor actions, reduced motion, the reading toggle and reload persistence, narrow layouts and the compiled Theia stylesheet. Browser and Electron builds are compilation/bundling checks, not Windows application execution.
 
-Windows acceptance remains: Korean app names and inputs; 100/125/150/200% DPI; multiple monitors including negative origins; real hover tooltips; wrong foreground/overlays; direct user edits; disconnect during click/value write; locked session and process restart. Record native screenshots and independent result readback before enabling this preview in distribution.
+Windows acceptance remains: Korean app names and inputs; 100/125/150/200% DPI; multiple monitors including negative origins; virtual-cursor display; wrong foreground/overlays; direct user edits; disconnect during UIA activation/value write; locked session and process restart. Record native screenshots and independent result readback before enabling this preview in distribution.
 
 
 ## Local app launch and exact-value verification (2026-09-23)

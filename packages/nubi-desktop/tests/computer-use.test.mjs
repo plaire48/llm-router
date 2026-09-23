@@ -50,7 +50,7 @@ test('proposal is inert; one approved click captures readback and duplicate deci
   const [a,b]=await Promise.all([decide(p),decide(p)]);assert.equal(data.acted,1);
   const receipt=service.state().computer.actions[0];assert.equal(receipt.state,'observed');assert.equal(receipt.verification,'not_verified');assert.equal(receipt.visualDifference.changedPixels,0); // threshold ignores small pixel differences
   assert(!('before' in receipt));assert(a.actions&&b.actions);
-  assert.deepEqual(data.calls.find(v=>v[1]==='click'),['ui','click','txt-query-ab12','-w','100','--json']);
+  assert.deepEqual(data.calls.find(v=>v[1]==='invoke'),['ui','invoke','txt-query-ab12','--action','invoke','-w','100','--json']);
 });
 test('literal text uses set-value argv and exact readback instead of key grammar',async t=>{
   const {data,propose,decide,service}=await setup(t),value='한국어 + {ENTER} $(echo no)';
@@ -75,9 +75,9 @@ test('uncertain click outcome is journaled and cannot be replayed or disguised a
   await decide(p,'acknowledge');assert.equal(service.state().computer.actions[0].state,'acknowledged');assert.equal(data.acted,1);
 });
 test('failed readback remains uncertain even after CLI returned successfully',async t=>{
-  const {data,propose,decide,service}=await setup(t),p=await propose('hover');data.failAfter=true;await decide(p);
+  const {data,propose,decide,service}=await setup(t),p=await propose('invoke');data.failAfter=true;await decide(p);
   assert.equal(data.acted,1);assert.equal(service.state().computer.actions[0].state,'attention');assert.equal(service.state().computer.actions[0].execution,'command_returned');
-  assert(data.calls.some(v=>v[1]==='hover'&&v.includes('--dwell-time')));
+  assert(data.calls.some(v=>v[1]==='invoke'));assert(!data.calls.some(v=>['click','hover','send-keys'].includes(v[1])));
 });
 test('missing password metadata, raw coordinates and offscreen controls fail closed',async t=>{
   const {service,task,data,propose}=await setup(t);data.password=undefined;await assert.rejects(()=>propose('set_value',{value:'secret'}),/computer_input_unavailable/);
@@ -131,7 +131,7 @@ test('shared Pi sends actual PNG observations to the model, proposes only and re
     if(round===2){
       assert.match(JSON.stringify(messages),/data:image\/png;base64/);
       const result=JSON.parse(messages.findLast(m=>m.role==='tool').content);
-      return call('propose_computer_action',{observationId:result.observationId,selector:result.elements[0].selector,action:'hover',reason:'도움말 표시를 확인합니다.'});
+      return call('propose_computer_action',{observationId:result.observationId,selector:result.elements[0].selector,action:'invoke',reason:'버튼 결과를 확인합니다.'});
     }
     if(round===3)assert.match(JSON.stringify(messages),/command_returned/);
     return {content:'확인된 기록을 검토해 주세요.',calls:[]};
@@ -233,4 +233,15 @@ test('capture verifies filesystem identity when the driver returns an equivalent
  assert((await a.capture(100)).data);
  a.runner=async args=>{const raw=await original(args);if(args[1]==='screenshot'){const other=raw.filePath+'.other';await writeFile(other,'different');return {...raw,filePath:other};}return raw;};
  await assert.rejects(a.capture(100),/computer_contract/);
+});
+
+
+test('virtual cursor policy never emits physical pointer commands or approves legacy hover actions',async t=>{
+ const {service,task,data,propose,decide}=await setup(t),a=service.computerAdapter;
+ for(const action of ['hover','drag','right_click','unknown'])await assert.rejects(a.act(100,data.control.selector,action),/computer_virtual_only/);
+ await assert.rejects(propose('hover'),/computer_invalid/);
+ data.control.isInvokable=false;await assert.rejects(propose('click'),/computer_target_unavailable/);data.control.isInvokable=true;
+ const p=await propose('click'),record=service.store.get('computer-action:'+p.id);service.store.set('computer-action:'+p.id,{...record,action:'hover'});
+ await assert.rejects(decide(p),/computer_virtual_only/);assert.equal(data.acted,0);
+ assert(!data.calls.some(v=>['click','hover','send-keys','drag'].includes(v[1])));
 });

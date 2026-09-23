@@ -5,7 +5,7 @@ import './computer-use.css';
 
 const verbs={invoke:'누르기',click:'클릭',hover:'마우스 올리기',set_value:'입력'};
 const states={proposed:'승인 대기',starting:'실행 중',observed:'결과 확인',stale:'대상 변경됨',attention:'확인 필요',rejected:'실행하지 않음',acknowledged:'사용자 확인됨'};
-const errors={computer_binding_required:'먼저 확인할 창을 연결해 주세요.',computer_app_invalid:'로컬 Windows 실행 파일의 전체 경로를 확인해 주세요.',computer_app_changed:'실행 파일이 바뀌었어요. 앱을 다시 등록해 주세요.',computer_app_limit:'등록한 앱이 많아요. 사용하지 않는 앱을 해제해 주세요.',computer_app_required:'이 작업에서 사용할 앱을 먼저 등록해 주세요.',computer_review_required:'대기 중인 동작이나 미확정 결과를 먼저 확인해 주세요.',computer_busy:'진행 중인 작업을 마친 뒤 다시 확인해 주세요.',computer_unavailable:'Windows 실행기 연결이 필요해요.',computer_binary_changed:'실행기 파일이 바뀌었어요. 설치 설정을 확인해 주세요.',computer_command_failed:'앱을 확인하지 못했어요. 창이 열려 있는지 확인해 주세요.',computer_contract:'실행기 응답 형식을 지원하지 않아요. 연결 버전을 확인해 주세요.',computer_target_changed:'창이나 대상이 바뀌었어요. 다시 연결해 주세요.',computer_cancelled:'중지한 작업입니다. 새 요청에서 연결해 주세요.'};
+const errors={computer_virtual_only:'사용자 커서를 움직이는 동작은 지원하지 않습니다. 앱이 제공하는 버튼이나 입력 기능을 사용해 주세요.',computer_binding_required:'먼저 확인할 창을 연결해 주세요.',computer_app_invalid:'로컬 Windows 실행 파일의 전체 경로를 확인해 주세요.',computer_app_changed:'실행 파일이 바뀌었어요. 앱을 다시 등록해 주세요.',computer_app_limit:'등록한 앱이 많아요. 사용하지 않는 앱을 해제해 주세요.',computer_app_required:'이 작업에서 사용할 앱을 먼저 등록해 주세요.',computer_review_required:'대기 중인 동작이나 미확정 결과를 먼저 확인해 주세요.',computer_busy:'진행 중인 작업을 마친 뒤 다시 확인해 주세요.',computer_unavailable:'Windows 실행기 연결이 필요해요.',computer_binary_changed:'실행기 파일이 바뀌었어요. 설치 설정을 확인해 주세요.',computer_command_failed:'앱을 확인하지 못했어요. 창이 열려 있는지 확인해 주세요.',computer_contract:'실행기 응답 형식을 지원하지 않아요. 연결 버전을 확인해 주세요.',computer_target_changed:'창이나 대상이 바뀌었어요. 다시 연결해 주세요.',computer_cancelled:'중지한 작업입니다. 새 요청에서 연결해 주세요.'};
 
 // The overlay marks an observed element center. It is not an OS cursor recording.
 export function ActionPreview({image,action='click',pointer={x:0.5,y:0.5},demo=false,label='예정 동작',children}){
@@ -20,7 +20,7 @@ export function ActionPreview({image,action='click',pointer={x:0.5,y:0.5},demo=f
         {action==='set_value'?<svg viewBox="0 0 24 28"><path d="M5 3h14M12 3v22M5 25h14"/></svg>:<svg viewBox="0 0 24 28"><path d="M3 2v20l5-5 4 9 4-2-4-8h8Z"/></svg>}
       </div>}
     </div>
-    <figcaption>{demo?'표시 예시입니다. 실제 앱을 조작하지 않습니다.':pointer?'표시는 대상의 중심입니다. 실제 마우스 이동을 녹화한 화면은 아닙니다.':'실행 직후 캡처입니다. 업무 결과는 별도로 확인해 주세요.'}</figcaption>
+    <figcaption>{demo?'표시 예시입니다. 실제 앱을 조작하지 않습니다.':pointer?'표시는 대상의 중심입니다. 누비의 가상 커서이며 사용자 마우스를 움직이지 않습니다.':'실행 직후 캡처입니다. 업무 결과는 별도로 확인해 주세요.'}</figcaption>
   </figure>;
 }
 
