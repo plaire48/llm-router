@@ -46,10 +46,23 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+      - uses: actions/cache/restore@v4
+        id: driver-cache
+        with:
+          path: packages/nubi-desktop/generated/winapp
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825
       - name: Prepare verified Windows driver
+        if: steps.driver-cache.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           ./scripts/prepare-winapp.ps1
+      - uses: actions/cache/save@v4
+        if: steps.driver-cache.outputs.cache-hit != 'true'
+        with:
+          path: packages/nubi-desktop/generated/winapp
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825
+      - name: Verify real Windows UIA
+        run: |
           node scripts/check-winapp.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build Windows installer

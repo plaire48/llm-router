@@ -18,7 +18,8 @@ async function setup(t){
     data.calls.push(args);const command=args[1];
     if(command==='list-windows')return [{...status,title:status.windowTitle,width:800,height:600}];
     if(command==='status')return {...status};
-    if(command==='inspect')return {windows:[{hwnd:100,elements:[{...control}]}]};
+    if(command==='inspect')return {windows:[{hwnd:100,elements:data.acted&&data.afterElements?data.afterElements:(data.elements||[{...control}])}]};
+    if(command==='search')return data.searchResult||{matchCount:1,hasMore:false,matches:[{...control}]};
     if(command==='get-property')return {elementId:control.selector,element:{...control},properties:{IsPassword:data.password,IsReadOnly:'False'}};
     if(command==='get-value')return {elementId:control.selector,text:data.text};
     if(command==='screenshot'){
@@ -48,7 +49,7 @@ test('computer use is unavailable outside Windows and does not discover PATH exe
 test('proposal is inert; one approved click captures readback and duplicate decisions do not replay',async t=>{
   const {service,data,propose,decide}=await setup(t),p=await propose();assert.equal(data.acted,0);
   const [a,b]=await Promise.all([decide(p),decide(p)]);assert.equal(data.acted,1);
-  const receipt=service.state().computer.actions[0];assert.equal(receipt.state,'observed');assert.equal(receipt.verification,'not_verified');assert.equal(receipt.visualDifference.changedPixels,0); // threshold ignores small pixel differences
+  const receipt=service.state().computer.actions[0];assert.equal(receipt.state,'observed');assert.equal(receipt.verification,'not_verified');assert.equal(receipt.visualDifference.state,'scope_changed'); // target crop and full result window are not comparable
   assert(!('before' in receipt));assert(a.actions&&b.actions);
   assert.deepEqual(data.calls.find(v=>v[1]==='click'),['ui','click','txt-query-ab12','-w','100','--json']);
 });
@@ -202,4 +203,79 @@ test('a pending or uncertain newer operation blocks continuation from an older r
   await assert.rejects(()=>service.computer(args),/computer_review_required/);
   data.failAction=true;await decide(next);await assert.rejects(()=>service.computer(args),/computer_review_required/);
   assert.equal(data.acted,2);assert.equal(service.store.get('computer-action:'+first.id).review,undefined);
+});
+
+test('targeted UIA search finds a control outside the first 150 elements without input or capture',async t=>{
+  const {service,task,data}=await setup(t);
+  data.elements=Array.from({length:160},(_,i)=>({...data.control,selector:'row-'+i,name:'Unrelated row'}));
+  const shallow=await observeComputer(service,task.id,{includeImage:false});
+  assert.equal(shallow.elements.length,150);assert.equal(shallow.truncated,true);
+  const focused=await observeComputer(service,task.id,{query:'검색',includeImage:false});
+  assert.equal(focused.elements[0].selector,data.control.selector);assert.equal(focused.coverage.mode,'search');
+  assert.deepEqual(data.calls.find(v=>v[1]==='search'),['ui','search','검색','-w','100','--max','20','--json']);
+  assert(!data.calls.some(v=>v[1]==='screenshot'));assert.equal(data.acted,0);
+  await proposeComputerAction(service,task.id,{observationId:focused.observationId,selector:data.control.selector,action:'click',reason:'확인'});
+  assert.equal(data.acted,0); // search evidence authorizes a proposal, never execution
+});
+
+test('search empty results are partial evidence and malformed results never grant selectors',async t=>{
+  const {service,task,data}=await setup(t);
+  data.searchResult={matchCount:0,hasMore:false,matches:[]};
+  const result=await observeComputer(service,task.id,{query:'존재하지 않음',includeImage:false});
+  assert.deepEqual(result.elements,[]);assert.equal(result.coverage.complete,false);
+  for(const query of ['', ' -w', '\0', 'x'.repeat(201)])await assert.rejects(()=>observeComputer(service,task.id,{query,includeImage:false}),/computer_invalid/);
+  data.searchResult={matchCount:2,hasMore:false,matches:[data.control,data.control]};
+  await assert.rejects(()=>observeComputer(service,task.id,{query:'검색'}),/computer_contract/);
+  data.searchResult={matchCount:9,hasMore:false,matches:[data.control]};
+  await assert.rejects(()=>observeComputer(service,task.id,{query:'검색'}),/computer_contract/);
+  assert.equal(data.acted,0);
+});
+
+test('only documented empty search exit 1 is a successful read, never an action or transport error',async()=>{
+  let error=Object.assign(Error('empty'),{code:1,stdout:JSON.stringify({matchCount:0,hasMore:false,matches:[]}),stderr:''});
+  const a=new WinappComputer({platform:'win32',runner:async()=>{throw error;}});
+  assert.deepEqual((await a.search(100,'missing')).elements,[]);
+  await assert.rejects(()=>a.act(100,'btn-x','click'),/computer_command_failed/);
+  for(const extra of [{killed:true},{signal:'SIGTERM'},{stderr:'failed'},{code:2},{stdout:'not json'},{stdout:'{"error":"unavailable"}'}]){
+    const original=error;error=Object.assign(Error('failed'),original,extra);
+    await assert.rejects(()=>a.search(100,'missing'),/computer_command_failed/);error=original;
+  }
+});
+
+test('click readback observes a new screen after the old target disappears; history grants no new action',async t=>{
+  const {service,task,data,propose,decide}=await setup(t),p=await propose();
+  data.afterElements=[{...data.control,selector:'txt-result',name:'결과'}];
+  const original=service.computerAdapter.runner;
+  service.computerAdapter.runner=async args=>{
+    if(data.acted&&((args[1]==='screenshot'&&args[2]===data.control.selector)||args[1]==='get-property'))throw Error('old target disappeared');
+    return original(args);
+  };
+  await decide(p);await decide(p);
+  const result=readComputerResult(service,task.id,{actionId:p.id,includeImage:true});
+  assert.equal(result.receipt.state,'observed');assert.equal(result.receipt.verification,'not_verified');assert.equal(data.acted,1);
+  assert.equal(result.image.scope,'window_region');assert.equal(result.observation.elements[0].selector,'txt-result');
+  assert.equal(result.observation.historical,true);assert.equal(service.computerObservation,null);
+  await assert.rejects(()=>proposeComputerAction(service,task.id,{observationId:p.observationId,selector:'txt-result',action:'click',reason:'확인'}),/computer_observation_stale/);
+  assert(readComputerResult(service,task.id,{actionId:p.id}).observation); // text-only models can inspect UIA
+  await service.computer({method:'unbind',taskId:task.id});
+  assert.equal(readComputerResult(service,task.id,{actionId:p.id}).observation,undefined);
+});
+
+test('query switches, result order and new observations do not reset repeated failures',()=>{
+  const p=createComputerProgress(),elements=[{selector:'a'},{selector:'b'}];
+  const observe=(query,els=elements)=>p.observe('observe_computer',{}, {observationId:crypto.randomUUID(),identity:{hwnd:1},coverage:{mode:'search',query},elements:els});
+  const failed=()=>p.observe('propose_computer_action',{}, {error:'computer_target_unavailable'});
+  observe('first');failed();observe('second');failed();observe('first',[...elements].reverse());assert.equal(failed().needsInput,true);
+  observe('first',[{selector:'c'}]);assert.equal(failed().failures,1);
+});
+
+test('upstream nullable accessible names remain usable without weakening selector or geometry checks',async t=>{
+  const {service,task,data}=await setup(t);delete data.control.name;
+  const result=await observeComputer(service,task.id,{includeImage:false});assert.equal(result.elements[0].name,'');
+  data.control.name=42;await assert.rejects(()=>observeComputer(service,task.id,{includeImage:false}),/computer_contract/);
+});
+test('window screenshot accepts omitted nullable elementId from upstream JSON',async t=>{
+  const {service,task}=await setup(t),a=service.computerAdapter,original=a.runner;
+  a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'&&result.elementId===null)delete result.elementId;return result;};
+  const result=await observeComputer(service,task.id);assert(result.image.data);
 });
