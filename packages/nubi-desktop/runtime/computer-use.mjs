@@ -1,6 +1,6 @@
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-import {readFile,stat,mkdtemp,rm} from 'node:fs/promises';
+import {readFile,stat,mkdtemp,rm,realpath} from 'node:fs/promises';
 import {randomUUID,createHash} from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
@@ -88,13 +88,15 @@ export class WinappComputer {
     // UIA password flag is required for value read/write. Missing is not false.
     return {element:element({...raw.element,selector}),resolvedSelector:raw.element.selector,password:raw.properties?.IsPassword,readOnly:raw.properties?.IsReadOnly};
   }
-  async value(window,selector){const {resolvedSelector}=await this.property(window,selector);const result=await this.call(['get-value',resolvedSelector,'-w',String(window)]);if(result?.elementId!==resolvedSelector||typeof result.text!=='string'||result.text.length>4000)fail('computer_contract');return result.text;}
+  async value(window,selector){const {resolvedSelector,password}=await this.property(window,selector);if(password!=='False')fail('computer_password');const result=await this.call(['get-value',resolvedSelector,'-w',String(window)]);if(result?.elementId!==resolvedSelector||typeof result.text!=='string'||result.text.length>4000)fail('computer_contract');return result.text;}
   async capture(window,selector){
     const directory=await mkdtemp(path.join(os.tmpdir(),'nubi-capture-')),file=path.join(directory,'capture.png');
     try{
       const resolvedSelector=selector?(await this.property(window,selector)).resolvedSelector:null;
       const result=await this.call(['screenshot',...(resolvedSelector?[resolvedSelector]:['--capture-screen']),'-w',String(window),'--output',file]);
-      if(result?.hwnd!==window||(result.elementId??null)!==resolvedSelector||path.resolve(result.filePath||'')!==file)fail('computer_contract');
+      if(result?.hwnd!==window||(result.elementId??null)!==resolvedSelector||typeof result.filePath!=='string'||!path.isAbsolute(result.filePath))fail('computer_contract');
+      // Windows/.NET may expand RUNNER~1 to runneradmin. Compare actual files, not spelling.
+      if(await realpath(result.filePath)!==await realpath(file))fail('computer_contract');
       if((await stat(file)).size>4500000)fail('computer_image_invalid');
       const bytes=await readFile(file),png=readPng(bytes);
       if(result.width!==png.width||result.height!==png.height)fail('computer_contract');

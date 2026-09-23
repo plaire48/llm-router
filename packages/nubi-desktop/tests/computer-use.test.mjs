@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {writeFile} from 'node:fs/promises';
+import {writeFile,symlink} from 'node:fs/promises';
 import {PNG} from 'pngjs';
 import {fixture} from './fixtures.mjs';
 import {WinappComputer,observeComputer,proposeComputerAction,verifyComputerValue,imageDifference,readPng} from '../runtime/computer-use.mjs';
@@ -294,6 +294,13 @@ test('AutomationId tree aliases resolve to native semantic selectors without wea
   await assert.rejects(()=>a.property(100,'another-target'),/computer_target_changed/);
   a.runner=async()=>({elementId:'different',element:{...data.control,selector:canonical,automationId:'NubiValue'}});
   await assert.rejects(()=>a.property(100,'NubiValue'),/computer_target_changed/);
+});
+test('capture validates the actual output file while rejecting an unrelated returned path',async t=>{
+  const {service}=await setup(t),a=service.computerAdapter,original=a.runner;
+  a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'){const alias=result.filePath+'.alias';await symlink(result.filePath,alias,'file');return {...result,filePath:alias};}return result;};
+  assert((await a.capture(100)).data);
+  a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'){const other=result.filePath+'.different';await writeFile(other,'not the captured file');return {...result,filePath:other};}return result;};
+  await assert.rejects(()=>a.capture(100),/computer_contract/);
 });
 
 
