@@ -1,5 +1,5 @@
 import {spawn} from 'node:child_process';
-import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {readFile,copyFile,mkdir} from 'node:fs/promises';
 import {createRequire} from 'node:module';
 import path from 'node:path';
 const require=createRequire(import.meta.url);
@@ -10,8 +10,9 @@ await run(process.execPath,[require.resolve('typescript/lib/tsc.js'),'-p','exten
 await run(process.execPath,[require.resolve('@theia/cli/bin/theia'),'rebuild:electron','--cacheRoot','..'],path.resolve('electron-app'));
 await run(process.execPath,[require.resolve('@theia/cli/bin/theia'),'build','--mode','production'],path.resolve('electron-app'));
 await run(process.execPath,['scripts/copy-assets.mjs','electron-app']);
-// ICO contains the existing Nubi PNG unchanged, including transparency.
-const png=await readFile('../../extensions/aipro-chat/public/icons/agent-128.png');
-const header=Buffer.alloc(22);header.writeUInt16LE(1,2);header.writeUInt16LE(1,4);header[6]=128;header[7]=128;header.writeUInt16LE(1,10);header.writeUInt16LE(32,12);header.writeUInt32LE(png.length,14);header.writeUInt32LE(22,18);
-await mkdir('electron-app/resources',{recursive:true});await writeFile('electron-app/resources/nubi.ico',Buffer.concat([header,png]));
+// Let electron-builder create Windows icon sizes from the approved transparent master.
+// Chrome's 128px toolbar asset is below electron-builder's 256px minimum.
+const source='../../extensions/aipro-chat/design/brand/bird-master.png',png=await readFile(source);
+if(!png.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||png.readUInt32BE(16)<256||png.readUInt32BE(20)<256)throw Error('windows_icon_resolution');
+await mkdir('electron-app/resources',{recursive:true});await copyFile(source,'electron-app/resources/nubi.png');
 await run(process.execPath,[require.resolve('electron-builder/cli.js'),'--projectDir','electron-app','--win','--x64','--publish','never']);
