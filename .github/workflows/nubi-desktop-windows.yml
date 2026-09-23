@@ -20,13 +20,10 @@ jobs:
           cache: npm
           cache-dependency-path: |
             packages/nubi-desktop/package-lock.json
-            packages/nubi-a2a/package-lock.json
             extensions/aipro-chat/package-lock.json
       - name: Install locked dependencies
         run: |
           npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          npm ci --prefix ../nubi-a2a
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -35,7 +32,7 @@ jobs:
           New-Item verification -ItemType Directory -Force | Out-Null
           npm run compile
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node --test tests/computer-use.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs
+          node --test tests/computer-use.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs tests/collaboration.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/checkout@v4
         with:

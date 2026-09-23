@@ -1,6 +1,5 @@
 import {ComputerUse} from './ComputerUse.jsx';
 import {SetupActions} from './SetupActions.jsx';
-import {Collaboration} from './Collaboration.jsx';
 import React, {useEffect, useRef, useState, useCallback} from 'react';
 import {CxButton, CxInput, CxTextarea, CxSelect, CxNotice, DetailPanel, Icon} from '@e2e/cx-design-system';
 import {AgentMark, NubiLogo} from '../../../extensions/aipro-chat/src/AgentMark.jsx';
@@ -36,19 +35,19 @@ export function Workbench({api,openCurrent,chooseFolder,openPath,review,apply,op
   const fabrixRpc=useCallback((method,args)=>api('fabrix',{method,...args}),[api]);
   const searchRun=useRef(0),composer=useRef(null),mounted=useRef(true),polling=useRef(false),actionLock=useRef(false);
   const task=project?.tasks?.find(t=>t.id===taskId), proposals=project?.proposals?.filter(p=>p.taskId===taskId&&p.state!=='superseded')||[];
-  const running=task?.state==='running',awaitingPeers=(project?.collaborations||[]).some(row=>row.state===6);
+  const running=task?.state==='running';
   async function refresh(){const result=await api('overview');if(mounted.current)setProject(result);return result;}
   async function refreshProvider(args){const value=await api('provider',args);if(mounted.current)setProvider(value);if(value.connected){const state=await api('state');if(mounted.current)setProject(p=>({...p,...state}));}return value;}
   async function perform(operation){if(actionLock.current)return;actionLock.current=true;setBusy(true);setError('');try{return await operation();}catch(e){if(mounted.current)setError(errors[e.message]||'처리하지 못했어요. 입력과 연결 상태를 확인해 주세요.');if(['setup_changed','setup_execution_unconfirmed','quality_unavailable','proposal_invalid_syntax'].includes(e.message))await refresh().catch(()=>{});}finally{actionLock.current=false;if(mounted.current)setBusy(false);}}
   useEffect(()=>{mounted.current=true;openCurrent().then(value=>{if(mounted.current)setProject(value);}).catch(e=>{if(mounted.current)setError(errors[e.message]||'프로젝트를 열지 못했어요. 실행기와 Git 저장소를 확인해 주세요.');});api('provider').then(value=>{if(mounted.current)setProvider(value);}).catch(()=>{});return()=>{mounted.current=false;};},[]);
   useEffect(()=>{
-    if(!running&&!awaitingPeers&&!provider?.pending&&!['running','stopping'].includes(processResult?.state))return;
+    if(!running&&!provider?.pending&&!['running','stopping'].includes(processResult?.state))return;
     const timer=setInterval(async()=>{if(polling.current)return;polling.current=true;try{
-      if(running||awaitingPeers){const state=await api('state');if(mounted.current)setProject(p=>({...p,...state}));}
+      if(running){const state=await api('state');if(mounted.current)setProject(p=>({...p,...state}));}
       if(provider?.pending)await refreshProvider();
       if(['running','stopping'].includes(processResult?.state)){const value=await api('poll',{id:processResult.id});const state=await api('state');if(mounted.current){setProcessResult(value);setProject(p=>({...p,...state}));}}
     }catch{}finally{polling.current=false;}},1000);return()=>clearInterval(timer);
-  },[running,awaitingPeers,provider?.pending,processResult?.id,processResult?.state]);
+  },[running,provider?.pending,processResult?.id,processResult?.state]);
   useEffect(()=>{if(project?.profiles?.length&&!project.profiles.some(p=>p.id===shell))setShell(project.profiles[0].id);},[project?.projectId]);
   useEffect(()=>{let current=true;setProcessResult(project?.processes?.find(p=>p.taskId===taskId)||null);setComparison(null);const previous=project?.comparisons?.find(c=>c.taskId===taskId);if(previous)api('comparison',{id:previous.id}).then(value=>{if(current&&mounted.current)setComparison(value);}).catch(()=>{});return()=>{current=false;};},[taskId]);
   useEffect(()=>{let current=true;setKnowledge(null);if(taskId&&tab==='library')api('knowledgeStatus',{taskId}).then(value=>{if(current)setKnowledge(value);}).catch(e=>{if(current)setError(errors[e.message]||'Wiki 기록을 확인하지 못했어요.');});return()=>{current=false;};},[taskId,tab]);
@@ -100,7 +99,6 @@ export function Workbench({api,openCurrent,chooseFolder,openPath,review,apply,op
           {!!task.questionHistory?.length&&<DeckDisclosure title="확인한 요구사항">{task.questionHistory.map((q,i)=><div className="nubi-decided-question" key={q.id||i}><p>{q.text}</p><strong>{q.answer.text}</strong></div>)}</DeckDisclosure>}
           {task.error&&<CxNotice tone="danger">{errors[task.error]||'분석이 멈췄어요. 연결을 확인한 뒤 다시 시도해 주세요.'}</CxNotice>}
           {proposals.length>0&&<section className="nubi-results"><h2>변경 제안</h2>{proposals.map(p=><article className="nubi-file-card" key={p.id}><Icon name="file" size={22}/><div><strong>{p.path}</strong>{' '}{p.kind==='create'&&<small>새 파일</small>}<p>{p.reason}</p><small>{stateLabel[p.state]}{p.stats?.state==='counted'?` (+${p.stats.added} / −${p.stats.removed}줄)`:''}</small><br/><small title="문법 검사 결과입니다. 타입 검사와 실행 테스트는 별도로 확인합니다.">{qualityLabel(p.quality)}</small></div><CxButton onClick={()=>perform(()=>review(p.id))}>비교</CxButton>{p.state==='proposed'&&<>{p.kind!=='create'&&<CxButton onClick={()=>perform(async()=>{const result=await api('mergeProposal',{proposalId:p.id});if(result.conflicted){setError('같은 부분이 바뀌었어요. 현재 파일과 제안을 비교해 주세요.');return;}await refresh();setNotice('현재 파일에 맞춰 새 제안을 만들었어요.');})}>다시 맞추기</CxButton>}<CxButton onClick={()=>perform(async()=>{await apply(p.id);await refresh();setNotice('파일 반영을 확인했어요.');})}>반영</CxButton></>}</article>)}</section>}
-          <Collaboration key={task.id} task={task} rows={(project.collaborations||[]).filter(r=>r.sourceTaskId===task.id)} api={api} refresh={refresh} disabled={busy||running}/>
           <DeckDisclosure title="완료 조건과 근거"><ul className="nubi-checks">{task.criteria.length?task.criteria.map(c=><li key={c.id}><span>{c.text}</span><DeckStatus>{c.state==='unknown'?'미확인':c.state}</DeckStatus></li>):<li>아직 완료 조건을 정하지 않았어요.</li>}</ul><CxButton onClick={()=>perform(async()=>{const report=await api('exportReport',{taskId});await openURI(report.uri);})}>검증 요약 열기</CxButton></DeckDisclosure>
           <AgentTrace steps={(task.trace||[]).map(event=>({...event,label:event.label||actionLabel[event.tool]||event.tool}))} captures={[]} live={running} completed={task.state==='review'}/>
           {provider?.connected&&<form className="composer nubi-followup" onSubmit={submit}><NubiComposerInput id="followup" value={request} onChange={e=>setRequest(e.target.value)} placeholder="이어서 요청해 주세요" aria-label="추가 요청" disabled={running||!!task.question} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing&&e.keyCode!==229){e.preventDefault();if(request.trim()&&!busy&&!running)submit(e);}}}/><NubiComposerBar leading={modelPicker} tools={<CxButton type="submit" variant="primary" aria-label="전송" disabled={!request.trim()||busy||running||!!task.question}><Icon name="arrowUp" size={20}/></CxButton>}/></form>}

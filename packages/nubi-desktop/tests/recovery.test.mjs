@@ -30,7 +30,7 @@ test('silent inference pauses with saved state; explicit resume rechecks current
 
 test('a stuck read times out into model feedback and the model changes its next operation',async t=>{
   const {service}=await fixture(t);service.recoveryOptions={toolTimeoutMs:20};service.search=()=>new Promise(()=>{});let round=0;
-  service.providers={status,dispose(){},complete:async messages=>{if(round++===0)return call('source_search',{query:'missing'});if(round===2){assert.match(messages.findLast(m=>m.role==='tool').content,/tool_timeout/);return call('read_source',{path:'app.txt'});}return reply();}};
+  service.providers={status,dispose(){},complete:async messages=>{if(round++===0)return call('source_search',{query:'missing'});if(round===2){assert.match(messages.findLast(m=>m.role==='tool').content,/tool_timeout/);service.recoveryOptions.toolTimeoutMs=1000;return call('read_source',{path:'app.txt'});}return reply();}};
   const task=await service.createTask({request:'Find source'});await service.startAgent({taskId:task.id});await service.agent.promise;
   assert.equal(service.task(task.id).state,'review');assert.ok(service.store.list('operation:').some(o=>o.receipt.error==='tool_timeout'));assert.ok(service.store.list('operation:').some(o=>o.tool==='read_source'&&o.state==='completed'));
 });

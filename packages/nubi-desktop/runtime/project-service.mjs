@@ -2,7 +2,6 @@ import {computer,computerState} from './computer-use.mjs';
 import {projectRules,validateProjectRules} from './project-rules.mjs';
 import {inspectNewPath,proposeNewFile,prepareNewFile,applyNewFile} from './new-files.mjs';
 import {decideSetupAction} from './setup-actions.mjs';
-import {collaboration,collaborationRows} from './collaboration.mjs';
 import {mkdir, realpath, readFile, writeFile, mkdtemp, copyFile, stat} from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
@@ -55,9 +54,9 @@ export class ProjectService {
     const [files, branch, status, profiles] = await Promise.all([listFiles(this.root), git(this.root, ['branch', '--show-current']), git(this.root, ['status', '--short']), shellProfiles()]);
     return {projectId: this.projectId, root: this.root, name: path.basename(this.root), branch: branch.trim() || 'detached', dirty: !!status,
       files: files.paths, truncated: files.truncated, wikiFiles: files.paths.filter(p => p.startsWith('openwiki/') && p.endsWith('.md')),
-      computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:collaborationRows(this), tasks: this.store.list('task:').slice(0, 50), proposals: this.store.list('proposal:').slice(0, 50), processes: this.store.list('process:').slice(0, 20), comparisons: this.store.list('comparison:').slice(0, 20), commandRepairs:this.store.list('command-repair:').slice(0,30), profiles};
+      computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:[], tasks: this.store.list('task:').slice(0, 50), proposals: this.store.list('proposal:').slice(0, 50), processes: this.store.list('process:').slice(0, 20), comparisons: this.store.list('comparison:').slice(0, 20), commandRepairs:this.store.list('command-repair:').slice(0,30), profiles};
   }
-  state() { this.ready(); return {computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:collaborationRows(this), tasks: this.store.list('task:').slice(0,50), proposals: this.store.list('proposal:').slice(0,50), processes: this.store.list('process:').slice(0,20), comparisons: this.store.list('comparison:').slice(0,20),commandRepairs:this.store.list('command-repair:').slice(0,30)}; }
+  state() { this.ready(); return {computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:[], tasks: this.store.list('task:').slice(0,50), proposals: this.store.list('proposal:').slice(0,50), processes: this.store.list('process:').slice(0,20), comparisons: this.store.list('comparison:').slice(0,20),commandRepairs:this.store.list('command-repair:').slice(0,30)}; }
   task(taskId) { const task = this.store.get('task:' + taskId); if (!task) fail('task_missing'); return task; }
   async target(taskId) {
     if (!taskId) return this.root;
@@ -94,7 +93,7 @@ export class ProjectService {
   async computer(args) {return computer.call(this,args);}
   async decideSetupAction(args) {return decideSetupAction.call(this,args);}
 
-  async collaboration(args) {return collaboration.call(this,args);}
+  async collaboration() {fail('a2a_not_enabled');}
 
   async createTask({request, criteria = []}) {
     this.ready(); request = limited(request);
