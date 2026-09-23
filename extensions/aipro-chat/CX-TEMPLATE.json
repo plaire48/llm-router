@@ -1,0 +1,8 @@
+{
+  "template": "app-shell",
+  "version": "0.5.4",
+  "source": "templates/app-shell/App.jsx",
+  "integration": [
+    "라우터와 메뉴는 호스트에서 연결합니다."
+  ]
+}

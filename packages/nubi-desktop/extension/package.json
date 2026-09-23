@@ -1,0 +1,19 @@
+{
+  "name": "@nubi/theia-extension",
+  "version": "0.1.0",
+  "private": true,
+  "main": "lib/browser/nubi-frontend-module.js",
+  "dependencies": {
+    "@theia/core": "1.75.0",
+    "@theia/workspace": "1.75.0",
+    "@theia/editor": "1.75.0",
+    "@theia/filesystem": "1.75.0",
+    "@theia/monaco": "1.75.0"
+  },
+  "theiaExtensions": [
+    {
+      "frontend": "lib/browser/nubi-frontend-module",
+      "backend": "lib/node/nubi-backend-module"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+name: Nubi Desktop Windows installer
+on:
+  push:
+    branches: ['codex/nubi-desktop-windows-release*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: packages/nubi-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+      - name: Install locked dependencies
+        run: |
+          npm ci --prefix ../nubi-a2a
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Compile runtime and check contracts
+        run: |
+          New-Item verification -ItemType Directory -Force | Out-Null
+          npm run compile
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --test tests/computer-use.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare verified Windows driver
+        shell: pwsh
+        run: ./scripts/prepare-winapp.ps1
+      - name: Build Windows installer
+        run: npm run package:windows
+      - name: Install and verify packaged application
+        shell: pwsh
+        run: ./scripts/Test-WindowsInstaller.ps1
+      - name: Upload verified installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: nubi-workspace-windows-x64
+          path: |
+            packages/nubi-desktop/release/windows/*-Setup.exe
+            packages/nubi-desktop/release/windows/*.sha256
+            packages/nubi-desktop/verification/electron-release.json
+            packages/nubi-desktop/verification/windows-installer.json
+          if-no-files-found: error
+      - name: Preserve diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nubi-windows-diagnostics
+          path: packages/nubi-desktop/verification/

@@ -1,0 +1,12 @@
+import {spawn} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import os from 'node:os';
+const require=createRequire(import.meta.url),root=fileURLToPath(new URL('../',import.meta.url));
+const target=process.argv[2]||'browser-app';
+if(!['browser-app','electron-app'].includes(target))throw new Error('target_invalid');
+const args=process.argv.slice(3),cli=require.resolve('@theia/cli/bin/theia');
+const child=spawn(process.execPath,[cli,'start','--hostname=127.0.0.1','--port=4330',...args],{cwd:path.join(root,target),stdio:'inherit',env:{...process.env,THEIA_CONFIG_DIR:process.env.THEIA_CONFIG_DIR||path.join(os.homedir(),'.nubi-desktop','ide')}});
+child.on('exit',code=>{process.exitCode=code??1;});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>child.kill(signal));

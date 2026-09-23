@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "nubi",
+  "version": "1.4.15",
+  "description": "웹을 누비는 AI Agent, 누비. 페이지 탐색부터 정보 수집, 입력과 실행까지 브라우저에서 필요한 일을 돕습니다. AI Pro, ChatGPT와 FabriX를 지원합니다.",
+  "minimum_chrome_version": "125",
+  "permissions": [
+    "storage",
+    "tabGroups",
+    "sidePanel",
+    "alarms",
+    "debugger",
+    "activeTab",
+    "scripting",
+    "declarativeNetRequestWithHostAccess",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "https://aipro.sdsdev.co.kr/*",
+    "https://auth.openai.com/*",
+    "https://chatgpt.com/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "http://[::1]/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "누비 열기",
+    "default_icon": {
+      "16": "icons/agent-16.png",
+      "32": "icons/agent-32.png",
+      "48": "icons/agent-48.png",
+      "128": "icons/agent-128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "options_page": "index.html#settings",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'none'; connect-src https: http://localhost:* http://127.0.0.1:*; base-uri 'none'"
+  },
+  "icons": {
+    "16": "icons/agent-16.png",
+    "32": "icons/agent-32.png",
+    "48": "icons/agent-48.png",
+    "128": "icons/agent-128.png"
+  },
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "short_name": "nubi",
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "auth-return.html"
+      ],
+      "matches": [
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://[::1]/*",
+        "https://aipro.sdsdev.co.kr/*",
+        "https://epsso.samsung.net/*",
+        "https://auth.openai.com/*",
+        "https://chatgpt.com/*"
+      ]
+    }
+  ],
+  "version_name": "Beta 1.0.0"
+}

@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/langchain-ai/openwiki",
+  "commit": "715109a8ab1cda6d47680fcc8170e203c751bf61",
+  "version": "0.5.2",
+  "extensions": ["aipro", "aipro-cli", "fabrix"],
+  "extensionTransportSource": "extensions/aipro-chat@0.10.2"
+}

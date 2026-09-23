@@ -1,0 +1,42 @@
+import React, {useEffect, useId, useState} from 'react';
+import {ActionButton, CxButton, DetailPanel, Icon} from '@e2e/cx-design-system';
+import './deck-surfaces.css';
+
+// Small surface primitives derived from the user's HTML: tile, pill,
+// list-card and approve-box. Host data and operations stay in the caller.
+export function DeckSectionLabel({icon, tone='blue', children}) {
+  return <span className="deck-section-label"><span className="deck-section-icon" data-tone={tone} aria-hidden="true"><Icon name={icon} size={18}/></span><span>{children}</span></span>;
+}
+
+export function DeckStatus({tone='neutral',icon,children}) {
+  return <span className="deck-status" data-tone={tone}>{icon && <Icon name={icon} size={14}/>}<span>{children}</span></span>;
+}
+
+// Compose public CX controls so confirmations use the same button typography
+// as other dialogs, including busy/error states and initial cancel focus.
+export function DeckConfirmation({title, message, confirmLabel, cancelLabel='취소', busy=false, onConfirm, onCancel, children}) {
+  const descriptionId = useId();
+  return <DetailPanel title={title} className="deck-dialog deck-confirmation" variant="confirmation" role="alertdialog" describedBy={descriptionId} initialFocus="[data-cancel-confirmation]" busy={busy} onClose={onCancel} footer={<>
+    <ActionButton action="cancel" iconOnly label={cancelLabel} title={cancelLabel} data-cancel-confirmation disabled={busy} onClick={onCancel}/>
+    <CxButton variant="primary" busy={busy} disabled={busy} onClick={onConfirm}>{confirmLabel}</CxButton>
+  </>}>
+    <div className="deck-confirmation-content"><span className="deck-symbol" aria-hidden="true"><Icon name="alertCircle" size={24}/></span><p id={descriptionId}>{message}</p></div>
+    {children}
+  </DetailPanel>;
+}
+
+export function DeckEmpty({icon='message',title,description,loading=false,children}) {
+  return <div className="deck-empty" role={loading ? 'status' : undefined}>
+    <span className="deck-symbol" aria-hidden="true">{loading ? <span className="status-spinner"/> : <Icon name={icon} size={24}/>}</span>
+    <strong>{title}</strong>{description && <p>{description}</p>}{children}
+  </div>;
+}
+
+export function DeckDisclosure({title,icon='list',attention=false,children}) {
+  const [expanded,setExpanded]=useState(attention);
+  useEffect(()=>{if(attention)setExpanded(true);},[attention]);
+  return <details className="deck-disclosure" open={expanded} onToggle={event=>setExpanded(event.currentTarget.open)}>
+    <summary><Icon name={icon} size={16}/><span>{title}</span><Icon name="chevronDown" size={16}/></summary>
+    <div className="deck-disclosure-body">{children}</div>
+  </details>;
+}

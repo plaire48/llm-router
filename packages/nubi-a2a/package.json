@@ -1,0 +1,16 @@
+{
+  "name": "@nubi/a2a",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared local A2A collaboration contract for Nubi hosts",
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@a2a-js/sdk": "1.2.0"
+  }
+}
