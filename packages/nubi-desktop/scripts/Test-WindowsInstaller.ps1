@@ -3,7 +3,21 @@ function Stage([string]$name) {
   Write-Host ("Nubi installer stage: " + $name + " at " + (Get-Date).ToUniversalTime().ToString('o'))
   @{ stage=$name; at=(Get-Date).ToUniversalTime().ToString('o') } | ConvertTo-Json -Compress | Add-Content verification/windows-installer-stages.jsonl
 }
-Stage 'install'
+function Get-AppShortcuts {
+  $shell = New-Object -ComObject WScript.Shell
+  $result = @()
+  foreach ($kind in @('DesktopDirectory', 'Programs', 'CommonDesktopDirectory', 'CommonPrograms')) {
+    $folder = [Environment]::GetFolderPath($kind)
+    if ($folder -and (Test-Path $folder)) {
+      foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse -Force) {
+        $shortcut = $shell.CreateShortcut($file.FullName)
+        $result += @{ folder=$kind; path=$file.FullName; name=$file.BaseName; target=$shortcut.TargetPath; icon=$shortcut.IconLocation }
+      }
+    }
+  }
+  return $result
+}
+Stage 'install' 
 $installer = Get-ChildItem release/windows/*-Setup.exe | Select-Object -First 1
 if (!$installer) { throw 'Installer missing' }
 $target = Join-Path $env:RUNNER_TEMP 'NubiInstalled'
@@ -12,6 +26,7 @@ if ($env:NUBI_BASELINE_INSTALLER) {
   Stage 'baseline-install'
   $baseline = Start-Process $env:NUBI_BASELINE_INSTALLER -ArgumentList @('/S', "/D=$target") -Wait -PassThru
   if ($baseline.ExitCode -ne 0 -or !(Test-Path (Join-Path $target 'Nubi Workspace.exe'))) { throw 'Baseline install failed' }
+  @(Get-AppShortcuts) | ConvertTo-Json -Depth 4 | Set-Content verification/windows-baseline-shortcuts.json
   $upgradeVerified = $true
   Stage 'upgrade'
 }
@@ -32,18 +47,12 @@ if (!$icon) { throw 'Executable icon missing' }
 $bitmap = $icon.ToBitmap()
 $bitmap.Save((Join-Path (Get-Location) 'verification/installed-icon.png'), [System.Drawing.Imaging.ImageFormat]::Png)
 $bitmap.Dispose(); $icon.Dispose()
-$shell = New-Object -ComObject WScript.Shell
-$links = @()
-foreach ($folder in @([Environment]::GetFolderPath('Desktop'), [Environment]::GetFolderPath('Programs'))) {
-  if (Test-Path $folder) {
-    foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse) {
-      $shortcut = $shell.CreateShortcut($file.FullName)
-      if ($shortcut.TargetPath -eq $exe) {
-        if ($file.BaseName -ne $expectedName) { throw "Unexpected shortcut name: $($file.BaseName)" }
-        $links += @{ name=$file.BaseName; target=($shortcut.TargetPath | Split-Path -Leaf); icon=($shortcut.IconLocation | Split-Path -Leaf) }
-      }
-    }
-  }
+$observedLinks = @(Get-AppShortcuts)
+$observedLinks | ConvertTo-Json -Depth 4 | Set-Content verification/windows-observed-shortcuts.json
+$links = @($observedLinks | Where-Object { $_.target -eq $exe })
+foreach ($link in $links) {
+  if ($link.name -ne $expectedName) { throw "Unexpected shortcut name: $($link.name)" }
+  if ($link.folder -like 'Common*') { throw 'Per-user installer created an all-users shortcut' }
 }
 if ($links.Count -lt 1) { throw 'Named app shortcut missing' }
 $registration = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like "$expectedName*" })

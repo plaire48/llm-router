@@ -72,6 +72,14 @@ jobs:
         run: node scripts/check-windows-workflow.mjs
       - name: Build Windows installer
         run: npm run package:windows
+      - name: Preserve candidate for reproducible installer diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: nubi-unverified-windows-candidate
+          path: packages/nubi-desktop/release/windows/*-Setup.exe
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
       - name: Download previous verified installer for upgrade coverage
         env:
           GH_TOKEN: ${{ github.token }}
