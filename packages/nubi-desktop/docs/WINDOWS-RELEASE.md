@@ -41,3 +41,7 @@ The earlier virtual-only deployment hold was superseded by the user: use the bla
 Administrator PowerShell commands have a separate one-action approval and Windows RunAs request. The application and per-user installer stay unelevated. CI checks the actual elevation bridge on an already-admin runner; interactive UAC on company Windows 11 remains unverified. See ADMINISTRATOR-EXECUTION.md.
 
 The release workflow includes current compaction, virtual cursor and elevation contracts. Installer creation, actual installed-app checks, reinstall and uninstall must all pass for the same artifact before publishing a beta. A2A remains deferred.
+
+## Unicode shortcut verification
+
+On the English Windows runner, WScript.Shell read the old ASCII shortcut correctly but returned an empty target for the existing Korean-named shortcut. The verification reader therefore uses Windows SDK IShellLinkW and IPersistFile to read Unicode paths, rather than treating an empty legacy COM result as proof of a broken installer. A native fixture runs before packaging and checks the target, icon and unchanged link bytes. The installed Desktop and Start menu links must both have the approved Korean name, point to the installed executable and use its icon. These are verification helpers, not an additional packaged runtime or a shortcut recreation workaround. [Microsoft API](https://learn.microsoft.com/windows/win32/api/shobjidl_core/nn-shobjidl_core-ishelllinkw).

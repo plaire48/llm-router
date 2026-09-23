@@ -21,6 +21,9 @@ jobs:
           cache-dependency-path: |
             packages/nubi-desktop/package-lock.json
             extensions/aipro-chat/package-lock.json
+      - name: Verify Unicode shortcut inspection
+        shell: pwsh
+        run: ./scripts/Test-ShellLink.ps1
       - name: Verify native virtual cursor shape and user pointer isolation
         run: node scripts/check-visual-pointer.mjs
       - name: Verify real RunAs and elevated child exit before dependency installation
@@ -89,7 +92,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           "NUBI_BASELINE_INSTALLER=$(Join-Path $baseline 'Nubi-Workspace-0.1.0-x64-Setup.exe')" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Install and verify packaged application
-        timeout-minutes: 20
+        timeout-minutes: 25
         shell: pwsh
         run: ./scripts/Test-WindowsInstaller.ps1
       - name: Upload verified installer

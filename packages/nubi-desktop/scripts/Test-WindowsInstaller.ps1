@@ -1,4 +1,5 @@
 $ErrorActionPreference = 'Stop'
+Add-Type -Path (Join-Path $PSScriptRoot 'Read-ShellLink.cs')
 function Stage([string]$name) {
   Write-Host ("Nubi installer stage: " + $name + " at " + (Get-Date).ToUniversalTime().ToString('o'))
   @{ stage=$name; at=(Get-Date).ToUniversalTime().ToString('o') } | ConvertTo-Json -Compress | Add-Content verification/windows-installer-stages.jsonl
@@ -9,9 +10,10 @@ function Get-AppShortcuts {
   foreach ($kind in @('DesktopDirectory', 'Programs', 'CommonDesktopDirectory', 'CommonPrograms')) {
     $folder = [Environment]::GetFolderPath($kind)
     if ($folder -and (Test-Path $folder)) {
-      foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse -Force) {
+      foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse -Force | Where-Object { $_.BaseName -in @('Nubi Workspace','누비 Workspace beta') }) {
         $shortcut = $shell.CreateShortcut($file.FullName)
-        $result += @{ folder=$kind; path=$file.FullName; name=$file.BaseName; target=$shortcut.TargetPath; icon=$shortcut.IconLocation }
+        $native = [NubiShellLink]::Read($file.FullName)
+        $result += @{ folder=$kind; path=$file.FullName; name=$file.BaseName; target=$native[0]; icon=$native[1]; legacyTarget=$shortcut.TargetPath }
       }
     }
   }
@@ -54,7 +56,8 @@ foreach ($link in $links) {
   if ($link.name -ne $expectedName) { throw "Unexpected shortcut name: $($link.name)" }
   if ($link.folder -like 'Common*') { throw 'Per-user installer created an all-users shortcut' }
 }
-if ($links.Count -lt 1) { throw 'Named app shortcut missing' }
+if ($links.Count -ne 2 -or 'DesktopDirectory' -notin $links.folder -or 'Programs' -notin $links.folder) { throw 'Named desktop and Start menu shortcuts required' }
+foreach ($link in $links) { if ($link.icon -ne "$exe,0") { throw 'Shortcut icon does not reference the installed executable' } }
 $registration = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like "$expectedName*" })
 if ($registration.Count -ne 1) { throw 'App uninstall name missing or ambiguous' }
 @{ productName=$metadata.ProductName; fileVersion=$metadata.FileVersion; iconMatchesMaster=$true; shortcuts=$links; uninstallName=$registration[0].DisplayName } | ConvertTo-Json -Depth 4 | Set-Content verification/windows-branding.json
