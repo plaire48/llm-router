@@ -14,7 +14,7 @@ import './workbench.css';
 @injectable()
 class NubiContribution extends AbstractViewContribution<NubiWidget> implements FrontendApplicationContribution {
   private layoutObserver?:ResizeObserver;
-  constructor(){super({widgetId:NubiWidget.ID,widgetName:'누비 Workspace',defaultWidgetOptions:{area:'main'},toggleCommandId:'nubi.open',toggleKeybinding:'ctrlcmd+alt+n'});}
+  constructor(){super({widgetId:NubiWidget.ID,widgetName:'누비 beta',defaultWidgetOptions:{area:'main'},toggleCommandId:'nubi.open',toggleKeybinding:'ctrlcmd+alt+n'});}
   async initializeLayout(){await this.openView({activate:true});}
   onDidInitializeLayout(app:FrontendApplication){
     // A restored dock can retain the pre-sidebar width. Synchronize the main

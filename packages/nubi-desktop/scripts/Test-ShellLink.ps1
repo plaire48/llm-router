@@ -5,7 +5,7 @@ New-Item -ItemType Directory -Path $folder | Out-Null
 try {
   $exe = Join-Path $env:WINDIR 'System32\notepad.exe'
   $ascii = Join-Path $folder 'fixture.lnk'
-  $unicode = Join-Path $folder '누비 Workspace beta.lnk'
+  $unicode = Join-Path $folder '누비 beta.lnk'
   $shell = New-Object -ComObject WScript.Shell
   $link = $shell.CreateShortcut($ascii)
   $link.TargetPath = $exe

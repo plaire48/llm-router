@@ -1,7 +1,7 @@
 appId: nubi.workspace
-productName: 누비 Workspace beta
+productName: 누비 beta
 executableName: Nubi Workspace
-artifactName: Nubi-Workspace-${version}-${arch}-Setup.${ext}
+artifactName: Nubi-${version}-${arch}-Setup.${ext}
 electronVersion: 42.8.1
 asar: false
 npmRebuild: false
@@ -34,6 +34,6 @@ nsis:
   allowToChangeInstallationDirectory: true
   runAfterFinish: false
   createDesktopShortcut: true
-  shortcutName: 누비 Workspace beta
-  uninstallDisplayName: 누비 Workspace beta ${version}
+  shortcutName: 누비 beta
+  uninstallDisplayName: 누비 beta ${version}
 publish: null

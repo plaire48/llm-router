@@ -45,3 +45,9 @@ The release workflow includes current compaction, virtual cursor and elevation c
 ## Unicode shortcut verification
 
 On the English Windows runner, WScript.Shell read the old ASCII shortcut correctly but returned an empty target for the existing Korean-named shortcut. The verification reader therefore uses Windows SDK IShellLinkW and IPersistFile to read Unicode paths, rather than treating an empty legacy COM result as proof of a broken installer. A native fixture runs before packaging and checks the target, icon and unchanged link bytes. The installed Desktop and Start menu links must both have the approved Korean name, point to the installed executable and use its icon. These are verification helpers, not an additional packaged runtime or a shortcut recreation workaround. [Microsoft API](https://learn.microsoft.com/windows/win32/api/shobjidl_core/nn-shobjidl_core-ishelllinkw).
+
+## 1.0.0 identity update
+
+The user-approved release name is 누비 beta 1.0.0. The app, tab, shortcuts and uninstall entry use 누비 beta. Package locks, installed Electron version and Windows file metadata must agree on 1.0.0. The stable app ID, executable and state paths preserve upgrade identity. No new dependency is needed.
+
+This release's workflow upgrades the SHA-256-pinned 0.1.1 verified installer from build run 35864493370, with read-only Actions access. The matching previous release remains archived in AI Workspace. CI artifacts expire: for later releases, update this baseline to an accessible verified release or a retained successful run and checksum. Do not remove the upgrade gate.

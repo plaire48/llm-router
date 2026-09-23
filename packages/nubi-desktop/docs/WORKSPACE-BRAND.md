@@ -1,9 +1,9 @@
-# 누비 Workspace beta
+# 누비 beta
 
-제품군은 누비 beta, 데스크톱 제품의 표시 이름은 누비 Workspace beta다. 내부 nubi-desktop 패키지와 저장소 식별자는 바꾸지 않는다.
+사용자 지정 배포명은 **누비 beta 1.0.0**이다. 제품명, 창 제목, Theia 작업 탭, Windows 바로가기와 카탈로그는 **누비 beta**로 표시하고 버전은 **1.0.0**으로 맞춘다. 로고에 Workspace를 붙이지 않는다.
 
-기존 새 이미지, 워드마크, 표정 프레임과 모션을 재사용한다. 공통 NubiLogo에 선택적인 product 표기만 추가해 브라우저와 Office의 기본 로고는 유지한다. CX와 사용자 HTML의 글꼴, 색상, 모션 감소 설정을 따른다. 추가 아이콘 패키지나 새 캐릭터는 도입하지 않는다.
+기존 누비 새 이미지, 워드마크와 모션, HTML 기준 글꼴과 색상을 재사용한다. Windows 설치 아이콘도 승인된 bird-master.png를 사용한다. 브라우저와 Office의 독립 배포 버전은 변경하지 않는다.
 
-Workspace 헤더에는 새, 누비 워드마크, Workspace, beta를 차례로 표시한다. Theia 작업 탭과 favicon에는 기존 agent-32.png를 사용한다. 연결 영역의 새는 실제 전송 중에만 작업 표정을 보이고, 실패하면 오류 표정을 보인다. 요청 대기를 실제 실행 진행으로 표현하지 않는다.
+이전 설치와의 연결을 위해 내부 nubi-desktop 패키지, nubi.workspace 앱 ID와 Nubi Workspace.exe 실행 파일, 저장 경로는 유지한다. 배포 파일은 Nubi-1.0.0-x64-Setup.exe다. 기존 electron-builder NSIS의 이름 변경과 업그레이드 기능을 재사용하며 새 의존성을 추가하지 않는다.
 
-검증은 Desktop 런타임, 공유 UI, 실제 Theia 화면과 Chrome 확장 연결 화면을 대상으로 수행한다. Windows 설치 파일과 OS 실행 아이콘 변경은 이번 범위에 포함하지 않는다.
+릴리즈 이름만 바꾸지 않고 실제 패키지 버전과 Windows 메타데이터를 함께 검증한다. 이전 설치에서 업그레이드한 뒤 바로가기 이름과 아이콘, 설치된 앱의 버전을 확인한다. 자세한 검증 경계는 WINDOWS-RELEASE.md를 따른다.
