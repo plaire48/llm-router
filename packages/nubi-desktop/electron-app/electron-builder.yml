@@ -20,7 +20,7 @@ extraResources:
   - from: ../vendor/licenses
     to: licenses
 win:
-  icon: resources/nubi.ico
+  icon: resources/nubi.png
   target:
     - target: nsis
       arch: [x64]

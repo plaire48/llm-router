@@ -25,3 +25,11 @@ The workflow builds on GitHub Windows runners. Their actual OS is reported in `w
 - `lib/runtime-provenance.json` records OpenWiki-SDS package identity, version and the digest of the source files actually bundled. Full CLI generation is not implied by the presence of retrieval/Claims/pairing functions.
 
 No new agent framework was added. Existing Pi, OpenWiki-SDS, SQLite and Theia remain the execution and evidence foundation.
+
+## A2A deferral verification
+
+The desktop omits peer controls and polling, excludes the A2A server/client/SDK from production bundles, and rejects legacy collaboration requests with `a2a_not_enabled`. Existing stored records are preserved but are not injected into model context. Shared error-name constants are inert and remain compatible with the Office error mapper. A build-time input check prevents accidentally restoring the transport. Prior experimental source is reference material only.
+
+After deferral, the isolated release snapshot passed 112 runtime tests, 45 actual Theia UI checks, 14 shared UI checks and a macOS Electron UI/worker/SQLite/OpenWiki-SDS smoke. These are not Windows installer or real model results.
+
+Pinned winapp promotes unique automation IDs during tree inspection but returns canonical UIA selectors for property/value queries. The adapter validates the returned selector and exact automation ID, retains the canonical identity for before/after comparisons, and reads the value by that canonical selector. Mismatched aliases remain rejected. This follows the pinned upstream `UiGetPropertyCommand`, `UiGetValueCommand` and `PromoteUniqueAutomationIds` implementations.
