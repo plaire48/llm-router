@@ -12,7 +12,7 @@ await writeFile(script,`Add-Type -AssemblyName PresentationFramework\n$w=New-Obj
 const child=spawn('powershell.exe',['-NoProfile','-STA','-File',script],{stdio:['ignore','pipe','pipe'],windowsHide:false});let stderr='';child.stderr.on('data',d=>stderr+=d);
 try{
  let window;for(let i=0;i<20;i++){window=(await adapter.windows()).find(v=>v.processId===child.pid);if(window)break;if(child.exitCode!==null)throw Error(stderr||'fixture exited');await new Promise(r=>setTimeout(r,500));}
- assert(window,'Fixture window not found');const status=await adapter.status(window.hwnd);const observation=await adapter.inspect(window.hwnd);
+ assert(window,'Fixture window not found');await mkdir('verification',{recursive:true});await writeFile('verification/windows-uia-status.json',JSON.stringify(await adapter.call(['status','-w',String(window.hwnd)]),null,2));const status=await adapter.status(window.hwnd);const observation=await adapter.inspect(window.hwnd);
  const target=observation.elements.find(v=>['Edit','TextBox'].includes(v.type));assert(target,'Editable UIA element missing');
  const property=await adapter.property(window.hwnd,target.selector);assert.equal(property.password,'False');
  await adapter.act(window.hwnd,target.selector,'set_value','Nubi verified');assert.equal(await adapter.value(window.hwnd,target.selector),'Nubi verified');

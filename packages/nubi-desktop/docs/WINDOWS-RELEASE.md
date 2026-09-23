@@ -2,7 +2,7 @@
 
 The Windows x64 installer uses the existing Theia Electron application and electron-builder 26.15.3 (MIT). The structure follows [Theia IDE packaging](https://theia-ide.org/docs/blueprint_documentation/) and its [official configuration](https://github.com/eclipse-theia/theia-ide/blob/master/applications/electron/electron-builder.yml). Native modules are rebuilt on Windows for Electron 42.8.1 before the production bundle is created. Mac/browser results do not substitute for this check.
 
-The installer is per-user, needs no elevated installation, and includes the existing Nubi bird icon. It contains the application, worker, runtime dependencies and a SHA-256 verified Microsoft winapp 0.6.0 x64 driver. The driver is checked again before each action. The app still requires a Git installation to work on Git repositories and a configured provider account to call a model. Driver inclusion grants no app/window or input approval.
+The installer is per-user, needs no elevated installation, and includes the existing Nubi bird icon. It contains the application, worker, runtime dependencies and a SHA-256 verified Microsoft winapp source d626d2b53b9e x64 driver. The driver is checked again before each action. The app still requires a Git installation to work on Git repositories and a configured provider account to call a model. Driver inclusion grants no app/window or input approval.
 
 ## Build and release gates
 

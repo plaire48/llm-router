@@ -15,3 +15,7 @@ const html=await readFile(index,'utf8');
 await writeFile(index,html.includes('data-nubi-favicon')?html:html.replace('</head>','<link data-nubi-favicon rel="icon" type="image/png" href="./icons/agent-32.png"></head>'));
 
 await cp('generated/runtime-provenance.json',`${target}/lib/runtime-provenance.json`);
+
+await mkdir(`${target}/lib/licenses`,{recursive:true});
+await cp('../openwiki/LICENSE',`${target}/lib/licenses/OpenWiki-SDS-LICENSE`);
+await cp('node_modules/dompurify/LICENSE',`${target}/lib/licenses/DOMPurify-LICENSE`);

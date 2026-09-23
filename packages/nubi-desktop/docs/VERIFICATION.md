@@ -125,3 +125,12 @@ Windows 설치 파일·서명·자동 업데이트·실제 Windows Git Bash/Powe
 - 실제 Theia 브라우저 검사 46개, 합성 공통 UI 검사 14개 통과. 결과 분석 연결과 네이티브 재실행 방지, 440px 화면을 확인했다. 데스크톱과 확장 CX 검사 이슈 0. Browser/Electron 개발 번들과 Chrome 확장 candidate 빌드 통과. 확장 빌드의 기존 chunk 크기 경고는 남아 있다.
 - 로그: verification/computer-harness-runtime.log, computer-harness-shared-ui.log, computer-harness-theia-ui.log, computer-harness-build.log, computer-harness-electron.log. 공유 코어와 candidate 로그는 extensions/aipro-chat/verification/computer-harness-core.log, computer-harness-candidate.log. 화면: verification/ui-windows-launch.png, ui-windows-launch-narrow.png.
 - 실제 Windows 11 앱 제어, winapp 설치, DPI/다중 모니터, 회사 앱과 실모델 이미지 해석 정확도는 미검증이다. OCR 실행기나 좌표 추정 클릭을 추가하지 않았으며 설치 파일을 생성하거나 배포하지 않았다.
+
+## 2026-09-23 배포 전 품질 재검사
+
+- OpenWiki-SDS 0.6.0의 실제 12개 소스 파일을 번들에 사용함을 확인했다. 패키지 이름과 버전, 실제 포함 소스의 SHA-256을 runtime-provenance.json에 기록하고 Electron 검사에서 이름을 검증한다.
+- Monaco 내장 DOMPurify를 공식 Theia esbuild 확장으로 3.4.15에 연결했다. 단순 npm override로는 내장 3.2.7 코드가 남는 것을 확인해 별도 빌드 차단 조건을 추가했다. UUID 11.1.1과 Mocha diff 8.0.3은 실제 호출 API를 검사했다. npm audit의 보고 항목은 25개에서 0개로 줄었다. 모든 보안 문제의 부재를 의미하지 않는다.
+- 오래된 동작 결과에서 분석을 재개할 때 같은 작업의 새로운 승인 대기/미확정 동작을 먼저 확인하도록 수정했다. 회귀 검사 포함 런타임 108개, Theia UI 46개, 공통 UI 14개, CX 검사 이슈 0. Browser/Electron 빌드 통과.
+- macOS에서 실제 Electron 42.8.1 창과 신뢰 확인, 누비 UI, 번들 worker IPC, SQLite, 소스 읽기와 OpenWiki-SDS 검색을 통과했다. Electron 내부 Node는 24.18.1이었다. 처음 검사에서 신뢰 대화상자를 처리하지 않아 대기했고, 이후 검사 코드의 require 접근을 Node builtin 조회로 수정했다. Windows 검증 결과와는 별도다.
+- Windows 첫 검사에서는 깨끗한 환경에 공유 브라우저 소스의 p-retry 의존성이 없어 실패했다. README와 workflow에 공유 패키지 잠금 설치를 추가했다. 기존 Mac node_modules에 의존하던 테스트 준비 누락을 수정한 것이다.
+- 로그: verification/quality-release-*.log, quality-release-audit-final.json, electron-release.json, electron-release.png. Windows 빌드/설치 결과는 docs/WINDOWS-RELEASE.md와 해당 CI 기록에서 따로 확인한다.

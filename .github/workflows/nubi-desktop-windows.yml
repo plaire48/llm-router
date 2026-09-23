@@ -37,6 +37,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --test tests/computer-use.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/checkout@v4
+        with:
+          repository: microsoft/winappCli
+          ref: d626d2b53b9eea27ae2972e9153ce0b1d4c52825
+          path: .build/winapp
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
       - name: Prepare verified Windows driver
         shell: pwsh
         run: |

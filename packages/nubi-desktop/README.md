@@ -24,7 +24,7 @@ npm run build:electron
 npm run start:electron -- /absolute/path/to/git-project
 ```
 
-Windows에서도 같은 npm 명령을 사용합니다. Git Bash가 있으면 탐지하고 없으면 PowerShell을 선택합니다. `NUBI_BASH_PATH`는 Git Bash 경로를 명시할 때만 사용합니다. 현재 산출물은 개발 실행용입니다. Windows 설치 파일·자동 업데이트·서명·원터치 배포는 아직 제공하지 않습니다.
+Windows에서도 같은 npm 명령을 사용합니다. Git Bash가 있으면 탐지하고 없으면 PowerShell을 선택합니다. `NUBI_BASH_PATH`는 Git Bash 경로를 명시할 때만 사용합니다. Windows x64 설치 파일은 `npm run package:windows`와 전용 Windows workflow로 생성합니다. 검증 절차와 실제 통과 범위는 [Windows 배포](docs/WINDOWS-RELEASE.md)를 따릅니다. 자동 업데이트와 공인 배포자 서명은 아직 제공하지 않습니다.
 
 ## 현재 연결된 동작
 
@@ -58,7 +58,7 @@ npm run test:shared-ui
 
 런타임 검사는 실제 임시 Git 저장소·SQLite·프로세스·OpenWiki HTTP·Chrome 캡처를 사용합니다. 모델은 주입한 합성 응답으로 도구 계약을 검증합니다. UI 검사는 실제 Theia에서 편집 충돌·diff·저장·명령 실행·화면 비교·새로고침·접근성 모션을 확인합니다. 공통 UI 검사는 합성 제공자 상태로 로그인 후 전환·검색형 모델 선택·후속 대화·로그아웃·FabriX 테스트 후 연결을 확인합니다. 실제 계정 인증 검사가 아닙니다. 증적은 gitignore된 `verification/`에 생성합니다.
 
-Windows 설치/실행, 각 제공자 실계정·사내망 성능, 실제 확장 설치 후 페어링, Office 작업 수신·편집·저장, OpenWiki의 자동 생성·주기적 갱신, LSP/VS Code 확장 호환성, 다중 창 작업 조정은 별도 검증·구현 범위입니다. 현재 Agent는 분석과 변경안 준비를 수행하고, 코드 반영과 명령 실행은 화면의 명시적 동작으로 연결합니다. 검증 요약을 만들 수 있지만 Office에 전달되거나 저장됐다고 표시하지 않습니다. 화면 픽셀 차이로 기능 완료를 판정하지 않습니다.
+사용자 Windows 11 환경, 각 제공자 실계정·사내망 성능, 실제 확장 설치 후 페어링, Office 작업 수신·편집·저장, OpenWiki의 자동 생성·주기적 갱신, LSP/VS Code 확장 호환성, 다중 창 작업 조정은 별도 검증·구현 범위입니다. 현재 Agent는 분석과 변경안 준비를 수행하고, 코드 반영과 명령 실행은 화면의 명시적 동작으로 연결합니다. 검증 요약을 만들 수 있지만 Office에 전달되거나 저장됐다고 표시하지 않습니다. 화면 픽셀 차이로 기능 완료를 판정하지 않습니다.
 
 검증 결과는 [검증 기록](docs/VERIFICATION.md), 개선 판단과 남은 우선순위는 [개선 기록](docs/IMPROVEMENTS.md), 선택 근거는 [구현 결정](docs/IMPLEMENTATION.md), 라이선스는 [THIRD-PARTY-NOTICES](THIRD-PARTY-NOTICES.md)에 기록했습니다.
 
