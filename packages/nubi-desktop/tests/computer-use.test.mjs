@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {writeFile} from 'node:fs/promises';
+import {writeFile,symlink} from 'node:fs/promises';
 import {PNG} from 'pngjs';
 import {fixture} from './fixtures.mjs';
 import {WinappComputer,observeComputer,proposeComputerAction,verifyComputerValue,imageDifference,readPng} from '../runtime/computer-use.mjs';
@@ -224,4 +224,13 @@ test('unique automation IDs resolve to canonical UIA selectors without accepting
  await assert.rejects(a.property(100,'DifferentControl'),/computer_target_changed/);
  a.runner=async args=>{const raw=await original(args);return args[1]==='get-property'?{...raw,elementId:'different-selector',element:{...raw.element,automationId:'NubiValue'}}:raw;};
  await assert.rejects(a.property(100,'NubiValue'),/computer_target_changed/);
+});
+
+
+test('capture verifies filesystem identity when the driver returns an equivalent path spelling',{skip:process.platform==='win32'},async t=>{
+ const {service}=await setup(t),a=service.computerAdapter,original=a.runner;
+ a.runner=async args=>{const raw=await original(args);if(args[1]==='screenshot'){const alias=raw.filePath+'.alias';await symlink(raw.filePath,alias);return {...raw,filePath:alias};}return raw;};
+ assert((await a.capture(100)).data);
+ a.runner=async args=>{const raw=await original(args);if(args[1]==='screenshot'){const other=raw.filePath+'.other';await writeFile(other,'different');return {...raw,filePath:other};}return raw;};
+ await assert.rejects(a.capture(100),/computer_contract/);
 });

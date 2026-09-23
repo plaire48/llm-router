@@ -1,6 +1,6 @@
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
-import {readFile,stat,mkdtemp,rm} from 'node:fs/promises';
+import {readFile,stat,mkdtemp,rm,realpath} from 'node:fs/promises';
 import {randomUUID,createHash} from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
@@ -77,7 +77,8 @@ export class WinappComputer {
     const directory=await mkdtemp(path.join(os.tmpdir(),'nubi-capture-')),file=path.join(directory,'capture.png');
     try{
       const result=await this.call(['screenshot',...(selector?[selector]:['--capture-screen']),'-w',String(window),'--output',file]);
-      if(result?.hwnd!==window||(result.elementId??null)!==(selector||null)||path.resolve(result.filePath||'')!==file)fail('computer_contract');
+      if(result?.hwnd!==window||(result.elementId??null)!==(selector||null)||typeof result.filePath!=='string'||!path.isAbsolute(result.filePath))fail('computer_contract');
+      if(await realpath(result.filePath)!==await realpath(file))fail('computer_contract');
       if((await stat(file)).size>4500000)fail('computer_image_invalid');
       const bytes=await readFile(file),png=readPng(bytes);
       if(result.width!==png.width||result.height!==png.height)fail('computer_contract');
