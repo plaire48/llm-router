@@ -26,7 +26,7 @@ test('payload preserves literal command and paths without execution policy chang
   assert.match(launcher,/-Verb RunAs/);assert.doesNotMatch(launcher+child,/ExecutionPolicy|Set-ExecutionPolicy|Credential\s+/);
   const original=JSON.parse(Buffer.from(child.match(/FromBase64String\('([^']+)'\)/)[1],'base64').toString('utf8'));
   assert.equal(original.script,script);assert.equal(original.cwd,"C:\\프로젝트 'one");assert.equal(payload.script,script);
-  assert.match(child,/IsInRole/);assert.match(child,/cancelPath/);assert(payload.command.length<28000);
+  assert.match(child,/IsInRole/);assert.match(launcher,/cancelPath/);assert.doesNotMatch(child,/WriteAllText|Out-File|logPath|startedPath/);assert.match(child,/NamedPipeClientStream/);assert(payload.command.length<28000);
   assert.throws(()=>elevationRequest({script:'x'.repeat(3001)}),/elevation_command_limit/);
 });
 test('only a matching explicit elevation approval can launch and duplicates return the existing receipt',async t=>{

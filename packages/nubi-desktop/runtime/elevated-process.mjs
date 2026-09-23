@@ -12,52 +12,82 @@ $ErrorActionPreference = 'Stop'
 [Console]::InputEncoding = New-Object Text.UTF8Encoding($false)
 $request = [Console]::In.ReadToEnd() | ConvertFrom-Json
 $receipt = @{ id=$request.id; state='unknown'; started=$false; exitCode=$null }
+$pipe=$null; $reader=$null; $writer=$null; $log=$null
 try {
   $tokens=$null; $parseErrors=$null
   [System.Management.Automation.Language.Parser]::ParseInput($request.script,[ref]$tokens,[ref]$parseErrors) | Out-Null
   if ($parseErrors.Count -gt 0) { $receipt.state='syntax_error' }
   elseif (Test-Path -LiteralPath $request.cancelPath) { $receipt.state='cancelled' }
   else {
+    $pipe=New-Object IO.Pipes.NamedPipeServerStream($request.pipeName,[IO.Pipes.PipeDirection]::InOut,1,[IO.Pipes.PipeTransmissionMode]::Byte,[IO.Pipes.PipeOptions]::Asynchronous)
+    $connection=$pipe.BeginWaitForConnection($null,$null)
     $child = Start-Process -FilePath (Join-Path $PSHOME 'powershell.exe') -Verb RunAs -ArgumentList @('-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',$request.command) -PassThru
     $null=$child.Handle
+    while(!$connection.AsyncWaitHandle.WaitOne(100) -and !$child.HasExited) {}
+    if($connection.IsCompleted){
+      $pipe.EndWaitForConnection($connection)
+      $reader=New-Object IO.StreamReader($pipe)
+      $writer=New-Object IO.StreamWriter($pipe)
+      $writer.AutoFlush=$true
+      $log=New-Object IO.StreamWriter($request.logPath,$false,[Text.UTF8Encoding]::new($false))
+      $writer.WriteLine($(if(Test-Path -LiteralPath $request.cancelPath){'cancel'}else{'run'}))
+      while($null -ne ($line=$reader.ReadLine())){
+        if($line.Length -gt 24000){throw 'invalid_frame'}
+        $frame=$line | ConvertFrom-Json
+        if($frame.type -eq 'started'){$receipt.started=$true}
+        elseif($frame.type -eq 'output'){$log.WriteLine([string]$frame.text)}
+        else{throw 'invalid_frame'}
+      }
+    }
     $child.WaitForExit()
     $receipt.exitCode=$child.ExitCode
-    $receipt.started=Test-Path -LiteralPath $request.startedPath
     $receipt.state=if($receipt.started){'finished'}elseif($child.ExitCode -eq 1223){'cancelled'}else{'unknown'}
   }
 } catch {
   $errorItem=$_.Exception
   while($errorItem -and $errorItem.NativeErrorCode -ne 1223){$errorItem=$errorItem.InnerException}
-  if($errorItem){$receipt.state='cancelled'}
+  if($errorItem -and !$receipt.started){$receipt.state='cancelled'}
+} finally {
+  if($log){$log.Dispose()}; if($writer){$writer.Dispose()}; if($reader){$reader.Dispose()}; if($pipe){$pipe.Dispose()}
 }
 [Console]::Out.WriteLine(($receipt | ConvertTo-Json -Compress))
 `;
 
-export function elevationRequest({id,cwd,script,logPath,cancelPath,startedPath}) {
+export function elevationRequest({id,cwd,script,logPath,cancelPath}) {
   if(typeof script!=='string'||!script.trim()||script.length>3000)throw new Error('elevation_command_limit');
-  const payload=Buffer.from(JSON.stringify({cwd,script,logPath,cancelPath,startedPath}),'utf8').toString('base64');
+  const pipeName='nubi-elevation-'+id;
+  const payload=Buffer.from(JSON.stringify({cwd,script,pipeName}),'utf8').toString('base64');
+  // The elevated wrapper only uses IPC for receipts. It never writes a log,
+  // marker or result to a lower-privilege writable path after consent.
   const command=encoded(String.raw`
 $ErrorActionPreference='Stop'
 $p=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${payload}')) | ConvertFrom-Json
 $admin=([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if(!$admin){exit 740}
-if(Test-Path -LiteralPath $p.cancelPath){exit 1223}
+$pipe=New-Object IO.Pipes.NamedPipeClientStream('.',$p.pipeName,[IO.Pipes.PipeDirection]::InOut)
+$pipe.Connect(15000)
+$reader=New-Object IO.StreamReader($pipe)
+$writer=New-Object IO.StreamWriter($pipe)
+$writer.AutoFlush=$true
+if($reader.ReadLine() -ne 'run'){exit 1223}
 Get-ChildItem Env: | Where-Object {$_.Name -match 'TOKEN|SECRET|PASSWORD|API_KEY|AUTHORIZATION|CREDENTIAL'} | ForEach-Object {Remove-Item ('Env:'+ $_.Name)}
 Set-Location -LiteralPath $p.cwd
-if(Test-Path -LiteralPath $p.cancelPath){exit 1223}
-[IO.File]::WriteAllText($p.startedPath,'started')
+$writer.WriteLine('{"type":"started"}')
 $global:LASTEXITCODE=0
 try {
-  & ([ScriptBlock]::Create($p.script)) *>&1 | Out-File -LiteralPath $p.logPath -Encoding utf8
+  & ([ScriptBlock]::Create($p.script)) *>&1 | ForEach-Object {
+    $text=[string]$_
+    for($offset=0;$offset -lt $text.Length;$offset+=2000){$writer.WriteLine((@{type='output';text=$text.Substring($offset,[Math]::Min(2000,$text.Length-$offset))} | ConvertTo-Json -Compress))}
+  }
   if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
   exit 0
 } catch {
-  'Command failed. Inspect the approved command and actual state before retrying.' | Out-File -LiteralPath $p.logPath -Append -Encoding utf8
+  $writer.WriteLine((@{type='output';text='Command failed. Inspect the approved command and actual state before retrying.'} | ConvertTo-Json -Compress))
   exit 1
 }
 `);
   if(command.length>28000)throw new Error('elevation_command_limit');
-  return {args:['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded(launcher)],input:JSON.stringify({id,script,command,cancelPath,startedPath})};
+  return {args:['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded(launcher)],input:JSON.stringify({id,script,command,cancelPath,logPath,pipeName})};
 }
 
 export function elevationReceipt(text,id) {
@@ -80,8 +110,8 @@ export async function startElevated(owner,{cwd,script,profile,taskId,setupAction
   if(!action||action.state!=='starting'||action.privilege!=='administrator'||!action.elevationConsentAt||action.taskId!==taskId||action.workspace!==cwd||action.script!==script||action.profile!==profile)throw new Error('elevation_approval_required');
   if(action.resultProcessId)return owner.poll(action.resultProcessId);
   const id=randomUUID(),directory=path.join(owner.store.directory,'elevation',id);
-  const logPath=path.join(directory,'output.log'),cancelPath=path.join(directory,'cancel'),startedPath=path.join(directory,'started');
-  const request=elevationRequest({id,cwd,script,logPath,cancelPath,startedPath});
+  const logPath=path.join(directory,'output.log'),cancelPath=path.join(directory,'cancel');
+  const request=elevationRequest({id,cwd,script,logPath,cancelPath});
   const record={id,taskId,cwd,script,profile,setupActionId,privilege:'administrator',startedAt:new Date().toISOString(),state:'running',lastOutputAt:Date.now(),execution:'requested',output:'Windows 승인과 실행 결과를 기다리고 있습니다.',exitCode:null,logPath,autoDiagnose:true};
   mkdirSync(directory,{recursive:true,mode:0o700});
   owner.store.set('process:'+id,record);
