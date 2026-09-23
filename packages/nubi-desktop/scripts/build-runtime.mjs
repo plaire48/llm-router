@@ -1,7 +1,14 @@
 import {build} from 'esbuild';
 import {mkdir,copyFile,readFile,writeFile} from 'node:fs/promises';
 import path from 'node:path';
-await build({entryPoints:['runtime/openwiki-source.ts'],outfile:'generated/openwiki.mjs',bundle:true,platform:'node',nodePaths:[path.resolve('node_modules')],format:'esm',target:'node24',external:['minisearch','yaml'],legalComments:'eof'});
+import {createHash} from 'node:crypto';
+const wikiBuild=await build({metafile:true,entryPoints:['runtime/openwiki-source.ts'],outfile:'generated/openwiki.mjs',bundle:true,platform:'node',nodePaths:[path.resolve('node_modules')],format:'esm',target:'node24',external:['minisearch','yaml'],legalComments:'eof'});
+const wikiPackage=JSON.parse(await readFile('../openwiki/package.json','utf8'));
+if(wikiPackage.name!=='openwiki-sds')throw Error('openwiki_sds_source_required');
+const wikiSources=Object.keys(wikiBuild.metafile.inputs).filter(p=>!p.includes('node_modules')&&p.replaceAll('\\','/').startsWith('../openwiki/')).sort();
+if(!wikiSources.length)throw Error('openwiki_sds_source_missing');
+const wikiHash=createHash('sha256');for(const file of wikiSources){wikiHash.update(file.replaceAll('\\','/'));wikiHash.update(await readFile(file));}
+await writeFile('generated/runtime-provenance.json',JSON.stringify({openwiki:{name:wikiPackage.name,version:wikiPackage.version,sourceSha256:wikiHash.digest('hex'),sourceFiles:wikiSources.length,scope:'Bundled retrieval, Claims, repository evidence and pairing. Not the full CLI.'}},null,2)+'\n');
 await mkdir('extension/lib/node',{recursive:true});
 for (const worker of ['schema-worker','database-worker','code-analysis-worker']) await build({entryPoints:[`runtime/${worker}.mjs`],outfile:`extension/lib/node/${worker}.mjs`,bundle:true,platform:'node',format:'esm',target:'node24',external:['knex','knex-schema-inspector','typescript','jsonc-parser'],banner:{js:"import {createRequire} from 'node:module'; const require=createRequire(import.meta.url);"}});
 await build({entryPoints:['runtime/service-entry.mjs'],outfile:'extension/lib/node/service-entry.mjs',bundle:true,platform:'node',nodePaths:[path.resolve('node_modules')],format:'esm',target:'node24',banner:{js:"import {createRequire} from 'node:module'; const require=createRequire(import.meta.url);"},external:['@vscode/ripgrep','knex','knex-schema-inspector','@earendil-works/pi-agent-core','@earendil-works/pi-ai','playwright','pixelmatch','pngjs','minisearch'],legalComments:'eof'});

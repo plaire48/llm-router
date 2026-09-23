@@ -10,6 +10,7 @@
 
 ```sh
 cd packages/nubi-desktop
+npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
 npm ci --prefix ../nubi-a2a
 npm ci
 npm run build

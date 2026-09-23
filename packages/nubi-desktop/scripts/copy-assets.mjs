@@ -13,3 +13,5 @@ await cp('../nubi-a2a/licenses',`${target}/lib/a2a-licenses`,{recursive:true});
 const index=`${target}/lib/frontend/index.html`;
 const html=await readFile(index,'utf8');
 await writeFile(index,html.includes('data-nubi-favicon')?html:html.replace('</head>','<link data-nubi-favicon rel="icon" type="image/png" href="./icons/agent-32.png"></head>'));
+
+await cp('generated/runtime-provenance.json',`${target}/lib/runtime-provenance.json`);

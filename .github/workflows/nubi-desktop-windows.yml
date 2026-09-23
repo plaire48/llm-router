@@ -17,8 +17,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24.18.0'
+          cache: npm
+          cache-dependency-path: |
+            packages/nubi-desktop/package-lock.json
+            packages/nubi-a2a/package-lock.json
+            extensions/aipro-chat/package-lock.json
       - name: Install locked dependencies
         run: |
+          npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm ci --prefix ../nubi-a2a
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm ci
@@ -32,7 +39,10 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prepare verified Windows driver
         shell: pwsh
-        run: ./scripts/prepare-winapp.ps1
+        run: |
+          ./scripts/prepare-winapp.ps1
+          node scripts/check-winapp.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build Windows installer
         run: npm run package:windows
       - name: Install and verify packaged application
@@ -47,6 +57,7 @@ jobs:
             packages/nubi-desktop/release/windows/*.sha256
             packages/nubi-desktop/verification/electron-release.json
             packages/nubi-desktop/verification/windows-installer.json
+            packages/nubi-desktop/verification/windows-uia.json
           if-no-files-found: error
       - name: Preserve diagnostics
         if: always()

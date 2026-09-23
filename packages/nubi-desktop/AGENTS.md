@@ -35,3 +35,5 @@
 - Windows 앱 실행은 Theia 파일 선택으로 등록한 작업별 EXE와 해시만 사용한다. 기존 Node 실행기로 승인한 앱을 한 번 시작하고 살아 있는 자식 PID의 창을 확인하며, 창 연결은 별도 사용자 선택이다. 재시작은 앱 권한을 복원하거나 실행을 재전송하지 않는다. Pi의 값 대조 결과는 개별 컨트롤 확인이며 업무 완료가 아니다. 명시적 Wiki 기록에는 결과 메타데이터만 추가하고 앱 경로, 입력값과 이미지를 제외한다.
 
 - Windows 관찰/결과 근거는 공유 Pi 분석 조정기에 호스트 opt-in으로 등록한다. 하위 분석은 동결된 근거만 읽고 native 도구/승인 권한을 받지 않는다. 과거 캡처와 요약은 새 조작 관찰을 대체하지 않는다. 결과 분석 재개는 원래 동작을 재실행하지 않으며, UIA 변화 없는 반복 실패는 기존 질문 폼으로 전환한다. 범위는 docs/WINDOWS-HARNESS.md를 따른다.
+
+- Windows 배포는 Windows x64에서 Theia native 모듈을 Electron ABI로 재빌드한 뒤 electron-builder NSIS로 만든다. 실제 설치 앱의 UI/worker/OpenWiki-SDS와 설치/재설치/제거 검사를 통과한 산출물만 게시한다. 러너 Windows 버전, 서명 상태, 실사용 Windows 11/실모델 미검증을 구분한다. Monaco의 내장 정제 코드는 저장소의 esbuild 플러그인으로 수정판에 연결하며 node_modules를 직접 수정하지 않는다. 상세 범위는 docs/WINDOWS-RELEASE.md를 따른다.
