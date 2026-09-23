@@ -38,10 +38,11 @@ test('history boundary survives a fresh adapter and retains original text and li
 });
 test('closing and reopening SQLite restores the summary without discarding original dialogue',async t=>{
   const {directory}=await fixture(t),options=setup();let store=new Store(path.join(directory,'conversation'));
-  t.after(()=>store.close());store.set('task:one',options.task);
+  try{store.set('task:one',options.task);
   const first=await prepareConversation({...options,store});store.close();store=new Store(path.join(directory,'conversation'));
   const restored=await prepareConversation({...options,store,task:store.get('task:one'),invoke:()=>assert.fail('durable boundary must be reused')});
   assert.deepEqual(restored.messages,first.messages);assert.deepEqual(store.get('task:one'),options.task);
+  }finally{store.close();} // Close before the fixture removes its directory on Windows.
 });
 test('changed, reordered and deleted historical prefixes invalidate a saved summary',async()=>{
   for(const mutate of [task=>task.messages[0].content='changed '.repeat(8000),task=>{[task.messages[0],task.messages[2]]=[task.messages[2],task.messages[0]];},task=>task.messages.splice(0,1)]) {

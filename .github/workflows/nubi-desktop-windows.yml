@@ -23,6 +23,8 @@ jobs:
             extensions/aipro-chat/package-lock.json
       - name: Verify native virtual cursor shape and user pointer isolation
         run: node scripts/check-visual-pointer.mjs
+      - name: Verify real RunAs and elevated child exit before dependency installation
+        run: node scripts/check-elevation.mjs
       - name: Install locked dependencies
         run: |
           npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
@@ -35,8 +37,6 @@ jobs:
           npm run compile
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --test tests/computer-use.test.mjs tests/computer-pointer.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs tests/collaboration.test.mjs tests/voc.test.mjs tests/conversation-context.test.mjs tests/elevated-process.test.mjs tests/provider-host.test.mjs
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node scripts/check-elevation.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/checkout@v4
         with:
@@ -81,7 +81,7 @@ jobs:
             packages/nubi-desktop/verification/electron-release.json
             packages/nubi-desktop/verification/windows-installer.json
             packages/nubi-desktop/verification/windows-uia.json
-            packages/nubi-desktop/verification/windows-uia-visual-pointer.json
+            packages/nubi-desktop/verification/windows-uia-visual-only.json
             packages/nubi-desktop/verification/windows-elevation.json
           if-no-files-found: error
       - name: Preserve diagnostics
