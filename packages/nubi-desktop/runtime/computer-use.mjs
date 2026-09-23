@@ -82,16 +82,19 @@ export class WinappComputer {
   }
   async property(window,selector){
     const raw=await this.call(['get-property',selector,'-w',String(window)]);
-    if(raw?.elementId!==selector||raw?.element?.selector!==selector)fail('computer_target_changed');
+    // Tree inspection prefers AutomationId; single-element queries return a semantic slug.
+    // Accept only an explicit alias on the resolved element, never an arbitrary ID mismatch.
+    if(raw?.elementId!==raw?.element?.selector||!validSelector(raw?.element?.selector)||(raw.element.selector!==selector&&raw.element.automationId!==selector))fail('computer_target_changed');
     // UIA password flag is required for value read/write. Missing is not false.
-    return {element:element(raw.element),password:raw.properties?.IsPassword,readOnly:raw.properties?.IsReadOnly};
+    return {element:element({...raw.element,selector}),resolvedSelector:raw.element.selector,password:raw.properties?.IsPassword,readOnly:raw.properties?.IsReadOnly};
   }
-  async value(window,selector){const result=await this.call(['get-value',selector,'-w',String(window)]);if(result?.elementId!==selector||typeof result.text!=='string'||result.text.length>4000)fail('computer_contract');return result.text;}
+  async value(window,selector){const {resolvedSelector}=await this.property(window,selector);const result=await this.call(['get-value',resolvedSelector,'-w',String(window)]);if(result?.elementId!==resolvedSelector||typeof result.text!=='string'||result.text.length>4000)fail('computer_contract');return result.text;}
   async capture(window,selector){
     const directory=await mkdtemp(path.join(os.tmpdir(),'nubi-capture-')),file=path.join(directory,'capture.png');
     try{
-      const result=await this.call(['screenshot',...(selector?[selector]:['--capture-screen']),'-w',String(window),'--output',file]);
-      if(result?.hwnd!==window||(result.elementId??null)!==(selector||null)||path.resolve(result.filePath||'')!==file)fail('computer_contract');
+      const resolvedSelector=selector?(await this.property(window,selector)).resolvedSelector:null;
+      const result=await this.call(['screenshot',...(resolvedSelector?[resolvedSelector]:['--capture-screen']),'-w',String(window),'--output',file]);
+      if(result?.hwnd!==window||(result.elementId??null)!==resolvedSelector||path.resolve(result.filePath||'')!==file)fail('computer_contract');
       if((await stat(file)).size>4500000)fail('computer_image_invalid');
       const bytes=await readFile(file),png=readPng(bytes);
       if(result.width!==png.width||result.height!==png.height)fail('computer_contract');
