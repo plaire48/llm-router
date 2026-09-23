@@ -450,6 +450,10 @@ h1 { font-size: var(--cx-type-title); font-weight: 900; letter-spacing: -.02em; 
 .help-topic-body { padding-bottom: var(--cx-space-4); font-size: var(--cx-type-body); line-height: var(--deck-line-body); color: var(--layout-muted); overflow-wrap: anywhere; }
 .help-topic-body p { margin: 0 0 var(--cx-space-3); }
 .help-topic-body .help-lead { color: var(--layout-text); }
+.help-lead strong, .help-points strong { font-weight: 600; }
+.help-points { display: grid; gap: var(--cx-space-4); margin: 0 0 var(--cx-space-4); }
+.help-points dt { color: var(--brand-ink); margin-bottom: var(--cx-space-1); }
+.help-points dd { margin: 0; color: var(--layout-muted); }
 .help-controls, .help-questions { display: grid; gap: var(--cx-space-3); margin: 0 0 var(--cx-space-4); }
 .help-controls > div { display: flex; align-items: flex-start; gap: var(--cx-space-3); }
 .help-controls > div > svg { flex-shrink: 0; margin-top: var(--cx-space-1); color: var(--brand-ink); }

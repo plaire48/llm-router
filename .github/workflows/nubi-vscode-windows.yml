@@ -1,0 +1,68 @@
+name: Nubi VS Code Windows package
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: packages/nubi-vscode
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+      - uses: actions/checkout@v4
+        with:
+          repository: microsoft/winappCli
+          ref: d626d2b53b9eea27ae2972e9153ce0b1d4c52825
+          path: .build/winapp
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install locked build and runtime dependencies
+        run: |
+          npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm ci --prefix ../nubi-desktop
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build and verify Windows driver
+        working-directory: packages/nubi-desktop
+        run: |
+          ./scripts/prepare-winapp.ps1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/check-winapp.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build shared UI and bundle verified Node
+        run: |
+          npm run build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run runtime:prepare
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify host boundaries and actual VS Code editor
+        run: |
+          npm test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run test:vscode
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package Windows VSIX
+        run: npm run package
+      - name: Verify installed Windows VSIX in an isolated VS Code profile
+        env:
+          NUBI_TEST_VSIX: release/nubi-workspace-0.1.0-win32-x64.vsix
+        run: npm run test:vscode
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nubi-vscode-win32-x64
+          path: |
+            packages/nubi-vscode/release/*.vsix
+            packages/nubi-vscode/release/*.sha256
+            packages/nubi-vscode/verification/vscode-host.json
+            packages/nubi-vscode/verification/vscode-installed.json
+          if-no-files-found: error

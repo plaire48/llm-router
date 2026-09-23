@@ -90,7 +90,9 @@ export async function compactHistory({messages, memory, model, preamble = [], to
   // Hosts may retain one recent turn when two cannot fit their tool/preamble
   // budget. Whole older turns are summarized; the default stays two.
   const userIndices = recent.flatMap((m, i) => m.role === 'user' ? [i] : []);
-  let cut = userIndices.at(recentTurns === 1 ? -1 : -2) ?? 0;
+  // A host may explicitly compact all completed history. The live request
+  // and mandatory requirements must remain outside that historical span.
+  let cut = recentTurns === 0 ? recent.length : userIndices.at(recentTurns === 1 ? -1 : -2) ?? 0;
   if (force && !cut) cut = userIndices.at(-1) || 0;
   if (cut > 0) {
     const older = recent.slice(0, cut), boundary = older.at(-1);

@@ -1,0 +1,5 @@
+/* The Nubi surface keeps the supplied HTML identity inside VS Code. The
+   surrounding editor theme, code fonts and OS dialogs remain host-owned. */
+html,body,#root { min-height:100%; margin:0; padding:0; }
+body { color:var(--deck-ink); background:var(--deck-background); }
+.nubi-workbench { min-height:100vh; }

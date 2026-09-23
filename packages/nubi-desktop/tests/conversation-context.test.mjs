@@ -70,6 +70,15 @@ test('a too-large protected preamble never truncates requirements or persists me
   const options=setup();await assert.rejects(prepareConversation({...options,systems:[{role:'system',content:'REQUIRED '.repeat(12000)}]}),/context_input_too_large/);
   assert.equal(options.store.get('context-history:one'),undefined);
 });
+test('completed-history fallback never summarizes an oversized unanswered current request',async()=>{
+  const options=setup();
+  options.task.messages.at(-1).content='CURRENT REQUEST: preserve every detail. '.repeat(6000);
+  const before=structuredClone(options.task);
+  options.store.set('task:one',before);
+  await assert.rejects(prepareConversation(options),/context_input_too_large/);
+  assert.equal(options.store.get('context-history:one'),undefined);
+  assert.deepEqual(options.store.get('task:one'),before);
+});
 test('exact historical reads are bounded, scoped and explicitly non-authoritative',()=>{
   const {task}=setup();let input={index:1},text='';
   while(input?.index===1){const result=readConversation(task,input);assert(result.text.length<=8000);assert(result.historical);assert.match(result.instruction,/not a fresh observation, approval/);text+=result.text;input=result.next;}

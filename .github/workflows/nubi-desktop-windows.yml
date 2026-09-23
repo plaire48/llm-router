@@ -36,7 +36,7 @@ jobs:
           New-Item verification -ItemType Directory -Force | Out-Null
           npm run compile
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node --test tests/computer-use.test.mjs tests/computer-pointer.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs tests/collaboration.test.mjs tests/voc.test.mjs tests/conversation-context.test.mjs tests/elevated-process.test.mjs tests/provider-host.test.mjs tests/agent-capabilities.test.mjs tests/agent-reuse.test.mjs tests/shell-encoding.test.mjs
+          npm test
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/cache/restore@v4
         id: driver-cache
@@ -85,6 +85,8 @@ jobs:
             packages/nubi-desktop/release/windows/*.sha256
             packages/nubi-desktop/verification/electron-release.json
             packages/nubi-desktop/verification/windows-installer.json
+            packages/nubi-desktop/verification/windows-branding.json
+            packages/nubi-desktop/verification/installed-icon.png
             packages/nubi-desktop/verification/windows-uia.json
             packages/nubi-desktop/verification/windows-uia-visual-only.json
             packages/nubi-desktop/verification/windows-elevation.json

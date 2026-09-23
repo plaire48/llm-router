@@ -28,11 +28,11 @@ body, .app-shell { font: var(--deck-font-body); -webkit-font-smoothing: antialia
 .deck-dialog .skill-option strong { font-size: var(--cx-type-body); font-weight: 500; }
 .deck-dialog .model-option-text, .history-title { line-height: var(--deck-line-body); }
 .deck-dialog .cx-kit-input::placeholder { color: var(--layout-muted); opacity: .8; }
-.settings-fields > details > summary, .context-memory > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--cx-space-3); list-style: none; color: var(--layout-text); font-size: var(--cx-type-body); font-weight: 500; line-height: var(--deck-line-body); }
-.settings-fields > details > summary::-webkit-details-marker, .context-memory > summary::-webkit-details-marker { display: none; }
-.settings-fields > details > summary::after, .context-memory > summary::after { content: ''; width: 6px; height: 6px; margin-right: var(--cx-space-1); border-right: 1.5px solid var(--layout-muted); border-bottom: 1.5px solid var(--layout-muted); transform: rotate(45deg); transition: transform var(--cx-motion); flex-shrink: 0; }
-.settings-fields > details[open] > summary::after, .context-memory[open] > summary::after { transform: rotate(225deg); }
-.settings-fields > details > summary:focus-visible, .context-memory > summary:focus-visible { outline: 2px solid var(--brand-action); outline-offset: var(--cx-space-1); border-radius: var(--cx-radius-control); }
+:is(.settings-fields > details, .context-memory, .deck-subsection) > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--cx-space-3); list-style: none; color: var(--layout-text); font-size: var(--cx-type-body); font-weight: 500; line-height: var(--deck-line-body); }
+:is(.settings-fields > details, .context-memory, .deck-subsection) > summary::-webkit-details-marker { display: none; }
+:is(.settings-fields > details, .context-memory, .deck-subsection) > summary::after { content: ''; width: 6px; height: 6px; margin-right: var(--cx-space-1); border-right: 1.5px solid var(--layout-muted); border-bottom: 1.5px solid var(--layout-muted); transform: rotate(45deg); transition: transform var(--cx-motion); flex-shrink: 0; }
+:is(.settings-fields > details, .context-memory, .deck-subsection)[open] > summary::after { transform: rotate(225deg); }
+:is(.settings-fields > details, .context-memory, .deck-subsection) > summary:focus-visible { outline: 2px solid var(--brand-action); outline-offset: var(--cx-space-1); border-radius: var(--cx-radius-control); }
 .settings-account-row { padding-inline: var(--cx-space-3); }
 .settings-fields:has(> .settings-account-row) { gap: var(--cx-space-2); }
 .workspace-settings { margin-bottom: var(--cx-space-2); }
@@ -44,7 +44,7 @@ body, .app-shell { font: var(--deck-font-body); -webkit-font-smoothing: antialia
 .project-task-state { display: block; color: var(--layout-muted); font: var(--deck-font-body); }
 /* Animate only newly opened content. Never move the dialog or its fixed toast. */
 @keyframes deck-disclosure-enter { from { opacity: .65; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-:is(.settings-fields > details, .help-topic, .deck-disclosure, .usage-provider, .approval-preview)[open] > :not(summary) { animation: deck-disclosure-enter var(--deck-disclosure) var(--deck-ease); }
+:is(.settings-fields > details, .deck-subsection, .help-topic, .deck-disclosure, .usage-provider, .approval-preview)[open] > :not(summary) { animation: deck-disclosure-enter var(--deck-disclosure) var(--deck-ease); }
 .help-topic > summary { line-height: var(--deck-line-body); }
 .deck-dialog .context-total strong { font-size: var(--cx-type-title); line-height: 1.3; }
 .deck-dialog :is(.fill-fields, .usage-breakdown) dt { font-size: var(--cx-type-body); line-height: var(--deck-line-body); }
@@ -96,9 +96,15 @@ body, .app-shell { font: var(--deck-font-body); -webkit-font-smoothing: antialia
 .provider-tabs [role='tab']:active:not(:disabled) .provider-tab-icon { transform: scale(.94); }
 @media (hover: hover) and (pointer: fine) { .provider-tabs [role='tab']:hover:not(:disabled) .provider-tab-icon { transform: translateY(-1px) scale(1.05); } }
 @media (prefers-reduced-motion: reduce) {
-  .agent-tab-highlight, .agent-tab-highlight i, .provider-tab-icon, .settings-fields > details > summary::after, .context-memory > summary::after { transition: none; }
+  .agent-tab-highlight, .agent-tab-highlight i, .provider-tab-icon, :is(.settings-fields > details, .context-memory, .deck-subsection) > summary::after { transition: none; }
   .deck-dialog :is(.cx-kit-input, .cx-input-shell), .help-topic > summary > svg { transition: none; }
-  :is(.settings-fields > details, .help-topic, .deck-disclosure, .usage-provider, .approval-preview)[open] > :not(summary) { animation: none; }
+  :is(.settings-fields > details, .deck-subsection, .help-topic, .deck-disclosure, .usage-provider, .approval-preview)[open] > :not(summary) { animation: none; }
 }
 
 .model-dialog .provider-account-actions { margin-inline-start:auto; }
+
+/* Nested details use the same disclosure affordance without another card. */
+.deck-dialog .deck-subsection > summary { min-height: var(--cx-control); font: var(--deck-font-label); color: var(--layout-text); border-radius: var(--cx-radius-control); transition: background-color var(--cx-motion) var(--deck-ease); }
+.deck-dialog .deck-subsection > summary:hover { background: var(--brand-soft); }
+.deck-subsection > :not(summary) { margin-top: var(--cx-space-3); }
+@media (prefers-reduced-motion: reduce) { .deck-dialog .deck-subsection > summary { transition: none; } }

@@ -1,5 +1,6 @@
 appId: nubi.workspace
-productName: Nubi Workspace
+productName: 누비 Workspace beta
+executableName: Nubi Workspace
 artifactName: Nubi-Workspace-${version}-${arch}-Setup.${ext}
 electronVersion: 42.8.1
 asar: false
@@ -13,6 +14,8 @@ files:
   - launcher.cjs
   - package.json
 extraResources:
+  - from: resources/nubi.png
+    to: nubi-icon.png
   - from: ../generated/winapp
     to: winapp
   - from: ../THIRD-PARTY-NOTICES.md
@@ -31,4 +34,6 @@ nsis:
   allowToChangeInstallationDirectory: true
   runAfterFinish: false
   createDesktopShortcut: true
+  shortcutName: 누비 Workspace beta
+  uninstallDisplayName: 누비 Workspace beta ${version}
 publish: null

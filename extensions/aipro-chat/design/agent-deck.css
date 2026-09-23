@@ -72,6 +72,7 @@
   --deck-stagger: 110ms;
   --deck-feedback: 240ms;
   --deck-pointer-travel: 50ms;
+  --deck-pointer-pulse: 180ms;
   --deck-disclosure: 240ms;
   --deck-float: 6s;
   --deck-press: .97;

@@ -1,0 +1,7 @@
+node_modules/
+media/
+dist/
+runtime/
+release/
+verification/
+.vscode-test/

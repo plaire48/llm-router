@@ -86,7 +86,7 @@ export function createAnalysisCoordinator({signal, modelId, complete, execute, r
     const failed = !result || typeof result !== 'object' || result.error || result.ok === false || result.cancelled;
     const source = {id, tool: name, kind: nativeSources.has(name)?'computer':DOCUMENT_TOOL_NAMES.has(name) ? 'document' : PROJECT_TOOL_NAMES.has(name) ? 'project' : 'page', historical:nativeSources.has(name)&&nativeSources.get(name)!=='live', revision, at: Date.now(), text: raw.slice(0, 200000), truncated: raw.length > 200000, image,
       status: failed ? 'error' : 'observed', error: failed ? /^[a-z_]{1,64}$/.test(result?.error || '') ? result.error : 'source_read_failed' : null,
-      provenance: result?.provenance ? {path: result.provenance.path, hash: result.provenance.hash, start: result.provenance.start, end: result.provenance.end, ...(result.provenance.document_id ? {document_id: result.provenance.document_id, unit: result.provenance.unit} : {})} : null};
+      provenance: result?.provenance ? {...(['wiki', 'source'].includes(result.provenance.kind) ? {kind: result.provenance.kind} : {}), path: result.provenance.path, hash: result.provenance.hash, start: result.provenance.start, end: result.provenance.end, ...(result.provenance.document_id ? {document_id: result.provenance.document_id, unit: result.provenance.unit} : {})} : null};
     sources.set(id, source);
     // Keep active delegates' inputs pinned. All of this store is run-local and
     // cleared on stop, question, approval or completion, not saved as chat text.

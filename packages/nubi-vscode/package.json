@@ -1,0 +1,79 @@
+{
+  "name": "nubi-workspace",
+  "displayName": "누비 Workspace beta",
+  "description": "소스와 OpenWiki-SDS를 이해하고 변경 결과를 확인하는 누비",
+  "version": "0.1.0",
+  "publisher": "nubi-internal",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "main": "./src/extension.cjs",
+  "icon": "media/icons/agent-128.png",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "소스 변경과 로컬 실행에는 신뢰한 작업 공간이 필요합니다."
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "현재는 로컬 파일 작업 공간만 지원합니다."
+    }
+  },
+  "activationEvents": [
+    "onWebviewPanel:nubi.workspace"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "nubi.open",
+        "title": "누비 열기",
+        "category": "Nubi",
+        "icon": "$(sparkle)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "nubi.open",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "runtime:prepare": "node scripts/prepare-runtime.mjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:vscode": "node scripts/test-vscode.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "@vscode/ripgrep": "1.18.0",
+    "@earendil-works/pi-agent-core": "0.86.1",
+    "@earendil-works/pi-ai": "0.86.1",
+    "knex": "3.3.0",
+    "knex-schema-inspector": "3.1.0",
+    "playwright": "1.58.2",
+    "pixelmatch": "7.1.0",
+    "pngjs": "7.0.0",
+    "minisearch": "7.2.0",
+    "typescript": "5.9.3",
+    "jsonc-parser": "3.3.1",
+    "mysql2": "3.24.4",
+    "oracledb": "7.0.1",
+    "pg": "8.23.0",
+    "tedious": "20.0.0"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "4.0.0",
+    "@vscode/test-electron": "3.1.0"
+  }
+}

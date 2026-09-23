@@ -37,3 +37,5 @@ Versions are pinned in the package lock. Original source notices and installed p
 The development dependency overrides are explicit in package.json. `vendor/decompress-compat` only adapts CommonJS to upstream ESM; extraction and security checks remain upstream. No Theia/node_modules source is patched. Other transitive audit findings are recorded in docs/IMPROVEMENTS.md; these replacements are not a claim that all dependencies are free of vulnerabilities.
 
 Windows packaging additionally uses electron-builder 26.15.3 (MIT) and Microsoft winapp source d626d2b53b9e (MIT; its license is bundled with the driver). DOMPurify 3.4.15 (Apache-2.0 OR MPL-2.0) replaces Monaco's embedded sanitizer through the application build hook. The pinned UUID 11.1.1 (MIT) and Mocha jsdiff 8.0.3 (BSD-3-Clause) retain their upstream notices.
+
+User skill package import uses yauzl 3.4.0 (MIT), pinned as a direct dependency. It reads bounded ZIP entry streams; Nubi checks paths, byte limits and CRC before storing skill resources. Upstream notice: Copyright (c) 2014 Josh Wolfe. The complete MIT notice is retained in the distributed dependency license inventory.

@@ -1,9 +1,9 @@
 {
   "name": "@nubi/electron-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
-    "@nubi/theia-extension": "0.1.0",
+    "@nubi/theia-extension": "0.1.1",
     "@theia/core": "1.75.0",
     "@theia/editor": "1.75.0",
     "@theia/electron": "1.75.0",

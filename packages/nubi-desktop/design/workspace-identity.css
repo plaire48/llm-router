@@ -1,0 +1,66 @@
+/* Desktop adaptation of the supplied HTML. Palette and shared components
+   come from agent-deck.css; this layer closes host and portal differences. */
+:root {
+  --nubi-reading-size: 15px;
+  --nubi-reading-leading: 1.75;
+  --theia-ui-font-family: var(--cx-font-family);
+  --theia-ui-font-size1: var(--cx-type-body);
+  --theia-ui-font-size0: var(--cx-type-caption);
+}
+:root:has(.nubi-workbench[data-large-text=true]) {
+  --deck-type-body: 16px;
+  --deck-line-body: 26px;
+  --deck-field-height: 40px;
+}
+.nubi-workbench { font: var(--deck-font-body); color: var(--deck-ink); -webkit-font-smoothing: antialiased; }
+:is(.nubi-workbench, .deck-dialog) :is(button, input, select, textarea) { font-family: var(--cx-font-family); }
+:is(.nubi-workbench, .deck-dialog) :is(p, label, dd, summary) { word-break: keep-all; overflow-wrap: anywhere; }
+.nubi-workbench :is(.cx-kit-button, .cx-action-button) { font: var(--deck-font-label); }
+:is(.nubi-workbench, .deck-dialog) .cx-kit-button { border-radius: var(--deck-control-radius); }
+.nubi-workbench :is(.cx-kit-input, .cx-input-shell) { background: var(--deck-section-surface); border-color: var(--cx-input-border); box-shadow: none; }
+.nubi-workbench :is(.cx-kit-input, .cx-input-shell):focus-within { background: var(--deck-card); border-color: var(--deck-blue-deep); }
+.nubi-workbench :is(.nubi-muted, .nubi-file-card p, .nubi-plan-list, .nubi-checks li, .nubi-trace, .nubi-decided-question, .nubi-url-pair label, .nubi-map-controls label, .nubi-db-fields label, .nubi-db-tls, .nubi-recovery-card small, .nubi-run-form small) { font: var(--deck-font-body); color: var(--deck-sub); }
+.nubi-workbench :is(.nubi-task h2, .nubi-map h2, .nubi-task h3, .nubi-knowledge-record h2) { font-size: var(--cx-type-section); line-height: var(--deck-line-heading); font-weight: 600; color: var(--deck-ink); }
+.nubi-workbench .nubi-task h1 { font-size: var(--cx-type-title); line-height: 1.45; font-weight: 700; }
+.nubi-workbench .nubi-task .message-body { font-size: var(--nubi-reading-size); line-height: var(--nubi-reading-leading); }
+.nubi-workbench .nubi-task .message-body :is(h1,h2) { font-size: 1.25em; line-height: 1.5; }
+.nubi-workbench .nubi-task .message-body h3 { font-size: 1.1em; line-height: 1.5; }
+.nubi-workbench :is(.nubi-file-card small, .nubi-history-item small, .nubi-map-meta) { font: var(--deck-font-caption); color: var(--deck-sub); }
+.nubi-workbench .nubi-icon-button { min-width: var(--deck-field-height); min-height: var(--deck-field-height); border-radius: var(--deck-control-radius); }
+.nubi-workbench :is(.nubi-icon-button, .nubi-text-size):hover:not(:disabled) { background: var(--deck-blue-soft); color: var(--deck-blue-deep); }
+.nubi-workbench .cx-kit-button { transition: background-color var(--deck-feedback) var(--deck-ease), color var(--deck-feedback) var(--deck-ease); }
+.nubi-workbench .nubi-inline { flex-wrap: wrap; }
+.nubi-panel :is(p, summary, label, .nubi-muted) { font: var(--deck-font-body); }
+.nubi-panel summary { font-weight: 500; }
+.nubi-panel strong { font-weight: 700; color: var(--deck-ink); }
+.nubi-panel :is(small, .nubi-history-item small) { font: var(--deck-font-caption); color: var(--deck-sub); }
+.nubi-panel .nubi-skill-library > p { margin: 0 0 var(--cx-space-4); }
+.nubi-skill-library .nubi-inline { margin-bottom: var(--cx-space-4); }
+.nubi-skill-library .nubi-inline .cx-action-button { margin-left: auto; }
+.nubi-skill-card { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: var(--cx-space-3); padding-block: var(--cx-space-4); }
+.nubi-skill-card > strong { align-self: center; min-width: 0; overflow-wrap: anywhere; }
+.nubi-skill-card > .cx-action-button { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+.nubi-skill-card > p { grid-column: 1; margin: var(--cx-space-1) 0 0; color: var(--deck-sub); }
+.nubi-skill-card > small { grid-column: 1 / -1; }
+.nubi-panel .deck-subsection { padding: var(--cx-space-3); background: var(--deck-section-surface); border-radius: var(--deck-control-radius); }
+.nubi-panel .deck-subsection p { margin-bottom: 0; }
+.nubi-toast { font: var(--deck-font-body); }
+.nubi-action-preview figcaption { font: var(--deck-font-body); }
+/* Theia's file picker is part of registration. Keep its native behavior and
+   keyboard handling; do not restyle Monaco code, OS dialogs or high contrast. */
+.theia-light { --theia-focusBorder: var(--deck-blue-deep); --theia-button-background: var(--deck-blue-deep); --theia-button-hoverBackground: var(--deck-action-hover); --theia-list-activeSelectionBackground: var(--deck-blue-soft); --theia-list-activeSelectionForeground: var(--deck-ink); }
+.dialogBlock { font: var(--deck-font-body); }
+.theia-light .lm-Widget.dialogOverlay .dialogBlock { color: var(--deck-ink); background: var(--deck-card); border: 1px solid var(--deck-line); border-radius: var(--deck-panel-radius); box-shadow: var(--deck-shadow); }
+.dialogBlock :is(input,button) { font-family: var(--cx-font-family); font-size: var(--cx-type-body); border-radius: var(--deck-control-radius); }
+.lm-Widget.dialogOverlay .dialogTitle { font-size: var(--cx-type-section); line-height: var(--deck-line-heading); font-weight: 600; }
+@media (pointer:coarse) { .nubi-workbench .nubi-icon-button { min-width: 44px; min-height: 44px; } }
+@media (prefers-reduced-motion:reduce) { :is(.nubi-workbench,.deck-dialog) *, :is(.nubi-workbench,.deck-dialog) *::after { animation:none!important; transition:none!important; } }
+
+/* Emphasis conveys hierarchy without relying on color alone. */
+.nubi-workbench .message-assistant .message-body strong { font-weight: 700; color: var(--deck-ink); }
+.nubi-workbench .message-assistant .message-body > p:first-child strong { color: var(--deck-blue-deep); }
+.nubi-workbench .message-body :is(p,li) { word-break: keep-all; overflow-wrap: anywhere; }
+.nubi-workbench .message-body li + li { margin-top: .35em; }
+.nubi-workbench .message-body a { text-decoration: underline; text-underline-offset: .18em; }
+.nubi-workbench .message-body :is(img,video) { max-width: 100%; height: auto; }
+.nubi-workbench .message-body img { border-radius: var(--deck-control-radius); }

@@ -1,0 +1,11 @@
+src/webview.jsx
+scripts/**
+tests/**
+verification/**
+design/**
+release/**
+AGENTS.md
+package-lock.json
+**/*.map
+.gitignore
+.vscode-test/**

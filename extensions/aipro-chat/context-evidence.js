@@ -67,12 +67,28 @@ export function continuityMessage(messages) {
       for (const key of ['error', 'reason']) if (/^[a-z_]{1,64}$/.test(result[key] || '')) receipt[key] = result[key];
       receipts.push(receipt);
     }
-    if (['wiki_query', 'wiki_search', 'wiki_read', 'source_search', 'read_source', 'search_documents', 'read_document'].includes(tool)) for (const row of [result, ...(Array.isArray(result.results) ? result.results : [])]) {
+    if (['wiki_query', 'wiki_search', 'wiki_read', 'source_search', 'read_source', 'search_documents', 'read_document', 'read_analysis_evidence'].includes(tool) &&
+        !result.error && result.ok !== false && !result.cancelled && result.source_status !== 'error') for (const row of [result, ...(Array.isArray(result.results) ? result.results : [])]) {
+      if (row?.error || row?.ok === false || row?.cancelled) continue;
       const p = row?.provenance;
+      // Attachment offsets are zero-based characters, unlike repository lines.
+      // Keep identifiers/ranges only; the conversation-bound reader revalidates
+      // access and hash. Filenames and excerpts cannot become instructions.
+      if (p?.unit === 'characters' && typeof p.document_id === 'string' && /^[A-Za-z0-9_-]{1,80}$/.test(p.document_id) &&
+          /^[a-f0-9]{64}$/.test(p.hash || '') && Number.isSafeInteger(p.start) && Number.isSafeInteger(p.end) &&
+          p.start >= 0 && p.end > p.start && p.end <= 40000 && p.end - p.start <= 6000) {
+        const source = {kind:'document', document_id:p.document_id, hash:p.hash, start:p.start, end:p.end, unit:'characters'};
+        const key = `document:${p.document_id}:${p.hash}:${p.start}:${p.end}`;
+        sources.delete(key); sources.set(key, source);
+        continue;
+      }
       if (!p || !['wiki', 'source'].includes(p.kind) || typeof p.path !== 'string' || p.path.length > 600 || /^(?:\/|[A-Za-z]:)|\\|(?:^|\/)\.\.(?:\/|$)/.test(p.path) ||
         !/^[a-f0-9]{64}$/.test(p.hash || '') || !Number.isSafeInteger(p.start) || !Number.isSafeInteger(p.end) || p.start < 1 || p.end < p.start || p.end - p.start >= 200) continue;
       const source = {kind: p.kind, path: p.path, hash: p.hash, start: p.start, end: p.end};
-      sources.delete(`${p.kind}:${p.path}`); sources.set(`${p.kind}:${p.path}`, source);
+      // A file can support several findings at different ranges or versions.
+      // Deduplicate exact locators only, keeping the existing output bound.
+      const key = JSON.stringify([p.kind, p.path, p.hash, p.start, p.end]);
+      sources.delete(key); sources.set(key, source);
     }
   }
   if (!receipts.length && !sources.size) return [];

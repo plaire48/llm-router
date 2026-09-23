@@ -13,5 +13,9 @@ if(process.platform==='win32'&&!process.env.NUBI_WINAPP_PATH){
 }
 if(!process.argv.some(arg=>arg.startsWith('--hostname')))process.argv.push('--hostname=127.0.0.1');
 if(!process.argv.some(arg=>arg.startsWith('--port')))process.argv.push('--port=0');
-app.setName('Nubi Workspace');
+app.setName('누비 Workspace beta');
+if(process.platform==='win32'){
+  app.setAppUserModelId('nubi.workspace');
+  app.on('browser-window-created',(_event,window)=>window.setIcon(path.join(process.resourcesPath,'nubi-icon.png')));
+}
 require('./lib/backend/electron-main.js');

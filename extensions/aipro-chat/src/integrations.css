@@ -1,0 +1,11 @@
+.integration-content,.integration-form,.integration-headers{display:grid;gap:var(--cx-space-3,12px)}
+.integration-content{padding-top:var(--cx-space-3,12px)}
+.integration-actions{display:flex;justify-content:flex-end;align-items:center;gap:var(--cx-space-2,8px)}
+.integration-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.integration-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:var(--cx-space-2,8px);align-items:end}
+.integration-content p{margin:0}
+.integration-settings summary{cursor:pointer}
+.integration-form input{min-width:0}
+@media(max-width:420px){.integration-header{grid-template-columns:minmax(0,1fr) auto}.integration-header> :first-child{grid-column:1/-1}}
+
+.workspace-mode-note{margin:var(--cx-space-2,8px) 0 0;color:var(--layout-muted);}

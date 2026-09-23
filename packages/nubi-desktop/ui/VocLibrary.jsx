@@ -15,7 +15,7 @@ export function VocLibrary({api,openPath,onError,onNotice}){
     const next=await api('queryVoc',{query:''});if(mounted.current)setResult(next);
   });}
   return <DeckDisclosure title="VOC 자료">
-    <p className="nubi-muted">현재 Workspace의 voc 폴더에 보관합니다. 정제 JSON을 가져오세요.</p>
+    <p className="nubi-muted">VOC JSON을 작업 공간의 voc 폴더에 보관합니다.</p>
     <form className="nubi-inline" onSubmit={e=>{e.preventDefault();run(async()=>{const next=await api('queryVoc',{query});if(mounted.current)setResult(next);});}}>
       <CxInput aria-label="VOC 검색" placeholder="티켓이나 처리 내용 검색" value={query} onChange={e=>setQuery(e.target.value)}/>
       <CxButton className="nubi-icon-button" type="submit" aria-label="VOC 검색 실행" title="검색" disabled={busy}><Icon name="search" size={18}/></CxButton>

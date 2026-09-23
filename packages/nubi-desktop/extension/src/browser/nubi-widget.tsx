@@ -23,6 +23,12 @@ export class NubiWidget extends ReactWidget {
   @inject(CommandService) protected readonly commands!: CommandService;
   @inject(FileDialogService) protected readonly fileDialogs!: FileDialogService;
   protected async call(method:string,args:any){
+    if(method==='chooseSkillPackage') {
+      const folder=args.kind==='folder';
+      const file=await this.fileDialogs.showOpenDialog({title:folder?'스킬 폴더 등록':'스킬 ZIP 등록',canSelectFiles:!folder,canSelectFolders:folder,canSelectMany:false,...(!folder?{filters:{'Skill ZIP':['zip']}}:{})});
+      if(!file)return {cancelled:true};
+      return this.service.invoke('importSkill',{taskId:args.taskId,source:file.path.fsPath()});
+    }
     if(method!=='chooseComputerApp')return this.service.invoke(method,args);
     const file=await this.fileDialogs.showOpenDialog({title:'실행할 Windows 앱 선택',canSelectFiles:true,canSelectFolders:false,canSelectMany:false,filters:{'Windows apps':['exe']}});
     if(!file)return {cancelled:true};

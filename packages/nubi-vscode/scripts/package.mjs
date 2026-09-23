@@ -1,0 +1,12 @@
+import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+const require=createRequire(import.meta.url),manifest=JSON.parse(await readFile('runtime/manifest.json','utf8'));
+if(manifest.platform!==process.platform||manifest.arch!==process.arch)throw Error('package_target_mismatch');
+if(process.platform==='win32')await readFile('runtime/winapp/manifest.json');
+await mkdir('release',{recursive:true});
+const target=(process.platform==='win32'?'win32':process.platform)+'-'+process.arch,file=`release/nubi-workspace-0.1.0-${target}.vsix`;
+const result=spawnSync(process.execPath,[require.resolve('@vscode/vsce/vsce'),'package','--target',target,'--out',file,'--allow-missing-repository','--skip-license'],{stdio:'inherit'});
+if(result.status!==0)throw Error('vsix_package_failed');
+await writeFile(file+'.sha256',createHash('sha256').update(await readFile(file)).digest('hex')+'  '+file.split('/').at(-1)+'\n');

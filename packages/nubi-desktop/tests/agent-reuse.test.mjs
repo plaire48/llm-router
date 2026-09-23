@@ -53,20 +53,22 @@ test('a desktop HITL question aborts the in-flight child transport and cannot re
 });
 
 test('desktop shared context compaction retains every original criterion and answered decision within the model catalog input limit',async t=>{
-  const {service}=await fixture(t);let summaries=0,parentCalls=0;
+  const {service}=await fixture(t);let summaries=0,parentCalls=0,maxWireTokens=0;
   const task=await service.createTask({request:'Original user goal',criteria:['CRITERION_FIRST','CRITERION_SECOND','CRITERION_THIRD','CRITERION_FOURTH']});
   service.store.set('computer-action:native-uncertain',{id:'native-uncertain',taskId:task.id,action:'click',state:'attention',execution:'unknown',verification:'not_verified',value:'PRIVATE_CONTROL_VALUE',identity:{windowTitle:'PRIVATE_WINDOW_TITLE'}});
   task.questionHistory=[{text:'범위는?',answer:{text:'USER_DECISION_CURRENT_SCREEN'}}];
   task.messages=Array.from({length:24},(_,i)=>({role:i%2?'assistant':'user',content:'Historical project discussion '+String(i)+' '+('reference details '.repeat(500))}));service.store.set('task:'+task.id,task);
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000,maxInputTokens:14000,maxOutputTokens:4096}]}),dispose(){},async complete(messages,tools){
     if(messages[0].content.startsWith('Summarize conversation')){summaries++;return {content:JSON.stringify({goal:'Original user goal',constraints:[],decisions:[],completed:[],pending:['Inspect current source'],references:[]}),calls:[]};}
-    parentCalls++;assert.ok(contextTokens(messages,tools)<=14000);const wire=JSON.stringify(messages);for(const value of ['Original user goal','CRITERION_FIRST','CRITERION_SECOND','CRITERION_THIRD','CRITERION_FOURTH','USER_DECISION_CURRENT_SCREEN'])assert.ok(wire.includes(value),value);
+    parentCalls++;maxWireTokens=Math.max(maxWireTokens,contextTokens(messages,tools));const wire=JSON.stringify(messages);for(const value of ['Original user goal','CRITERION_FIRST','CRITERION_SECOND','CRITERION_THIRD','CRITERION_FOURTH','USER_DECISION_CURRENT_SCREEN'])assert.ok(wire.includes(value),value);
     assert.match(wire,/native-uncertain/);assert.match(wire,/attention/);assert.doesNotMatch(wire,/PRIVATE_CONTROL_VALUE|PRIVATE_WINDOW_TITLE/);
     return {content:'원래 조건과 답변을 유지했습니다. 실행 검증은 아직 하지 않았습니다.',calls:[]};
   }};
   await service.startAgent({taskId:task.id});await service.agent.promise;
-  assert.ok(summaries>0);assert.equal(parentCalls,1);assert.equal(service.task(task.id).state,'review');assert.equal(service.task(task.id).criteria.every(c=>c.state==='unknown'),true);
-  assert.ok(service.store.get('context:'+task.id).afterTokens<service.store.get('context:'+task.id).beforeTokens);
+  assert.ok(maxWireTokens<=14000,`wire tokens ${maxWireTokens}`);assert.ok(summaries>0);assert.equal(parentCalls,1,service.task(task.id).error);assert.equal(service.task(task.id).state,'review',service.task(task.id).error);assert.equal(service.task(task.id).criteria.every(c=>c.state==='unknown'),true);
+  const memory=service.store.get('context:'+task.id)||service.store.get('context-history:'+task.id);
+  assert.ok(memory.afterTokens<memory.beforeTokens);
+  assert.equal(service.task(task.id).messages.filter(m=>m.content.startsWith('Historical project discussion')).length,24);
 });
 
 test('repeated unchanged source failure asks a durable focused question and resumes the original task',async t=>{

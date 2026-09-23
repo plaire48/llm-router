@@ -11,6 +11,37 @@ $p = Start-Process $installer.FullName -ArgumentList @('/S', "/D=$target") -Wait
 if ($p.ExitCode -ne 0) { throw "Installer failed: $($p.ExitCode)" }
 $exe = Join-Path $target 'Nubi Workspace.exe'
 if (!(Test-Path $exe)) { throw 'Installed executable missing' }
+Stage 'branding'
+$expectedName = '누비 Workspace beta'
+$metadata = (Get-Item $exe).VersionInfo
+if ($metadata.ProductName -ne $expectedName) { throw "Unexpected product name: $($metadata.ProductName)" }
+$iconFile = Join-Path $target 'resources/nubi-icon.png'
+$master = Resolve-Path '../../extensions/aipro-chat/design/brand/bird-master.png'
+if ((Get-FileHash $iconFile).Hash -ne (Get-FileHash $master).Hash) { throw 'Packaged bird icon differs from approved master' }
+Add-Type -AssemblyName System.Drawing
+$icon = [System.Drawing.Icon]::ExtractAssociatedIcon($exe)
+if (!$icon) { throw 'Executable icon missing' }
+$bitmap = $icon.ToBitmap()
+$bitmap.Save((Join-Path (Get-Location) 'verification/installed-icon.png'), [System.Drawing.Imaging.ImageFormat]::Png)
+$bitmap.Dispose(); $icon.Dispose()
+$shell = New-Object -ComObject WScript.Shell
+$links = @()
+foreach ($folder in @([Environment]::GetFolderPath('Desktop'), [Environment]::GetFolderPath('Programs'))) {
+  if (Test-Path $folder) {
+    foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse) {
+      $shortcut = $shell.CreateShortcut($file.FullName)
+      if ($shortcut.TargetPath -eq $exe) {
+        if ($file.BaseName -ne $expectedName) { throw "Unexpected shortcut name: $($file.BaseName)" }
+        $links += @{ name=$file.BaseName; target=($shortcut.TargetPath | Split-Path -Leaf); icon=($shortcut.IconLocation | Split-Path -Leaf) }
+      }
+    }
+  }
+}
+if ($links.Count -lt 1) { throw 'Named app shortcut missing' }
+$registration = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like "$expectedName*" })
+if ($registration.Count -ne 1) { throw 'App uninstall name missing or ambiguous' }
+@{ productName=$metadata.ProductName; fileVersion=$metadata.FileVersion; iconMatchesMaster=$true; shortcuts=$links; uninstallName=$registration[0].DisplayName } | ConvertTo-Json -Depth 4 | Set-Content verification/windows-branding.json
+
 $env:NUBI_TEST_EXECUTABLE = $exe
 Stage 'first-launch'
 node scripts/check-electron.mjs

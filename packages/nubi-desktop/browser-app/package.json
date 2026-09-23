@@ -1,6 +1,6 @@
 {
   "name": "@nubi/browser-app",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@theia/core": "1.75.0",
@@ -16,7 +16,7 @@
     "@theia/workspace": "1.75.0",
     "@theia/search-in-workspace": "1.75.0",
     "@theia/scm": "1.75.0",
-    "@nubi/theia-extension": "0.1.0"
+    "@nubi/theia-extension": "0.1.1"
   },
   "devDependencies": {
     "@theia/cli": "1.75.0"

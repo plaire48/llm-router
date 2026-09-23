@@ -1,0 +1,38 @@
+{
+  "source": "agentfactorysdkdeck.html",
+  "sha256": "df9cfcc44f2f8d4ea14c6f137d0297c562ca506f8a0028df374c7f012d8715ac",
+  "palette": {
+    "blue": "#3182F6",
+    "blue-deep": "#1B64DA",
+    "blue-lite": "#64A8F8",
+    "blue-soft": "#E8F1FE",
+    "ink": "#191F28",
+    "sub": "#4E5968",
+    "muted": "#8B95A1",
+    "card": "#FFFFFF",
+    "tint": "#F1F7FE",
+    "line": "#E5E8EB",
+    "dark": "#17171C",
+    "green": "#148A5C",
+    "green-soft": "#E6F6EE",
+    "red": "#D22030",
+    "red-soft": "#FDEBEC",
+    "violet": "#7B61E6",
+    "violet-soft": "#EFECFD",
+    "orange": "#F08A3C",
+    "orange-soft": "#FEF1E6",
+    "teal": "#189BB0",
+    "teal-soft": "#E6F6F9"
+  },
+  "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", sans-serif",
+  "mono": "ui-monospace, \"SF Mono\", SFMono-Regular, Menlo, Consolas, monospace",
+  "adaptation": {
+    "body": 14,
+    "reading": 15,
+    "largeReading": 17,
+    "caption": 12,
+    "heading": 16,
+    "line": 22,
+    "headingLine": 24
+  }
+}

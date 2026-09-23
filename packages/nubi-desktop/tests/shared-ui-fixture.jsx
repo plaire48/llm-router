@@ -30,7 +30,7 @@ async function api(method,args={}){
   if(method==='stopAgent'){project.tasks[0].state='cancelled';project.tasks[0].context.phase='ready';return project.tasks[0];}
   if(method==='overview'||method==='state')return structuredClone(project);
   if(method==='createTask'){const task={id:'fixture-task',request:args.request,requirementId:'REQ-fixture',criteria:[],state:'draft',messages:[],trace:[]};project.tasks=[task];return task;}
-  if(method==='startAgent'){const task=project.tasks[0];if(args.answer)task.messages.push({role:'user',content:args.answer});task.messages.push({role:'assistant',content:'이 응답은 화면 흐름 검증용 합성 응답입니다.'});task.state='review';return {taskId:task.id,state:'review'};}
+  if(method==='startAgent'){const task=project.tasks[0];if(args.answer)task.messages.push({role:'user',content:args.answer});task.messages.push({role:'assistant',content:'**핵심 내용을 먼저 보여줍니다.**\n\n이 응답은 화면 흐름 검증용 합성 응답입니다. **실제 모델 결과가 아닙니다.**'});task.state='review';return {taskId:task.id,state:'review'};}
   throw new Error('fixture_method_invalid');
 }
 createRoot(document.getElementById('root')).render(new URLSearchParams(location.search).has('pointer')?<ComputerPointerUiFixture/>:new URLSearchParams(location.search).has('controls')?<ComputerControlUiFixture/>:new URLSearchParams(location.search).has('computer')?<ComputerUiFixture/>:<Workbench api={api} openCurrent={async()=>project} chooseFolder={()=>{}} openPath={()=>{}} review={()=>{}} apply={()=>{}} openURI={()=>{}} openBrowser={()=>{}}/>);

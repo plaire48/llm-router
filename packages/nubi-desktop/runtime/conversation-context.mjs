@@ -34,13 +34,22 @@ export async function prepareConversation({task,store,model,systems,receipts,too
   // Leave space for structured memory and literal anchors. A small model can
   // retain one complete recent turn rather than silently truncating two.
   const recentTurns=contextTokens([...preamble,...messages.slice(users.at(-2)??0)],tools)>budget.input*.8?1:2;
-  const result=await compactHistory({messages,memory,model,preamble,tools,recentTurns,invoke,signal,
+  const compact=retained=>compactHistory({messages,memory,model,preamble,tools,recentTurns:retained,invoke,signal,
     save:async({memory:next})=>{
       if(signal.aborted)throw new Error('cancelled');
       const current=conversationMessages(store.get('task:'+task.id)||task);
       if(fingerprint(current)!==fingerprint(messages))throw new Error('context_history_changed');
       store.set(key,{...next,prefixHash:fingerprint(prefix(messages,next.throughId))});
     }});
+  let result;
+  try {result=await compact(recentTurns);}
+  catch(error) {
+    // A completed historical reply can also be summarized when tool schemas
+    // leave too little room for a whole old turn. Keep an unanswered current
+    // user message verbatim; never use this fallback on an active request.
+    if(error.message!=='context_input_too_large'||messages.at(-1)?.role!=='assistant'||signal.aborted)throw error;
+    result=await compact(0);
+  }
   if(signal.aborted)throw new Error('cancelled');
   return {...result,messages:[...systems,...result.messages,receipts]};
 }

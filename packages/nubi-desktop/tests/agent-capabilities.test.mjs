@@ -31,7 +31,7 @@ test('skill resources are bounded text, block traversal and secret files, and ne
   const {root}=await fixture(t);await skill(root);const catalog=await skillCatalog(root),entry=catalog.skills[0];const base=path.join(root,path.posix.dirname(entry.path));
   await writeFile(path.join(base,'reference.md'),'x'.repeat(17000));await writeFile(path.join(base,'script.sh'),'echo NEVER_RUN');
   const first=await load(root,catalog,entry,{resource:'reference.md'});assert.equal(first.content.length,8000);assert.equal(first.nextOffset,8000);
-  const last=await load(root,catalog,entry,{resource:'reference.md',offset:16000});assert.equal(last.content.length,1000);assert.equal(last.nextOffset,null);
+  const last=await load(root,catalog,entry,{resource:'reference.md',offset:16000,resourceHash:first.hash});assert.equal(last.content.length,1000);assert.equal(last.nextOffset,null);
   assert.equal((await load(root,catalog,entry,{resource:'script.sh'})).content,'echo NEVER_RUN');
   for(const resource of ['../app.txt','/etc/passwd','.env','nested/../../app.txt','C:/outside'])await assert.rejects(load(root,catalog,entry,{resource}),/path_scope/);
 });
