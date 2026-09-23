@@ -10,12 +10,12 @@ import pixelmatch from 'pixelmatch';
 import {fail,hash} from './files.mjs';
 import {WindowsApps} from './windows-apps.mjs';
 import {reviewComputerResult} from './computer-harness.mjs';
-import {CONTROL_ACTIONS,controlState,expectedControlState,supportsControlAction,checkControlState} from './computer-controls.mjs';
+import {CONTROL_ACTIONS,POINTER_ACTIONS,controlState,expectedControlState,supportsControlAction,checkControlState} from './computer-controls.mjs';
 import {validateWikiEvidence} from './wiki-evidence.mjs';
 
 const exec=promisify(execFile), TTL=120000;
 const text=maxLength=>({type:'string',minLength:1,maxLength});
-export const COMPUTER_ACTION_SCHEMA={type:'object',additionalProperties:false,properties:{observationId:text(80),selector:text(300),action:{enum:CONTROL_ACTIONS,type:'string'},value:{type:'string',maxLength:4000},reason:text(500),evidenceIds:{type:'array',maxItems:10,uniqueItems:true,items:text(300)}},required:['observationId','selector','action','reason']};
+export const COMPUTER_ACTION_SCHEMA={type:'object',additionalProperties:false,properties:{observationId:text(80),selector:text(300),destinationSelector:text(300),action:{enum:[...CONTROL_ACTIONS,...POINTER_ACTIONS],type:'string'},value:{type:'string',maxLength:4000},reason:text(500),evidenceIds:{type:'array',maxItems:10,uniqueItems:true,items:text(300)}},required:['observationId','selector','action','reason']};
 const validate=new Ajv().compile(COMPUTER_ACTION_SCHEMA);
 let desktopOwner=null;
 const stamp=()=>new Date().toISOString();
@@ -105,7 +105,13 @@ export class WinappComputer {
       return {mimeType:'image/png',data:bytes.toString('base64'),width:png.width,height:png.height,scope:selector?'element':'window_region',selector:selector||null};
     }finally{await rm(directory,{recursive:true,force:true});}
   }
-  async act(window,selector,action,value){
+  async act(window,selector,action,value,{pointerConsent=false,destinationSelector}={}){
+    if(POINTER_ACTIONS.includes(action)){
+      if(pointerConsent!==true)fail('computer_pointer_consent_required');
+      if(!validSelector(selector)||(action==='drag'&&!validSelector(destinationSelector)))fail('computer_invalid');
+      const args=action==='drag'?['drag',selector,destinationSelector]:action==='hover'?['hover',selector,'--dwell-time','800']:['click',selector,...(action==='pointer_right_click'?['--right']:action==='pointer_double_click'?['--double']:[])];
+      await this.call([...args,'-w',String(window)]);return;
+    }
     if(!CONTROL_ACTIONS.includes(action))fail('computer_virtual_only');
     // Click is a UIA InvokePattern request. Never emit OS mouse or keyboard input.
     const args=action==='set_value'?['set-value',selector,value]:['invoke',selector,'--action',action==='click'?'invoke':action.replace('_','-')];
@@ -201,6 +207,7 @@ async function observe(service,taskId,selector,includeImage=true,query){
     if(selector){const before=await a.property(status.hwnd,selector);usable(before.element);image=await a.capture(status.hwnd,selector);if(!same(before,await a.property(status.hwnd,selector)))fail('computer_target_changed');}
     else image=await a.capture(status.hwnd);
   }
+  if(target&&!same(target,await a.property(status.hwnd,selector)))fail('computer_target_changed');
   if(!same(status,await a.status(status.hwnd)))fail('computer_target_changed');
   const observation={id:randomUUID(),taskId,bindingId:b.id,identity:status,at:Date.now(),...result,image};
   service.computerObservation=observation;
@@ -209,6 +216,7 @@ async function observe(service,taskId,selector,includeImage=true,query){
 export async function observeComputer(service,taskId,args={}){taskReady(service,taskId,{agent:true});if(args.includeImage!==undefined&&typeof args.includeImage!=='boolean')fail('computer_invalid');return exclusive(service,()=>observe(service,taskId,args.selector,args.includeImage!==false,args.query));}
 export async function proposeComputerAction(service,taskId,args,observations){
   if(!validate(args)||!validSelector(args.selector)||(args.action==='set_value')!==(typeof args.value==='string')||(args.value?.startsWith('-'))||args.value?.includes('\0'))fail('computer_invalid');
+  if((args.action==='drag')!==(args.destinationSelector!==undefined)||(args.destinationSelector!==undefined&&(!validSelector(args.destinationSelector)||args.destinationSelector===args.selector)))fail('computer_invalid');
   taskReady(service,taskId,{agent:true});
   return exclusive(service,async()=>{
     const wikiEvidence=(args.evidenceIds||[]).map(id=>{const row=observations?.wikiEvidence?.get(id);if(!row)fail('wiki_evidence_required');return structuredClone(row);});
@@ -219,7 +227,16 @@ export async function proposeComputerAction(service,taskId,args,observations){
     const seen=o.elements.filter(v=>v.selector===args.selector);if(seen.length!==1)fail('computer_target_unavailable');
     const a=adapter(service),current=await a.property(b.identity.hwnd,args.selector);usable(current.element);
     if(!same(current.element,seen[0])||!same(await a.status(b.identity.hwnd),b.identity))fail('computer_target_changed');
-    if(!supportsControlAction(current,args.action))fail('computer_target_unavailable');
+    const sharedPointer=POINTER_ACTIONS.includes(args.action);
+    if(!sharedPointer&&!supportsControlAction(current,args.action))fail('computer_target_unavailable');
+    let destination,destinationBefore;
+    if(args.action==='drag'){
+      const seenDestination=o.elements.filter(v=>v.selector===args.destinationSelector);if(seenDestination.length!==1)fail('computer_target_unavailable');
+      destination=await a.property(b.identity.hwnd,args.destinationSelector);usable(destination.element);
+      if(!same(destination.element,seenDestination[0]))fail('computer_target_changed');
+      destinationBefore=await a.capture(b.identity.hwnd,args.destinationSelector);
+      if(Math.abs(destinationBefore.width-destination.element.width)>1||Math.abs(destinationBefore.height-destination.element.height)>1)fail('computer_image_unmapped');
+    }
     let previousValueHash;
     if(args.action==='set_value'){
       if(current.password!=='False'||current.readOnly==='True'||!['Edit','TextBox','Document'].includes(current.element.type))fail('computer_input_unavailable');
@@ -228,12 +245,14 @@ export async function proposeComputerAction(service,taskId,args,observations){
     const before=await a.capture(b.identity.hwnd,args.selector);
     if(Math.abs(before.width-current.element.width)>1||Math.abs(before.height-current.element.height)>1)fail('computer_image_unmapped');
     if(!same(current,await a.property(b.identity.hwnd,args.selector)))fail('computer_target_changed');
+    if(destination&&!same(destination,await a.property(b.identity.hwnd,args.destinationSelector)))fail('computer_target_changed');
+    if(!same(await a.status(b.identity.hwnd),b.identity))fail('computer_target_changed');
     taskReady(service,taskId,{agent:true});
-    const value={...args,wikiEvidence,id:randomUUID(),taskId,bindingId:b.id,identity:b.identity,target:current,previousValueHash,before,createdAt:stamp(),expiresAt:Date.now()+TTL,state:'proposed',verification:'not_verified',pointer:{x:0.5,y:0.5,space:'element_fraction',kind:'target_center'}};
-    value.fingerprint=hash(JSON.stringify(value));service.store.set('computer-image:'+value.id,{before});delete value.before;service.store.set('computer-action:'+value.id,value);return value;
+    const value={...args,wikiEvidence,inputMode:sharedPointer?'shared_pointer':'uia',destination,destinationBefore,id:randomUUID(),taskId,bindingId:b.id,identity:b.identity,target:current,previousValueHash,before,createdAt:stamp(),expiresAt:Date.now()+TTL,state:'proposed',verification:'not_verified',pointer:{x:0.5,y:0.5,space:'element_fraction',kind:'target_center'}};
+    value.fingerprint=hash(JSON.stringify(value));service.store.set('computer-image:'+value.id,{before,destinationBefore});delete value.before;delete value.destinationBefore;service.store.set('computer-action:'+value.id,value);return value;
   });
 }
-export async function computer({method='status',taskId,window,id,fingerprint,decision,file,appId,expectedIdentity}={}){
+export async function computer({method='status',taskId,window,id,fingerprint,decision,file,appId,expectedIdentity,pointerConsent=false}={}){
   this.ready();const a=adapter(this);
   if(method==='status')return computerState(this);
   if(method==='review_result'){await reviewComputerResult(this,taskId,{id,fingerprint});return computerState(this);}
@@ -251,7 +270,9 @@ export async function computer({method='status',taskId,window,id,fingerprint,dec
     taskReady(this,taskId);if(this.unsettledOperations?.size)fail('tool_unsettled');
     if(decision==='acknowledge')fail('computer_invalid');
     if(decision==='reject'){v.state='rejected';this.store.set('computer-action:'+id,v);return computerState(this);}
-    if(!['launch',...CONTROL_ACTIONS].includes(v.action)||(v.action==='click'&&!v.target?.element?.isInvokable))fail('computer_virtual_only');
+    const sharedPointer=POINTER_ACTIONS.includes(v.action);
+    if(sharedPointer&&(v.inputMode!=='shared_pointer'||pointerConsent!==true))fail('computer_pointer_consent_required');
+    if(!['launch',...CONTROL_ACTIONS,...POINTER_ACTIONS].includes(v.action)||(v.action==='click'&&!v.target?.element?.isInvokable))fail('computer_virtual_only');
     return exclusive(this,async()=>{
       v.state='starting';this.store.set('computer-action:'+id,v);let issued=false;
       if(v.action==='launch'){await executeLaunch(this,v);return computerState(this);}
@@ -259,12 +280,15 @@ export async function computer({method='status',taskId,window,id,fingerprint,dec
         await validateWikiEvidence(this,taskId,v.wikiEvidence||[]);
         const b=bound(this,taskId);
         if(b.id!==v.bindingId||Date.now()>v.expiresAt||!same(v.identity,await a.status(v.identity.hwnd)))fail('computer_target_changed');
-        if(!same(v.target,await a.property(v.identity.hwnd,v.selector))||!supportsControlAction(v.target,v.action))fail('computer_target_changed');
+        if(!same(v.target,await a.property(v.identity.hwnd,v.selector))||(!sharedPointer&&!supportsControlAction(v.target,v.action)))fail('computer_target_changed');
+        if(v.action==='drag'&&(!v.destination||!same(v.destination,await a.property(v.identity.hwnd,v.destinationSelector))))fail('computer_target_changed');
         if(v.action==='set_value'&&hash(await a.value(v.identity.hwnd,v.selector))!==v.previousValueHash)fail('computer_target_changed');
         taskReady(this,taskId);this.computerObservation=null;issued=true;
         const expected=expectedControlState(v.action),alreadyMatched=expected&&checkControlState(v.action,v.target).verification==='state_matched';
-        if(!alreadyMatched)await a.act(v.identity.hwnd,v.target.resolvedSelector,v.action,v.value);
+        if(sharedPointer){v.pointerApproval={at:stamp(),scope:'one_action',fingerprint:v.fingerprint};this.store.set('computer-action:'+id,v);}
+        if(!alreadyMatched)await a.act(v.identity.hwnd,v.target.resolvedSelector,v.action,v.value,{pointerConsent:sharedPointer&&pointerConsent===true,destinationSelector:v.destination?.resolvedSelector});
         v.execution=alreadyMatched?'already_at_target':'command_returned';
+        taskReady(this,taskId);
         if(!same(v.identity,await a.status(v.identity.hwnd)))fail('computer_target_changed');
         if(v.action==='set_value')v.verification=await a.value(v.identity.hwnd,v.selector)===v.value?'value_matched':'value_mismatch';
         if(expected){

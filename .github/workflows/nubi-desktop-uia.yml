@@ -46,6 +46,11 @@ jobs:
       - name: Prepare verified driver
         if: steps.driver-cache.outputs.cache-hit != 'true'
         run: ./scripts/prepare-winapp.ps1
+      - uses: actions/cache/save@v4
+        if: steps.driver-cache.outputs.cache-hit != 'true'
+        with:
+          path: packages/nubi-desktop/generated/winapp
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825-password-v1
       - name: Verify UIA state and cursor position on real Windows
         run: node scripts/check-winapp.mjs
       - name: Preserve verification evidence

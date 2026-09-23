@@ -1,5 +1,6 @@
-// Exact UIA patterns only. No pointer injection, keyboard fallback or blind toggle.
+// UIA is the default. Shared-pointer gestures require separate per-action human consent.
 export const CONTROL_ACTIONS=['invoke','click','set_value','select','toggle_on','toggle_off','expand','collapse'];
+export const POINTER_ACTIONS=['pointer_click','pointer_double_click','pointer_right_click','hover','drag'];
 const expectations={select:['selected','True'],toggle_on:['toggle','On'],toggle_off:['toggle','Off'],expand:['expansion','Expanded'],collapse:['expansion','Collapsed']};
 const member=(value,values)=>values.includes(value)?value:null;
 export function controlState(properties={}){
