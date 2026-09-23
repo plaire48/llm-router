@@ -16,6 +16,7 @@ if(!process.argv.some(arg=>arg.startsWith('--port')))process.argv.push('--port=0
 app.setName('누비 Workspace beta');
 if(process.platform==='win32'){
   app.setAppUserModelId('nubi.workspace');
-  app.on('browser-window-created',(_event,window)=>window.setIcon(path.join(process.resourcesPath,'nubi-icon.png')));
+  const icon=app.isPackaged?path.join(process.resourcesPath,'nubi-icon.png'):path.resolve(__dirname,'../../../extensions/aipro-chat/design/brand/bird-master.png');
+  app.on('browser-window-created',(_event,window)=>window.setIcon(icon));
 }
 require('./lib/backend/electron-main.js');
