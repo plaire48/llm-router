@@ -11,7 +11,6 @@
 ```sh
 cd packages/nubi-desktop
 npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
-npm ci --prefix ../nubi-a2a
 npm ci
 npm run build
 npm start -- /absolute/path/to/git-project
@@ -68,4 +67,4 @@ OpenWiki와 함께 사용하는 검색, 출처 대조, 요구사항 인용 흐�
 
 코딩 품질 개선에는 기존 Pi와 ripgrep 검색, JS/TS 구조 조회, TypeScript/JSONC/YAML 문법 검사를 연결했습니다. 새 오류는 AI에 돌려줘 제안을 고치고, 반영 전에도 다시 검사합니다. 화면에는 검사 상태를 한 줄로 보여 줍니다. 문법 통과와 실제 기능 테스트는 구분합니다. OpenCode/Aider 방법론의 적용 범위와 다른 후보의 선택 근거는 [코드 변경 품질](docs/CODING-AGENT-QUALITY.md)에 정리했습니다.
 
-A2A 작업 연결은 [공통 연결 계약](../nubi-a2a/README.md)을 따릅니다. 소스와 Wiki 근거를 받은 앱의 기존 채팅에 가져오고 답변을 원래 Desktop 작업으로 돌려보냅니다. 전달 완료와 실제 실행 검증은 구분합니다.
+A2A는 향후 연결 가능성만 검토하며 현재 버전에서는 제공하지 않습니다. 앱 간 연결과 작업 전송은 비활성입니다.

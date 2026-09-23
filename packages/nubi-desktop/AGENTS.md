@@ -22,7 +22,7 @@
 
 - Reuse ripgrep for bounded literal source search and TypeScript/JSONC/YAML for in-memory draft diagnostics. Check before proposal creation and application; introduced errors or unavailable supported checks MUST return feedback instead of applying. Keep unchanged baseline errors, unsupported languages, syntax checks, types and execution tests distinct. AST outlines MUST NOT grant edit observations. Bundle and copy the analysis worker for both app targets. See docs/CODING-AGENT-QUALITY.md.
 
-- 누비 앱 간 작업 전달은 `packages/nubi-a2a`의 공식 A2A 1.0 SDK 전송과 수신자별 로컬 연결을 재사용한다. Desktop은 SQLite 작업/근거 조정 서버이며 Chrome/Office는 수신 클라이언트다. 가져온 요청은 기존 채팅에서 명시적으로 전송하고 기존 HITL을 유지한다. 소스/Wiki 버전이 바뀐 결과는 받지 않으며 A2A 완료를 실제 테스트 통과나 Office 저장 성공으로 취급하지 않는다. 미확정 결과는 Task/영수증을 조회하고 실행을 맹목 재전송하지 않는다. 인증은 모델에 전달하지 않는다. 상세 범위는 `packages/nubi-a2a/README.md`와 `packages/nubi-desktop/docs/A2A-COLLABORATION.md`를 따른다.
+- A2A는 사용자 요청으로 보류한다. 현재 앱은 연결 UI, 전송 서버와 모델 문맥 주입을 활성화하지 않는다. 기존 실험 소스는 참고용으로 보존하며 새 A2A 구현은 사용자 요청 전까지 추가하지 않는다.
 
 - 제품명은 **누비 Workspace beta**이며 로고에는 Workspace를 붙이지 않고 **누비 beta**로 표시한다. 누비 제품군의 기존 새 이미지, 워드마크와 모션을 재사용한다. 브라우저/Office의 기본 누비 beta 표기와 내부 패키지 ID는 유지한다.
 

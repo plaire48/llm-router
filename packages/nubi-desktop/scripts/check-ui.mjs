@@ -1,6 +1,5 @@
 import {prepareSetupAction} from '../runtime/setup-actions.mjs';
 import {SourceObservations} from '../runtime/source-edits.mjs';
-import {connectA2A,importA2A,deliverA2A} from '../../nubi-a2a/client.mjs';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile,readFile,realpath,mkdtemp,rm,readdir} from 'node:fs/promises';
 import {spawn} from 'node:child_process';
@@ -73,12 +72,7 @@ try{
   await p.setViewportSize({width:820,height:900});await p.getByText('실행 복구 설정',{exact:true}).click();await p.getByRole('spinbutton',{name:'실행 시간 제한 (초)'}).fill('30');assert.equal(await p.getByRole('checkbox',{name:'실패하면 AI가 원인 분석'}).isChecked(),true);assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await p.screenshot({path:'verification/ui-recovery-narrow.png'});ok('recovery settings and reviewed command fit the narrow workspace');await p.setViewportSize({width:1480,height:980});
   await p.getByRole('button',{name:'작업 이력',exact:true}).click();await p.getByRole('button',{name:/문법 검사 결과 검증/}).click();await p.getByText('문법 검사 완료',{exact:true}).waitFor();assert.equal(await p.getByRole('button',{name:'반영',exact:true}).count(),1);await p.screenshot({path:'verification/ui-coding-quality.png'});ok('only the syntax-checked proposal appears with scoped quality status');
   await p.getByRole('button',{name:'반영',exact:true}).click();await p.getByText('파일 반영을 확인했어요.',{exact:true}).waitFor();assert.equal(await readFile(path.join(root,'calculator.ts'),'utf8'),'export const total = 2;\n');await p.reload();await p.getByRole('button',{name:'작업 이력',exact:true}).click();await p.getByRole('button',{name:/문법 검사 결과 검증/}).click();await p.getByText('문법 검사 완료',{exact:true}).waitFor();assert.equal(await p.getByRole('button',{name:'반영',exact:true}).count(),0);ok('compiled parser rechecks application and persists quality after renderer reload');
-  await p.getByText('다른 누비와 작업',{exact:true}).click();await p.getByRole('button',{name:'브라우저에 시나리오 요청',exact:true}).click();await p.getByText('브라우저 검토 대기',{exact:true}).waitFor();
-  await p.getByRole('button',{name:'브라우저 연결 주소',exact:true}).click();const invitation=await p.locator('#a2a-invite').inputValue();const peer=await connectA2A(invitation,'browser');
-  const {listA2A}=await import('../../nubi-a2a/client.mjs');const sent=(await listA2A(peer)).tasks[0],draft=await importA2A(peer,sent.id);assert.match(draft.text,/calculator/);
-  await deliverA2A(peer,{...draft,messageId:crypto.randomUUID(),localRunId:'synthetic-ui-peer',kind:'scenario_draft',text:'AC-1: 합계 표시를 확인하는 시나리오입니다. 실제 실행 전입니다.'});
-  await p.getByText('브라우저 결과 받음',{exact:true}).waitFor();await p.getByText('브라우저 결과 받음',{exact:true}).click();await p.getByText('AC-1: 합계 표시를 확인하는 시나리오입니다. 실제 실행 전입니다.',{exact:true}).waitFor();await p.screenshot({path:'verification/ui-a2a-result.png'});ok('A2A request carries actual source and returned draft appears without passing acceptance criteria');
-  await p.reload();await p.getByRole('button',{name:'작업 이력',exact:true}).click();await p.getByRole('button',{name:/문법 검사 결과 검증/}).click();await p.getByText('다른 누비와 작업',{exact:true}).click();await p.getByText('브라우저 결과 받음',{exact:true}).waitFor();ok('A2A artifact survives renderer reentry');
+  assert.equal(await p.getByText('다른 누비와 작업',{exact:true}).count(),0);assert.equal(await p.getByRole('button',{name:'브라우저에 시나리오 요청',exact:true}).count(),0);ok('deferred A2A controls are absent from the task workspace');
   await p.getByRole('button',{name:'작업 이력',exact:true}).click();await p.getByRole('button',{name:/실행 준비 승인 검증/}).click();
   const setupCard=title=>p.getByRole('region',{name:'실행 준비 승인',exact:true}).filter({has:p.getByRole('heading',{name:title,exact:true})});
   await setupCard('준비 파일 만들기').waitFor();await assert.rejects(readFile(path.join(root,'setup-approved.txt')));
