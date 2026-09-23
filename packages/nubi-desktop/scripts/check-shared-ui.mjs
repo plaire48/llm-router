@@ -17,6 +17,9 @@ try{
  const requestBox=p.getByRole('textbox',{name:'작업 요청'}),smallHeight=await requestBox.evaluate(e=>e.clientHeight);
  assert.equal(await p.getByText('완료 조건 추가',{exact:true}).count(),0);
  assert.equal(await requestBox.evaluate(e=>getComputedStyle(e).resize),'none');
+ await requestBox.focus();assert.equal(await requestBox.evaluate(e=>getComputedStyle(e).outlineStyle),'none');
+ assert.equal(await requestBox.evaluate(e=>getComputedStyle(e.closest('form')).outlineStyle),'none');
+ assert.equal(await requestBox.evaluate(e=>getComputedStyle(e.closest('form')).borderTopWidth),'1px');
  await requestBox.fill('한글로 확인할 결과를 설명합니다.\n'.repeat(30));
  assert.equal(await requestBox.evaluate(e=>e.clientHeight>76&&e.clientHeight<=180&&e.scrollHeight>e.clientHeight&&getComputedStyle(e).overflowY==='auto'),true);
  await requestBox.fill('');assert.equal(await requestBox.evaluate(e=>e.clientHeight),smallHeight);

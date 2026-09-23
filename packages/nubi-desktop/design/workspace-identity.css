@@ -67,3 +67,4 @@
 
 /* Chromium sizes the shared composer without a manual resize handle. */
 .nubi-workbench .composer textarea.aipro-message-input { width:100%; field-sizing:content; resize:none; max-height:180px; overflow-y:auto; }
+.nubi-workbench .composer textarea.aipro-message-input:focus { outline:none; box-shadow:none; }
