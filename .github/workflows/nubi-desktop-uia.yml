@@ -1,0 +1,57 @@
+name: Nubi Windows UIA control verification
+on:
+  push:
+    branches: ['codex/nubi-desktop-uia-controls-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  uia:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: packages/nubi-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.18.0'
+          cache: npm
+          cache-dependency-path: |
+            packages/nubi-desktop/package-lock.json
+            extensions/aipro-chat/package-lock.json
+      - name: Install locked dependencies and compile
+        run: |
+          npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run compile
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/checkout@v4
+        with:
+          repository: microsoft/winappCli
+          ref: d626d2b53b9eea27ae2972e9153ce0b1d4c52825
+          path: .build/winapp
+          persist-credentials: false
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/cache/restore@v4
+        id: driver-cache
+        with:
+          path: packages/nubi-desktop/generated/winapp
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825-password-v1
+      - name: Prepare verified driver
+        if: steps.driver-cache.outputs.cache-hit != 'true'
+        run: ./scripts/prepare-winapp.ps1
+      - name: Verify UIA state and cursor position on real Windows
+        run: node scripts/check-winapp.mjs
+      - name: Preserve verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nubi-uia-control-evidence
+          path: packages/nubi-desktop/verification/windows-uia*
+          if-no-files-found: warn
