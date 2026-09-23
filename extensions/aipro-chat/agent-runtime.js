@@ -117,7 +117,7 @@ export function progressTools(tools, stepwise) {
     parameters: {...tool.function.parameters, properties: {...tool.function.parameters.properties, progress: {type: 'string', maxLength: 100, description: 'Short public action label in the user language, e.g. A1:B2 읽기. Use observed targets; omit secrets, input values and reasoning. The UI adds the actual execution status.'}}}}});
 }
 
-export async function runAgent({messages, tools, documents = [], observationSources = {}, modelId = 'aipro', signal, complete, completeAnalysis, execute, onStep = () => {}, onRound = () => {}, prepareContext, preparePlan, resumePlan, harness: useHarness = false, stepwise = useHarness, reviewGoal, assessCompletion, resumeVerification = false, resumedObservation, interruptedAction}) {
+export async function runAgent({messages, tools, documents = [], observationSources = {}, modelId = 'aipro', signal, complete, completeAnalysis, execute, onStep = () => {}, onRound = () => {}, prepareContext, preparePlan, resumePlan, harness: useHarness = false, stepwise = useHarness, clarifyOnStall = false, reviewGoal, assessCompletion, resumeVerification = false, resumedObservation, interruptedAction}) {
   const evidence = resumedObservation ? [reviewEvidence(1, 'browser_snapshot', {}, resumedObservation)] : [];
   const analyses = completeAnalysis && execute && supportsAnalysis(tools) ? createAnalysisCoordinator({
     signal, modelId, complete: completeAnalysis, execute, run: runAgent, tools, documents, observationSources, onStep,
@@ -179,7 +179,7 @@ export async function runAgent({messages, tools, documents = [], observationSour
     if (MUTATING_TOOLS.has(name) && !result?.cancelled && result?.actionIssued !== false) actionsSinceReview++;
     if (harness && reviewGoal && (failureStreak >= 2 || actionsSinceReview >= 5)) checkpointDue = true;
     if (progress.repetitions >= 3) {
-      if ((harness || stepwise && protocolFailures >= 3) && tools.some(tool => tool.function.name === 'ask_user')) {
+      if ((harness || stepwise && (protocolFailures >= 3 || clarifyOnStall)) && tools.some(tool => tool.function.name === 'ask_user')) {
         clarification = {reason: 'Repeated tool results made no progress. Clarify the specific obstacle before another attempt.', sent: false};
         batchFailed = true;
       } else stop(new Error('agent_stalled'));

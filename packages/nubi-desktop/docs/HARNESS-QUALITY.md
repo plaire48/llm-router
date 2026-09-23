@@ -1,0 +1,21 @@
+# 하네스 품질과 적용 근거
+
+누비는 Pi 실행기 하나가 도구 호출과 대화를 소유한다. 하위 분석, 압축, 오류 복구는 이 실행기의 목표와 승인 경계를 유지한다.
+
+| 구성 | 현재 적용 | 검증 기준 |
+| --- | --- | --- |
+| 도구 실행 | 한 번 실행하고 실제 결과를 다음 모델 호출에 전달 | 같은 턴의 의존 동작을 미리 연속 실행하지 않음 |
+| 스킬 | 기존 YAML과 MiniSearch로 프로젝트 지침 검색 후 필요한 내용만 로드 | 손상된 YAML, 변경된 해시, 외부 경로, 자동 스크립트 실행 차단 |
+| 하위 분석 | 기존 Pi coordinator의 최대 두 개 독립 읽기 분석, 범위별 brief와 근거 ID | 부모 대화 격리, 하위 조회가 부모 수정 권한을 만들지 않음, 근거 없는 보고서 거부 |
+| 문맥 | 원문 SQLite 보존, 요약 경계 해시 확인, 원래 조건과 답변 및 최신 호스트 기록 재주입 | 압축 후 목표 누락과 오래된 관찰 재사용 거부 |
+| 반복 실패 | Desktop에서 공통 실행기의 `clarifyOnStall`을 활성화 | 같은 도구 결과가 세 번 반복되면 기존 질문 폼으로 구체적인 장애를 확인하고 같은 작업으로 재개 |
+| 미확정 실행 | 실제 파일과 프로세스 기록을 먼저 확인 | 응답 유실 후 쓰기/명령의 자동 재전송 금지 |
+| 완료 판단 | 제안, 적용, 관찰, 검증과 사용자 검토 상태를 분리 | 모델 답변만으로 완료 조건을 통과시키지 않음 |
+
+이번에 보완한 것은 반복 실패 처리다. 기존 브라우저와 Office 동작을 바꾸지 않도록 옵션 기본값은 꺼 두고 Desktop에서만 켰다. 횟수는 전체 업무의 제한이 아니라 같은 결과를 반복하는 상황의 기준이다. 진전이 있거나 다른 근거를 얻으면 기존 공통 비교기가 이를 반영한다. 임의의 자동 재실행이나 시간에 따른 가짜 진행은 추가하지 않았다.
+
+[Anthropic의 context engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)은 필요한 근거를 그때 조회하고 압축과 분리된 하위 문맥을 활용하는 판단에 사용했다. [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)의 단순한 실행 루프와 목적이 구분된 하위 작업 접근을 유지했다. [OpenAI Agents SDK](https://openai.github.io/openai-agents-js/guides/agents/)의 도구, handoff와 실행 상태 분리를 검토했으며 누비에는 이미 Pi와 작업 저장소가 있으므로 또 다른 전체 실행기를 추가하지 않았다. A2A는 사용자의 보류 결정을 유지한다.
+
+실제 재사용은 Pi 0.86.1, 공통 analysis coordinator와 context manager, p-retry, YAML, MiniSearch 및 SQLite다. 라이선스 고지는 기존 THIRD-PARTY-NOTICES와 잠금 파일을 유지한다. 외부 프레임워크 전체를 도입하지 않은 이유는 중복된 대화/승인 상태와 배포 비용을 늘리지 않기 위해서다.
+
+`tests/agent-reuse.test.mjs`는 실제 Pi 루프에 합성 모델을 연결해 독립 하위 분석, 취소 전파, 원래 요구조건 보존, 반복 실패 질문과 답변 후 재개를 검사한다. 공통 runtime/analysis/recovery 검사도 함께 실행한다. 이는 제어 계약의 검증이며 사내 모델의 실제 문제 해결률이나 독립 평가자의 의미 정확도는 아직 측정하지 않았다. Desktop은 브라우저용 `verify_page` 하네스를 그대로 켜지 않는다. 프로젝트별 기능 테스트와 실제 업무 결과 검증이 추가로 필요하며 모델의 말만으로 이를 대신하지 않는다.

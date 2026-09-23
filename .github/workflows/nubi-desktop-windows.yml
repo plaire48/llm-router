@@ -38,20 +38,22 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --test tests/computer-use.test.mjs tests/computer-pointer.test.mjs tests/windows-apps.test.mjs tests/dependency-quality.test.mjs tests/collaboration.test.mjs tests/voc.test.mjs tests/conversation-context.test.mjs tests/elevated-process.test.mjs tests/provider-host.test.mjs tests/agent-capabilities.test.mjs tests/agent-reuse.test.mjs tests/shell-encoding.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/cache/restore@v4
+        id: driver-cache
+        with:
+          path: packages/nubi-desktop/generated/winapp
+          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825-password-v1
       - uses: actions/checkout@v4
+        if: steps.driver-cache.outputs.cache-hit != 'true'
         with:
           repository: microsoft/winappCli
           ref: d626d2b53b9eea27ae2972e9153ce0b1d4c52825
           path: .build/winapp
           persist-credentials: false
       - uses: actions/setup-dotnet@v4
+        if: steps.driver-cache.outputs.cache-hit != 'true'
         with:
           dotnet-version: '10.0.x'
-      - uses: actions/cache/restore@v4
-        id: driver-cache
-        with:
-          path: packages/nubi-desktop/generated/winapp
-          key: winapp-x64-d626d2b53b9eea27ae2972e9153ce0b1d4c52825-password-v1
       - name: Prepare verified Windows driver
         if: steps.driver-cache.outputs.cache-hit != 'true'
         shell: pwsh
@@ -71,6 +73,7 @@ jobs:
       - name: Build Windows installer
         run: npm run package:windows
       - name: Install and verify packaged application
+        timeout-minutes: 20
         shell: pwsh
         run: ./scripts/Test-WindowsInstaller.ps1
       - name: Upload verified installer

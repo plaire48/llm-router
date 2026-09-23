@@ -68,3 +68,19 @@ test('desktop shared context compaction retains every original criterion and ans
   assert.ok(summaries>0);assert.equal(parentCalls,1);assert.equal(service.task(task.id).state,'review');assert.equal(service.task(task.id).criteria.every(c=>c.state==='unknown'),true);
   assert.ok(service.store.get('context:'+task.id).afterTokens<service.store.get('context:'+task.id).beforeTokens);
 });
+
+test('repeated unchanged source failure asks a durable focused question and resumes the original task',async t=>{
+  const {service}=await fixture(t);let failures=0,answered=false;
+  service.providers={status,dispose(){},async complete(messages,tools){
+    if(tools.length===1&&tools[0].function.name==='ask_user')return call('ask_user',{question:'요청하신 설정 파일은 어느 경로에 있나요?',input_mode:'text'});
+    if(!answered){failures++;return call('read_source',{path:'missing-settings.txt'});}
+    assert.match(JSON.stringify(messages),/ORIGINAL_GOAL|app.txt/);
+    return {content:'확인한 경로에서 이어가겠습니다. 아직 변경하지 않았습니다.',calls:[]};
+  }};
+  const task=await service.createTask({request:'ORIGINAL_GOAL: inspect the requested settings',criteria:['Preserve current behavior']});
+  await service.startAgent({taskId:task.id});await service.agent.promise;
+  const waiting=service.task(task.id);assert.equal(failures,3);assert.equal(waiting.state,'waiting_input');assert.ok(waiting.question?.id);assert.equal(waiting.error,null);
+  assert.equal(service.state().proposals.length,0);
+  answered=true;await service.answerAgent({taskId:task.id,answer:'app.txt'});await service.agent.promise;
+  const resumed=service.task(task.id);assert.equal(resumed.request,task.request);assert.equal(resumed.criteria[0].text,'Preserve current behavior');assert.equal(resumed.questionHistory[0].answer.text,'app.txt');assert.equal(resumed.state,'review');
+});

@@ -51,3 +51,5 @@
 - Windows UIA 상태 동작은 명시적 select/toggle_on/toggle_off/expand/collapse만 허용한다. 목표 상태를 재조회하고 상태 일치와 업무 완료를 구분한다. OpenWiki-SDS 근거 ID는 주 실행기의 현재 조회에서만 가져오며 제안과 승인 시 다시 검증한다. 변경된 근거와 미확정 쓰기를 우회하거나 재전송하지 않는다. 상세 판단은 `../../docs/research/2026-09-23-nubi-local-windows-uia.md`를 따른다.
 
 - 프로젝트 스킬은 작업 Workspace 루트의 `.agents/skills`, `.claude/skills`, `.opencode/skills`에서 메타데이터만 검색하고 필요한 본문/참조만 해시 확인 후 읽는다. 기존 YAML/MiniSearch와 Pi 도구 루프를 재사용한다. 스킬의 allowed-tools와 스크립트는 승인이나 소스 수정 관찰이 아니며 자동 실행하지 않는다. 홈/외부 경로와 심볼릭 링크는 자동 로드하지 않는다. 도구 선택 안내는 실제 등록된 도구만 제공하며 실행 가능 여부와 성공은 호스트 상태/결과로 별도 확인한다. 상세 범위는 docs/AGENT-SKILLS-AND-TOOLS.md를 따른다.
+
+- Desktop은 공통 Pi 실행기의 `clarifyOnStall`을 사용해 같은 도구 결과가 세 번 반복되면 기존 HITL 질문으로 구체적인 장애를 확인한다. 원래 목표와 조건, 답변 이력, 완료/미확정 기록을 유지하고 질문 답변을 쓰기 승인으로 취급하지 않는다. 전체 업무의 호출 횟수 제한이 아니다.
