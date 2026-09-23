@@ -48,6 +48,6 @@ On the English Windows runner, WScript.Shell read the old ASCII shortcut correct
 
 ## 1.0.0 identity update
 
-The user-approved release name is 누비 beta 1.0.0. The app, tab, shortcuts and uninstall entry use 누비 beta. Package locks, installed Electron version and Windows file metadata must agree on 1.0.0. The stable app ID, executable and state paths preserve upgrade identity. No new dependency is needed.
+The user-approved product name is 누비 workspace and its display version is beta 1.0.0. The release title and catalog use 누비 workspace beta 1.0.0. Shortcuts use the product name, while the uninstall entry and window title also include the display version. Package locks, installed Electron version and Windows file metadata must agree on 1.0.0. The stable app ID, executable and state paths preserve upgrade identity. No new dependency is needed.
 
 This release's workflow upgrades the SHA-256-pinned 0.1.1 verified installer from build run 35864493370, with read-only Actions access. The matching previous release remains archived in AI Workspace. CI artifacts expire: for later releases, update this baseline to an accessible verified release or a retained successful run and checksum. Do not remove the upgrade gate.

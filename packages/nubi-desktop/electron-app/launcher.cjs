@@ -13,7 +13,7 @@ if(process.platform==='win32'&&!process.env.NUBI_WINAPP_PATH){
 }
 if(!process.argv.some(arg=>arg.startsWith('--hostname')))process.argv.push('--hostname=127.0.0.1');
 if(!process.argv.some(arg=>arg.startsWith('--port')))process.argv.push('--port=0');
-app.setName('누비 beta');
+app.setName('누비 workspace');
 if(process.platform==='win32'){
   app.setAppUserModelId('nubi.workspace');
   const icon=app.isPackaged?path.join(process.resourcesPath,'nubi-icon.png'):path.resolve(__dirname,'../../../extensions/aipro-chat/design/brand/bird-master.png');

@@ -10,7 +10,7 @@ function Get-AppShortcuts {
   foreach ($kind in @('DesktopDirectory', 'Programs', 'CommonDesktopDirectory', 'CommonPrograms')) {
     $folder = [Environment]::GetFolderPath($kind)
     if ($folder -and (Test-Path $folder)) {
-      foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse -Force | Where-Object { $_.BaseName -in @('Nubi Workspace','누비 Workspace beta','누비 beta') }) {
+      foreach ($file in Get-ChildItem $folder -Filter '*.lnk' -Recurse -Force | Where-Object { $_.BaseName -in @('Nubi Workspace','누비 Workspace beta','누비 beta','누비 workspace') }) {
         $shortcut = $shell.CreateShortcut($file.FullName)
         $native = [NubiShellLink]::Read($file.FullName)
         $result += @{ folder=$kind; path=$file.FullName; name=$file.BaseName; target=$native[0]; icon=$native[1]; legacyTarget=$shortcut.TargetPath }
@@ -37,7 +37,7 @@ if ($p.ExitCode -ne 0) { throw "Installer failed: $($p.ExitCode)" }
 $exe = Join-Path $target 'Nubi Workspace.exe'
 if (!(Test-Path $exe)) { throw 'Installed executable missing' }
 Stage 'branding'
-$expectedName = '누비 beta'
+$expectedName = '누비 workspace'
 $expectedVersion = (Get-Content package.json -Raw | ConvertFrom-Json).version
 $metadata = (Get-Item $exe).VersionInfo
 if ($metadata.ProductName -ne $expectedName) { throw "Unexpected product name: $($metadata.ProductName)" }
@@ -61,7 +61,7 @@ foreach ($link in $links) {
 if ($links.Count -ne 2 -or 'DesktopDirectory' -notin $links.folder -or 'Programs' -notin $links.folder) { throw 'Named desktop and Start menu shortcuts required' }
 foreach ($link in $links) { if ($link.icon -ne "$exe,0") { throw 'Shortcut icon does not reference the installed executable' } }
 $registration = @(Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*' | Where-Object { $_.DisplayName -like "$expectedName*" })
-if ($registration.Count -ne 1 -or $registration[0].DisplayName -ne "$expectedName $expectedVersion") { throw 'App uninstall name missing or ambiguous' }
+if ($registration.Count -ne 1 -or $registration[0].DisplayName -ne "$expectedName beta $expectedVersion") { throw 'App uninstall name missing or ambiguous' }
 @{ productName=$metadata.ProductName; fileVersion=$metadata.FileVersion; iconMatchesMaster=$true; shortcuts=$links; uninstallName=$registration[0].DisplayName } | ConvertTo-Json -Depth 4 | Set-Content verification/windows-branding.json
 
 $env:NUBI_TEST_EXECUTABLE = $exe

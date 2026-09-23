@@ -17,7 +17,7 @@ try{
  await page.getByRole('button',{name:'작업 이력',exact:true}).waitFor();
  const facts=await app.evaluate(({app})=>({packaged:app.isPackaged,name:app.getName(),version:app.getVersion(),node:process.versions.node,electron:process.versions.electron,provenance:JSON.parse(process.getBuiltinModule('node:fs').readFileSync(process.getBuiltinModule('node:path').join(app.getAppPath(),'lib/runtime-provenance.json'),'utf8'))}));
  assert.equal(facts.provenance.openwiki.name,'openwiki-sds');
- assert.equal(facts.name,'누비 beta');assert.equal(facts.version,JSON.parse(await readFile('package.json','utf8')).version);
+ assert.equal(facts.name,'누비 workspace');assert.equal(facts.version,JSON.parse(await readFile('package.json','utf8')).version);
  if(installed)assert.equal(facts.packaged,true);
  await mkdir('verification',{recursive:true});await page.screenshot({path:'verification/electron-release.png'});
  // Reach the actual compiled worker over IPC, including SQLite and OpenWiki-SDS.

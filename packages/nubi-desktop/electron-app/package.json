@@ -46,7 +46,7 @@
     "target": "electron",
     "frontend": {
       "config": {
-        "applicationName": "누비 beta",
+        "applicationName": "누비 workspace beta 1.0.0",
         "defaultTheme": "light",
         "defaultIconTheme": "theia-file-icons",
         "preferences": {
