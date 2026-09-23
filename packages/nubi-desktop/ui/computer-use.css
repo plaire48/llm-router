@@ -1,18 +1,15 @@
+:root { --nubi-pointer-move:180ms; --nubi-pointer-feedback:140ms; --nubi-pointer-ease:cubic-bezier(0.2,0,0,1); }
 .nubi-action-preview { margin:var(--cx-space-3,12px) 0; border:1px solid var(--cx-border); border-radius:var(--cx-radius-card); overflow:hidden; }
 .nubi-action-preview-head { display:flex; align-items:center; justify-content:space-between; gap:var(--cx-space-2,8px); padding:var(--cx-space-2,8px) var(--cx-space-3,12px); flex-wrap:wrap; background:var(--layout-surface); }
 .nubi-action-stage { position:relative; overflow:hidden; background:var(--deck-tint); }
 .nubi-action-stage>img { display:block; width:100%; height:auto; }
-.nubi-action-pointer { position:absolute; width:24px; height:28px; pointer-events:none; color:var(--brand-action); animation:nubi-pointer-arrive 420ms ease-out both; }
-.nubi-action-pointer svg { position:relative; width:24px; height:28px; overflow:visible; fill:var(--brand-action); stroke:var(--layout-surface); stroke-width:1.8; stroke-linejoin:round; }
-.nubi-action-pointer.is-set_value svg { fill:none; stroke:var(--brand-action); stroke-width:2.4; transform:translate(-12px,-14px); }
-.nubi-action-halo { position:absolute; width:30px; height:30px; left:-15px; top:-15px; border:2px solid var(--brand-action); border-radius:50%; background:color-mix(in srgb,var(--brand-action) 10%,transparent); }
-.is-click .nubi-action-halo,.is-invoke .nubi-action-halo { animation:nubi-click-ring 700ms 420ms ease-out both; }
-.is-hover .nubi-action-halo { animation:nubi-hover-hold 1100ms 420ms ease-in-out both; }
+.nubi-action-pointer { position:absolute; width:28px; height:32px; pointer-events:none; color:#171717; transition:left var(--nubi-pointer-move) var(--nubi-pointer-ease),top var(--nubi-pointer-move) var(--nubi-pointer-ease); }
+.nubi-action-pointer svg { position:relative; width:28px; height:32px; overflow:visible; fill:#171717; stroke:#fff; stroke-width:2.5; filter:drop-shadow(0 1px 1px #0008); stroke-linejoin:round; }
+.nubi-action-halo { position:absolute; width:16px; height:16px; left:-8px; top:-8px; border:1.5px solid #171717; border-radius:50%; opacity:0; }
+.is-click .nubi-action-halo[data-demo=true],.is-invoke .nubi-action-halo[data-demo=true] { animation:nubi-click-ring var(--nubi-pointer-feedback,140ms) ease-out both; }
 .nubi-action-preview figcaption { padding:var(--cx-space-2,8px) var(--cx-space-3,12px); font-size:12px; line-height:16px; color:var(--layout-muted); }
 .nubi-cursor-example-surface { display:grid; place-items:center; min-height:180px; padding:var(--cx-space-5,24px); }
 .nubi-cursor-example-surface>span { border:1px solid var(--cx-border); border-radius:var(--cx-radius-control); padding:12px 24px; background:var(--layout-surface); color:var(--layout-text); }
-.nubi-action-stage[data-motion=off] .nubi-action-pointer,.nubi-action-stage[data-motion=off] .nubi-action-halo { animation:none; }
-@keyframes nubi-pointer-arrive { from { opacity:0; } to { opacity:1; } }
-@keyframes nubi-click-ring { 0% { transform:scale(.55); opacity:1; } 100% { transform:scale(1.4); opacity:.4; } }
-@keyframes nubi-hover-hold { 0%,100% { opacity:.5; } 50% { opacity:1; } }
-@media(prefers-reduced-motion:reduce) { .nubi-action-pointer,.nubi-action-halo { animation:none !important; } }
+.nubi-action-stage[data-motion=off] .nubi-action-pointer,.nubi-action-stage[data-motion=off] .nubi-action-halo { animation:none; transition:none; }
+@keyframes nubi-click-ring { 0% { opacity:1; } 100% { opacity:0; } }
+@media(prefers-reduced-motion:reduce) { :root { --nubi-pointer-move:0ms; --nubi-pointer-feedback:0ms; } .nubi-action-pointer,.nubi-action-halo { animation:none !important; transition:none !important; } }

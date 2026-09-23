@@ -3,6 +3,7 @@ const target=process.argv[2]||'browser-app';
 if(!['browser-app','electron-app'].includes(target))throw new Error('target_invalid');
 await mkdir(`${target}/lib/frontend`,{recursive:true});
 await cp('../../extensions/aipro-chat/public/icons',`${target}/lib/frontend/icons`,{recursive:true});
+await cp('runtime/computer-pointer.ps1',`${target}/lib/backend/computer-pointer.ps1`);
 // Theia bundles backend modules into lib/backend/main.js; keep the owned worker alongside it.
 await cp('extension/lib/node/service-entry.mjs',`${target}/lib/backend/service-entry.mjs`);
 

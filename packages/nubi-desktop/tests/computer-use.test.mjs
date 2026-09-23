@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {writeFile,symlink} from 'node:fs/promises';
+import {writeFile,symlink,readFile} from 'node:fs/promises';
 import {PNG} from 'pngjs';
 import {fixture} from './fixtures.mjs';
 import {WinappComputer,observeComputer,proposeComputerAction,verifyComputerValue,imageDifference,readPng} from '../runtime/computer-use.mjs';
+import {rememberWikiEvidence} from '../runtime/wiki-evidence.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {createComputerProgress,computerCheckpoint,readComputerResult} from '../runtime/computer-harness.mjs';
@@ -18,8 +19,9 @@ async function setup(t){
     data.calls.push(args);const command=args[1];
     if(command==='list-windows')return [{...status,title:status.windowTitle,width:800,height:600}];
     if(command==='status')return {...status};
-    if(command==='inspect')return {windows:[{hwnd:100,elements:[{...control}]}]};
-    if(command==='get-property')return {elementId:control.selector,element:{...control},properties:{IsPassword:data.password,IsReadOnly:'False'}};
+    if(command==='inspect')return {windows:[{hwnd:100,elements:data.acted&&data.afterElements?data.afterElements:(data.elements||[{...control}])}]};
+    if(command==='search')return data.searchResult||{matchCount:1,hasMore:false,matches:[{...control}]};
+    if(command==='get-property'){const selected=data.elements?.find(v=>v.selector===args[2])||control;return {elementId:selected.selector,element:{...selected},properties:{IsPassword:data.password,IsReadOnly:'False',...data.properties}};}
     if(command==='get-value')return {elementId:control.selector,text:data.text};
     if(command==='screenshot'){
       if(data.failAfter&&data.acted)throw Error('capture failed');
@@ -28,7 +30,9 @@ async function setup(t){
       return {hwnd:100,elementId:args[2]==='--capture-screen'?null:args[2],filePath:file,width:120,height:40};
     }
     data.acted++;
+    if(data.onAction)await data.onAction();
     if(command==='set-value')data.text=args[3];
+    if(command==='invoke'&&data.transition)data.transition(args[4]);
     if(data.failAction)throw Error('response lost after input');
     return {ok:true};
   };
@@ -41,6 +45,82 @@ async function setup(t){
   const decide=(p,decision='approve')=>service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision});
   return {service,task,data,propose,decide};
 }
+for(const [action,property,before,after,native] of [
+  ['select','IsSelected','False','True','select'],
+  ['toggle_on','ToggleState','Off','On','toggle-on'],
+  ['toggle_off','ToggleState','On','Off','toggle-off'],
+  ['expand','ExpandCollapseState','Collapsed','Expanded','expand'],
+  ['collapse','ExpandCollapseState','Expanded','Collapsed','collapse'],
+])test('explicit UIA '+action+' reads back state without physical input and is not replayed',async t=>{
+  const {service,task,data,propose,decide}=await setup(t);
+  data.properties={[property]:before};data.transition=command=>{assert.equal(command,native);data.properties[property]=after;};
+  const observed=await observeComputer(service,task.id,{selector:data.control.selector,includeImage:false});assert(observed.target.controlState);
+  const p=await propose(action);assert.equal(data.acted,0);await decide(p);await decide(p);
+  const receipt=readComputerResult(service,task.id,{actionId:p.id}).receipt;
+  assert.equal(receipt.verification,'state_matched');assert.equal(receipt.controlCheck.actual,after);assert.equal(receipt.controlCheck.scope,'exact_control_state');assert.equal(data.acted,1);
+  assert(!data.calls.some(args=>['click','hover','drag','send-keys','focus'].includes(args[1])));
+  const q=await propose(action);await decide(q);assert.equal(data.acted,1);assert.equal(service.store.get('computer-action:'+q.id).execution,'already_at_target');
+});
+
+test('missing patterns and leaf nodes cannot grant actions; changed state invalidates approval',async t=>{
+  const {service,data,propose,decide}=await setup(t);
+  for(const action of ['select','toggle_on','expand'])await assert.rejects(()=>propose(action),/computer_target_unavailable/);
+  data.properties={ExpandCollapseState:'LeafNode'};await assert.rejects(()=>propose('expand'),/computer_target_unavailable/);
+  data.properties={ToggleState:'Off'};const p=await propose('toggle_on');data.properties.ToggleState='On';await decide(p);
+  assert.equal(data.acted,0);assert.equal(service.store.get('computer-action:'+p.id).state,'stale');
+});
+
+for(const unreadable of [false,true])test('state '+(unreadable?'missing':'mismatch')+' after a returned command stays unresolved',async t=>{
+  const {service,data,propose,decide}=await setup(t);data.properties={IsSelected:'False'};
+  if(unreadable)data.transition=()=>{delete data.properties.IsSelected;};
+  const p=await propose('select');await decide(p);await decide(p);
+  const receipt=service.store.get('computer-action:'+p.id);assert.equal(receipt.state,'attention');assert.equal(receipt.verification,unreadable?'state_unavailable':'state_mismatch');assert.equal(data.acted,1);
+  await assert.rejects(()=>propose('select'),/computer_review_required/);
+});
+
+test('state action response loss never replays an operation that already changed the app',async t=>{
+  const {service,data,propose,decide}=await setup(t);data.properties={ToggleState:'Off'};data.transition=()=>{data.properties.ToggleState='On';};data.failAction=true;
+  const p=await propose('toggle_on');await decide(p);await decide(p);
+  assert.equal(data.properties.ToggleState,'On');assert.equal(data.acted,1);assert.equal(service.store.get('computer-action:'+p.id).execution,'unknown');
+});
+
+test('computer proposals require actually retrieved Wiki references and revalidate them at approval',async t=>{
+  const {service,task,data,decide}=await setup(t),observations={};
+  const row=(await service.wikiQuery({query:'welcome',taskId:task.id})).results[0];assert(row);
+  const o=await observeComputer(service,task.id);
+  const args={observationId:o.observationId,selector:data.control.selector,action:'invoke',reason:'문서의 안내를 확인합니다.',evidenceIds:[row.evidenceId]};
+  await assert.rejects(()=>proposeComputerAction(service,task.id,args,observations),/wiki_evidence_required/);
+  rememberWikiEvidence(observations,[row]);const proposal=await proposeComputerAction(service,task.id,args,observations);
+  assert.equal(proposal.wikiEvidence[0].path,row.path);
+  await writeFile(service.root+'/'+row.path,'# Updated\nA human changed the work instructions.');
+  await decide(proposal);const receipt=readComputerResult(service,task.id,{actionId:proposal.id}).receipt;
+  assert.equal(receipt.state,'stale');assert.equal(receipt.error,'wiki_evidence_stale');assert.equal(data.acted,0);assert.equal(receipt.wikiEvidence[0].evidenceId,row.evidenceId);
+  const record=await service.recordKnowledge({taskId:task.id}),content=await readFile(service.root+'/'+record.path,'utf8');
+  assert.match(content,/## 앱 동작에 사용한 Wiki/);assert(content.includes(row.path+':'+row.provenance.start));assert(content.includes(row.hash));assert.doesNotMatch(content,/Test app|Fixture|txt-query-ab12/);
+  await writeFile(service.root+'/'+row.path,'# Updated again\nAnother human edit.');assert.equal((await service.knowledgeStatus({taskId:task.id})).state,'outdated');
+  await assert.rejects(()=>proposeComputerAction(service,task.id,args,observations),/wiki_evidence_stale/);
+});
+
+test('Pi carries its own Wiki evidence into an approved UIA state action and reads the receipt',async t=>{
+  const {service,task,data,decide}=await setup(t);let round=0,evidenceId;
+  data.properties={ToggleState:'Off'};data.transition=()=>{data.properties.ToggleState='On';};
+  const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
+  service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async(messages,definitions)=>{
+    const definition=definitions.find(v=>v.function?.name==='propose_computer_action').function;
+    assert(definition.parameters.properties.action.enum.includes('toggle_on'));assert.match(definition.description,/separate user mouse-control approval/);
+    const last=messages.findLast(m=>m.role==='tool'),result=last?JSON.parse(last.content):null;
+    switch(++round){
+      case 1:return call('wiki_query',{query:'welcome'});
+      case 2:evidenceId=result.results[0].evidenceId;return call('observe_computer',{selector:data.control.selector,includeImage:false});
+      case 3:assert.equal(result.target.controlState.toggle,'Off');return call('propose_computer_action',{observationId:result.observationId,selector:data.control.selector,action:'toggle_on',reason:'문서에 연결한 설정을 확인합니다.',evidenceIds:[evidenceId]});
+      default:assert.match(JSON.stringify(messages),/state_matched/);return {content:'설정 상태가 일치합니다. 업무 결과는 추가 확인이 필요합니다.',calls:[]};
+    }
+  }};
+  await service.startAgent({taskId:task.id});await service.agent.promise;assert.equal(data.acted,0);assert.equal(round,3);
+  const p=service.state().computer.actions[0];assert.equal(p.wikiEvidence[0].evidenceId,evidenceId);await decide(p);
+  await service.startAgent({taskId:task.id});await service.agent.promise;assert.equal(round,4);assert.equal(data.acted,1);
+});
+
 test('computer use is unavailable outside Windows and does not discover PATH executables',()=>{
   assert.equal(new WinappComputer({platform:'darwin'}).availability().available,false);
   assert.equal(new WinappComputer({platform:'win32',binary:'winapp'}).availability().available,false);
@@ -48,7 +128,7 @@ test('computer use is unavailable outside Windows and does not discover PATH exe
 test('proposal is inert; one approved click captures readback and duplicate decisions do not replay',async t=>{
   const {service,data,propose,decide}=await setup(t),p=await propose();assert.equal(data.acted,0);
   const [a,b]=await Promise.all([decide(p),decide(p)]);assert.equal(data.acted,1);
-  const receipt=service.state().computer.actions[0];assert.equal(receipt.state,'observed');assert.equal(receipt.verification,'not_verified');assert.equal(receipt.visualDifference.changedPixels,0); // threshold ignores small pixel differences
+  const receipt=service.state().computer.actions[0];assert.equal(receipt.state,'observed');assert.equal(receipt.verification,'not_verified');assert.equal(receipt.visualDifference.state,'scope_changed'); // target crop and full result window are not comparable
   assert(!('before' in receipt));assert(a.actions&&b.actions);
   assert.deepEqual(data.calls.find(v=>v[1]==='invoke'),['ui','invoke','txt-query-ab12','--action','invoke','-w','100','--json']);
 });
@@ -204,6 +284,70 @@ test('a pending or uncertain newer operation blocks continuation from an older r
   assert.equal(data.acted,2);assert.equal(service.store.get('computer-action:'+first.id).review,undefined);
 });
 
+test('targeted UIA search finds a control outside the first 150 elements without input or capture',async t=>{
+  const {service,task,data}=await setup(t);
+  data.elements=Array.from({length:160},(_,i)=>({...data.control,selector:'row-'+i,name:'Unrelated row'}));
+  const shallow=await observeComputer(service,task.id,{includeImage:false});
+  assert.equal(shallow.elements.length,150);assert.equal(shallow.truncated,true);
+  const focused=await observeComputer(service,task.id,{query:'검색',includeImage:false});
+  assert.equal(focused.elements[0].selector,data.control.selector);assert.equal(focused.coverage.mode,'search');
+  assert.deepEqual(data.calls.find(v=>v[1]==='search'),['ui','search','검색','-w','100','--max','20','--json']);
+  assert(!data.calls.some(v=>v[1]==='screenshot'));assert.equal(data.acted,0);
+  await proposeComputerAction(service,task.id,{observationId:focused.observationId,selector:data.control.selector,action:'click',reason:'확인'});
+  assert.equal(data.acted,0); // search evidence authorizes a proposal, never execution
+});
+
+test('search empty results are partial evidence and malformed results never grant selectors',async t=>{
+  const {service,task,data}=await setup(t);
+  data.searchResult={matchCount:0,hasMore:false,matches:[]};
+  const result=await observeComputer(service,task.id,{query:'존재하지 않음',includeImage:false});
+  assert.deepEqual(result.elements,[]);assert.equal(result.coverage.complete,false);
+  for(const query of ['', ' -w', '\0', 'x'.repeat(201)])await assert.rejects(()=>observeComputer(service,task.id,{query,includeImage:false}),/computer_invalid/);
+  data.searchResult={matchCount:2,hasMore:false,matches:[data.control,data.control]};
+  await assert.rejects(()=>observeComputer(service,task.id,{query:'검색'}),/computer_contract/);
+  data.searchResult={matchCount:9,hasMore:false,matches:[data.control]};
+  await assert.rejects(()=>observeComputer(service,task.id,{query:'검색'}),/computer_contract/);
+  assert.equal(data.acted,0);
+});
+
+test('only documented empty search exit 1 is a successful read, never an action or transport error',async()=>{
+  let error=Object.assign(Error('empty'),{code:1,stdout:JSON.stringify({matchCount:0,hasMore:false,matches:[]}),stderr:''});
+  const a=new WinappComputer({platform:'win32',runner:async()=>{throw error;}});
+  assert.deepEqual((await a.search(100,'missing')).elements,[]);
+  await assert.rejects(()=>a.act(100,'btn-x','click'),/computer_command_failed/);
+  for(const extra of [{killed:true},{signal:'SIGTERM'},{stderr:'failed'},{code:2},{stdout:'not json'},{stdout:'{"error":"unavailable"}'}]){
+    const original=error;error=Object.assign(Error('failed'),original,extra);
+    await assert.rejects(()=>a.search(100,'missing'),/computer_command_failed/);error=original;
+  }
+});
+
+test('click readback observes a new screen after the old target disappears; history grants no new action',async t=>{
+  const {service,task,data,propose,decide}=await setup(t),p=await propose();
+  data.afterElements=[{...data.control,selector:'txt-result',name:'결과'}];
+  const original=service.computerAdapter.runner;
+  service.computerAdapter.runner=async args=>{
+    if(data.acted&&((args[1]==='screenshot'&&args[2]===data.control.selector)||args[1]==='get-property'))throw Error('old target disappeared');
+    return original(args);
+  };
+  await decide(p);await decide(p);
+  const result=readComputerResult(service,task.id,{actionId:p.id,includeImage:true});
+  assert.equal(result.receipt.state,'observed');assert.equal(result.receipt.verification,'not_verified');assert.equal(data.acted,1);
+  assert.equal(result.image.scope,'window_region');assert.equal(result.observation.elements[0].selector,'txt-result');
+  assert.equal(result.observation.historical,true);assert.equal(service.computerObservation,null);
+  await assert.rejects(()=>proposeComputerAction(service,task.id,{observationId:p.observationId,selector:'txt-result',action:'click',reason:'확인'}),/computer_observation_stale/);
+  assert(readComputerResult(service,task.id,{actionId:p.id}).observation); // text-only models can inspect UIA
+  await service.computer({method:'unbind',taskId:task.id});
+  assert.equal(readComputerResult(service,task.id,{actionId:p.id}).observation,undefined);
+});
+
+test('query switches, result order and new observations do not reset repeated failures',()=>{
+  const p=createComputerProgress(),elements=[{selector:'a'},{selector:'b'}];
+  const observe=(query,els=elements)=>p.observe('observe_computer',{}, {observationId:crypto.randomUUID(),identity:{hwnd:1},coverage:{mode:'search',query},elements:els});
+  const failed=()=>p.observe('propose_computer_action',{}, {error:'computer_target_unavailable'});
+  observe('first');failed();observe('second');failed();observe('first',[...elements].reverse());assert.equal(failed().needsInput,true);
+  observe('first',[{selector:'c'}]);assert.equal(failed().failures,1);
+});
+
 test('upstream nullable accessible names remain usable without weakening selector or geometry checks',async t=>{
   const {service,task,data}=await setup(t);delete data.control.name;
   const result=await observeComputer(service,task.id,{includeImage:false});assert.equal(result.elements[0].name,'');
@@ -213,6 +357,29 @@ test('window screenshot accepts omitted nullable elementId from upstream JSON',a
   const {service,task}=await setup(t),a=service.computerAdapter,original=a.runner;
   a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'&&result.elementId===null)delete result.elementId;return result;};
   const result=await observeComputer(service,task.id);assert(result.image.data);
+});
+test('AutomationId tree aliases resolve to native semantic selectors without weakening target checks',async t=>{
+  const {service,data,propose,decide}=await setup(t),a=service.computerAdapter,original=a.runner;
+  data.control.selector='NubiValue';const canonical='txt-nubivalue-1651';
+  a.runner=async args=>{
+    const result=await original(args);
+    if(args[1]==='get-property')return {...result,elementId:canonical,element:{...result.element,selector:canonical,automationId:'NubiValue'}};
+    if(args[1]==='get-value'){assert.equal(args[2],canonical);return {...result,elementId:canonical};}
+    if(args[1]==='screenshot'&&args[2]!=='--capture-screen')assert.equal(args[2],canonical);
+    return result;
+  };
+  const p=await propose('set_value',{value:'verified'});await decide(p);
+  assert.equal(service.store.get('computer-action:'+p.id).verification,'value_matched');assert.equal(data.acted,1);
+  await assert.rejects(()=>a.property(100,'another-target'),/computer_target_changed/);
+  a.runner=async()=>({elementId:'different',element:{...data.control,selector:canonical,automationId:'NubiValue'}});
+  await assert.rejects(()=>a.property(100,'NubiValue'),/computer_target_changed/);
+});
+test('capture validates the actual output file while rejecting an unrelated returned path',async t=>{
+  const {service}=await setup(t),a=service.computerAdapter,original=a.runner;
+  a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'){const alias=result.filePath+'.alias';await symlink(result.filePath,alias,'file');return {...result,filePath:alias};}return result;};
+  assert((await a.capture(100)).data);
+  a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'){const other=result.filePath+'.different';await writeFile(other,'not the captured file');return {...result,filePath:other};}return result;};
+  await assert.rejects(()=>a.capture(100),/computer_contract/);
 });
 
 
@@ -227,21 +394,118 @@ test('unique automation IDs resolve to canonical UIA selectors without accepting
 });
 
 
-test('capture verifies filesystem identity when the driver returns an equivalent path spelling',{skip:process.platform==='win32'},async t=>{
- const {service}=await setup(t),a=service.computerAdapter,original=a.runner;
- a.runner=async args=>{const raw=await original(args);if(args[1]==='screenshot'){const alias=raw.filePath+'.alias';await symlink(raw.filePath,alias);return {...raw,filePath:alias};}return raw;};
- assert((await a.capture(100)).data);
- a.runner=async args=>{const raw=await original(args);if(args[1]==='screenshot'){const other=raw.filePath+'.other';await writeFile(other,'different');return {...raw,filePath:other};}return raw;};
- await assert.rejects(a.capture(100),/computer_contract/);
-});
-
-
-test('virtual cursor policy never emits physical pointer commands or approves legacy hover actions',async t=>{
+test('UIA is the default and legacy hover records cannot acquire mouse consent',async t=>{
  const {service,task,data,propose,decide}=await setup(t),a=service.computerAdapter;
- for(const action of ['hover','drag','right_click','unknown'])await assert.rejects(a.act(100,data.control.selector,action),/computer_virtual_only/);
- await assert.rejects(propose('hover'),/computer_invalid/);
+ for(const action of ['hover','drag','pointer_click'])await assert.rejects(a.act(100,data.control.selector,action),/computer_pointer_consent_required/);
+ for(const action of ['right_click','unknown'])await assert.rejects(a.act(100,data.control.selector,action),/computer_virtual_only/);
  data.control.isInvokable=false;await assert.rejects(propose('click'),/computer_target_unavailable/);data.control.isInvokable=true;
  const p=await propose('click'),record=service.store.get('computer-action:'+p.id);service.store.set('computer-action:'+p.id,{...record,action:'hover'});
- await assert.rejects(decide(p),/computer_virtual_only/);assert.equal(data.acted,0);
+ await assert.rejects(decide(p),/computer_pointer_consent_required/);
+ await assert.rejects(service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'approve',pointerConsent:true}),/computer_pointer_consent_required/);assert.equal(data.acted,0);
  assert(!data.calls.some(v=>['click','hover','send-keys','drag'].includes(v[1])));
+});
+
+async function allowPointer(propose){
+  for(let i=0;i<3;i++)await assert.rejects(()=>propose('select'),error=>error.message==='computer_target_unavailable'&&error.pointerFallback.failures===i+1);
+}
+
+for(const [action,command,flag] of [['pointer_click','click',null],['pointer_double_click','click','--double'],['pointer_right_click','click','--right'],['hover','hover','--dwell-time']])test(action+' needs a separate one-action HITL grant',async t=>{
+  const {service,task,data,propose,decide}=await setup(t);data.control.isInvokable=false;
+  await allowPointer(propose);const p=await propose(action);assert.equal(p.inputMode,'shared_pointer');assert.equal(data.acted,0);
+  await assert.rejects(decide(p),/computer_pointer_consent_required/);assert.equal(data.acted,0);
+  const approve=()=>service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'approve',pointerConsent:true});
+  await approve();await approve();assert.equal(data.acted,1);
+  const args=data.calls.find(v=>v[1]===command);assert(args);if(flag)assert(args.includes(flag));assert(args.includes('100'));
+  const receipt=readComputerResult(service,task.id,{actionId:p.id}).receipt;assert.equal(receipt.pointerApproval.scope,'one_action');assert.equal(receipt.inputMode,'shared_pointer');assert.equal(receipt.verification,'not_verified');
+  await assert.rejects(propose(action),/computer_uia_attempts_required/);await allowPointer(propose);const q=await propose(action);await assert.rejects(decide(q),/computer_pointer_consent_required/);assert.equal(data.acted,1);
+});
+
+test('drag binds two observed selectors and rejects a destination changed after approval preview',async t=>{
+  const {service,task,data,propose}=await setup(t),destination={...data.control,selector:'drop-target',name:'도착 위치',x:100};data.elements=[data.control,destination];
+  await allowPointer(propose);await assert.rejects(propose('drag'),/computer_invalid/);
+  await assert.rejects(propose('drag',{destinationSelector:'unobserved'}),/computer_target_unavailable/);
+  await assert.rejects(propose('drag',{destinationSelector:'200,300'}),/computer_invalid/);
+  const p=await propose('drag',{destinationSelector:destination.selector});assert(service.store.get('computer-image:'+p.id).destinationBefore);
+  destination.x++;await service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'approve',pointerConsent:true});assert.equal(data.acted,0);
+  const q=await propose('drag',{destinationSelector:destination.selector});await service.computer({method:'decide',taskId:task.id,id:q.id,fingerprint:q.fingerprint,decision:'approve',pointerConsent:true});
+  assert.equal(data.acted,1);assert.deepEqual(data.calls.find(v=>v[1]==='drag'),['ui','drag',data.control.selector,'drop-target','-w','100','--json']);
+});
+
+test('lost pointer response is uncertain and is never resent',async t=>{
+  const {service,task,data,propose}=await setup(t);await allowPointer(propose);const p=await propose('pointer_click');data.failAction=true;
+  const args={method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'approve',pointerConsent:true};
+  await service.computer(args);await service.computer(args);assert.equal(data.acted,1);assert.equal(service.store.get('computer-action:'+p.id).execution,'unknown');
+  await assert.rejects(propose('pointer_click'),/computer_review_required/);
+});
+
+test('user stop during an approved gesture preserves uncertainty and prevents subsequent steps',async t=>{
+  const {service,task,data,propose}=await setup(t);await allowPointer(propose);const p=await propose('hover');let release,started;
+  const waiting=new Promise(resolve=>{started=resolve;});data.onAction=()=>{started();return new Promise(resolve=>{release=resolve;});};
+  const running=service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'approve',pointerConsent:true});
+  await waiting;await service.stopAgent({taskId:task.id});release();await running;
+  const receipt=service.store.get('computer-action:'+p.id);assert.equal(receipt.state,'attention');assert.equal(data.acted,1);assert.equal(service.task(task.id).state,'cancelled');
+  await assert.rejects(propose('hover'),/computer_cancelled/);
+});
+
+test('mouse fallback counts fresh safe UIA failures, not duplicated observations, and expires on rebind',async t=>{
+  const {service,task,data,propose}=await setup(t);
+  await assert.rejects(propose('pointer_click'),/computer_uia_attempts_required/);
+  const observation=await observeComputer(service,task.id);
+  const args={observationId:observation.observationId,selector:data.control.selector,action:'select',reason:'Select observed control'};
+  for(let i=0;i<4;i++)await assert.rejects(proposeComputerAction(service,task.id,args),e=>e.pointerFallback.failures===1&&!e.pointerFallback.eligible);
+  await assert.rejects(propose('pointer_click'),/computer_uia_attempts_required/);
+  for(let i=2;i<=3;i++)await assert.rejects(propose('select'),e=>e.pointerFallback.failures===i);
+  const p=await propose('pointer_click');assert.equal(p.pointerFallback.failures,3);
+  await service.computer({method:'bind',taskId:task.id,window:100});
+  await service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'approve',pointerConsent:true});
+  assert.equal(data.acted,0);assert.equal(service.store.get('computer-action:'+p.id).state,'stale');
+  await assert.rejects(propose('pointer_click'),/computer_uia_attempts_required/);
+});
+
+test('visual pointer follows host dispatch and hides before result capture without replay',async t=>{
+  const {service,data,propose,decide}=await setup(t),events=[];
+  service.computerPointer={move:async()=>{events.push('move');return {available:true};},pulse:async()=>events.push('pulse'),hide:async()=>{events.push('hide');return {available:true};},dispose(){}};
+  data.onAction=async()=>events.push('act');const capture=service.computerAdapter.capture.bind(service.computerAdapter);
+  service.computerAdapter.capture=async(...args)=>{events.push('capture');return capture(...args);};
+  const p=await propose('click');events.length=0;await decide(p);await decide(p);
+  assert.deepEqual(events,['move','pulse','act','hide','capture']);assert.equal(data.acted,1);
+});
+
+test('visual pointer movement cannot bypass a changed target and cannot pulse a no-op',async t=>{
+  const {service,data,propose,decide}=await setup(t),events=[];
+  service.computerPointer={move:async()=>{events.push('move');data.control.x++;return {available:true};},pulse:async()=>events.push('pulse'),hide:async()=>{events.push('hide');return {available:true};},dispose(){}};
+  const p=await propose('click');await decide(p);assert.deepEqual(events,['move','hide']);assert.equal(data.acted,0);
+  assert.equal(service.store.get('computer-action:'+p.id).execution,'not_started');
+  data.properties={ToggleState:'On'};events.length=0;const q=await propose('toggle_on');await decide(q);assert.deepEqual(events,[]);
+});
+
+test('failed pointer hide preserves returned input receipt and does not capture misleading evidence',async t=>{
+  const {service,data,propose,decide}=await setup(t);
+  service.computerPointer={move:async()=>({available:true}),pulse:async()=>({available:true}),hide:async()=>({available:false}),dispose(){}};
+  const p=await propose('click');await decide(p);await decide(p);
+  assert.equal(data.acted,1);const receipt=service.store.get('computer-action:'+p.id);
+  assert.equal(receipt.state,'attention');assert.equal(receipt.execution,'command_returned');assert(!service.store.get('computer-image:'+p.id).after);
+});
+
+test('unknown UIA writes do not unlock mouse fallback even after user acknowledgement',async t=>{
+  const {service,task,data,propose,decide}=await setup(t);
+  await allowPointer(propose);const p=await propose('click');data.failAction=true;await decide(p);
+  await service.computer({method:'decide',taskId:task.id,id:p.id,fingerprint:p.fingerprint,decision:'acknowledge'});
+  await assert.rejects(propose('pointer_click'),/computer_uia_attempts_required/);assert.equal(data.acted,1);
+});
+
+test('Pi receives host fallback eligibility after safe failures and stops at mouse HITL',async t=>{
+  const {service,task,data}=await setup(t);let round=0;
+  const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
+  service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async messages=>{
+    round++;
+    if(round<=5&&round%2)return call('observe_computer',{includeImage:false});
+    const result=JSON.parse(messages.findLast(m=>m.role==='tool').content);
+    if(round<=6)return call('propose_computer_action',{observationId:result.observationId,selector:data.control.selector,action:['select','toggle_on','expand'][round/2-1],reason:'확인한 UIA 패턴을 검사합니다.'});
+    assert.equal(round,7);assert.equal(result.pointerFallback.eligible,true);assert.equal(result.actionIssued,false);
+    return call('propose_computer_action',{observationId:service.computerObservation.id,selector:data.control.selector,action:'pointer_click',reason:'UIA 조작이 지원되지 않아 마우스 승인을 요청합니다.'});
+  }};
+  await service.startAgent({taskId:task.id});await service.agent.promise;
+  assert.equal(round,7);assert.equal(data.acted,0);assert.equal(service.task(task.id).state,'review');assert(!service.task(task.id).question);
+  const proposal=service.state().computer.actions[0];assert.equal(proposal.state,'proposed');assert.equal(proposal.inputMode,'shared_pointer');assert.equal(proposal.pointerFallback.failures,3);
 });

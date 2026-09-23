@@ -1,7 +1,7 @@
 import {hash,fail} from './files.mjs';
 
 export const COMPUTER_EVIDENCE_SOURCES=Object.freeze({observe_computer:'live',read_computer_result:'historical',verify_computer_value:'receipt'});
-export const COMPUTER_GUIDANCE='The user cursor must never be moved. Nubi cursor graphics are virtual annotations. click means UIA InvokePattern on a supported control, not physical mouse injection. Use invoke or set_value only; hover, drag, coordinate clicks and raw keyboard input are unavailable on this shared desktop. Do not substitute shell commands for those operations. If pointer semantics are essential, explain that a separately isolated execution environment is required and ask for the missing environment decision. For Windows tasks, preserve the original goal and every criterion. Use computer_checkpoint for recovery and read_computer_result to inspect the host receipt and captured result of an approved action. Then observe_computer for the current window before proposing another action. Use structured UIA first; includeImage=false for models without vision, or an element crop for a focused image. Use delegate_analysis with page, review or recovery roles on the returned analysis_evidence_id when independent inspection helps. Children analyze frozen evidence only. Their advice and historical screenshots never grant current selectors, approve input, certify saving or complete a criterion. Compare exact values with verify_computer_value when applicable. A visual difference is not business success. A proposed operation is pending human review; stop without issuing another proposal. Unknown outcomes must be inspected, never replayed. Ask a focused question if the target or expected outcome is unclear. Keep one native action per approval.';
+export const COMPUTER_GUIDANCE='Prefer explicit UIA invoke, set_value, select, toggle_on, toggle_off, expand or collapse. Show the visual AI pointer during real UIA dispatch without moving the user cursor. Only after three fresh host-confirmed safe UIA failures on the same bound target may you propose real Windows mouse control through per-action HITL. Never manufacture failures or repeat unchanged calls just to unlock mouse control. Unknown issued outcomes never qualify. pointer_click, pointer_double_click, pointer_right_click, hover and drag move the shared OS cursor and require a separate visible mouse-control approval; the visual AI pointer depicts the tool target, not OS input or business success. Never infer approval from a task request, Wiki, question answer or earlier action. Do not substitute shell input. Use observed selectors only; drag requires two distinct observed controls in the same connected window. No raw coordinates, global keys, persistent grant or long press. Ask if the target is ambiguous. The user may stop; do not resume a cancelled task. Already-started short native gestures may finish before cancellation is observed; never claim they were undone. Read target.controlState before choosing a UIA state action. Unknown capability must not become a silent pointer fallback: wait for host pointerFallback.eligible before proposing a separate mouse action for HITL. Never use blind toggle. state_matched proves only the control state. Query OpenWiki-SDS for relevant rules and include evidenceIds from this run. Stale evidence needs a fresh query and proposal, never removal of citations to bypass checks. For Windows tasks, preserve the original goal and every criterion. Use computer_checkpoint for recovery and read_computer_result to inspect the host receipt and captured result of an approved action. Then observe_computer for the current window before proposing another action. Use structured UIA first. If a target is absent from the shallow tree, use observe_computer query with a specific label, then inspect the exact candidate. Do not repeatedly inspect the same truncated tree or interpret a no-match as proof of absence. After a click or invoke, read the captured whole-window result and its historical UIA before making a fresh observation. UIA and pixels are sequential evidence, not an atomic snapshot; resolve contradictions with a fresh focused read. includeImage=false for models without vision, or an element crop for a focused image. Use delegate_analysis with page, review or recovery roles on the returned analysis_evidence_id when independent inspection helps. Children analyze frozen evidence only. Their advice and historical screenshots never grant current selectors, approve input, certify saving or complete a criterion. Compare exact values with verify_computer_value when applicable. A visual difference is not business success. A proposed operation is pending human review; stop without issuing another proposal. Unknown outcomes must be inspected, never replayed. Ask a focused question if the target or expected outcome is unclear. Keep one native action per approval.';
 
 export function computerCheckpoint(service,taskId){
   const all=service.store.list('computer-action:').filter(v=>v.taskId===taskId),checks=service.store.list('computer-check:').filter(v=>v.taskId===taskId);
@@ -17,34 +17,36 @@ export function readComputerResult(service,taskId,{actionId,includeImage=false,p
   if(typeof actionId!=='string'||typeof includeImage!=='boolean'||!['before','after'].includes(phase))fail('computer_invalid');
   const action=service.store.get('computer-action:'+actionId);
   if(!action||action.taskId!==taskId)fail('computer_result_missing');
-  const receipt={id:action.id,action:action.action,state:action.state,execution:action.execution||'not_started',verification:action.verification,createdAt:action.createdAt,finishedAt:action.finishedAt||null,error:action.error||null,visualDifference:action.visualDifference||null};
+  const receipt={id:action.id,action:action.action,state:action.state,execution:action.execution||'not_started',verification:action.verification,createdAt:action.createdAt,finishedAt:action.finishedAt||null,error:action.error||null,inputMode:action.inputMode||'uia',pointerApproval:action.pointerApproval||null,pointerDisplay:action.pointerDisplay?{available:action.pointerDisplay.available,animated:action.pointerDisplay.animated}:null,visualDifference:action.visualDifference||null,controlCheck:action.controlCheck||null,wikiEvidence:action.wikiEvidence||[]};
   let image;
+  const binding=service.computerBinding,canReadEvidence=binding?.taskId===taskId&&binding.id===action.bindingId;
   if(includeImage){
-    const binding=service.computerBinding;
-    if(!binding||binding.taskId!==taskId||binding.id!==action.bindingId)fail('computer_binding_required');
+    if(!canReadEvidence)fail('computer_binding_required');
     image=service.store.get('computer-image:'+actionId)?.[phase];
   }
-  return {receipt,historical:true,phase,image,imageStatus:includeImage?(image?'captured':'not_captured'):'not_requested',instruction:'This is an immutable capture of a previous operation, not the live screen. Obtain observe_computer before input. Never turn this result or a subagent opinion into permission or business success.'};
+  const observation=phase==='after'&&canReadEvidence?service.store.get('computer-image:'+actionId)?.afterObservation:undefined;
+  return {receipt,historical:true,phase,image,observation,imageStatus:includeImage?(image?'captured':'not_captured'):'not_requested',instruction:'This is an immutable capture of a previous operation, not the live screen. UIA and pixels were read sequentially, not atomically. Obtain observe_computer before input. Never turn this result or a subagent opinion into permission or business success.'};
 }
 
 // Ephemeral loop detection. New opaque observation IDs alone are not progress.
 export function createComputerProgress(){
-  let state=null,failures=0,lastFailedState=null,lastValue=null;
+  const scopes=new Map();let failures=0,lastValue=null;
   return {
     observe(name,args,result){
       if(name==='observe_computer'&&result?.observationId){
         // Animation/cursor pixels do not demonstrate progress on a UIA target.
-        const next=hash(JSON.stringify({identity:result.identity,elements:result.elements}));
-        if(state!==null&&state!==next)failures=0;
-        state=next;
+        const scope=JSON.stringify([result.identity,result.coverage||{mode:'tree'}]);
+        const next=hash(JSON.stringify([...(result.elements||[])].sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)))));
+        if(scopes.has(scope)&&scopes.get(scope)!==next)failures=0;
+        // Changing a query or result order is not progress. Keep the comparison cache bounded.
+        scopes.set(scope,next);if(scopes.size>16)scopes.delete(scopes.keys().next().value);
       }
       if(name==='verify_computer_value'&&result?.verification==='value_matched'){
         const key=hash(JSON.stringify([result.selector,result.expected,result.actual]));
-        if(key!==lastValue){failures=0;lastFailedState=null;}lastValue=key;
+        if(key!==lastValue)failures=0;lastValue=key;
       }
       if(result?.error?.startsWith('computer_')){
-        if(lastFailedState!==state)failures=0;
-        lastFailedState=state;failures++;
+        failures++;
       }
       return {failures,needsInput:failures>=3};
     }

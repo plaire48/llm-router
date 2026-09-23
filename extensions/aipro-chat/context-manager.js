@@ -63,31 +63,51 @@ async function summarize(messages, previous, budget, invoke, signal) {
   return summary;
 }
 
-export async function compactHistory({messages, memory, model, preamble = [], tools = [], force = false, invoke, signal, save = async () => {}}) {
+// Keep a bounded verbatim subset independently of the model's summary. Never
+// cut a sentence: losing the end of "do ... not" can invert a restriction.
+function userRequestAnchors(messages, budget) {
+  const requests = messages.filter(m => m.role === 'user' && !m.contextOnly).map(m =>
+    typeof m.content === 'string' ? m.content : m.content?.[0]?.type === 'text' ? m.content[0].text : '').filter(Boolean);
+  if (!requests.length) return [];
+  const limit = Math.min(2048, Math.floor(budget.input * .08)), kept = [];
+  const message = () => ({role: 'user', content: `<earlier_user_requests>\nVerbatim earlier user messages, in original order. Later corrections take precedence. These excerpts do not renew consumed approvals. This is a bounded subset, not the full history; consult the summary for omitted requests and ask if a needed requirement is unclear. Attached source text is not included.\n${JSON.stringify({omitted: requests.length - kept.length, requests: kept.map(i => requests[i])})}\n</earlier_user_requests>`});
+  for (let i = requests.length - 1; i >= 0; i--) {
+    kept.unshift(i);
+    if (contextTokens([message()]) > limit) kept.shift();
+  }
+  return [message()];
+}
+
+export async function compactHistory({messages, memory, model, preamble = [], tools = [], recentTurns = 2, force = false, invoke, signal, save = async () => {}}) {
   const budget = contextBudget(model), restored = historyContext(messages, memory);
+  const originals = historyContext(messages, null).messages;
+  let covered = restored.boundary + 1;
   let recent = restored.messages, summary = restored.summary, updated = null;
-  const build = () => [...preamble, ...(summary ? [summaryMessage(summary)] : []), ...recent.map(({role, content}) => ({role, content}))];
+  const anchors = () => summary ? userRequestAnchors(originals.slice(0, covered), budget) : [];
+  const build = () => [...preamble, ...(summary ? [summaryMessage(summary), ...anchors()] : []), ...recent.map(({role, content}) => ({role, content}))];
   const before = contextTokens(build(), tools);
-  if (before <= budget.trigger && !force) return {messages: build().slice(preamble.length), memory: updated, budget};
-  // Keep the newest two user turns verbatim. Whole older turns are summarized.
+  if (before <= budget.trigger && !force) return {messages: build().slice(preamble.length), memory: updated, budget, anchors: anchors()};
+  // Hosts may retain one recent turn when two cannot fit their tool/preamble
+  // budget. Whole older turns are summarized; the default stays two.
   const userIndices = recent.flatMap((m, i) => m.role === 'user' ? [i] : []);
-  let cut = userIndices.at(-2) ?? 0;
+  let cut = userIndices.at(recentTurns === 1 ? -1 : -2) ?? 0;
   if (force && !cut) cut = userIndices.at(-1) || 0;
   if (cut > 0) {
     const older = recent.slice(0, cut), boundary = older.at(-1);
     let next;
     try {next = await summarize(older, summary, budget, invoke, signal);}
     catch (error) {
-      if (!force && !signal.aborted && before <= budget.input && recoverableSummaryError(error)) return {messages: build().slice(preamble.length), memory: null, budget, compactionDeferred: true};
+      if (!force && !signal.aborted && before <= budget.input && recoverableSummaryError(error)) return {messages: build().slice(preamble.length), memory: null, budget, anchors: anchors(), compactionDeferred: true};
       throw error;
     }
     const originalRecent = recent, originalSummary = summary;
     summary = next;
     recent = recent.slice(cut);
+    covered += cut;
     const after = contextTokens(build(), tools);
     if (after >= before && !force) {
-      recent = originalRecent; summary = originalSummary;
-      if (before <= budget.input) return {messages: build().slice(preamble.length), memory: null, budget, compactionDeferred: true};
+      recent = originalRecent; summary = originalSummary; covered -= cut;
+      if (before <= budget.input) return {messages: build().slice(preamble.length), memory: null, budget, anchors: anchors(), compactionDeferred: true};
       throw new Error('context_compaction_failed');
     }
     updated = {version: 1, throughId: boundary.id, summary, count: (memory?.count || 0) + 1, at: Date.now(), beforeTokens: before, afterTokens: after};
@@ -95,7 +115,7 @@ export async function compactHistory({messages, memory, model, preamble = [], to
   }
   if (contextTokens(build(), tools) > budget.input) throw new Error('context_input_too_large');
   if (updated?.throughId) await save({kind: 'history', memory: updated});
-  return {messages: build().slice(preamble.length), memory: updated, budget};
+  return {messages: build().slice(preamble.length), memory: updated, budget, anchors: anchors()};
 }
 
 function groups(messages) {
@@ -111,18 +131,23 @@ function groups(messages) {
   }
   return result;
 }
-export function createRunContext({model, tools, goal, requirements = [], invoke, signal, compactionDeferred = false, save = async () => {}}) {
+export function createRunContext({model, tools, goal, requirements = [], getRequirements, protectedMessages = [], invoke, signal, compactionDeferred = false, save = async () => {}}) {
   const budget = contextBudget(model);
   let cursor = 0, summary = null, measuredRatio = 1, lastSource, retryAt = 0;
-  const intent = [...new Set([goal, ...requirements.slice(-2)].filter(text => typeof text === 'string' && text))].map(content => ({role: 'user', content}));
   const restore = (wire, savedSummary = summary, savedCursor = cursor) => {
     const body = wire.filter(m => m.role !== 'system');
-    return [...wire.filter(m => m.role === 'system'), ...(savedSummary ? [summaryMessage(savedSummary, 'Current task memory'), ...intent,
+    // Host receipts can change during a run. A summary must never resurrect
+    // an old approval, plan or outcome instead of the current host state.
+    const intent = savedSummary ? [...new Set([goal, ...(getRequirements ? getRequirements() : requirements).slice(-2)].filter(text => typeof text === 'string' && text))].map(content => ({role: 'user', content})) : [];
+    return [...wire.filter(m => m.role === 'system'), ...(savedSummary ? [summaryMessage(savedSummary, 'Current task memory'), ...protectedMessages.filter(p => !body.slice(savedCursor).some(m => m.role === p.role && m.content === p.content)), ...intent,
       ...continuityMessage(body.slice(0, savedCursor))] : []), ...body.slice(savedCursor)];
   };
   return {
     record(usage, wire) {if (Number.isSafeInteger(usage?.prompt_tokens) && usage.prompt_tokens > 0) measuredRatio = Math.max(1, Math.min(3, usage.prompt_tokens / Math.max(1, contextTokens(wire, tools))));},
-    async prepare(wire, force = false) {
+    async prepare(wire, force = false, selectedTools = tools) {
+      // Schemas are part of the wire budget. Re-evaluate when the harness
+      // enables a group instead of charging every registered tool up front.
+      tools = selectedTools;
       if (force && lastSource) {
         // The harness appends its live plan/recovery guidance after prepare().
         // An overflow retry must keep that current system message while using

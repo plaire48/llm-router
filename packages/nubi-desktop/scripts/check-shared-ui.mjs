@@ -21,7 +21,8 @@ try{
 
  await p.locator('summary:visible').filter({hasText:/^컴퓨터로 확인$/}).click();await p.getByText('동작 표시 예시',{exact:true}).click();const preview=p.getByRole('figure',{name:'커서 표시 예시'});await preview.waitFor();await preview.getByText('표시 예시입니다. 실제 앱을 조작하지 않습니다.',{exact:true}).waitFor();
  const example=p.getByRole('group',{name:'동작 예시 선택'});await example.getByRole('button',{name:'마우스 올리기',exact:true}).click();assert.equal(await preview.locator('.is-hover').count(),1);await example.getByRole('button',{name:'입력',exact:true}).click();assert.equal(await preview.locator('.is-set_value').count(),1);await example.getByRole('button',{name:'클릭',exact:true}).click();assert.equal(await preview.locator('.is-click').count(),1);checks.push('cursor preview distinguishes click, hover and input without issuing actions');
- await preview.getByRole('button',{name:'커서 모션'}).click();assert.equal(await preview.locator('.nubi-action-pointer').evaluate(e=>getComputedStyle(e).animationName),'none');await preview.getByRole('button',{name:'커서 모션'}).click();await p.emulateMedia({reducedMotion:'reduce'});assert.equal(await preview.locator('.nubi-action-halo').evaluate(e=>getComputedStyle(e).animationName),'none');checks.push('cursor motion respects explicit toggle and reduced-motion preference');await p.emulateMedia({reducedMotion:'no-preference'});
+ const arrowStyle=await preview.locator('svg path').evaluate(e=>({fill:getComputedStyle(e).fill,stroke:getComputedStyle(e).stroke}));assert.equal(arrowStyle.fill,'rgb(23, 23, 23)');assert.equal(arrowStyle.stroke,'rgb(255, 255, 255)');await preview.screenshot({path:'verification/ui-visual-pointer-shape.png'});
+ await preview.getByRole('button',{name:'커서 모션'}).click();assert.equal(await preview.locator('.nubi-action-pointer').evaluate(e=>getComputedStyle(e).animationName),'none');await preview.getByRole('button',{name:'커서 모션'}).click();await p.emulateMedia({reducedMotion:'reduce'});assert.equal(await preview.locator('.nubi-action-halo').evaluate(e=>getComputedStyle(e).animationName),'none');assert.equal(await preview.locator('.nubi-action-pointer').evaluate(e=>getComputedStyle(e).transitionDuration),'0s');checks.push('cursor motion respects explicit toggle and reduced-motion preference');await p.emulateMedia({reducedMotion:'no-preference'});
  const body=p.getByRole('article',{name:'내 메시지'}).first().locator('.message-body');assert.equal(await body.evaluate(e=>getComputedStyle(e).fontSize),'15px');await p.getByRole('button',{name:'큰 글자',exact:true}).click();assert.equal(await body.evaluate(e=>getComputedStyle(e).fontSize),'17px');assert.equal(await body.evaluate(e=>getComputedStyle(e).fontWeight),'400');assert.equal(await p.evaluate(()=>localStorage.getItem('nubi-workspace-large-text')),'true');checks.push('desktop body has stable 15px/17px reading scale and persists text preference');
  await p.setViewportSize({width:440,height:900});assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await p.screenshot({path:'verification/ui-cursor-typography-narrow.png'});await p.setViewportSize({width:1280,height:950});await preview.scrollIntoViewIfNeeded();await p.screenshot({path:'verification/ui-cursor-typography.png'});checks.push('cursor preview and large Korean text fit narrow layout');
  await p.reload();assert.equal(await p.getByRole('button',{name:'큰 글자',exact:true}).getAttribute('aria-pressed'),'true');await p.getByRole('button',{name:'큰 글자',exact:true}).click();assert.equal(await p.evaluate(()=>localStorage.getItem('nubi-workspace-large-text')),'false');checks.push('large text preference survives reload and can return to default');assert.deepEqual(errors,[]);
@@ -41,5 +42,34 @@ try{
 
  await p.setViewportSize({width:440,height:950});assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await p.screenshot({path:'verification/ui-windows-launch-narrow.png'});
  await p.setViewportSize({width:1280,height:950});await p.screenshot({path:'verification/ui-windows-launch.png'});assert.deepEqual(errors,[]);
+ await p.goto('http://127.0.0.1:'+server.address().port+'/?controls=1');
+ await p.getByText('이미 요청한 상태여서 다시 조작하지 않았습니다.',{exact:true}).waitFor();
+ await p.getByText('OpenWiki-SDS 근거가 바뀌어 실행하지 않았습니다. 최신 근거로 다시 제안해 주세요.',{exact:true}).waitFor();
+ await p.getByText('OpenWiki-SDS 근거 1개',{exact:true}).first().click();await p.getByText('openwiki/notification.md:3 참조 버전 일치',{exact:true}).first().waitFor();
+ assert.equal(await p.getByRole('button',{name:'승인하고 실행',exact:true}).count(),0);
+ await p.setViewportSize({width:440,height:950});assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await p.screenshot({path:'verification/ui-uia-state-evidence.png'});
+ checks.push('UIA no-op and stale Wiki remain distinct with reviewable evidence and no execution button');assert.deepEqual(errors,[]);
+ await p.goto('http://127.0.0.1:'+server.address().port+'/?pointer=1');
+ const pointerApproval=p.getByRole('button',{name:'마우스 제어 승인',exact:true});assert.equal(await pointerApproval.isDisabled(),true);assert.equal(await p.getByLabel('마우스 실행 횟수').textContent(),'0');
+ await p.getByRole('button',{name:'대상 위치 보기',exact:true}).click();await p.getByRole('figure',{name:'컴퓨터 동작 미리보기',exact:true}).nth(1).waitFor();assert.equal(await pointerApproval.isEnabled(),true);
+ await p.screenshot({path:'verification/ui-shared-pointer-approval.png'});await pointerApproval.click();await p.getByRole('button',{name:'작업 중지',exact:true}).click();await p.getByText('확인 필요',{exact:true}).waitFor();assert.equal(await p.getByLabel('마우스 실행 횟수').textContent(),'1');assert.equal(await p.getByRole('button',{name:'마우스 제어 승인',exact:true}).count(),0);
+ checks.push('mouse control requires viewing both drag targets, explicit consent and permits stop without replay');assert.deepEqual(errors,[]);
+ await p.goto('http://127.0.0.1:'+server.address().port+'/?compaction=1');
+ await p.getByRole('button',{name:'작업 이력',exact:true}).click();await p.getByRole('button',{name:/대화 압축 화면 검증/}).click();
+ await p.getByRole('status').getByText('이전 대화를 정리하고 있어요',{exact:true}).waitFor();
+ await p.getByRole('article',{name:'내 메시지'}).getByText('원문 보존 확인: 승인 없이 실행하지 마세요.',{exact:true}).waitFor();
+ await p.screenshot({path:'verification/ui-context-compaction.png',animations:'disabled'});
+ await p.getByRole('button',{name:'중지',exact:true}).click();await p.getByText('이전 대화를 정리하고 있어요',{exact:true}).waitFor({state:'hidden'});
+ await p.getByRole('article',{name:'내 메시지'}).getByText('원문 보존 확인: 승인 없이 실행하지 마세요.',{exact:true}).waitFor();
+ checks.push('synthetic compaction phase has a concise status and stop control while original messages remain visible');assert.deepEqual(errors,[]);
+ await p.goto('http://127.0.0.1:'+server.address().port+'/?elevation=1');
+ await p.getByRole('button',{name:'작업 이력',exact:true}).click();await p.getByRole('button',{name:/관리자 승인 화면 검증/}).click();
+ const adminCard=title=>p.getByRole('region',{name:'실행 준비 승인',exact:true}).filter({has:p.getByRole('heading',{name:title,exact:true})});
+ await adminCard('관리자 실행 거절').getByRole('button',{name:'실행하지 않기',exact:true}).click();await adminCard('관리자 실행 거절').getByText('실행하지 않음',{exact:true}).waitFor();
+ await adminCard('관리자 실행 검증').getByText(/Windows UAC/).waitFor();
+ await p.screenshot({path:'verification/ui-administrator-approval.png',animations:'disabled'});
+ await adminCard('관리자 실행 검증').getByRole('button',{name:'관리자 권한으로 실행',exact:true}).click();await p.getByText('합성 관리자 승인 전달을 확인했습니다. 실제 UAC 실행은 하지 않았습니다.',{exact:true}).waitFor();
+ assert.equal(await adminCard('관리자 실행 검증').getByRole('button',{name:'관리자 권한으로 실행',exact:true}).count(),0);
+ checks.push('administrator card distinguishes dedicated consent, rejection and OS UAC from ordinary command approval');assert.deepEqual(errors,[]);
  await writeFile('verification/shared-ui-result.json',JSON.stringify({scope:'synthetic UI provider states; not live authentication or model inference',checks,errors},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:'verification/shared-ui-failure.png'});await writeFile('verification/shared-ui-failure.html',await p.content());throw error;}finally{await browser?.close();server.close();}

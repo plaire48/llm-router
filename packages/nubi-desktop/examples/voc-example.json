@@ -1,0 +1,24 @@
+{
+  "contract": "nubi-voc-v1",
+  "sourceUrl": "https://jira.example/browse/HELP-42",
+  "key": "HELP-42",
+  "title": "로그인 오류 (예시)",
+  "updatedAt": "2026-09-23T00:00:00Z",
+  "status": "확인 중",
+  "coverage": "partial",
+  "body": "로그인 후 오류가 발생했습니다. 원인은 아직 확인하지 않았습니다.",
+  "comments": [
+    {
+      "id": "comment-1",
+      "text": "캐시를 지운 뒤 재확인을 요청했습니다. 해결 여부는 미확인입니다.",
+      "visibility": "internal"
+    }
+  ],
+  "documents": [
+    {
+      "id": "attachment-1-text",
+      "text": "문서에서 추출한 본문을 넣는 예시입니다. 실제 첨부파일을 다운로드한 기록은 아닙니다.",
+      "visibility": "unknown"
+    }
+  ]
+}

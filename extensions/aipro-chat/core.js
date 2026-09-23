@@ -1,3 +1,5 @@
+import {VOC_ERRORS} from './voc-tools.js';
+import {MCP_ERRORS} from './mcp-config.js';
 export const ORIGIN = 'https://aipro.sdsdev.co.kr';
 export const MODEL_CATALOG_VERSION = 6;
 export const PROVIDER_LABELS = {aipro: 'AI Pro', chatgpt: 'ChatGPT', fabrix: 'FabriX'};
@@ -9,7 +11,7 @@ export function callbackOriginKind(value) {
   return origin === ORIGIN ? 'aipro' : origin === SSO_ORIGIN ? 'epsso' : 'other';
 }
 export const DEFAULT_SETTINGS = {loginRoute: 'cli', mode: 'browser', modelId: 'QWEN3.8-27B-FP8-256K'};
-export const ERROR_TEXT = {
+export const ERROR_TEXT = {...VOC_ERRORS,...MCP_ERRORS,
   attachment_type: '이미지, PDF, Word(docx) 또는 텍스트 소스를 선택해주세요.',
   attachment_size: '이미지는 4 MB, 텍스트는 128 KB와 4만 자, 한 번에 총 8 MB까지 첨부할 수 있습니다.',
   attachment_count: '한 번에 파일 4개까지 첨부할 수 있습니다.',

@@ -4,6 +4,7 @@ import {mkdirSync,appendFileSync} from 'node:fs';
 import {access} from 'node:fs/promises';
 import path from 'node:path';
 import {promisify} from 'node:util';
+import {startElevated,stopElevated} from './elevated-process.mjs';
 const executeFile=promisify(execFile);
 
 export async function shellProfiles() {
@@ -15,8 +16,10 @@ export async function shellProfiles() {
 }
 export class Processes {
   constructor(store,{onFinished=()=>{},profiles=shellProfiles}={}) { this.store = store; this.active = new Map(); this.records = new Map(); this.pending=new Set();this.preflights=new Map();this.disposed=false;this.onFinished=onFinished;this.profiles=profiles; }
-  async start({cwd, script, profile = 'bash', taskId, timeoutMs = 0,autoDiagnose=true,repairOf,setupActionId}) {
+  async start({cwd, script, profile = 'bash', taskId, timeoutMs = 0,autoDiagnose=true,repairOf,setupActionId,privilege='user'}) {
     if(this.disposed)throw new Error('host_disconnected');
+    if(privilege==='administrator')return startElevated(this,{cwd,script,profile,taskId,setupActionId});
+    if(privilege!=='user')throw new Error('elevation_approval_required');
     if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0 || timeoutMs > 86400000) throw new Error('timeout_invalid');
     if (typeof script !== 'string' || !script.trim() || script.length > 16000) throw new Error('command_invalid');
     const id = randomUUID(), record = {id, taskId, cwd, profile, script,timeoutMs,autoDiagnose:autoDiagnose===true,...(repairOf?{repairOf}:{}),...(setupActionId?{setupActionId}:{}), startedAt: new Date().toISOString(), state: 'checking', execution:'not_started', output: '', exitCode: null};
@@ -52,6 +55,7 @@ export class Processes {
     const preflight=this.preflights.get(id);
     if(preflight){const item=this.records.get(id);item.state='stopping';item.cancellationRequested=true;item.stopReason=reason;this.store.set('process:'+id,item);preflight.abort();return item;}
     const child = this.active.get(id); if (!child) return this.poll(id);
+    if(child.nubiElevation)return stopElevated(this,id,child,reason);
     const item = this.records.get(id); item.state = 'stopping'; item.cancellationRequested=true;item.stopReason=reason; this.store.set('process:' + id, item);
     if (process.platform === 'win32') execFile('taskkill', ['/PID', String(child.pid), '/T', '/F'], {windowsHide: true}, () => {});
     else { try { process.kill(-child.pid, 'SIGTERM'); } catch {} const timer = setTimeout(() => { if (this.active.get(id) === child) {try {process.kill(-child.pid, 'SIGKILL');} catch {}} }, 1500); timer.unref(); }

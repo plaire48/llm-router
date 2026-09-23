@@ -40,7 +40,7 @@ export async function fetchModelCatalog(token, fetchImpl = fetch, signal) {
     if (!id || id.length > 200 || /[\x00-\x1f\x7f]/.test(id)) {summary.excluded.name++; return [];}
     if (seen.has(id)) {summary.excluded.duplicate++; return [];}
     seen.add(id);
-    return [{ id, label: typeof item.display_name === 'string' && item.display_name.trim() ? item.display_name.trim().slice(0, 200) : id,
+    return [{ id, ...(typeof item.supports_images==='boolean'?{supportsImages:item.supports_images}:{}), label: typeof item.display_name === 'string' && item.display_name.trim() ? item.display_name.trim().slice(0, 200) : id,
       ...(Number.isSafeInteger(item.context_length) && item.context_length > 0 ? {contextLength: item.context_length} : {}),
       ...(Number.isSafeInteger(item.max_input_tokens) && item.max_input_tokens > 0 ? {maxInputTokens: item.max_input_tokens} : {}) }];
   });

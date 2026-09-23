@@ -30,10 +30,14 @@ No new agent framework was added. Existing Pi, OpenWiki-SDS, SQLite and Theia re
 
 The desktop omits peer controls and polling, excludes the A2A server/client/SDK from production bundles, and rejects legacy collaboration requests with `a2a_not_enabled`. Existing stored records are preserved but are not injected into model context. Shared error-name constants are inert and remain compatible with the Office error mapper. A build-time input check prevents accidentally restoring the transport. Prior experimental source is reference material only.
 
-After deferral, the isolated release snapshot passed 112 runtime tests, 45 actual Theia UI checks, 14 shared UI checks and a macOS Electron UI/worker/SQLite/OpenWiki-SDS smoke. These are not Windows installer or real model results.
+After deferral, the isolated release snapshot passed 111 runtime tests, 45 actual Theia UI checks, 14 shared UI checks and a macOS Electron UI/worker/SQLite/OpenWiki-SDS smoke. These are not Windows installer or real model results.
 
 Pinned winapp promotes unique automation IDs during tree inspection but returns canonical UIA selectors for property/value queries. The adapter validates the returned selector and exact automation ID, retains the canonical identity for before/after comparisons, and reads the value by that canonical selector. Mismatched aliases remain rejected. This follows the pinned upstream `UiGetPropertyCommand`, `UiGetValueCommand` and `PromoteUniqueAutomationIds` implementations.
 
-## Deployment hold after cursor clarification
+## Current cursor and administrator policy
 
-The earlier installer candidate does not meet the newly clarified virtual-only cursor requirement and must not be published. Host pointer injection has been removed from source; the full isolated Windows work view is not implemented. Previous native UIA/packaging results do not validate this subsequent cursor-policy change.
+The earlier virtual-only deployment hold was superseded by the user: use the black rounded arrow with a white outline as a visual overlay; keep UIA as the default; offer physical mouse control only after three qualifying UIA failures and separate per-action HITL. No badge is attached. The native visual pointer and UIA checks are required for this candidate.
+
+Administrator PowerShell commands have a separate one-action approval and Windows RunAs request. The application and per-user installer stay unelevated. CI checks the actual elevation bridge on an already-admin runner; interactive UAC on company Windows 11 remains unverified. See ADMINISTRATOR-EXECUTION.md.
+
+The release workflow includes current compaction, virtual cursor and elevation contracts. Installer creation, actual installed-app checks, reinstall and uninstall must all pass for the same artifact before publishing a beta. A2A remains deferred.

@@ -12,8 +12,13 @@ const plain = value => String(value).replace(/[\r\n]/g, ' ').replace(/[<>`|]/g, 
 export async function collectKnowledge(service, taskId) {
   const task = service.task(taskId), root = await service.target(taskId);
   const proposals = service.store.list('proposal:').filter(p => p.taskId === taskId).reverse();
+  const computerActions=service.store.list('computer-action:').filter(v=>v.taskId===taskId);
   const observed = new Map((task.sources || []).map(source => [source.path, {...source}]));
   for(const row of task.changePlan?.wikiEvidence||[])if(!observed.has(row.path))observed.set(row.path,{path:row.path,hash:row.hash});
+  for(const action of computerActions)for(const row of action.wikiEvidence||[]){
+    if(!observed.has(row.path))observed.set(row.path,{path:row.path,hash:row.hash});
+    for(const ref of row.sourceReferences||[])if(ref.path&&ref.hash&&!observed.has(ref.path))observed.set(ref.path,{path:ref.path,hash:ref.hash});
+  }
   for (const proposal of proposals.filter(p => p.state !== 'superseded')) observed.set(proposal.path, {path:proposal.path,hash:proposal.state === 'applied' ? proposal.afterHash : proposal.expectedHash});
   const sources = [];
   for (const source of [...observed.values()].sort((a,b) => a.path.localeCompare(b.path))) {
@@ -24,7 +29,7 @@ export async function collectKnowledge(service, taskId) {
   const processes = service.store.list('process:').filter(p => p.taskId === taskId).reverse().map(({id,profile,state,exitCode,startedAt,finishedAt}) => ({id,profile,state,exitCode,startedAt,finishedAt:finishedAt || null}));
   const comparisons = service.store.list('comparison:').filter(c => c.taskId === taskId).reverse().map(({id,createdAt,state,changedPixels,sourceAssociation}) => ({id,createdAt,state,changedPixels,sourceAssociation}));
   const operations=service.store.list('operation:').filter(o=>o.taskId===taskId).slice(0,30).map(({id,tool,state,outcome,receipt})=>({id,tool,state,outcome:outcome||null,error:receipt?.error||null}));
-  const computer={actions:service.store.list('computer-action:').filter(v=>v.taskId===taskId).map(({id,action,state,execution,verification,createdAt,finishedAt})=>({id,action,state,execution:execution||'not_started',verification,createdAt,finishedAt:finishedAt||null})),checks:service.store.list('computer-check:').filter(v=>v.taskId===taskId).map(({id,observationId,verification,scope,at})=>({id,observationId,verification,scope,at}))};
+  const computer={actions:computerActions.map(({id,action,state,execution,verification,createdAt,finishedAt,wikiEvidence=[]})=>({id,action,state,execution:execution||'not_started',verification,createdAt,finishedAt:finishedAt||null,wikiEvidence:wikiEvidence.map(({evidenceId,path,hash,start,end,freshness})=>({evidenceId,path,hash,start,end,freshness}))})),checks:service.store.list('computer-check:').filter(v=>v.taskId===taskId).map(({id,observationId,verification,scope,at})=>({id,observationId,verification,scope,at}))};
   const packet = {schema:1,taskId,recovery:task.recovery?{state:task.recovery.state,code:task.recovery.code||null}:null,operations,requirementId:task.requirementId,request:task.request,criteria:task.criteria,changePlan:task.changePlan||null,decisions:task.questionHistory||[],head,workspace:task.workspace ? 'worktree' : 'project',sources,
     proposals:proposals.map(({id,path,kind,state,expectedHash,afterHash,stats,quality}) => ({id,path,kind:kind||'edit',state,expectedHash,afterHash,stats:stats || null,quality:quality?{state:quality.state,scope:quality.scope,engine:quality.engine,errorCount:quality.errorCount,beforeHash:quality.beforeHash,afterHash:quality.afterHash}:null})),processes,comparisons,computer};
   return {root,task,packet,digest:hash(JSON.stringify(packet))};
@@ -65,6 +70,8 @@ function renderRecord(packet, {revision,createdAt,digest,previous}) {
     (packet.comparisons.length ? packet.comparisons.map(c => `- ${c.createdAt}: ${c.changedPixels} pixels 차이. 서버와 소스 버전 연결: 미확인. (${c.id})`).join('\n') : '- 화면 비교 기록 없음') +
     '\n\n## Windows 앱 확인\n\n' +
     (packet.computer.actions.length?packet.computer.actions.map(v=>`- ${plain(v.action)}: ${plain(v.state)}, ${plain(v.execution)}, ${plain(v.verification)} (${v.id})`).join('\n'):'- 앱 동작 기록 없음') +
+    '\n\n## 앱 동작에 사용한 Wiki\n\n' +
+    (packet.computer.actions.some(v=>v.wikiEvidence.length)?packet.computer.actions.flatMap(v=>v.wikiEvidence.map(row=>`- ${plain(row.path)}:${row.start} (${v.id})\n  - 관찰 해시: ${plain(row.hash)}\n  - 제안 시점: ${row.freshness==='source_matched'?'출처 버전 일치':'검증되지 않은 참고 정보'}`)).join('\n'):'- 연결한 Wiki 근거 없음') +
     '\n\n' + (packet.computer.checks.length?packet.computer.checks.map(v=>`- ${v.at}: ${v.verification==='value_matched'?'화면 값 일치':'화면 값 불일치'} (${v.id})`).join('\n'):'- 화면 값 대조 없음') +
     '\n\n요청한 시점의 동작과 개별 값 대조 기록입니다. 저장, 제출과 업무 완료를 증명하지 않습니다. 앱 경로, 창 제목, 입력값과 화면 이미지는 이 항목에 포함하지 않았습니다.\n' +
     '\n\n완료 조건은 별도 검증이 필요합니다. Office 전달과 저장은 확인하지 않았습니다.\n';

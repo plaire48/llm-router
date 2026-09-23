@@ -17,7 +17,7 @@
 - [Claude Code permissions](https://code.claude.com/docs/en/permissions)의 도구별 승인과 호스트에서 권한을 강제하는 방식을 참고했다. 모델 지시문이나 질문 답변으로 실행 권한을 부여하지 않는다.
 - [npm ci](https://docs.npmjs.com/cli/commands/npm-ci/)처럼 lockfile 기반 설치를 우선 검토하되 기존 node_modules 제거와 설치 스크립트 실행 등의 효과를 제안에 설명한다. `ignore-scripts`도 명시적으로 요청한 npm run 스크립트를 차단하는 sandbox가 아니므로 자동 안전 판정에 사용하지 않는다. 사용 중인 패키지 매니저 버전의 동작을 확인해야 한다.
 - Pi agent core, Ajv 계약 검증, 기존 SourceObservations, SQLite 실행 기록, Bash 사전 문법 검사, 누비 QuestionForm과 CX 버튼을 재사용했다. 새 agent/설치 프레임워크와 별도 질문 UI는 도입하지 않았다.
-- mise/Dev Containers 등 환경 관리 도구를 제품 필수 의존성으로 추가하지 않았다. 프로젝트가 이미 사용한다면 설정을 읽고 관련 명령을 제안할 수 있다. Windows 도구 설치, 관리자 권한 상승, 비밀 입력과 OS sandbox는 별도 구현/검증 범위다.
+- mise/Dev Containers 등 환경 관리 도구를 제품 필수 의존성으로 추가하지 않았다. 프로젝트가 이미 사용한다면 설정을 읽고 관련 명령을 제안할 수 있다. 관리자 권한은 별도 일회 승인과 Windows RunAs를 연결했으며 `ADMINISTRATOR-EXECUTION.md`를 따른다. 실제 회사 PC 설치, UAC 자격 증명 입력과 OS sandbox는 별도 검증 범위다.
 
 ## 검증 경계
 

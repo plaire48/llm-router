@@ -39,8 +39,8 @@ export function taskReceipt(task, tool, phase, result, page) {
   let verification = task.verification;
   if (phase === 'start' && MUTATING_TOOLS.has(tool)) verification = {status: 'pending'};
   if (phase === 'end' && tool === 'verify_page') verification = {status: result?.ok === true && result?.verified === true ? 'passed' : 'failed', at: Date.now(), checks: Array.isArray(result?.checks) ? result.checks.length : 0};
-  if (phase === 'end' && tool === 'run_playwright' && result?.actionIssued === false) verification = verificationPrior || {status: 'not_required'};
-  return {...baseTask, ...(verification ? {verification} : {}), ...(phase === 'start' && task.goalReview ? {goalReview: {status: 'running', checks: 0}} : {}), ...(phase === 'start' && tool === 'run_playwright' ? {verificationPrior: task.verification || {status: 'not_required'}} : {}), steps: steps.slice(-32), ...(target ? {page: target} : {}), updatedAt: Date.now()};
+  if (phase === 'end' && ['run_playwright', 'run_skill_script'].includes(tool) && result?.actionIssued === false) verification = verificationPrior || {status: 'not_required'};
+  return {...baseTask, ...(verification ? {verification} : {}), ...(phase === 'start' && task.goalReview ? {goalReview: {status: 'running', checks: 0}} : {}), ...(phase === 'start' && ['run_playwright', 'run_skill_script'].includes(tool) ? {verificationPrior: task.verification || {status: 'not_required'}} : {}), steps: steps.slice(-32), ...(target ? {page: target} : {}), updatedAt: Date.now()};
 }
 export function pauseTask(task) {
   return task ? {...task, status: 'paused', steps: (task.steps || []).map(step => step.status === 'running' ? {...step, status: 'unknown'} : step), updatedAt: Date.now()} : task;

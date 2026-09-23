@@ -11,7 +11,7 @@ export {safeError} from './connection-errors.mjs';
 
 // Explicit implemented adapters make parity tests fail when Nubi adds a provider.
 export const PROVIDERS = {aipro: PROVIDER_LABELS.aipro, chatgpt: PROVIDER_LABELS.chatgpt, fabrix: PROVIDER_LABELS.fabrix, 'aipro-cli': 'AI Pro CLI', compatible: 'OpenAI 호환'};
-const catalog = payload => (payload?.modelList || []).map(m => ({id: m.name, label: m.display_name || m.name, contextLength: m.context_length, maxOutputTokens: m.max_output_tokens}));
+const catalog = payload => (payload?.modelList || []).map(m => ({id: m.name, label: m.display_name || m.name, contextLength: m.context_length, maxOutputTokens: m.max_output_tokens, ...(typeof m.supports_images==='boolean'?{supportsImages:m.supports_images}:{})}));
 // Prefer the enterprise catalog's actual Qwen 3.8 27B ID. Never fabricate a
 // public model ID/context size, filter alternatives, or replace a user choice.
 export function defaultOfficeModel(models) {
@@ -53,7 +53,7 @@ export function createProviders(deps = {}) {
   const api = {fetchImpl: fetch, startLogin, chatGPTLogin, chatGPTModels, completeChatGPT, refreshChatGPTToken, fabrixModels, fabrixCompletion, ...deps};
   const sessions = new Map(); let active = 'aipro', pending = null, loginError = null, generation = 0;
   const status = () => ({providers: Object.entries(PROVIDERS).map(([id, label]) => ({id, label, connected: sessions.has(id)})), provider: active,
-    connected: sessions.has(active), models: sessions.get(active)?.models || [], model: sessions.get(active)?.model || '', verified: !!sessions.get(active)?.verified,
+    connected: sessions.has(active), vision:active!=='fabrix'&&sessions.get(active)?.models.find(m=>m.id===sessions.get(active)?.model)?.supportsImages===true, models: sessions.get(active)?.models || [], model: sessions.get(active)?.model || '', verified: !!sessions.get(active)?.verified,
     modelCatalog: sessions.get(active)?.modelCatalog || null, pending: pending?.provider || null, loginError});
   const select = provider => { if (!Object.hasOwn(PROVIDERS, provider)) throw new Error('invalid_provider'); active = provider; return status(); };
   async function connect(input) {

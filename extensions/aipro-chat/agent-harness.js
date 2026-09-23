@@ -4,16 +4,17 @@ const groups = Object.freeze({
   input: ['fill_form', 'verify_form', 'select_option'],
   interaction: ['drag_element', 'click_element', 'hover_element', 'press_key', 'scroll_page', 'wait_page'],
   navigation: ['navigate_page', 'list_tabs', 'switch_tab', 'go_back'],
-  scripts: ['run_playwright'],
+  scripts: ['run_playwright', 'run_skill_script'],
   images: ['find_images', 'inspect_images', 'attach_images', 'capture_page', 'click_at'],
   storage: ['list_page_storage', 'read_page_storage'],
+  voc: ['collect_voc','search_voc','read_voc','download_voc_attachment','export_voc'],
   project: ['wiki_query', 'wiki_search', 'wiki_read', 'source_search', 'read_source'],
 });
-const core = ['search_documents', 'read_document', 'find_skills', 'read_skill', 'request_approval', 'ask_user', 'read_page', 'inspect_dom', 'browser_snapshot', 'capture_page', 'update_plan', 'verify_page', 'delegate_analysis', 'collect_analysis', 'read_analysis_evidence', 'cancel_analysis'];
-export const MUTATING_TOOLS = new Set(['drag_element', 'apply_approved_action','fill_form', 'select_option', 'click_element', 'press_key', 'navigate_page', 'switch_tab', 'go_back', 'run_playwright', 'click_at']);
+const core = ['list_mcp_tools','call_mcp_tool','search_documents', 'read_document', 'find_skills', 'read_skill', 'request_approval', 'ask_user', 'read_page', 'inspect_dom', 'browser_snapshot', 'capture_page', 'update_plan', 'verify_page', 'delegate_analysis', 'collect_analysis', 'read_analysis_evidence', 'cancel_analysis'];
+export const MUTATING_TOOLS = new Set(['drag_element', 'apply_approved_action','fill_form', 'select_option', 'click_element', 'press_key', 'navigate_page', 'switch_tab', 'go_back', 'run_playwright', 'run_skill_script', 'click_at']);
 const viewActions = new Set(['hover', 'scroll', 'scrollIntoViewIfNeeded']);
 export function changesObservation(name, result) {
-  if (name === 'run_playwright' && result?.actionIssued === false) return result.execution?.commands?.some(command => viewActions.has(command.method)) === true;
+  if (['run_playwright', 'run_skill_script'].includes(name) && result?.actionIssued === false) return result.execution?.commands?.some(command => viewActions.has(command.method)) === true;
   return MUTATING_TOOLS.has(name) || ['hover_element', 'scroll_page'].includes(name);
 }
 
@@ -35,11 +36,11 @@ export function createHarness(tools, {resumeVerification = false} = {}) {
       for (const names of Object.values(catalog)) if (names.includes(name)) for (const tool of names) enabled.add(tool);
       // Correct a failed generated script with already-authorized semantic
       // tools as well. This never grants permissions or replays an action.
-      if (name === 'run_playwright' && (result?.error || result?.ok === false) && result?.error !== 'cancelled') {
+      if (['run_playwright', 'run_skill_script'].includes(name) && (result?.error || result?.ok === false) && result?.error !== 'cancelled') {
         for (const group of ['input', 'interaction', 'navigation']) for (const tool of catalog[group] || []) enabled.add(tool);
       }
       if (result?.visualRecovery) for (const tool of catalog.images || []) enabled.add(tool);
-      if (MUTATING_TOOLS.has(name) && !result?.cancelled && !(name === 'run_playwright' && result?.actionIssued === false)) {revision++; needsVerification = true;}
+      if (MUTATING_TOOLS.has(name) && !result?.cancelled && !(['run_playwright', 'run_skill_script'].includes(name) && result?.actionIssued === false)) {revision++; needsVerification = true;}
       if (name === 'verify_page') {
         verifiedRevision = result?.ok === true && result?.verified === true ? revision : -1;
         // A verified stage starts a new repair window. Reads, new references,

@@ -1,3 +1,4 @@
+import {importVoc,queryVoc,readVoc} from './voc.mjs';
 import {computer,computerState} from './computer-use.mjs';
 import {projectRules,validateProjectRules} from './project-rules.mjs';
 import {inspectNewPath,proposeNewFile,prepareNewFile,applyNewFile} from './new-files.mjs';
@@ -30,11 +31,11 @@ export class ProjectService {
     const resolved = await realpath(limited(root, 2000));
     const top = await realpath((await git(resolved, ['rev-parse', '--show-toplevel'])).trim());
     if (this.root === top && this.store?.db.isOpen) return this.overview();
-    if (this.computerBusy || this.newFileBusy || this.setupBusy || this.processes?.active.size || this.processes?.pending.size || this.unsettledOperations?.size || this.reconciling || this.agent?.running || this.recordingKnowledge || this.databaseBusy || this.collaborationBusy) fail('project_busy');
+    if (this.vocBusy || this.computerBusy || this.newFileBusy || this.setupBusy || this.processes?.active.size || this.processes?.pending.size || this.unsettledOperations?.size || this.reconciling || this.agent?.running || this.recordingKnowledge || this.databaseBusy || this.collaborationBusy) fail('project_busy');
     const projectId = hash(top).slice(7, 31), store = new Store(path.join(this.storageRoot, projectId));
     await this.collaborationServer?.close();this.collaborationServer=null;this.knowledge?.server.close(); this.knowledge=null; this.store?.close(); this.root = top; this.projectId = projectId;
     this.store = store;
-    this.computerAdapter?.dispose?.();this.computerAdapter=null;this.computerLauncher?.dispose?.();this.computerLauncher=null;this.computerApps=new Map();this.databaseConnections=new Map();this.computerBinding=null;this.computerObservation=null;
+    this.computerPointer?.dispose();this.computerPointer=null;this.computerFallback=null;this.computerAdapter?.dispose?.();this.computerAdapter=null;this.computerLauncher?.dispose?.();this.computerLauncher=null;this.computerApps=new Map();this.databaseConnections=new Map();this.computerBinding=null;this.computerObservation=null;
     for(const action of this.store.list('computer-action:').filter(v=>v.state==='starting'))this.store.set('computer-action:'+action.id,{...action,state:'attention',execution:'unknown',error:'computer_outcome_unknown'});
     for(const action of this.store.list('computer-action:').filter(v=>v.review?.state==='running'))this.store.set('computer-action:'+action.id,{...action,review:{...action.review,state:'interrupted'}});
     this.disposed=false;this.recoveryQueue=new Set();
@@ -90,6 +91,10 @@ export class ProjectService {
   async recordKnowledge(args) { return recordKnowledge.call(this,args); }
   async connectKnowledge() { return connectKnowledge.call(this); }
 
+  async importVoc(args) {return importVoc.call(this,args);}
+  async queryVoc(args) {return queryVoc.call(this,args);}
+  async readVoc(args) {return readVoc.call(this,args);}
+
   async computer(args) {return computer.call(this,args);}
   async decideSetupAction(args) {return decideSetupAction.call(this,args);}
 
@@ -120,7 +125,7 @@ export class ProjectService {
   }
   async createWorktree({taskId}) {
     const task = this.task(taskId); if (task.workspace) return task;
-    if (this.computerBusy || this.newFileBusy || this.setupBusy || this.agent?.running || this.processes?.active.size || this.processes?.pending.size || this.unsettledOperations?.size) fail('project_busy');
+    if (this.vocBusy || this.computerBusy || this.newFileBusy || this.setupBusy || this.agent?.running || this.processes?.active.size || this.processes?.pending.size || this.unsettledOperations?.size) fail('project_busy');
     // P0 makes the selected HEAD baseline explicit; existing dirty changes stay in the original checkout.
     const head = (await git(this.root, ['rev-parse', '--verify', 'HEAD'])).trim();
     const parent = path.join(this.store.directory, 'worktrees'); await mkdir(parent, {recursive: true});
@@ -184,12 +189,12 @@ export class ProjectService {
     const file = path.join(reports, task.id + '.md'); await writeFile(file, content); return {uri: pathToFileURL(file).href, hash: hash(content), content};
   }
   async invoke(method, args = {}) {
-    const allowed = new Set(['computer','applyNewFile','decideSetupAction','collaboration','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','open','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','read','search','wikiQuery','createTask','exportRequirement','createWorktree','propose','prepareProposal','proposalArtifacts','confirmProposal','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent']);
+    const allowed = new Set(['importVoc','queryVoc','readVoc','computer','applyNewFile','decideSetupAction','collaboration','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','open','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','read','search','wikiQuery','createTask','exportRequirement','createWorktree','propose','prepareProposal','proposalArtifacts','confirmProposal','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent']);
     if (method === 'poll') { this.ready(); return this.processes.poll(args.id); }
     if (method === 'stop') { this.ready(); return this.processes.stop(args.id); }
     if (method === 'events') { this.ready(); return this.store.events(args.after); }
     if (!allowed.has(method) || typeof this[method] !== 'function') fail('method_invalid');
     return this[method](method === 'open' ? args.root : args);
   }
-  dispose() { this.computerLauncher?.dispose?.();this.computerAdapter?.dispose?.();void this.collaborationServer?.close();this.disposed=true;this.recoveryQueue?.clear();this.databaseWorker?.terminate(); this.databaseConnections?.clear(); this.knowledge?.server.close(); this.agent?.controller.abort(); this.providers?.dispose(); for(const entry of this.fabrixTests?.values()||[])entry.provider.dispose();this.fabrixTests?.clear(); this.processes?.dispose(); }
+  dispose() { this.computerPointer?.dispose();this.computerLauncher?.dispose?.();this.computerAdapter?.dispose?.();void this.collaborationServer?.close();this.disposed=true;this.recoveryQueue?.clear();this.databaseWorker?.terminate(); this.databaseConnections?.clear(); this.knowledge?.server.close(); this.agent?.controller.abort(); this.providers?.dispose(); for(const entry of this.fabrixTests?.values()||[])entry.provider.dispose();this.fabrixTests?.clear(); this.processes?.dispose(); }
 }
