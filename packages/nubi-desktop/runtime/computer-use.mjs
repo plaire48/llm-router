@@ -68,11 +68,11 @@ export class WinappComputer {
   }
   async property(window,selector){
     const raw=await this.call(['get-property',selector,'-w',String(window)]);
-    if(raw?.elementId!==selector||raw?.element?.selector!==selector)fail('computer_target_changed');
+    if(!validSelector(raw?.elementId)||raw.elementId!==raw?.element?.selector||(raw.elementId!==selector&&raw.element.automationId!==selector))fail('computer_target_changed');
     // UIA password flag is required for value read/write. Missing is not false.
-    return {element:element(raw.element),password:raw.properties?.IsPassword,readOnly:raw.properties?.IsReadOnly};
+    return {element:element({...raw.element,selector}),resolvedSelector:raw.elementId,password:raw.properties?.IsPassword,readOnly:raw.properties?.IsReadOnly};
   }
-  async value(window,selector){const result=await this.call(['get-value',selector,'-w',String(window)]);if(result?.elementId!==selector||typeof result.text!=='string'||result.text.length>4000)fail('computer_contract');return result.text;}
+  async value(window,selector){const target=await this.property(window,selector);if(target.password!=='False')fail('computer_password');const result=await this.call(['get-value',target.resolvedSelector,'-w',String(window)]);if(result?.elementId!==target.resolvedSelector||typeof result.text!=='string'||result.text.length>4000)fail('computer_contract');return result.text;}
   async capture(window,selector){
     const directory=await mkdtemp(path.join(os.tmpdir(),'nubi-capture-')),file=path.join(directory,'capture.png');
     try{

@@ -214,3 +214,14 @@ test('window screenshot accepts omitted nullable elementId from upstream JSON',a
   a.runner=async args=>{const result=await original(args);if(args[1]==='screenshot'&&result.elementId===null)delete result.elementId;return result;};
   const result=await observeComputer(service,task.id);assert(result.image.data);
 });
+
+
+test('unique automation IDs resolve to canonical UIA selectors without accepting a different element',async t=>{
+ const {service,data}=await setup(t),a=service.computerAdapter,original=a.runner;
+ a.runner=async args=>{const raw=await original(args);if(args[1]==='get-property')return {...raw,element:{...raw.element,automationId:'NubiValue'}};return raw;};
+ const observed=await a.property(100,'NubiValue');assert.equal(observed.element.selector,'NubiValue');assert.equal(observed.resolvedSelector,data.control.selector);
+ assert.equal(await a.value(100,'NubiValue'),'old');assert.equal(data.calls.findLast(v=>v[1]==='get-value')[2],data.control.selector);
+ await assert.rejects(a.property(100,'DifferentControl'),/computer_target_changed/);
+ a.runner=async args=>{const raw=await original(args);return args[1]==='get-property'?{...raw,elementId:'different-selector',element:{...raw.element,automationId:'NubiValue'}}:raw;};
+ await assert.rejects(a.property(100,'NubiValue'),/computer_target_changed/);
+});
