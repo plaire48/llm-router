@@ -5,9 +5,11 @@ import path from 'node:path';
 import os from 'node:os';
 import assert from 'node:assert/strict';
 import {WinappComputer} from '../runtime/computer-use.mjs';
+import {ComputerPointer} from '../runtime/computer-pointer.mjs';
 if(process.platform!=='win32')throw Error('Windows required');
 const driver=path.resolve('generated/winapp'),manifest=JSON.parse(await readFile(path.join(driver,'manifest.json'),'utf8'));
 const adapter=new WinappComputer({binary:path.join(driver,'winapp.exe'),digest:manifest.sha256});
+const visualPointer=new ComputerPointer();
 const nativeCall=adapter.call.bind(adapter);
 adapter.call=async args=>{const result=await nativeCall(args);if(args[0]==='screenshot'){await mkdir('verification',{recursive:true});await writeFile('verification/windows-uia-capture.json',JSON.stringify({args,result},null,2));}return result;};
 const call=adapter.call.bind(adapter);adapter.call=async args=>{const result=await call(args);if(args[0]==='screenshot')await writeFile('verification/windows-uia-capture-'+(args.includes('--capture-screen')?'window':'element')+'.json',JSON.stringify({args,result},null,2));return result;};
@@ -25,6 +27,16 @@ try{
  await adapter.act(window.hwnd,button.selector,'invoke');assert.equal(await adapter.value(window.hwnd,target.selector),'clicked');
  const cursorScript=path.join(directory,'cursor.ps1');await writeFile(cursorScript,'Add-Type -AssemblyName System.Windows.Forms\n$p=[System.Windows.Forms.Cursor]::Position\n@{x=$p.X;y=$p.Y}|ConvertTo-Json -Compress');
  const cursor=async()=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-File',cursorScript],{windowsHide:true})).stdout);
+ const beforeVisualCursor=await cursor(),visualBinding={id:'windows-uia-fixture'};
+ const firstVisual=await visualPointer.move(visualBinding,await adapter.property(window.hwnd,button.selector));assert.equal(firstVisual.available,true,'visual pointer helper started');assert.equal(firstVisual.animated,false,'first location is immediate');
+ const visual=await visualPointer.move(visualBinding,property);assert.equal(visual.available,true);await visualPointer.pulse();
+ const overlayImage=await adapter.capture(window.hwnd);await writeFile('verification/windows-uia-visual-pointer.png',Buffer.from(overlayImage.data,'base64'));
+ const visualScript=path.join(directory,'visual.ps1');await writeFile(visualScript,`Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class V {[DllImport("user32.dll")] public static extern int GetWindowLong(IntPtr h,int i);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);}'\n@{style=[V]::GetWindowLong([IntPtr]${visual.hwnd},-20);foreground=[V]::GetForegroundWindow().ToInt64();visible=[V]::IsWindowVisible([IntPtr]${visual.hwnd})}|ConvertTo-Json -Compress`);
+ const readVisual=async()=>JSON.parse((await promisify(execFile)('powershell.exe',['-NoProfile','-File',visualScript],{windowsHide:true})).stdout);
+ const nativeVisual=await readVisual();assert.equal(nativeVisual.visible,true);assert.notEqual(nativeVisual.foreground,visual.hwnd);assert.equal(nativeVisual.style&0x08000020,0x08000020);
+ assert.deepEqual(await cursor(),beforeVisualCursor,'visual pointer must not move user cursor');
+ await visualPointer.hide();assert.equal((await readVisual()).visible,false,'hide completes before evidence capture');
+ await writeFile('verification/windows-uia-visual-pointer.json',JSON.stringify({firstVisual,visual,nativeVisual,cursorUnchanged:true,hiddenBeforeCapture:true,scope:'Native visual-only overlay on owned WPF fixture. No user input injection.'},null,2));
  const patternChecks=[];
  for(const [selector,action,property,expected] of [['NubiEnabled','toggle_on','toggle','On'],['NubiEnabled','toggle_on','toggle','On'],['NubiEnabled','toggle_off','toggle','Off'],['NubiSecond','select','selected','True'],['NubiBranch','expand','expansion','Expanded'],['NubiBranch','collapse','expansion','Collapsed']]){
    const target=await adapter.property(window.hwnd,selector),beforePointer=await cursor();
@@ -48,4 +60,4 @@ try{
  await adapter.capture(window.hwnd);const screenshot=await adapter.capture(window.hwnd,target.selector);assert(screenshot.width>0&&screenshot.data.length>0);
  await mkdir('verification',{recursive:true});await writeFile('verification/windows-uia.json',JSON.stringify({passed:true,driver:manifest.version,status,checks:['window discovery','UIA observation','password metadata','literal value write and readback','target search and empty search','button invoke and value readback','PNG capture','select/toggle/expand/collapse state readback','cursor position unchanged during UIA state actions','explicitly permitted mouse events and real drag/drop'],scope:'Owned WPF fixture only; not company apps or model quality'},null,2));
  await writeFile('verification/windows-uia.png',Buffer.from(screenshot.data,'base64'));console.log('Windows UIA fixture passed');
-}finally{child.kill();adapter.dispose();}
+}finally{visualPointer.dispose();child.kill();adapter.dispose();}

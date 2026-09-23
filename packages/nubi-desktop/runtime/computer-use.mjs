@@ -12,6 +12,8 @@ import {WindowsApps} from './windows-apps.mjs';
 import {reviewComputerResult} from './computer-harness.mjs';
 import {CONTROL_ACTIONS,POINTER_ACTIONS,controlState,expectedControlState,supportsControlAction,checkControlState} from './computer-controls.mjs';
 import {validateWikiEvidence} from './wiki-evidence.mjs';
+import {ComputerPointer} from './computer-pointer.mjs';
+import {recordUiaFailure,fallbackStatus} from './computer-fallback.mjs';
 
 const exec=promisify(execFile), TTL=120000;
 const text=maxLength=>({type:'string',minLength:1,maxLength});
@@ -228,7 +230,11 @@ export async function proposeComputerAction(service,taskId,args,observations){
     const a=adapter(service),current=await a.property(b.identity.hwnd,args.selector);usable(current.element);
     if(!same(current.element,seen[0])||!same(await a.status(b.identity.hwnd),b.identity))fail('computer_target_changed');
     const sharedPointer=POINTER_ACTIONS.includes(args.action);
-    if(!sharedPointer&&!supportsControlAction(current,args.action))fail('computer_target_unavailable');
+    if(!sharedPointer&&!supportsControlAction(current,args.action)){
+      const error=new Error('computer_target_unavailable');error.pointerFallback=recordUiaFailure(service,b,current,o);throw error;
+    }
+    const pointerFallback=sharedPointer?fallbackStatus(service,b,current):undefined;
+    if(sharedPointer&&!pointerFallback.eligible)fail('computer_uia_attempts_required');
     let destination,destinationBefore;
     if(args.action==='drag'){
       const seenDestination=o.elements.filter(v=>v.selector===args.destinationSelector);if(seenDestination.length!==1)fail('computer_target_unavailable');
@@ -248,7 +254,7 @@ export async function proposeComputerAction(service,taskId,args,observations){
     if(destination&&!same(destination,await a.property(b.identity.hwnd,args.destinationSelector)))fail('computer_target_changed');
     if(!same(await a.status(b.identity.hwnd),b.identity))fail('computer_target_changed');
     taskReady(service,taskId,{agent:true});
-    const value={...args,wikiEvidence,inputMode:sharedPointer?'shared_pointer':'uia',destination,destinationBefore,id:randomUUID(),taskId,bindingId:b.id,identity:b.identity,target:current,previousValueHash,before,createdAt:stamp(),expiresAt:Date.now()+TTL,state:'proposed',verification:'not_verified',pointer:{x:0.5,y:0.5,space:'element_fraction',kind:'target_center'}};
+    const value={...args,wikiEvidence,pointerFallback,inputMode:sharedPointer?'shared_pointer':'uia',destination,destinationBefore,id:randomUUID(),taskId,bindingId:b.id,identity:b.identity,target:current,previousValueHash,before,createdAt:stamp(),expiresAt:Date.now()+TTL,state:'proposed',verification:'not_verified',pointer:{x:0.5,y:0.5,space:'element_fraction',kind:'target_center'}};
     value.fingerprint=hash(JSON.stringify(value));service.store.set('computer-image:'+value.id,{before,destinationBefore});delete value.before;delete value.destinationBefore;service.store.set('computer-action:'+value.id,value);return value;
   });
 }
@@ -283,10 +289,22 @@ export async function computer({method='status',taskId,window,id,fingerprint,dec
         if(!same(v.target,await a.property(v.identity.hwnd,v.selector))||(!sharedPointer&&!supportsControlAction(v.target,v.action)))fail('computer_target_changed');
         if(v.action==='drag'&&(!v.destination||!same(v.destination,await a.property(v.identity.hwnd,v.destinationSelector))))fail('computer_target_changed');
         if(v.action==='set_value'&&hash(await a.value(v.identity.hwnd,v.selector))!==v.previousValueHash)fail('computer_target_changed');
-        taskReady(this,taskId);this.computerObservation=null;issued=true;
+        if(sharedPointer&&(!v.pointerFallback?.eligible||!fallbackStatus(this,b,v.target).eligible))fail('computer_uia_attempts_required');
+        taskReady(this,taskId);this.computerObservation=null;
         const expected=expectedControlState(v.action),alreadyMatched=expected&&checkControlState(v.action,v.target).verification==='state_matched';
         if(sharedPointer){v.pointerApproval={at:stamp(),scope:'one_action',fingerprint:v.fingerprint};this.store.set('computer-action:'+id,v);}
-        if(!alreadyMatched)await a.act(v.identity.hwnd,v.target.resolvedSelector,v.action,v.value,{pointerConsent:sharedPointer&&pointerConsent===true,destinationSelector:v.destination?.resolvedSelector});
+        const pointer=!sharedPointer&&!alreadyMatched?(this.computerPointer ||=new ComputerPointer()):null;
+        try{
+          if(pointer){
+            v.pointerDisplay=await pointer.move(b,v.target);
+            // The short visual move must not authorize input into a target that changed meanwhile.
+            taskReady(this,taskId);
+            if(!same(v.identity,await a.status(v.identity.hwnd))||!same(v.target,await a.property(v.identity.hwnd,v.selector)))fail('computer_target_changed');
+            await pointer.pulse();
+          }
+          taskReady(this,taskId);issued=true;this.computerFallback=null;
+          if(!alreadyMatched)await a.act(v.identity.hwnd,v.target.resolvedSelector,v.action,v.value,{pointerConsent:sharedPointer&&pointerConsent===true,destinationSelector:v.destination?.resolvedSelector});
+        }finally{await pointer?.hide();}
         v.execution=alreadyMatched?'already_at_target':'command_returned';
         taskReady(this,taskId);
         if(!same(v.identity,await a.status(v.identity.hwnd)))fail('computer_target_changed');
@@ -318,11 +336,11 @@ export async function computer({method='status',taskId,window,id,fingerprint,dec
     }
     if(method==='remove_app'){const app=this.computerApps?.get(appId);if(!app||app.taskId!==taskId)fail('computer_invalid');this.computerApps.delete(appId);return computerState(this);}
     if(method==='windows')return {windows:await a.windows()};
-    if(method==='unbind'){this.computerBinding=null;this.computerObservation=null;return computerState(this);}
+    if(method==='unbind'){this.computerBinding=null;this.computerObservation=null;this.computerFallback=null;await this.computerPointer?.hide();return computerState(this);}
     if(method==='bind'){
       if(!hwnd(window))fail('computer_invalid');
       const status=await a.status(window);if(expectedIdentity&&!same(expectedIdentity,status))fail('computer_target_changed');
-      this.computerBinding={id:randomUUID(),taskId,identity:status};this.computerObservation=null;return computerState(this);
+      this.computerBinding={id:randomUUID(),taskId,identity:status};this.computerObservation=null;this.computerFallback=null;await this.computerPointer?.hide();return computerState(this);
     }
     fail('computer_invalid');
   });
