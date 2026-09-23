@@ -21,6 +21,8 @@ jobs:
           cache-dependency-path: |
             packages/nubi-desktop/package-lock.json
             extensions/aipro-chat/package-lock.json
+      - name: Verify native visual pointer before dependency installation
+        run: node scripts/check-visual-pointer.mjs
       - name: Install locked dependencies and compile
         run: |
           npm ci --prefix ../../extensions/aipro-chat --ignore-scripts
