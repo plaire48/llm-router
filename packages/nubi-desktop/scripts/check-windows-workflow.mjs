@@ -55,11 +55,12 @@ try {
   report.checks.push('approved button action','independent UTF-8 file readback','duplicate approval saves once','before and after screenshots');
   report.shells=[];
   for(const profile of await shellProfiles()) {
-    const script=profile.id==='powershell'?"Write-Output '누비 PowerShell 확인'; exit 7":"printf '누비 Bash 확인\\n'; exit 7";
+    // Each shell gets its own syntax: CMD joined the Windows profiles after 1.0.0.
+    const {script,expected}={powershell:{script:"Write-Output '누비 PowerShell 확인'; exit 7",expected:/누비 PowerShell 확인/},cmd:{script:'echo 누비 CMD 확인& exit /b 7',expected:/누비 CMD 확인/}}[profile.id]||{script:"printf '누비 Bash 확인\\n'; exit 7",expected:/누비 Bash 확인/};
     const started=await service.processes.start({taskId,cwd:root,script,profile:profile.id,timeoutMs:15000,autoDiagnose:false});
     const deadline=Date.now()+20000;let result;
     do {result=service.processes.poll(started.id);if(!['checking','running','stopping'].includes(result.state))break;await new Promise(r=>setTimeout(r,100));}while(Date.now()<deadline);
-    assert.equal(result.state,'failed');assert.equal(result.exitCode,7);assert.match(result.output,profile.id==='powershell'?/누비 PowerShell 확인/:/누비 Bash 확인/);
+    assert.equal(result.state,'failed',profile.id);assert.equal(result.exitCode,7,profile.id);assert.match(result.output,expected);
     report.shells.push({profile:profile.id,unicodeOutput:true,exitCode:result.exitCode});
   }
   assert(report.shells.some(s=>s.profile==='powershell'));assert(report.shells.some(s=>s.profile==='bash'),'Git Bash missing on acceptance host');
