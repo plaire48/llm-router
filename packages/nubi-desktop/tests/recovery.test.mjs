@@ -60,7 +60,7 @@ test('Bash syntax and missing shell are not executed; configured timeout differs
   const absent=await service.run({taskId:task.id,script:'echo x',profile:'not-installed',autoDiagnose:false});assert.equal(absent.fault,'shell_unavailable');assert.equal(absent.execution,'not_started');
   const timed=await service.run({taskId:task.id,script:'sleep 5',profile:'bash',timeoutMs:30,autoDiagnose:false});await wait(()=>!service.processes.active.size);assert.equal(service.processes.poll(timed.id).state,'timed_out');
   const stopped=await service.run({taskId:task.id,script:'sleep 5',profile:'bash'});service.processes.stop(stopped.id);await wait(()=>!service.processes.active.size);assert.equal(service.processes.poll(stopped.id).state,'cancelled');assert.equal(service.recoveryQueue.size,0);
-  const missingBinary=new Processes(service.store,{profiles:async()=>[{id:'bash',executable:path.join(root,'no-bash'),args:[]}]});const result=await missingBinary.start({cwd:root,taskId:task.id,script:'echo x'});assert.equal(result.fault,'shell_executable_missing');
+  const missingBinary=new Processes(service.store,{profiles:async()=>[{id:'bash',executable:path.join(root,'no-bash'),args:[]}]});const result=await missingBinary.start({cwd:root,taskId:task.id,script:'echo x',profile:'bash'});assert.equal(result.fault,'shell_executable_missing');
 });
 
 test('host reentry preserves interrupted operations and reconciles saved content after a lost apply receipt',async t=>{
