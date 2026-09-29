@@ -37,7 +37,19 @@ try{
    }finally{worker.disconnect();}
  },root);
  assert.match(receipt.content,/release verification/);assert(receipt.wiki>0);
+ // The OpenWiki update runner is a separate folder beside the worker, loaded only when an update runs (1.1.0).
+ // A child of the app imports it, as the worker does when an update runs.
+ const probe=path.join(dir,'update-runner-probe.mjs');
+ await writeFile(probe,"import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';\nconst folder=process.argv[2],loaded=await import(pathToFileURL(path.join(folder,'index.mjs')).href);\nprocess.send({exports:['runNativeRepositoryGeneration','NubiOpenWikiModel','syncBundledSkills'].filter(name=>typeof loaded[name]==='function'),skills:fs.readdirSync(path.join(folder,'openwiki','skills')).sort()});\n");
+ const updateRunner=await app.evaluate(async({app},probe)=>{
+   const {fork}=process.getBuiltinModule('node:child_process'),path=process.getBuiltinModule('node:path');
+   const child=fork(probe,[path.join(app.getAppPath(),'lib/backend/openwiki-update')],{stdio:['ignore','pipe','pipe','ipc']});
+   let stderr='';child.stderr.on('data',d=>stderr+=d);
+   try{return await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('update_runner_timeout')),60000);child.on('message',value=>{clearTimeout(timer);resolve(value);});child.on('exit',code=>{clearTimeout(timer);reject(Error('update_runner_exit_'+code+': '+stderr.slice(-500)));});});}
+   finally{child.kill();}
+ },probe);
+ assert.deepEqual(updateRunner.exports,['runNativeRepositoryGeneration','NubiOpenWikiModel','syncBundledSkills']);assert.ok(updateRunner.skills.length>0);
  assert.deepEqual({...receipt.voc,pages:undefined},{imported:true,duplicate:true,found:true,exactRead:true,pages:undefined});assert(receipt.voc.pages>1);
- const result={passed:true,platform:process.platform,...facts,receipt,scope:'Electron launch, UI, compiled worker IPC, SQLite, source read and OpenWiki-SDS retrieval. No live model or company app.'};
+ const result={passed:true,platform:process.platform,...facts,receipt,updateRunner,scope:'Electron launch, UI, compiled worker IPC, SQLite, source read, OpenWiki-SDS retrieval and loading of the OpenWiki update runner. No live model or company app.'};
  await writeFile('verification/electron-release.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{await app.close();await writeFile('verification/electron-release-stderr.log',errors.join(''));}
