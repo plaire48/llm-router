@@ -35,6 +35,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm ci
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      # The shared runtime imports OpenWiki-SDS source at run time (agent-runtime -> openwiki-agent -> wiki-question.ts),
+      # and the OpenWiki update runner is bundled from it: install its locked dependencies as in development.
+      - name: Install OpenWiki-SDS locked dependencies
+        working-directory: packages/openwiki
+        run: |
+          npm install --global pnpm@11.25.0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pnpm install --frozen-lockfile --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Compile runtime and check contracts
         run: |
           New-Item verification -ItemType Directory -Force | Out-Null

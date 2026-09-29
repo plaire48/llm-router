@@ -25,6 +25,8 @@ test('project shell setting rejects unavailable choices and survives host restar
   const restored=new ProjectService({storageRoot:path.join(directory,'state')});t.after(()=>{restored.dispose();restored.store?.close();});
   await restored.open(root);
   assert.equal((await restored.overview()).defaultShell,choice);
+  // Closed before the fixture removes its folder: Windows cannot delete the open owner journal (EBUSY).
+  restored.dispose();restored.store.close();
 });
 
 test('PowerShell transport preserves literal Korean and quotes with explicit UTF-8 output',()=>{

@@ -57,3 +57,5 @@ This release's workflow upgrades the SHA-256-pinned 0.1.1 verified installer fro
 Display version beta 1.1.0; package locks, the installed Electron version and Windows file metadata agree on 1.1.0. The name, app ID, executable and state paths are unchanged, so 1.0.0 installations upgrade in place.
 
 The upgrade gate now installs the verified 1.0.0 installer from build run 35870591663 (artifact `nubi-workspace-windows-x64`, retained until 2026-12-22, SHA-256 `2cf070446d301a20e57b0722a8fa15400f6e18947b1f3c63813dc379a45ea59e`), then this candidate over it. The published 1.0.0 release in AI Workspace holds the same file. For a later release, move the baseline to 1.1.0 before that artifact expires.
+
+Since 1.0.0 the shared runtime imports OpenWiki-SDS source at run time (`agent-runtime.js` -> `openwiki-agent.js` -> `wiki-question.ts`), so the contract checks need OpenWiki's own dependencies, and the OpenWiki update runner is bundled from them. The workflow installs them with the pinned pnpm 11.25.0 and the frozen lock, without install scripts, as in development. The first 1.1.0 run failed without them: 56 test files could not resolve `minisearch`.
