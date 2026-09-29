@@ -1,0 +1,14 @@
+{
+  "id": "C5-ambiguous-discount",
+  "title": "모호한 요청",
+  "suite": "edit",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "할인율 좀 올려 줘.",
+  "stopAtQuestion": true,
+  "expect": {
+    "state": "waiting_input",
+    "asked": true,
+    "unchanged_except": []
+  }
+}

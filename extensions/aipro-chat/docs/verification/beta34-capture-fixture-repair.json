@@ -1,0 +1,7 @@
+{
+  "issue": "Standalone full-page coordinate probe ran outside the host tool queue while the completed UI kept polling GET_STATE. Normal idle recovery cancelled the unowned probe.",
+  "change": "Run only the test probe through the same serialized tool boundary and toolBusy lifecycle used by normal RUN_TOOL; keep all capture/coordinate rejection assertions.",
+  "productionSourceChanged": false,
+  "isolatedRegression": "tests/full-page-captures-browser.mjs passed",
+  "initialFullReport": "verification/pre-release-2026-09-25T03-38-05-560Z/report.json"
+}

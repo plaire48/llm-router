@@ -1,0 +1,12 @@
+PASS text, display-contents links, inline handlers and pointer cards expose exact refs, names and navigation hints
+PASS text opens the intended page through semantic click and returns fresh destination evidence
+PASS contents opens the intended page through semantic click and returns fresh destination evidence
+PASS inline opens the intended page through Playwright ref and returns fresh destination evidence
+PASS card opens the intended page through Playwright ref and returns fresh destination evidence
+PASS icon opens the intended page through semantic click and returns fresh destination evidence
+PASS 그림자 링크 opens the intended page through Playwright ref and returns fresh destination evidence
+PASS 프레임 링크 opens the intended page through semantic click and returns fresh destination evidence
+PASS history opens the intended page through semantic click and returns fresh destination evidence
+PASS compose opens the intended page through Playwright ref and returns fresh destination evidence
+PASS blank opens the intended page through Playwright ref and returns fresh destination evidence
+PASS covered and disabled links explain the actual obstacle without force-click or navigation bypass

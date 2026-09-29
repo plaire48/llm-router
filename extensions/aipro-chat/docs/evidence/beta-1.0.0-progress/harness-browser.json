@@ -1,0 +1,14 @@
+{
+  "version": "1.4.9",
+  "checks": [
+    "dynamic tool selection reaches AI Pro, actual input/save failure is observed, corrected once and independently verified",
+    "independent requirement review catches an omitted body, repairs only that field and rechecks the full request without repeating title input",
+    "premature success text is withheld and durable verification stores status/counts without field values",
+    "worker independently prevents unverified FINISH_CHAT success and preserves a resumable checkpoint",
+    "resume retains verification debt even after a fresh read and rejects completion without a fresh result check",
+    "worker rejects successful completion while the requirements review still requests a correction"
+  ],
+  "syntheticModel": true,
+  "actualBrowserActions": true,
+  "companyProviderVerified": false
+}

@@ -1,0 +1,7 @@
+{
+  "issue": "The old substring check for expected also matched expectedHash in valid restart recovery receipts.",
+  "change": "Verify the durable result schema, 64-character comparison hashes, exact allowed target keys and absence of both raw input values in receipts. Keep actual repair, no-repeat and final-completion guards unchanged.",
+  "productionBehaviorChanged": false,
+  "regression": "tests/harness-browser.mjs passed",
+  "initialReport": "verification/pre-release-2026-09-25T03-46-52-917Z/report.json"
+}

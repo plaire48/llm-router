@@ -3,19 +3,19 @@
 /* The supplied deck is the source of brand colors, typography and motion. */
 :root { --cx-font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
 .nubi-widget { background: var(--deck-background); color: var(--deck-ink); overflow: auto; }
-.nubi-workbench { position: relative; min-height: 100%; font: 500 clamp(13px, 1.55vw, 16px)/1.5 var(--cx-font-family); }
+.nubi-workbench { position: relative; min-height: 100%; font: var(--deck-font-body); }
 .nubi-workbench *, .nubi-workbench *::before, .nubi-workbench *::after { box-sizing: border-box; }
 .nubi-bar { display: flex; align-items: center; gap: 18px; padding: 18px 28px; }
-.nubi-project-label { color: var(--deck-sub); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nubi-project-label { color: var(--deck-sub); font-size: var(--cx-type-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nubi-header-actions { margin-left: auto; display:flex; gap: 4px; }
 .nubi-icon-button.cx-kit-button { border: 0; padding: 8px; background: transparent; color: var(--deck-sub); }
 .nubi-main { max-width: 1060px; margin: 0 auto; padding: 16px 36px 64px; }
 .nubi-welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 620px; gap: 18px; padding-bottom: 60px; }
-.nubi-welcome h1 { margin: 0; color: var(--deck-ink); font-size: clamp(29px,4.2vw,50px); font-weight: 900; line-height: 1.3; letter-spacing: -.02em; }
+.nubi-welcome h1 { margin: 0; color: var(--deck-ink); font-size: var(--nubi-welcome-title); font-weight: 900; line-height: 1.3; letter-spacing: -.02em; }
 .nubi-welcome h1 span { color: var(--deck-blue); }
-.nubi-welcome > p { color: var(--deck-sub); font-size: clamp(15px,1.75vw,19px); line-height:1.6; margin:0 0 12px; }
+.nubi-welcome > p { color: var(--deck-sub); font-size: var(--nubi-welcome-copy); line-height:1.6; margin:0 0 12px; }
 .nubi-compose-card { width: min(760px,100%); background: var(--deck-card); border-radius:24px; box-shadow:var(--deck-shadow); padding:20px 24px; }
-.nubi-compose-card textarea.cx-kit-textarea { min-height:76px; padding:10px 0; border:0; border-radius:0; resize:none; background:transparent; box-shadow:none; font:500 16px/1.5 var(--cx-font-family); }
+.nubi-compose-card textarea.cx-kit-textarea { min-height:76px; padding:10px 0; border:0; border-radius:0; resize:none; background:transparent; box-shadow:none; font:var(--deck-font-body); }
 .nubi-compose-card .composer-bottom { display:flex; align-items:center; justify-content:space-between; gap:16px; }
 .nubi-model-choice.cx-kit-button { border:0; background:var(--deck-tint); color:var(--deck-sub); }
 .nubi-home-links { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; font-size:var(--cx-type-caption); color:var(--deck-sub); }
@@ -25,7 +25,7 @@
 .nubi-task { padding-top:12px; }
 .nubi-task-heading { display:flex; align-items:center; gap:12px; color:var(--deck-sub); font-size:var(--cx-type-caption); }
 .nubi-task-heading .deck-status { margin-left:auto; }
-.nubi-task h1 { margin:18px 0 22px; font-size:clamp(22px,2.6vw,30px); line-height:1.45; letter-spacing:-.02em; font-weight:800; overflow-wrap:anywhere; }
+.nubi-task h1 { margin:18px 0 22px; font-size:var(--cx-type-title); line-height:1.45; letter-spacing:-.02em; font-weight:800; overflow-wrap:anywhere; }
 .nubi-task h2 { font-size:var(--cx-type-section); font-weight:700; margin:22px 0 12px; }
 .nubi-tabs { display:flex; gap:4px; padding:4px; width:fit-content; background:color-mix(in srgb,var(--deck-card) 70%,transparent); border-radius:14px; margin-bottom:24px; }
 .nubi-tabs .cx-kit-button { border:0; background:transparent; color:var(--deck-sub); transition:background 240ms,color 240ms,box-shadow 240ms; }
@@ -44,7 +44,7 @@
 .nubi-file-card { display:flex; gap:14px; align-items:center; margin:10px 0; padding:18px; border-radius:var(--deck-inset-radius); background:var(--deck-card); box-shadow:var(--deck-shadow-file); animation:nubi-rise 450ms var(--deck-ease) both; }
 .nubi-file-card > svg { color:var(--deck-blue); flex-shrink:0; }
 .nubi-file-card > div { flex:1; min-width:0; overflow-wrap:anywhere; }
-.nubi-file-card strong { font-size:15px; }
+.nubi-file-card strong { font-size:var(--cx-type-body); }
 .nubi-file-card p { margin:4px 0; color:var(--deck-sub); font-size:var(--cx-type-body); }
 .nubi-file-card small { color:var(--deck-sub); font-size:var(--cx-type-caption); }
 .nubi-workbench .deck-disclosure { margin:16px 0; border:0; border-radius:var(--deck-inset-radius); background:color-mix(in srgb,var(--deck-card) 75%,transparent); }
@@ -57,15 +57,22 @@
 .nubi-library { min-height:200px; }
 .nubi-file-link.cx-kit-button,.nubi-search-result.cx-kit-button,.nubi-history-item.cx-kit-button { width:100%; display:flex; flex-direction:column; gap:4px; align-items:flex-start; text-align:left; white-space:normal; height:auto; padding:12px 14px; border:0; border-radius:var(--deck-control-radius); background:transparent; overflow-wrap:anywhere; }
 .nubi-search-result.cx-kit-button { margin:6px 0; background:var(--deck-card); }
-.nubi-search-result > span:not(.deck-status) { font:400 13px/1.5 var(--deck-mono); color:var(--deck-sub); }
+.nubi-search-result > span:not(.deck-status) { font:400 var(--deck-type-code)/1.5 var(--deck-mono); color:var(--deck-sub); }
 .nubi-wiki-evidence .nubi-search-result > .nubi-wiki-excerpt { font:var(--deck-font-body); }
 .nubi-history-item small { font-size:var(--cx-type-caption); color:var(--deck-sub); }
 .nubi-run-form { padding:22px; border-radius:var(--deck-panel-radius); background:var(--deck-card); margin:18px 0; }
 .nubi-run-form > label { display:block; font-weight:700; margin-bottom:10px; }
 .nubi-run-form small { display:block; color:var(--deck-sub); font-size:var(--cx-type-caption); margin-top:10px; }
-.nubi-process { background:var(--deck-dark,#17171C); color:var(--deck-card); padding:18px; border-radius:var(--deck-inset-radius); margin:16px 0; }
+.nubi-settings { display:grid; gap:10px; padding:4px 0 12px; }
+.nubi-settings label { font-weight:700; }
+.nubi-settings select { width:100%; }
+.nubi-settings p { margin:0; }
+.nubi-process { background:var(--nubi-terminal-surface); color:var(--deck-card); padding:18px; border-radius:var(--deck-inset-radius); margin:16px 0; }
 .nubi-process > div { display:flex; justify-content:space-between; }
-.nubi-process pre { max-height:240px; overflow:auto; font:400 13px/1.6 var(--deck-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
+.nubi-process details { margin-top:var(--cx-space-2); }
+.nubi-process summary { cursor:pointer; }
+.nubi-process code { display:block; padding:var(--cx-space-2) 0; font:400 var(--deck-type-code)/1.6 var(--deck-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
+.nubi-process pre { max-height:240px; overflow:auto; font:400 var(--deck-type-code)/1.6 var(--deck-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
 .nubi-url-pair { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:12px 0; }
 .nubi-url-pair label { display:grid; gap:8px; font-size:var(--cx-type-body); }
 .nubi-compare-toolbar { display:flex; justify-content:space-between; margin:20px 0 10px; }
@@ -128,20 +135,20 @@
 .nubi-map-heading { display:flex; align-items:center; gap:12px; justify-content:space-between; flex-wrap:wrap; }
 .nubi-map h2 { font-size:var(--cx-type-section); margin:0; }
 .nubi-map-controls,.nubi-db-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:end; gap:12px; }
-.nubi-map-controls label,.nubi-db-fields label { display:grid; gap:6px; font-size:13px; color:var(--deck-sub); }
+.nubi-map-controls label,.nubi-db-fields label { display:grid; gap:6px; font-size:var(--cx-type-body); color:var(--deck-sub); }
 .nubi-map-controls .cx-kit-input,.nubi-db-fields .cx-kit-input,.nubi-map-controls .cx-kit-select,.nubi-db-fields .cx-kit-select { width:100%; min-width:0; }
 .nubi-map-focus { background:var(--deck-blue-soft); border-radius:var(--deck-inset-radius); padding:16px; display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
 .nubi-map-focus>div { flex:1; display:flex; align-items:center; flex-wrap:wrap; gap:8px; min-width:0; }
 .nubi-map-focus strong { overflow-wrap:anywhere; }
-.nubi-map-focus code { flex-basis:100%; font-size:11px; overflow-wrap:anywhere; color:var(--deck-sub); }
+.nubi-map-focus code { flex-basis:100%; font-size:var(--cx-type-caption); overflow-wrap:anywhere; color:var(--deck-sub); }
 .nubi-map-focus small { font-size:var(--cx-type-caption); color:var(--deck-sub); }
 .nubi-map-relations { list-style:none; padding:0; margin:16px 0; }
 .nubi-map-relations li { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); align-items:center; gap:6px; padding:7px 0; border-bottom:1px solid var(--deck-line); }
 .nubi-map-relations .cx-kit-button { white-space:normal; overflow-wrap:anywhere; height:auto; }
 .nubi-map-relations span { text-align:center; font-size:var(--cx-type-caption); color:var(--deck-sub); }
-.nubi-map-relations small { display:block; font-size:11px; }
+.nubi-map-relations small { display:block; font-size:var(--cx-type-caption); }
 .nubi-db-connect { padding:16px; background:var(--deck-background); border-radius:var(--deck-inset-radius); margin-bottom:16px; }
-.nubi-db-tls { display:flex; align-items:center; gap:8px; margin:16px 0; font-size:13px; }
+.nubi-db-tls { display:flex; align-items:center; gap:8px; margin:16px 0; font-size:var(--cx-type-body); }
 .nubi-db-connected { display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:12px 0; }
 .nubi-db-connected span { flex:1; min-width:140px; font-size:var(--cx-type-body); overflow-wrap:anywhere; }
 .nubi-db-connected small { display:block; font-size:var(--cx-type-caption); color:var(--deck-sub); }
@@ -155,7 +162,7 @@
 .nubi-decided-question p {color:var(--deck-sub);margin:0 0 4px;}
 
 .nubi-recovery-card { background:var(--deck-card);border:1px solid var(--deck-line);border-radius:var(--deck-inset-radius);padding:20px;margin:16px 0; }
-.nubi-recovery-card pre {white-space:pre-wrap;overflow-wrap:anywhere;font:400 13px/1.6 var(--deck-mono);}
+.nubi-recovery-card pre {white-space:pre-wrap;overflow-wrap:anywhere;font:400 var(--deck-type-code)/1.6 var(--deck-mono);}
 .nubi-recovery-card small {display:block;color:var(--deck-sub);margin-bottom:12px;}
 .nubi-recovery-option {display:flex;align-items:center;gap:12px;margin:12px 0;}
 .nubi-recovery-option > span {flex:0 0 auto;}
@@ -172,8 +179,8 @@
 .nubi-workbench .agent-intro h1 {white-space:normal;word-break:keep-all;}
 
 /* Workspace reading scale: stable at narrow IDE widths; keep the deck identity. */
-.nubi-workbench { --nubi-reading-size:15px; --nubi-reading-leading:1.75; font:400 14px/1.6 var(--cx-font-family); }
-.nubi-workbench[data-large-text=true] { --nubi-reading-size:17px; }
+.nubi-workbench { font:var(--deck-font-body); }
+
 .nubi-task .message-body,.nubi-task .interaction-card { font:400 var(--nubi-reading-size)/var(--nubi-reading-leading) var(--cx-font-family); letter-spacing:normal; }
 .nubi-task .message-body { max-width:78ch; overflow-wrap:anywhere; }
 .nubi-task .message-body p,.nubi-task .message-body li { font:inherit; }
@@ -191,3 +198,7 @@
 .nubi-skill-card { padding: 14px 0; border-top: 1px solid var(--deck-line); }
 .nubi-skill-card p { margin: 6px 0 10px; overflow-wrap: anywhere; }
 .nubi-skill-card small { display: block; margin-top: 8px; color: var(--deck-sub); overflow-wrap: anywhere; }
+
+.nubi-db-options { margin:16px 0; }
+.nubi-db-options summary { cursor:pointer; }
+.nubi-db-options .nubi-db-fields { margin-top:12px; }

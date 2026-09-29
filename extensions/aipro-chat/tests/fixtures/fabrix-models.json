@@ -1,0 +1,194 @@
+[
+  {
+    "modelId": "01992d20-4584-752b-a3aa-4d17612e8df9",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "Samsung 2.3 37B"
+      },
+      {
+        "languageCode": "en",
+        "content": "Samsung 2.3 37B"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "문서 작성·요약과 지식 활용을 돕는 업무용 모델 \n[Tools] Knowledge\n[Context] 32K\n[Cutoff] 2024-04-01\n[Speed] Medium\n[Price] High "
+      },
+      {
+        "languageCode": "en",
+        "content": "Work-focused model for document writing, summarization and knowledge utilization\n[Tools] Knowledge\n[Context] 32K\n[Cutoff] 2024-04-01\n[Speed] Medium\n[Price] High "
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "01995a66-a919-7b3d-a589-e200de57555a",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "Samsung LLM-Reasoning"
+      },
+      {
+        "languageCode": "en",
+        "content": "Samsung LLM-Reasoning"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "단계적 추론으로 문제 해결을 지원하는 모델\n[Tools] Knowledge\n[Context] 64K\n[Speed] Medium\n[Price] High"
+      },
+      {
+        "languageCode": "en",
+        "content": "Model that supports problem-solving throught step-by-step reasoning \n[Tools] Knowledge\n[Context] 64K\n[Speed] Medium\n[Price] High"
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "019f23a1-46aa-7fa5-a6ab-391127fea7e6",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "Glm 5.2"
+      },
+      {
+        "languageCode": "en",
+        "content": "Glm 5.2"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "복잡한 업무 분석과 도구 활용을 지원하는 모델\n[Tools] Function Calling, Knowledge\n[Context] 128K\n[Speed] Fast\n[Price] High"
+      },
+      {
+        "languageCode": "en",
+        "content": "Model for complex task analysis and tool use\n[Tools] Function Calling, Knowledge\n[Context] 128K\n[Speed] Fast\n[Price] High"
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "01a08af2-8aef-7d8a-893d-f88b6a875802",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "DeepSeek-V4-Flash-0731"
+      },
+      {
+        "languageCode": "en",
+        "content": "DeepSeek-V4-Flash-0731"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "긴 문서 분석·추론·코딩을 빠르게 지원하는 모델\n[Tools] Function Calling, Knowledge\n[Context] 400K\n[Speed] Fast\n[Price] Medium"
+      },
+      {
+        "languageCode": "en",
+        "content": "Fast model for long-document analysis, reasoning, and coding\n[Tools] Function Calling, Knowledge\n[Context] 400K\n[Speed] Fast\n[Price] Medium"
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "01995a69-ab51-77a5-a6bd-364528f8d7a9",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "Llama 3.3"
+      },
+      {
+        "languageCode": "en",
+        "content": "Llama 3.3"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "문서 작성·요약·번역을 지원하는 범용 모델\n[Tools] Function Calling, Knowledge\n[Context] 32K\n[Cutoff] 2023-12-01\n[Speed] Medium\n[Price] Medium"
+      },
+      {
+        "languageCode": "en",
+        "content": "General-purpose model for document writing, summarization, and translation\n[Tools] Function Calling, Knowledge\n[Context] 32K\n[Cutoff] 2023-12-01\n[Speed] Medium\n[Price] Medium"
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "019a774a-c6ad-7518-b37c-d651c2696c66",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "gpt-oss-120b(Mid)"
+      },
+      {
+        "languageCode": "en",
+        "content": "gpt-oss-120b(Mid)"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "추론·코딩을 빠르고 경제적으로 지원하는 모델\n[Tools] Function Calling, Knowledge\n[Context] 128K\n[Cutoff] 2024-06-01\n[Speed] Fast\n[Price] Low"
+      },
+      {
+        "languageCode": "en",
+        "content": "Fast and cost-effective model for reasoning and coding\n[Tools] Function Calling, Knowledge\n[Context] 128K\n[Cutoff] 2024-06-01\n[Speed] Fast\n[Price] Low"
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "01996fce-5f0e-7807-b8ae-aaca7532dc3e",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "gpt-oss-120b(Low)"
+      },
+      {
+        "languageCode": "en",
+        "content": "gpt-oss-120b(Low)"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "추론·코딩을 빠르고 경제적으로 지원하는 모델\n[Tools] Function Calling, Knowledge\n[Context] 128K\n[Cutoff] 2024-06-01\n[Speed] Fast\n[Price] Low"
+      },
+      {
+        "languageCode": "en",
+        "content": "Fast and cost-effective model for reasoning and coding\n[Tools] Function Calling, Knowledge\n[Context] 128K\n[Cutoff] 2024-06-01\n[Speed] Fast\n[Price] Low"
+      }
+    ],
+    "types": []
+  },
+  {
+    "modelId": "019f238e-5c49-7bd2-b2fc-e500174936cf",
+    "name": [
+      {
+        "languageCode": "ko",
+        "content": "Gemma4"
+      },
+      {
+        "languageCode": "en",
+        "content": "Gemma4"
+      }
+    ],
+    "description": [
+      {
+        "languageCode": "ko",
+        "content": "빠르고 경제적인 문서 요약·질의응답 모델\n[Tools] Function Calling, Knowledge\n[Context] 100K\n[Cutoff] 2025-01-01\n[Speed] Fast\n[Price] Low"
+      },
+      {
+        "languageCode": "en",
+        "content": "Fast and cost-effective model for document summarization and question-answering\n[Tools] Function Calling, Knowledge\n[Context] 100K\n[Cutoff] 2025-01-01\n[Speed] Fast\n[Price] Low"
+      }
+    ],
+    "types": []
+  }
+]

@@ -1,3 +1,4 @@
+import {ATTACHMENT_LIMITS} from './attachment-limits.js';
 import {RecursiveCharacterTextSplitter} from '@langchain/textsplitters';
 import {rankEvidence} from './evidence-search.js';
 import {readAttachment} from './attachment-store.js';
@@ -13,6 +14,31 @@ const rangeInfo = (file, source, start, end) => ({...metadata(file), start, end,
   dataKind: 'document_reference', scope: file.kind === 'document' ? 'Extracted text only; images, layout and OCR are unavailable.' : 'Attached reference text, not current browser state.'});
 const splitter = new RecursiveCharacterTextSplitter({chunkSize: 1600, chunkOverlap: 200, keepSeparator: true,
   separators: ['\n\n', '\n', '. ', '。', ' ', '']});
+const planSplitter = new RecursiveCharacterTextSplitter({chunkSize: 3200, chunkOverlap: 0, keepSeparator: true,
+  separators: ['\n\n', '\n', '. ', '。', ' ', '']});
+
+async function planRanges(file, source, offset) {
+  const ranges = []; let cursor = offset;
+  for (const chunk of await planSplitter.splitText(source.slice(offset))) {
+    const start = source.indexOf(chunk, cursor);
+    if (start < 0) throw new Error('response_invalid');
+    const end = start + chunk.length;
+    // Splitter trimming must never silently drop whitespace or repeated text.
+    // Bound every original span, including gaps, before exposing coordinates.
+    while (cursor < end && ranges.length < 6) {
+      const next = Math.min(end, cursor + 3600);
+      ranges.push({document_id: file.id, hash: file.hash, start: cursor, end: next}); cursor = next;
+    }
+    if (ranges.length === 6) break;
+  }
+  while (cursor < source.length && ranges.length < 6) {
+    const end = Math.min(source.length, cursor + 3600);
+    ranges.push({document_id: file.id, hash: file.hash, start: cursor, end}); cursor = end;
+  }
+  return {ok: true, ...metadata(file), metadata_only: true, characters: source.length, ranges,
+    next_offset: cursor < source.length ? cursor : null, coverage: 'unread',
+    instruction: 'These are unread original character ranges, not findings. Delegate independent document_ranges with this hash. Merge summaries and evidence; inspect cross-range dependencies and missing ranges before claiming full coverage.'};
+}
 
 export async function executeDocumentTool({bindings = [], owner}, name, args = {}, {load = readAttachment} = {}) {
   const lookup = id => bindings.find(file => file.id === id);
@@ -21,14 +47,30 @@ export async function executeDocumentTool({bindings = [], owner}, name, args = {
     if (file.hash !== binding.hash || !['text', 'document'].includes(file.kind)) throw new Error('attachment_missing');
     return {file, text: file.extractedText ?? await file.blob.text()};
   };
+  if (name === 'ask_documents') {
+    if (typeof args.question !== 'string' || !args.question.trim() || args.question.length > 4000 ||
+      !Array.isArray(args.document_ids) || !args.document_ids.length || args.document_ids.length > 8 ||
+      new Set(args.document_ids).size !== args.document_ids.length || args.document_ids.some(id => typeof id !== 'string' || !lookup(id))) return {error: 'tool_arguments_invalid'};
+    const documents = []; let characters = 0;
+    for (const id of args.document_ids) {
+      const {file, text} = await source(lookup(id));
+      characters += text.length;
+      if (text.length > ATTACHMENT_LIMITS.textChars || characters > ATTACHMENT_LIMITS.researchCharacters) return {error: 'attachment_document_size'};
+      documents.push({id, title: file.name, path: file.name, kind: 'document', version: file.hash, text});
+    }
+    // Private host packet: the runtime adapter consumes it before any model message.
+    return {dataKind: 'document_snapshot', sourceComplete: true, documents};
+  }
   const offset = args.offset ?? 0;
-  if (!Number.isSafeInteger(offset) || offset < 0 || offset > 40000) return {error: 'tool_arguments_invalid'};
+  if (!Number.isSafeInteger(offset) || offset < 0 || offset > ATTACHMENT_LIMITS.textChars) return {error: 'tool_arguments_invalid'};
   if (name === 'read_document') {
     const binding = lookup(args.document_id), length = args.length ?? 4000;
     if (!binding) return {error: 'attachment_missing', instruction: 'Use a document ID returned by search_documents in this conversation.'};
     if (!Number.isSafeInteger(length) || length < 1 || length > 6000) return {error: 'tool_arguments_invalid'};
     const {file, text} = await source(binding);
     if (offset > text.length) return {error: 'tool_arguments_invalid', characters: text.length};
+    if (args.mode === 'plan') return planRanges(file, text, offset);
+    if (args.mode !== undefined && args.mode !== 'text') return {error: 'tool_arguments_invalid'};
     const end = Math.min(text.length, offset + length);
     return {ok: true, ...rangeInfo(file, text, offset, end), text: text.slice(offset, end), next_offset: end < text.length ? end : null};
   }

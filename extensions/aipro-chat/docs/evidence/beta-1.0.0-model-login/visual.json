@@ -1,0 +1,298 @@
+{
+  "version": "1.4.6",
+  "samples": [
+    {
+      "width": 320,
+      "height": 480,
+      "provider": "AI Pro",
+      "dialog": {
+        "x": 12,
+        "y": 106.5,
+        "width": 296,
+        "height": 267
+      },
+      "button": {
+        "x": 128,
+        "y": 268.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 144,
+        "y": 284.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 29,
+        "y": 244.5,
+        "width": 262,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "rgb(27, 100, 218)",
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "height": 480,
+      "provider": "ChatGPT",
+      "dialog": {
+        "x": 12,
+        "y": 106.5,
+        "width": 296,
+        "height": 267
+      },
+      "button": {
+        "x": 128,
+        "y": 268.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 144,
+        "y": 284.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 29,
+        "y": 244.5,
+        "width": 262,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "rgb(25, 31, 40)",
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "height": 480,
+      "provider": "FabriX",
+      "dialog": {
+        "x": 12,
+        "y": 106.5,
+        "width": 296,
+        "height": 267
+      },
+      "button": {
+        "x": 128,
+        "y": 268.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 144,
+        "y": 284.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 29,
+        "y": 244.5,
+        "width": 262,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "color(srgb 0.0958431 0.393882 0.455529)",
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "provider": "AI Pro",
+      "dialog": {
+        "x": 12,
+        "y": 266.5,
+        "width": 336,
+        "height": 267
+      },
+      "button": {
+        "x": 148,
+        "y": 428.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 164,
+        "y": 444.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 29,
+        "y": 404.5,
+        "width": 302,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "rgb(27, 100, 218)",
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "provider": "ChatGPT",
+      "dialog": {
+        "x": 12,
+        "y": 266.5,
+        "width": 336,
+        "height": 267
+      },
+      "button": {
+        "x": 148,
+        "y": 428.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 164,
+        "y": 444.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 29,
+        "y": 404.5,
+        "width": 302,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "rgb(25, 31, 40)",
+      "overflow": false
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "provider": "FabriX",
+      "dialog": {
+        "x": 12,
+        "y": 266.5,
+        "width": 336,
+        "height": 267
+      },
+      "button": {
+        "x": 148,
+        "y": 428.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 164,
+        "y": 444.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 29,
+        "y": 404.5,
+        "width": 302,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "color(srgb 0.0958431 0.393882 0.455529)",
+      "overflow": false
+    },
+    {
+      "width": 1100,
+      "height": 850,
+      "provider": "AI Pro",
+      "dialog": {
+        "x": 340,
+        "y": 291.5,
+        "width": 420,
+        "height": 267
+      },
+      "button": {
+        "x": 518,
+        "y": 453.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 534,
+        "y": 469.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 357,
+        "y": 429.5,
+        "width": 386,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "rgb(27, 100, 218)",
+      "overflow": false
+    },
+    {
+      "width": 1100,
+      "height": 850,
+      "provider": "ChatGPT",
+      "dialog": {
+        "x": 340,
+        "y": 291.5,
+        "width": 420,
+        "height": 267
+      },
+      "button": {
+        "x": 518,
+        "y": 453.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 534,
+        "y": 469.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 357,
+        "y": 429.5,
+        "width": 386,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "rgb(25, 31, 40)",
+      "overflow": false
+    },
+    {
+      "width": 1100,
+      "height": 850,
+      "provider": "FabriX",
+      "dialog": {
+        "x": 340,
+        "y": 291.5,
+        "width": 420,
+        "height": 267
+      },
+      "button": {
+        "x": 518,
+        "y": 453.5,
+        "width": 64,
+        "height": 64
+      },
+      "icon": {
+        "x": 534,
+        "y": 469.5,
+        "width": 32,
+        "height": 32
+      },
+      "region": {
+        "x": 357,
+        "y": 429.5,
+        "width": 386,
+        "height": 112
+      },
+      "radius": "28%",
+      "color": "color(srgb 0.0958431 0.393882 0.455529)",
+      "overflow": false
+    }
+  ],
+  "reducedMotion": {
+    "transform": "none",
+    "transition": "1e-05s"
+  },
+  "keyboardTooltip": true
+}

@@ -1,0 +1,4 @@
+{
+  "reason": "Stopped intentionally after separate visual inspection found the signed-in header logout button clipped at 320px after adding beta. Harness stage received SIGTERM; this is not evidence of a harness assertion failure. Header spacing and visible-control regression will be corrected before a fresh full matrix.",
+  "superseded": true
+}

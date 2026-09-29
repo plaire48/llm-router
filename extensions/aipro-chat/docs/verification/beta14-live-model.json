@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "startedAt": "2026-09-23T11:08:18.601Z",
+  "model": "QWEN3.8-27B-FP8-256K",
+  "baselineModel": "QWEN3.8-27B-FP8-256K",
+  "baseline": true,
+  "syntheticSite": true,
+  "actualModel": false,
+  "status": "not_configured",
+  "cases": [],
+  "reason": "NUBI_EVAL_TOKEN is not configured. No inference or browser actions were executed."
+}

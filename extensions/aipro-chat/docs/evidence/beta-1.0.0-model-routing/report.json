@@ -1,0 +1,240 @@
+{
+  "status": "passed",
+  "version": "1.0.0-beta.9",
+  "extensionVersion": "1.4.12",
+  "buildSha256": "de7a5807ad4d17b4b4278abf3f3c7be5d096de5c4f5a0e9e0cd64be6d2302df0",
+  "archiveSha256": "61ae7076fbd356d8b3fd576d0dce05247484d3ee1475aa5b8c2b6c299bdf8d7f",
+  "unitTests": 313,
+  "browserRuns": 22,
+  "sameBuildAcrossMatrices": true,
+  "actualCompanyAPI": false,
+  "actualQwenAccuracy": false,
+  "checks": [
+    {
+      "name": "vision-routing-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:04.154Z",
+      "log": "vision-routing-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10604
+    },
+    {
+      "name": "model-catalog-refresh-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:04.154Z",
+      "log": "model-catalog-refresh-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2575
+    },
+    {
+      "name": "toggle-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:06.731Z",
+      "log": "toggle-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 28163
+    },
+    {
+      "name": "attachments-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:14.759Z",
+      "log": "attachments-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5604
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:20.363Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25008
+    },
+    {
+      "name": "vision-routing-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:45.372Z",
+      "log": "vision-routing-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10496
+    },
+    {
+      "name": "model-catalog-refresh-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:45.372Z",
+      "log": "model-catalog-refresh-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2549
+    },
+    {
+      "name": "toggle-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:47.923Z",
+      "log": "toggle-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 28294
+    },
+    {
+      "name": "attachments-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:55.869Z",
+      "log": "attachments-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5783
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:01.652Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25120
+    },
+    {
+      "name": "vision-routing-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:26.772Z",
+      "log": "vision-routing-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10595
+    },
+    {
+      "name": "model-catalog-refresh-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:26.772Z",
+      "log": "model-catalog-refresh-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2588
+    },
+    {
+      "name": "toggle-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:29.362Z",
+      "log": "toggle-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 28314
+    },
+    {
+      "name": "attachments-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:37.367Z",
+      "log": "attachments-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5668
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:43.036Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25084
+    },
+    {
+      "name": "typography-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:28:08.121Z",
+      "log": "typography-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7869
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:28:08.121Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7552
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:28:15.990Z",
+      "log": "browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 23808
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:15.356Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24313
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:15.356Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5179
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:20.537Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17042
+    },
+    {
+      "name": "models-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:37.580Z",
+      "log": "models-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7063
+    }
+  ],
+  "testCorrection": "FabriX fixture now waits for the rendered model label after the storage update. Original failed run retained; corrected check passed against the same build.",
+  "headedRuns": 2,
+  "headedChecks": [
+    "vision-routing-browser",
+    "model-catalog-refresh-browser"
+  ]
+}

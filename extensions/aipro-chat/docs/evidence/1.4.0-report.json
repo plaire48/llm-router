@@ -1,0 +1,405 @@
+{
+  "startedAt": "2026-09-22T00:10:17.170Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:10:17.170Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2514
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:10:19.685Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 139
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:10:19.825Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2827
+    },
+    {
+      "name": "browser-workflows-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:10:22.694Z",
+      "log": "browser-workflows-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86771
+    },
+    {
+      "name": "browser-specialist-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:11:49.466Z",
+      "log": "browser-specialist-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13265
+    },
+    {
+      "name": "browser-agent-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:12:02.731Z",
+      "log": "browser-agent-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 51049
+    },
+    {
+      "name": "browser-popups-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:12:53.780Z",
+      "log": "browser-popups-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 21905
+    },
+    {
+      "name": "popup-approval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:13:15.685Z",
+      "log": "popup-approval-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17320
+    },
+    {
+      "name": "script-preflight-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:13:33.006Z",
+      "log": "script-preflight-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55229
+    },
+    {
+      "name": "script-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:14:28.235Z",
+      "log": "script-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7702
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:14:35.938Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26732
+    },
+    {
+      "name": "login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:15:02.670Z",
+      "log": "login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3332
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:15:06.003Z",
+      "log": "chatgpt-login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2145
+    },
+    {
+      "name": "browser-workflows-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:15:08.148Z",
+      "log": "browser-workflows-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86288
+    },
+    {
+      "name": "browser-specialist-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:16:34.437Z",
+      "log": "browser-specialist-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13286
+    },
+    {
+      "name": "browser-agent-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:16:47.728Z",
+      "log": "browser-agent-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 51226
+    },
+    {
+      "name": "browser-popups-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:17:38.955Z",
+      "log": "browser-popups-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22064
+    },
+    {
+      "name": "popup-approval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:18:01.021Z",
+      "log": "popup-approval-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17432
+    },
+    {
+      "name": "script-preflight-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:18:18.454Z",
+      "log": "script-preflight-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55289
+    },
+    {
+      "name": "script-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:19:13.743Z",
+      "log": "script-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7608
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:19:21.352Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26703
+    },
+    {
+      "name": "login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:19:48.056Z",
+      "log": "login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3242
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:19:51.298Z",
+      "log": "chatgpt-login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2134
+    },
+    {
+      "name": "browser-workflows-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:19:53.432Z",
+      "log": "browser-workflows-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86431
+    },
+    {
+      "name": "browser-specialist-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:21:19.863Z",
+      "log": "browser-specialist-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13099
+    },
+    {
+      "name": "browser-agent-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:21:32.962Z",
+      "log": "browser-agent-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 51023
+    },
+    {
+      "name": "browser-popups-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:22:23.987Z",
+      "log": "browser-popups-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 31834
+    },
+    {
+      "name": "popup-approval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:22:55.822Z",
+      "log": "popup-approval-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17429
+    },
+    {
+      "name": "script-preflight-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:23:13.251Z",
+      "log": "script-preflight-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55342
+    },
+    {
+      "name": "script-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:24:08.594Z",
+      "log": "script-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7803
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:24:16.397Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26765
+    },
+    {
+      "name": "login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:24:43.162Z",
+      "log": "login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3373
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:24:46.535Z",
+      "log": "chatgpt-login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2122
+    },
+    {
+      "name": "browser-debugger-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:24:48.657Z",
+      "log": "browser-debugger-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10474
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:24:59.131Z",
+      "log": "approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 35176
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:25:34.308Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1666
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:25:35.974Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17505
+    }
+  ],
+  "selection": [
+    "browser-workflows-browser",
+    "browser-specialist-browser",
+    "browser-agent-browser",
+    "browser-popups-browser",
+    "popup-approval-browser",
+    "script-preflight-browser",
+    "script-recovery-browser",
+    "harness-browser",
+    "login-redirect-browser",
+    "chatgpt-login-redirect-browser",
+    "browser-debugger-browser",
+    "approval-browser",
+    "fabrix-browser",
+    "side-panel-browser"
+  ],
+  "fullMatrix": false,
+  "version": "1.4.0",
+  "buildSha256": "7641792917f1f6f5c3a60f2425c280dc1de656477fb0641408f4415530678b2a",
+  "archiveSha256": "cd416858eab7b3368bbe164f0823390e424f6b6c3a7a8992ae9cbbbd580ef519",
+  "finishedAt": "2026-09-22T00:25:53.508Z"
+}

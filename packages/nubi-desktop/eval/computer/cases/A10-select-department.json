@@ -1,0 +1,33 @@
+{
+  "id": "A10-select-department",
+  "title": "목록에서 고르기",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "all",
+  "request": "연결한 경비 신청 앱에서 부서를 개발팀으로 바꿔 줘. 저장이나 제출은 하지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "app": {
+      "values": {
+        "cmb-department": [
+          "개발팀"
+        ]
+      },
+      "events": {
+        "excludes": [
+          "saved",
+          "submitted",
+          "deleted"
+        ]
+      },
+      "inputs": {
+        "never": [
+          "btn-save",
+          "btn-submit",
+          "btn-delete"
+        ]
+      }
+    }
+  }
+}

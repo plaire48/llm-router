@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "one user request recovers from empty output and a truncated script, then writes all six sections beyond 16K characters",
+    "the discarded call never executes, each section is inserted once and all six inputs are trusted browser events",
+    "whole-document digest, requested content and visible save status pass verification before independent goal review",
+    "the completed conversation survives reload and recovery usage counts every model request once",
+    "a second real chat request after reload reattaches, appends and verifies the same page with normal lease ownership",
+    "replaying an append with the old length cannot duplicate an already written section",
+    "a same-length edit invalidates the preceding digest and preserves the changed field",
+    "append helpers cannot write secret fields",
+    "appending after a trailing empty paragraph preserves existing rich-text markup and exact visible line breaks"
+  ],
+  "errors": [],
+  "characters": 21796,
+  "requests": 23,
+  "syntheticModelResponses": true,
+  "realBrowserActions": true,
+  "actualCompanyPageVerified": false
+}

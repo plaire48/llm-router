@@ -1,0 +1,16 @@
+{
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.2",
+  "unitTests": 285,
+  "browserSuites": 43,
+  "browserRuns": 71,
+  "openWikiTests": 24,
+  "headerStates": 12,
+  "archive": "/Users/ganadi/Documents/llm_router/extensions/aipro-chat/releases/nubi-beta-1.0.0.zip",
+  "sha256": "0633f6ed4b783c3e70709acbf930a1ce9133379f34d60a10951329f3039b3f6c",
+  "files": 415,
+  "sourceAndTestsUnchanged": true,
+  "liveAccountsVerified": false,
+  "nativeConfirmSupport": "gap_confirmed",
+  "previousBetaPreserved": "/Users/ganadi/Documents/llm_router/extensions/aipro-chat/releases/nubi-beta-1.0.0-build-1.4.1.zip"
+}

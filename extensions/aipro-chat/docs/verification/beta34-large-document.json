@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "actualBrowser": true,
+  "actualModel": false,
+  "browser": "151.0.7922.34",
+  "checks": [
+    "actual TXT ingestion and PDF.js extraction preserve over 40,000 characters and the 161st PDF page before any model call",
+    "large original attachments survive UI reload through IndexedDB",
+    "the actual Pi run delegates selected documents to two independent researchers, repairs unread spans, hierarchically synthesizes and verifies the final result",
+    "parent and child model messages exclude full private snapshots while persisted progress shows research, recovery, synthesis and handoff",
+    "actual Pi SAVE_CONTEXT persists all journal events beyond the recent trace with complete, unique paginated retrieval"
+  ],
+  "documents": [
+    {
+      "name": "large-reference.txt",
+      "characters": 131219,
+      "end": 131219,
+      "originalBytes": 131219,
+      "storedBytes": 131219,
+      "extractedCharacters": 0
+    },
+    {
+      "name": "161-page-reference.pdf",
+      "characters": 66781,
+      "end": 66781,
+      "originalBytes": 117741,
+      "storedBytes": 251303,
+      "extractedCharacters": 66781
+    }
+  ],
+  "modelCalls": 86,
+  "maxModelMessageCharacters": 51482,
+  "maxParallel": 2,
+  "synthesisCalls": 13,
+  "childReads": 34,
+  "workers": 34,
+  "finalReviewCount": 1,
+  "journal": {
+    "retained": 373,
+    "missing": 0,
+    "dropped": 0,
+    "incomplete": false,
+    "pages": 8,
+    "recentTrace": 32
+  },
+  "errors": []
+}

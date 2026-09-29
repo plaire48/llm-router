@@ -1,0 +1,3 @@
+# Evidence contract
+
+Track only the facts needed by this task: user outcome and restrictions; wiki id/path and lines; source path/lines/hash when available; current page title/URL and observed control refs; each claimed relation and its supporting excerpt. Keep a relation as a candidate until supported. Do not infer a deployed component from a matching label alone. If evidence conflicts, reread the current source and page, explain the difference, and ask only if it blocks the requested outcome. A missing match in a truncated excerpt is not proof of absence. Folder mode has wiki documents only; do not substitute rendered DOM for repository source.

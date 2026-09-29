@@ -1,0 +1,31 @@
+PASS fresh install shows provider choices and history, with the requested model ready
+PASS fresh worker startup migrates saved VS Code settings to the CLI login route
+PASS SSO callback automatically opens chat and returns focus to the extension
+PASS modelList loads automatically and the compact composer shows display_name
+PASS credential never appears in persistent storage or diagnostic events
+PASS model catalog is cached across page re-entry
+PASS Korean IME Enter does not submit; draft survives refresh
+PASS first message sends name rather than numeric id or display_name and renders safe Markdown
+PASS final SSE usage is stored, model identity is preserved and code copy excludes its toolbar
+PASS measured context survives re-entry and becomes an explicit estimate while drafting
+PASS switching model discards the previous measurement and never invents a missing capacity
+PASS all model classifications and agents remain selectable, sorted by sort_seq with original request names
+PASS 360px panel has no page overflow and composer remains visible
+PASS reading earlier messages does not force the conversation to the bottom
+PASS latest-answer control and context details work in the narrow panel
+PASS compact model choices support arrow keys, Escape and focus return; search appears only for larger lists
+PASS settings open as a compact modal with connection details collapsed
+PASS unrelated tab cannot deliver credentials; cancel removes pending login
+PASS HTTP 401 becomes actionable re-login state without raw upstream body
+PASS retry replaces the failed answer without duplicating the user message
+PASS refresh recovers an in-flight message as interrupted without resending or reusing old usage
+PASS failed callback status closes the login and removes its redirect without storing the code
+PASS JWT query callback remains valid when a code query is also present
+PASS server-empty and missing-name model responses have distinct labels and safe counts
+PASS copied model diagnostics include HTTP status and exclusion counts without model values or credentials
+PASS malformed model responses remain retryable errors with their HTTP status
+PASS catalog errors and empty lists recover without losing draft or selection
+PASS a previous login cannot replace the current model catalog
+PASS a removed selection falls back to an available model
+PASS new chat archives the current conversation and selection restores it
+PASS browser restart preserves chat and removes session credential

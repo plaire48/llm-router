@@ -1,0 +1,19 @@
+{
+  "version": "1.1.0",
+  "status": "passed",
+  "browserRuns": 56,
+  "uniqueSuites": 36,
+  "unitTests": 250,
+  "openWikiRelatedTests": 213,
+  "buildSha256": "ee78b9134c40b4352f191464dd7a3ca1f4d9354ab3efbf4470aea3cc6ecc39c0",
+  "archiveSha256": "f15c54b78bcd0afd16bc61862c2434c22563a49f94ba6926f0a62b1c3fc05e97",
+  "archiveFiles": 195,
+  "runs": [
+    "verification/pre-release-2026-09-21T15-45-54-107Z/report.json",
+    "verification/pre-release-2026-09-21T16-02-04-686Z/report.json"
+  ],
+  "continuationReason": "Existing account-usage test expected pre-1.0.2 empty-state copy. Updated test and completed remaining suites against identical build content. Not a single uninterrupted pass.",
+  "actualModelVerified": false,
+  "liveAccountVerified": false,
+  "published": false
+}

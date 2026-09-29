@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "startedAt": "2026-09-23T11:08:40.619Z",
+  "to": "1.4.17",
+  "oldArchiveSha256": "f731e492190500173138b8fb55f7dd49c77a65153153b413197f59a07f88a82e",
+  "actualBrowser": true,
+  "actualModel": false,
+  "liveAccount": false,
+  "checks": [
+    "Updating the same unpacked extension folder preserves ID, active/history conversations, draft, model and work mode across Chrome restart.",
+    "A saved conversation can be selected after upgrading and stays selected after reload."
+  ],
+  "errors": [],
+  "from": "1.4.16",
+  "finishedAt": "2026-09-23T11:08:42.696Z"
+}

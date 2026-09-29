@@ -1,0 +1,686 @@
+{
+  "schemaVersion": 2,
+  "scope": "browser-extension",
+  "currentCoreReport": "verification/pre-release-2026-09-25T06-03-32-139Z/report.json",
+  "actualModelQuality": null,
+  "releaseApproved": false,
+  "items": [
+    {
+      "id": "NQ-16",
+      "title": "회귀 점수와 프로세스 종료 근거 일치",
+      "state": "implemented",
+      "acceptance": "실패 종료/시간 초과/시그널을 통과로 세지 않고 종료 근거 누락은 미검증 처리",
+      "order": 1,
+      "checks": [
+        "unit"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-17",
+      "title": "항목별 검사 근거와 다음 행동 연결",
+      "state": "implemented",
+      "acceptance": "유효한 순서/검사명/완료 조건과 다음 행동을 검증하고 동일 후보의 단계별 로그 연결",
+      "order": 2,
+      "checks": [
+        "unit"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-15",
+      "order": 3,
+      "title": "하위 분석 보고서와 근거 반환의 독립 사본",
+      "state": "implemented",
+      "acceptance": "반환 보고서/출처/읽은 범위/이미지를 수정해도 재조회 원본은 불변. 부분 결과와 만료 판정 유지",
+      "checks": [
+        "unit",
+        "analysis-retention-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        },
+        {
+          "name": "analysis-retention-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/analysis-retention-browser.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-13",
+      "order": 4,
+      "title": "현재 소스와 검증 근거를 자동 대조하는 작업 목록",
+      "state": "implemented",
+      "acceptance": "단일 동일 후보의 v5 핵심 gate 또는 필수 기준을 모두 포함한 전체 gate만 인정. 오래된 해시/부분 검사/중복 단계/최근 실패 거부",
+      "checks": [
+        "unit"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-14",
+      "order": 5,
+      "title": "Pi 0.87.1 업그레이드와 질문/승인 중지 경계",
+      "state": "implemented",
+      "acceptance": "finishTurn 전환 후 질문/승인 추가 호출 0, 오류/취소 유지, 읽기 병렬과 인계 회귀",
+      "checks": [
+        "unit",
+        "clarification-browser",
+        "popup-approval-browser",
+        "role-agents-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        },
+        {
+          "name": "clarification-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/clarification-browser-1.log"
+        },
+        {
+          "name": "clarification-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/clarification-browser-2.log"
+        },
+        {
+          "name": "clarification-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/clarification-browser-3.log"
+        },
+        {
+          "name": "popup-approval-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/popup-approval-browser-1.log"
+        },
+        {
+          "name": "popup-approval-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/popup-approval-browser-2.log"
+        },
+        {
+          "name": "popup-approval-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/popup-approval-browser-3.log"
+        },
+        {
+          "name": "role-agents-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/role-agents-browser-1.log"
+        },
+        {
+          "name": "role-agents-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/role-agents-browser-2.log"
+        },
+        {
+          "name": "role-agents-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/role-agents-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-01",
+      "order": 6,
+      "title": "동일 후보 핵심 회귀",
+      "state": "implemented",
+      "acceptance": "v5 핵심의 단위/디자인/후보 빌드와 22종 3회+11종을 단일 동일 후보로 검증. 전체 gate는 같은 필수 기준을 포함하고 모든 추가 단계까지 통과해야 인정",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        },
+        {
+          "name": "design",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/design.log"
+        },
+        {
+          "name": "candidate-build",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/candidate-build.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-02",
+      "order": 7,
+      "title": "실제 Qwen 업무 성공률",
+      "state": "external",
+      "acceptance": "전용 평가 인증과 회사망에서 8과제 3회, 독립 정답과 수신 근거",
+      "checks": [],
+      "nextAction": "회사망의 평가 전용 인증을 연결하고 8개 정답 과제를 각각 3회 실행해 실제 Qwen 결과를 채점",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "NQ-03",
+      "order": 8,
+      "title": "내장/외부 Wiki와 긴 문서 위임",
+      "state": "implemented",
+      "acceptance": "실제 Chrome 검색/위임/인용/범위 확인. 의미 정확도는 NQ-02와 별도",
+      "checks": [
+        "openwiki-agent-browser",
+        "wiki-folder-persistence-browser",
+        "document-retrieval-browser",
+        "wiki-quality-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "openwiki-agent-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/openwiki-agent-browser.log"
+        },
+        {
+          "name": "wiki-folder-persistence-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/wiki-folder-persistence-browser.log"
+        },
+        {
+          "name": "document-retrieval-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/document-retrieval-browser-1.log"
+        },
+        {
+          "name": "document-retrieval-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/document-retrieval-browser-2.log"
+        },
+        {
+          "name": "document-retrieval-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/document-retrieval-browser-3.log"
+        },
+        {
+          "name": "wiki-quality-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/wiki-quality-browser.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-04",
+      "order": 9,
+      "title": "실제 사이트 저장/등록 완료",
+      "state": "external",
+      "acceptance": "사용자 대표 사이트/업무와 서버 영수증 계약. 로컬 입력은 서버 저장 근거가 아님",
+      "checks": [],
+      "nextAction": "대표 사이트와 저장/등록 완료를 판정할 서버 영수증 계약 확보 후 검증",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "NQ-05",
+      "order": 10,
+      "title": "worker 및 Chrome 종료 후 미확정 입력",
+      "state": "implemented",
+      "acceptance": "재관찰로 대상/값 확인, 중복 쓰기 0. 사이트 세션 복원은 별도",
+      "checks": [
+        "restart-write-browser",
+        "background-lifetime-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "restart-write-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/restart-write-browser.log"
+        },
+        {
+          "name": "background-lifetime-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/background-lifetime-browser-1.log"
+        },
+        {
+          "name": "background-lifetime-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/background-lifetime-browser-2.log"
+        },
+        {
+          "name": "background-lifetime-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/background-lifetime-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-06",
+      "order": 11,
+      "title": "native 확인창과 사용자 답변",
+      "state": "implemented",
+      "acceptance": "확인/취소/재진입/응답형식 검증, 취소 후 재실행 없음",
+      "checks": [
+        "native-dialog-approval-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "native-dialog-approval-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/native-dialog-approval-browser.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-07",
+      "order": 12,
+      "title": "실계정 SSO와 Windows/Edge 설치",
+      "state": "external",
+      "acceptance": "각 대상 환경에서 로그인/모델 선택/실제 요청/업데이트 검증",
+      "checks": [],
+      "nextAction": "Windows/Edge 환경과 각 제공자 실계정으로 로그인/모델 선택/설치 업데이트 검증",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "NQ-08",
+      "order": 13,
+      "title": "공식 WebArena 독립 평가",
+      "state": "external",
+      "acceptance": "공식 Docker 환경/평가 인증과 누비 실행 후 독립 grader 성공률",
+      "checks": [],
+      "nextAction": "공식 WebArena Docker 환경과 평가 인증을 연결하고 독립 grader 실행",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "C01-C08",
+      "order": 14,
+      "title": "진단/파일 전송/알림/녹화/예약/조직 정책",
+      "state": "implemented",
+      "acceptance": "Chrome 합성 업무와 권한/취소/영수증 검증. 정책 초기화 지연 시 제한 모드와 늦은 정책 복구 확인. OS 배너와 실제 정책 배포는 별도",
+      "checks": [
+        "browser-routines-browser",
+        "browser-diagnostics-browser",
+        "browser-policy-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "browser-routines-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-routines-browser-1.log"
+        },
+        {
+          "name": "browser-routines-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-routines-browser-2.log"
+        },
+        {
+          "name": "browser-routines-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-routines-browser-3.log"
+        },
+        {
+          "name": "browser-diagnostics-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-diagnostics-browser-1.log"
+        },
+        {
+          "name": "browser-diagnostics-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-diagnostics-browser-2.log"
+        },
+        {
+          "name": "browser-diagnostics-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-diagnostics-browser-3.log"
+        },
+        {
+          "name": "browser-policy-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-policy-browser.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "C10-C12",
+      "order": 15,
+      "title": "녹화 종료와 저장 복구",
+      "state": "implemented",
+      "acceptance": "만료/탭 종료/저장 실패 체크포인트/중복 저장 방지",
+      "checks": [
+        "browser-routines-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "browser-routines-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-routines-browser-1.log"
+        },
+        {
+          "name": "browser-routines-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-routines-browser-2.log"
+        },
+        {
+          "name": "browser-routines-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/browser-routines-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-10",
+      "order": 16,
+      "title": "반복 감지와 필수 조건 보존",
+      "state": "implemented",
+      "acceptance": "반복 상태를 진전으로 처리하지 않음, 명시 조건과 미확정 쓰기 보존",
+      "checks": [
+        "context-browser",
+        "harness-repair-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "context-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-1.log"
+        },
+        {
+          "name": "context-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-2.log"
+        },
+        {
+          "name": "context-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-3.log"
+        },
+        {
+          "name": "harness-repair-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/harness-repair-browser-1.log"
+        },
+        {
+          "name": "harness-repair-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/harness-repair-browser-2.log"
+        },
+        {
+          "name": "harness-repair-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/harness-repair-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-11",
+      "order": 17,
+      "title": "하위 분석 원래 조건과 배치 검증",
+      "state": "implemented",
+      "acceptance": "assignment 재조회, TypeBox 입력 검증, effort 변경 중복 실행 방지",
+      "checks": [
+        "analysis-retention-browser",
+        "role-agents-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "analysis-retention-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/analysis-retention-browser.log"
+        },
+        {
+          "name": "role-agents-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/role-agents-browser-1.log"
+        },
+        {
+          "name": "role-agents-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/role-agents-browser-2.log"
+        },
+        {
+          "name": "role-agents-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/role-agents-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-12",
+      "order": 18,
+      "title": "압축 후 하위 분석 재조회",
+      "state": "implemented",
+      "acceptance": "두 번 압축 후 원래 조건과 부분 결과 조회, 미완료 우선/취소 상태 보존",
+      "checks": [
+        "analysis-retention-browser",
+        "context-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증",
+      "evidenceStages": [
+        {
+          "name": "analysis-retention-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/analysis-retention-browser.log"
+        },
+        {
+          "name": "context-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-1.log"
+        },
+        {
+          "name": "context-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-2.log"
+        },
+        {
+          "name": "context-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-18",
+      "order": 19,
+      "title": "큰 첨부 문서 분할 조사와 압축 후 최종 근거",
+      "state": "implemented",
+      "acceptance": "ask_documents가 선택 문서만 독립 워커로 나누고 부분 실패/미열람/원래 조건을 유지. 압축 뒤 문서 근거를 재조회하고 최종 요구사항 검토에 연결. 실모델 정확도는 별도",
+      "checks": [
+        "unit",
+        "large-document-browser",
+        "context-browser"
+      ],
+      "nextAction": "현재 후보의 v5 핵심 또는 전체 gate에서 문서 범위/압축/최종 근거 회귀를 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        },
+        {
+          "name": "large-document-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/large-document-browser.log"
+        },
+        {
+          "name": "context-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-1.log"
+        },
+        {
+          "name": "context-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-2.log"
+        },
+        {
+          "name": "context-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/context-browser-3.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "NQ-19",
+      "order": 20,
+      "title": "역할별 워커 진행과 전체 실행 기록",
+      "state": "implemented",
+      "acceptance": "분할/조사/누락 보완/합성/전달을 실제 이벤트로 구분. 최근 32개와 별도 저널 페이지/재진입/소유권/삭제/보관 한도/취소 tail 누락을 검증",
+      "checks": [
+        "unit",
+        "subagent-progress-browser",
+        "trace-journal-browser"
+      ],
+      "nextAction": "현재 후보의 v5 핵심 또는 전체 gate에서 역할 표시와 전체 기록 회귀를 검증",
+      "evidenceStages": [
+        {
+          "name": "unit",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/unit.log"
+        },
+        {
+          "name": "subagent-progress-browser-1",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/subagent-progress-browser-1.log"
+        },
+        {
+          "name": "subagent-progress-browser-2",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/subagent-progress-browser-2.log"
+        },
+        {
+          "name": "subagent-progress-browser-3",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/subagent-progress-browser-3.log"
+        },
+        {
+          "name": "trace-journal-browser",
+          "status": "passed",
+          "log": "verification/pre-release-2026-09-25T06-03-32-139Z/trace-journal-browser.log"
+        }
+      ],
+      "verification": "current_core_passed"
+    },
+    {
+      "id": "D01",
+      "order": 21,
+      "title": "Pi 세션 분기/전체 하네스 교체",
+      "state": "not_selected",
+      "acceptance": "현재 IndexedDB 대화/승인/실행 경계를 교체할 재현 결함이나 사용자 분기 요구 없음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "D02",
+      "order": 22,
+      "title": "Pi 도구 진행 이벤트 별도 도입",
+      "state": "not_selected",
+      "acceptance": "기존 호스트 실제 단계 이벤트 유지. 추가 세부 이벤트 생산자 없이 가짜 진행 상태를 만들지 않음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "D03",
+      "order": 23,
+      "title": "Pi 스킬 파일 로더로 교체",
+      "state": "not_selected",
+      "acceptance": "기존 ZIP/폴더 가져오기/검증/MiniSearch 조회 유지. Node 파일 환경 의존성 추가 효과 없음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "D04",
+      "order": 24,
+      "title": "외부 telemetry SDK 도입",
+      "state": "not_selected",
+      "acceptance": "기존 usage와 하위 분석 호출/입력/토큰 계측 유지. 외부 전송/중복 계측 도입 근거 없음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    },
+    {
+      "id": "D05",
+      "order": 25,
+      "title": "검색 엔진/DeepAgents/UI 도구 일괄 최신화",
+      "state": "not_selected",
+      "acceptance": "현 정답/회귀에서 교체 필요 미확인. 새 버전 존재만으로 기존 동작을 변경하지 않음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토",
+      "evidenceStages": [],
+      "verification": "not_claimed"
+    }
+  ],
+  "blocked": [
+    {
+      "id": "NQ-02",
+      "nextAction": "회사망의 평가 전용 인증을 연결하고 8개 정답 과제를 각각 3회 실행해 실제 Qwen 결과를 채점"
+    },
+    {
+      "id": "NQ-04",
+      "nextAction": "대표 사이트와 저장/등록 완료를 판정할 서버 영수증 계약 확보 후 검증"
+    },
+    {
+      "id": "NQ-07",
+      "nextAction": "Windows/Edge 환경과 각 제공자 실계정으로 로그인/모델 선택/설치 업데이트 검증"
+    },
+    {
+      "id": "NQ-08",
+      "nextAction": "공식 WebArena Docker 환경과 평가 인증을 연결하고 독립 grader 실행"
+    }
+  ],
+  "next": null,
+  "unreadableReports": []
+}

@@ -1,0 +1,609 @@
+{
+  "version": "1.4.5",
+  "baseline": false,
+  "checks": [
+    {
+      "label": "360x800 provider vertical centers, 48px targets, shared icon/text starts and equal card padding",
+      "boxes": [
+        {
+          "button": {
+            "x": 37,
+            "y": 494.09375,
+            "width": 286,
+            "height": 48,
+            "cx": 180,
+            "cy": 518.09375
+          },
+          "label": {
+            "x": 134.53125,
+            "y": 506.09375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 179.9921875,
+            "cy": 518.09375
+          },
+          "logo": {
+            "x": 134.53125,
+            "y": 506.09375,
+            "width": 24,
+            "height": 24,
+            "cx": 146.53125,
+            "cy": 518.09375
+          },
+          "text": {
+            "x": 166.53125,
+            "y": 506.09375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 195.9921875,
+            "cy": 518.09375
+          }
+        },
+        {
+          "button": {
+            "x": 37,
+            "y": 554.09375,
+            "width": 286,
+            "height": 48,
+            "cx": 180,
+            "cy": 578.09375
+          },
+          "label": {
+            "x": 134.53125,
+            "y": 566.09375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 179.9921875,
+            "cy": 578.09375
+          },
+          "logo": {
+            "x": 134.53125,
+            "y": 566.09375,
+            "width": 24,
+            "height": 24,
+            "cx": 146.53125,
+            "cy": 578.09375
+          },
+          "text": {
+            "x": 166.53125,
+            "y": 566.09375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 195.9921875,
+            "cy": 578.09375
+          }
+        },
+        {
+          "button": {
+            "x": 37,
+            "y": 614.09375,
+            "width": 286,
+            "height": 48,
+            "cx": 180,
+            "cy": 638.09375
+          },
+          "label": {
+            "x": 134.53125,
+            "y": 626.09375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 179.9921875,
+            "cy": 638.09375
+          },
+          "logo": {
+            "x": 134.53125,
+            "y": 626.09375,
+            "width": 24,
+            "height": 24,
+            "cx": 146.53125,
+            "cy": 638.09375
+          },
+          "text": {
+            "x": 166.53125,
+            "y": 626.09375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 195.9921875,
+            "cy": 638.09375
+          }
+        }
+      ]
+    },
+    {
+      "label": "1100x850 provider vertical centers, 48px targets, shared icon/text starts and equal card padding",
+      "boxes": [
+        {
+          "button": {
+            "x": 395,
+            "y": 523.296875,
+            "width": 310,
+            "height": 48,
+            "cx": 550,
+            "cy": 547.296875
+          },
+          "label": {
+            "x": 504.53125,
+            "y": 535.296875,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 549.9921875,
+            "cy": 547.296875
+          },
+          "logo": {
+            "x": 504.53125,
+            "y": 535.296875,
+            "width": 24,
+            "height": 24,
+            "cx": 516.53125,
+            "cy": 547.296875
+          },
+          "text": {
+            "x": 536.53125,
+            "y": 535.296875,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 565.9921875,
+            "cy": 547.296875
+          }
+        },
+        {
+          "button": {
+            "x": 395,
+            "y": 583.296875,
+            "width": 310,
+            "height": 48,
+            "cx": 550,
+            "cy": 607.296875
+          },
+          "label": {
+            "x": 504.53125,
+            "y": 595.296875,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 549.9921875,
+            "cy": 607.296875
+          },
+          "logo": {
+            "x": 504.53125,
+            "y": 595.296875,
+            "width": 24,
+            "height": 24,
+            "cx": 516.53125,
+            "cy": 607.296875
+          },
+          "text": {
+            "x": 536.53125,
+            "y": 595.296875,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 565.9921875,
+            "cy": 607.296875
+          }
+        },
+        {
+          "button": {
+            "x": 395,
+            "y": 643.296875,
+            "width": 310,
+            "height": 48,
+            "cx": 550,
+            "cy": 667.296875
+          },
+          "label": {
+            "x": 504.53125,
+            "y": 655.296875,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 549.9921875,
+            "cy": 667.296875
+          },
+          "logo": {
+            "x": 504.53125,
+            "y": 655.296875,
+            "width": 24,
+            "height": 24,
+            "cx": 516.53125,
+            "cy": 667.296875
+          },
+          "text": {
+            "x": 536.53125,
+            "y": 655.296875,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 565.9921875,
+            "cy": 667.296875
+          }
+        }
+      ]
+    },
+    {
+      "label": "320x640 provider vertical centers, 48px targets, shared icon/text starts and equal card padding",
+      "boxes": [
+        {
+          "button": {
+            "x": 25,
+            "y": 362.9375,
+            "width": 270,
+            "height": 48,
+            "cx": 160,
+            "cy": 386.9375
+          },
+          "label": {
+            "x": 114.53125,
+            "y": 374.9375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 159.9921875,
+            "cy": 386.9375
+          },
+          "logo": {
+            "x": 114.53125,
+            "y": 374.9375,
+            "width": 24,
+            "height": 24,
+            "cx": 126.53125,
+            "cy": 386.9375
+          },
+          "text": {
+            "x": 146.53125,
+            "y": 374.9375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 175.9921875,
+            "cy": 386.9375
+          }
+        },
+        {
+          "button": {
+            "x": 25,
+            "y": 418.9375,
+            "width": 270,
+            "height": 48,
+            "cx": 160,
+            "cy": 442.9375
+          },
+          "label": {
+            "x": 114.53125,
+            "y": 430.9375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 159.9921875,
+            "cy": 442.9375
+          },
+          "logo": {
+            "x": 114.53125,
+            "y": 430.9375,
+            "width": 24,
+            "height": 24,
+            "cx": 126.53125,
+            "cy": 442.9375
+          },
+          "text": {
+            "x": 146.53125,
+            "y": 430.9375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 175.9921875,
+            "cy": 442.9375
+          }
+        },
+        {
+          "button": {
+            "x": 25,
+            "y": 474.9375,
+            "width": 270,
+            "height": 48,
+            "cx": 160,
+            "cy": 498.9375
+          },
+          "label": {
+            "x": 114.53125,
+            "y": 486.9375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 159.9921875,
+            "cy": 498.9375
+          },
+          "logo": {
+            "x": 114.53125,
+            "y": 486.9375,
+            "width": 24,
+            "height": 24,
+            "cx": 126.53125,
+            "cy": 498.9375
+          },
+          "text": {
+            "x": 146.53125,
+            "y": 486.9375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 175.9921875,
+            "cy": 498.9375
+          }
+        }
+      ]
+    },
+    {
+      "label": "360x480 provider vertical centers, 48px targets, shared icon/text starts and equal card padding",
+      "boxes": [
+        {
+          "button": {
+            "x": 25,
+            "y": 236.9375,
+            "width": 310,
+            "height": 48,
+            "cx": 180,
+            "cy": 260.9375
+          },
+          "label": {
+            "x": 134.53125,
+            "y": 248.9375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 179.9921875,
+            "cy": 260.9375
+          },
+          "logo": {
+            "x": 134.53125,
+            "y": 248.9375,
+            "width": 24,
+            "height": 24,
+            "cx": 146.53125,
+            "cy": 260.9375
+          },
+          "text": {
+            "x": 166.53125,
+            "y": 248.9375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 195.9921875,
+            "cy": 260.9375
+          }
+        },
+        {
+          "button": {
+            "x": 25,
+            "y": 292.9375,
+            "width": 310,
+            "height": 48,
+            "cx": 180,
+            "cy": 316.9375
+          },
+          "label": {
+            "x": 134.53125,
+            "y": 304.9375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 179.9921875,
+            "cy": 316.9375
+          },
+          "logo": {
+            "x": 134.53125,
+            "y": 304.9375,
+            "width": 24,
+            "height": 24,
+            "cx": 146.53125,
+            "cy": 316.9375
+          },
+          "text": {
+            "x": 166.53125,
+            "y": 304.9375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 195.9921875,
+            "cy": 316.9375
+          }
+        },
+        {
+          "button": {
+            "x": 25,
+            "y": 348.9375,
+            "width": 310,
+            "height": 48,
+            "cx": 180,
+            "cy": 372.9375
+          },
+          "label": {
+            "x": 134.53125,
+            "y": 360.9375,
+            "width": 90.921875,
+            "height": 24,
+            "cx": 179.9921875,
+            "cy": 372.9375
+          },
+          "logo": {
+            "x": 134.53125,
+            "y": 360.9375,
+            "width": 24,
+            "height": 24,
+            "cx": 146.53125,
+            "cy": 372.9375
+          },
+          "text": {
+            "x": 166.53125,
+            "y": 360.9375,
+            "width": 58.921875,
+            "height": 24,
+            "cx": 195.9921875,
+            "cy": 372.9375
+          }
+        }
+      ]
+    },
+    {
+      "label": "three provider pastel surfaces retain dark readable labels, transparent logo backgrounds and hover colors",
+      "providerStyles": [
+        {
+          "provider": "aipro",
+          "image": "linear-gradient(112deg, rgb(232, 241, 254), rgb(239, 236, 253))",
+          "color": "rgba(0, 0, 0, 0)",
+          "text": "rgb(27, 100, 218)",
+          "filter": "none"
+        },
+        {
+          "provider": "chatgpt",
+          "image": "none",
+          "color": "color(srgb 0.954902 0.956078 0.957843)",
+          "text": "rgb(25, 31, 40)",
+          "filter": "none"
+        },
+        {
+          "provider": "fabrix",
+          "image": "linear-gradient(112deg, rgb(230, 246, 249), color(srgb 0.941176 0.978824 0.985882))",
+          "color": "rgba(0, 0, 0, 0)",
+          "text": "color(srgb 0.0958431 0.393882 0.455529)",
+          "filter": "none"
+        }
+      ]
+    },
+    {
+      "label": "removed motion control leaves no stale pause preference; OS reduced motion remains supported"
+    },
+    {
+      "label": "360x800 empty",
+      "bottom": 788,
+      "top": 654,
+      "height": 800,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x800 multiline",
+      "bottom": 788,
+      "top": 614,
+      "height": 800,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x800 first reply",
+      "bottom": 788,
+      "top": 654,
+      "height": 800,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x800 new chat",
+      "bottom": 788,
+      "top": 654,
+      "height": 800,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x800 reload",
+      "bottom": 788,
+      "top": 654,
+      "height": 800,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "1100x850 empty",
+      "bottom": 834,
+      "top": 700,
+      "height": 850,
+      "inset": 16,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "1100x850 multiline",
+      "bottom": 834,
+      "top": 660,
+      "height": 850,
+      "inset": 16,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "1100x850 first reply",
+      "bottom": 834,
+      "top": 700,
+      "height": 850,
+      "inset": 16,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "1100x850 new chat",
+      "bottom": 834,
+      "top": 700,
+      "height": 850,
+      "inset": 16,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "1100x850 reload",
+      "bottom": 834,
+      "top": 700,
+      "height": 850,
+      "inset": 16,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x480 empty",
+      "bottom": 468,
+      "top": 334,
+      "height": 480,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x480 multiline",
+      "bottom": 468,
+      "top": 294,
+      "height": 480,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x480 first reply",
+      "bottom": 468,
+      "top": 334,
+      "height": 480,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x480 new chat",
+      "bottom": 468,
+      "top": 334,
+      "height": 480,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    },
+    {
+      "label": "360x480 reload",
+      "bottom": 468,
+      "top": 334,
+      "height": 480,
+      "inset": 12,
+      "horizontalOverflow": false,
+      "verticalOverflow": false
+    }
+  ],
+  "errors": [],
+  "syntheticAuthAndModel": true,
+  "fixtureSiteAccessPregranted": true,
+  "typingProgression": true,
+  "stableHeadingWidth": true,
+  "logoMotion": true,
+  "motionContinuesOnFocus": true,
+  "earlyTypingCompletion": true,
+  "reducedMotion": true,
+  "noGreetingReplay": true,
+  "loginOverflow": false
+}

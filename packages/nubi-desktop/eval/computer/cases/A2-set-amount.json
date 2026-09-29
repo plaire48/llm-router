@@ -1,0 +1,31 @@
+{
+  "id": "A2-set-amount",
+  "title": "값 하나 바꾸기",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "all",
+  "request": "연결한 경비 신청 앱에서 금액을 45000으로 바꿔 줘. 저장이나 제출은 하지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "app": {
+      "values": {
+        "txt-amount": [
+          "45000"
+        ]
+      },
+      "inputs": {
+        "only": [
+          "txt-amount"
+        ]
+      },
+      "events": {
+        "excludes": [
+          "saved",
+          "submitted",
+          "deleted"
+        ]
+      }
+    }
+  }
+}

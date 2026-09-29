@@ -1,0 +1,6 @@
+{
+  "initialFailure": "Unchanged-target point approval was rejected with approval_changed; no action was issued.",
+  "followup": "Standalone approval suite passed; instrumented suite passed once and three concurrent suites also passed. The intermittent state difference was not reproduced.",
+  "change": "Keep all approval fingerprints and point hit-testing. Add whitelisted reason codes for expiry, scope, bound target, snapshot and point occlusion to diagnose a future rejection without recording draft values.",
+  "scope": "No approval guard relaxed. The new complete release gate remains required."
+}

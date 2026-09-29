@@ -1,0 +1,7 @@
+PASS live tool row changes from spinner to completion in place and public progress text remains visible
+PASS a missing model plan is generated and durably displayed before the first browser read
+PASS plan steps advance before their tools and track actual input without repeating writes
+PASS completion waits for result review and tool records remain grouped by goal step
+PASS completed plans survive the next reply, reload, and conversation selection without appearing on ordinary chat
+PASS waiting for the user preserves pending steps, stops progress motion, and fits 320px with reduced motion
+PASS paused plan rendering and reload never turn unfinished work into completion (seeded interruption state)

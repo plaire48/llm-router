@@ -1,0 +1,669 @@
+{
+  "checks": [
+    "320px: markdown headings, body, composer and expanded settings keep the same role-based type scale after reload",
+    "360px: markdown headings, body, composer and expanded settings keep the same role-based type scale after reload",
+    "1100px: markdown headings, body, composer and expanded settings keep the same role-based type scale after reload",
+    "narrative questions, approval previews and actions share the same body font and line height"
+  ],
+  "errors": [],
+  "measurements": [
+    {
+      "tag": "H1",
+      "text": "페이지 확인",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H2",
+      "text": "작업 진행",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H3",
+      "text": "확인 결과",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H4",
+      "text": "세부 항목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H5",
+      "text": "참고 사항",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H6",
+      "text": "추가 설명",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "P",
+      "text": "본문과 강조, 링크가 같은 크기로 보입니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "LI",
+      "text": "읽기와 실행",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "확인한 내용입니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TH",
+      "text": "항목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "TH",
+      "text": "결과",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "TD",
+      "text": "표시",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TD",
+      "text": "정상",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "inline code",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TEXTAREA",
+      "text": "",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "H6",
+      "text": "추가 설명",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H2",
+      "text": "설정",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "OpenWiki 폴더",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "서버 연결",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "연결 진단",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "데이터 보관",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "PRE",
+      "text": "10:52:48  models_received HTTP 200 ",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "대화와 이미지는 이 브라우저에 저장됩니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "로그인 정보는 브라우저를 종료하면 삭제됩니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "SPAN",
+      "text": "Beta 1.0.0",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "12px",
+      "line": "16px",
+      "weight": "400"
+    },
+    {
+      "tag": "H1",
+      "text": "페이지 확인",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H2",
+      "text": "작업 진행",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H3",
+      "text": "확인 결과",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H4",
+      "text": "세부 항목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H5",
+      "text": "참고 사항",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H6",
+      "text": "추가 설명",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "P",
+      "text": "본문과 강조, 링크가 같은 크기로 보입니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "LI",
+      "text": "읽기와 실행",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "확인한 내용입니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TH",
+      "text": "항목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "TH",
+      "text": "결과",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "TD",
+      "text": "표시",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TD",
+      "text": "정상",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "inline code",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TEXTAREA",
+      "text": "",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "H6",
+      "text": "추가 설명",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H2",
+      "text": "설정",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "OpenWiki 폴더",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "서버 연결",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "연결 진단",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "데이터 보관",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "PRE",
+      "text": "10:52:48  models_received HTTP 200 ",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "대화와 이미지는 이 브라우저에 저장됩니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "로그인 정보는 브라우저를 종료하면 삭제됩니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "SPAN",
+      "text": "Beta 1.0.0",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "12px",
+      "line": "16px",
+      "weight": "400"
+    },
+    {
+      "tag": "H1",
+      "text": "페이지 확인",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H2",
+      "text": "작업 진행",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H3",
+      "text": "확인 결과",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H4",
+      "text": "세부 항목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H5",
+      "text": "참고 사항",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H6",
+      "text": "추가 설명",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "P",
+      "text": "본문과 강조, 링크가 같은 크기로 보입니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "LI",
+      "text": "읽기와 실행",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "확인한 내용입니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TH",
+      "text": "항목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "TH",
+      "text": "결과",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "TD",
+      "text": "표시",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TD",
+      "text": "정상",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "inline code",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "TEXTAREA",
+      "text": "",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "H6",
+      "text": "추가 설명",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "H2",
+      "text": "설정",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "16px",
+      "line": "24px",
+      "weight": "600"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "OpenWiki 폴더",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "서버 연결",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "연결 진단",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "데이터 보관",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "PRE",
+      "text": "10:52:48  models_received HTTP 200 ",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "대화와 이미지는 이 브라우저에 저장됩니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "로그인 정보는 브라우저를 종료하면 삭제됩니다.",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "SPAN",
+      "text": "Beta 1.0.0",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "12px",
+      "line": "16px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "어떤 내용을 담을까요?",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "600"
+    },
+    {
+      "tag": "TEXTAREA",
+      "text": "",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "P",
+      "text": "작성한 내용을 등록할까요?",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "600"
+    },
+    {
+      "tag": "SUMMARY",
+      "text": "초안 보기",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "DT",
+      "text": "제목",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    },
+    {
+      "tag": "DD",
+      "text": "확인한 내용",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "400"
+    },
+    {
+      "tag": "BUTTON",
+      "text": "등록",
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "size": "14px",
+      "line": "22px",
+      "weight": "500"
+    }
+  ],
+  "actualBrowser": true,
+  "syntheticTranscript": true
+}

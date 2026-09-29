@@ -1,0 +1,6 @@
+PASS custom ARIA combobox exposes constraints, waits for delayed options and discovers a dependent required field
+PASS input-triggered rerender stops a stale second write and fresh observation completes only the missing field
+PASS an overlay prevents the click; recovery dismisses it and performs one preview without replaying earlier inputs
+PASS paginated duplicate-name row buttons are selected by fresh row context and obsolete row refs never execute
+PASS a temporarily disabled control is awaited and clicked exactly once when the application enables it
+PASS server rejection fails completion verification; one explicit retry saves the correct payload without rewriting the draft

@@ -1,0 +1,48 @@
+{
+  "version": "1.4.7",
+  "legacy": true,
+  "checks": [
+    "visible text split across DOM nodes verifies without a debugger",
+    "disabled fields remain readable during result verification",
+    "read-only verification waits for a delayed visible result",
+    "a returned script snapshot keeps usable refs in its final observation",
+    "common Playwright read-only inspection methods are supported",
+    "observed disabled controls can be inspected without attempting an action"
+  ],
+  "findings": [
+    {
+      "name": "visible text split across DOM nodes verifies without a debugger",
+      "ok": false,
+      "verified": false,
+      "error": "verification_failed"
+    },
+    {
+      "name": "disabled fields remain readable during result verification",
+      "error": "browser_action_failed"
+    },
+    {
+      "name": "read-only verification waits for a delayed visible result",
+      "ok": false,
+      "verified": false,
+      "error": "verification_failed"
+    },
+    {
+      "name": "a returned script snapshot keeps usable refs in its final observation",
+      "error": "browser_stale",
+      "reason": "browser_stale"
+    },
+    {
+      "name": "common Playwright read-only inspection methods are supported",
+      "error": "script_api",
+      "reason": "script_api"
+    },
+    {
+      "name": "observed disabled controls can be inspected without attempting an action",
+      "error": "script_failed",
+      "reason": "script_failed"
+    }
+  ],
+  "actualBrowser": true,
+  "syntheticSite": true,
+  "liveModel": false
+}

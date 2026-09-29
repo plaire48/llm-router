@@ -1,8 +1,60 @@
-import {httpError} from './core.js';
+import {httpError, ERROR_TEXT} from './core.js';
 import {retryAfterMs} from './http-retry.js';
 
 const reasons = new Set(['system_messages', 'tool_messages', 'tool_schema', 'stream_options', 'context_limit', 'model_unavailable', 'image_input', 'request_body', 'endpoint', 'http']);
 const requestStatuses = [400, 404, 413, 415, 422];
+
+// Typed check outcomes only: never retain expected values, refs or page text.
+export function verificationDiagnostic(result) {
+  const kinds = new Set(['field_value', 'field_valid', 'field_sum', 'field_digest', 'field_contains', 'text_style', 'control_state', 'control_expanded', 'element_in', 'text_present', 'url_is', 'url_page_is', 'link_destination', 'link_page_is', 'field_unchanged', 'fields_unchanged']);
+  return (Array.isArray(result?.checks) ? result.checks : []).slice(0, 24)
+    .filter(check => kinds.has(check?.kind) && typeof check.passed === 'boolean')
+    .map(check => ({kind: check.kind, passed: check.passed,
+      ...(['target_changed', 'check_target_incompatible', 'url_expected_invalid', 'url_expected_restricted', 'url_actual_invalid', 'url_actual_restricted', 'url_origin_mismatch', 'url_path_mismatch', 'url_identifier_mismatch', 'baseline_missing', 'field_written', 'value_changed', 'url_query_mismatch', 'url_fragment_mismatch', 'url_identity_mismatch'].includes(check.reason) ? {reason: check.reason} : {})}));
+}
+
+const SCOPE_REASONS = ['scope_issue_invalid', 'scope_target_invalid', 'scope_anchor_invalid', 'scope_review_quote_mismatch', 'scope_source_quote_mismatch', 'scope_answer_invalid'];
+const SCOPE_KINDS = ['new_requirement', 'optional_method', 'new_rank', 'pending_step', 'unsupported_answer_claim', 'other'];
+const SCOPE_TARGETS = ['check', 'next_step', 'plan', 'text', 'other'];
+// Counts and fixed categories only; a model-authored string never passes.
+function scopeShape(value) {
+  const count = item => Number.isSafeInteger(item) && item >= 0 && item <= 64;
+  if (!value || typeof value !== 'object' || !['within_scope', 'repair_scope', 'unknown'].includes(value.decision) ||
+      !['answer', 'external', 'unknown'].includes(value.correctionTarget) || !Array.isArray(value.kinds) || !Array.isArray(value.targets) ||
+      !['issues', 'anchored', 'extraKeys', 'nonmet', 'cited'].every(key => count(value[key]))) return null;
+  return {decision: value.decision, correctionTarget: value.correctionTarget, issues: value.issues,
+    kinds: SCOPE_KINDS.filter(kind => value.kinds.includes(kind)), targets: SCOPE_TARGETS.filter(target => value.targets.includes(target)),
+    anchored: value.anchored, extraKeys: value.extraKeys, nonmet: value.nonmet, cited: value.cited};
+}
+
+// Persist only typed lifecycle facts. Model-written review text, source bodies,
+// arguments and arbitrary error strings never enter the session event log.
+export function agentDiagnostic(value) {
+  if (value?.kind !== 'agent') return null;
+  if (value.phase === 'scope_review' && ['plan_scope', 'plan_step', 'checkpoint', 'final'].includes(value.scope) &&
+      ['within_scope', 'repair_scope', 'unknown'].includes(value.decision) && ['answer', 'external', 'unknown'].includes(value.correctionTarget) && typeof value.corrected === 'boolean') {
+    return {phase: value.phase, scope: value.scope, decision: value.decision, correctionTarget: value.correctionTarget, corrected: value.corrected,
+      ...(['scope_input_invalid', 'scope_context_budget', 'scope_protocol_invalid', 'scope_quote_invalid', 'scope_issue_invalid', 'scope_target_invalid', 'scope_anchor_invalid', 'scope_review_quote_mismatch', 'scope_source_quote_mismatch', 'scope_answer_invalid', 'scope_response_invalid', 'scope_skipped', 'cancelled', 'authentication'].includes(value.reason) ? {reason: value.reason} : {}),
+      ...(SCOPE_REASONS.includes(value.withdrawn) ? {withdrawn: value.withdrawn} : {}),
+      // The stage was settled by its met checks: every open check lay outside it.
+      ...(value.settled === true && value.scope === 'plan_step' && value.decision === 'repair_scope' ? {settled: true} : {}),
+      ...(scopeShape(value.shape) ? {shape: scopeShape(value.shape)} : {})};
+  }
+  if (value.phase === 'review_result' && ['plan_step', 'checkpoint', 'final'].includes(value.scope) && ['complete', 'revise', 'blocked'].includes(value.status)) {
+    const checks = Array.isArray(value.checks) ? value.checks.slice(0, 8) : [];
+    return {phase: value.phase, scope: value.scope, status: value.status,
+      met: checks.filter(check => check?.status === 'met').length,
+      unmet: checks.filter(check => check?.status === 'unmet').length,
+      unknown: checks.filter(check => check?.status === 'unknown').length};
+  }
+  if (value.phase === 'run_result' && ['answer', 'waiting_user', 'cancelled', 'failed'].includes(value.outcome)) {
+    return {phase: value.phase, outcome: value.outcome,
+      verification: value.verification === 'passed' && value.outcome === 'answer' ? 'passed' : 'not_run',
+      ...(value.outcome === 'failed' || value.outcome === 'cancelled' ? {code: Object.hasOwn(ERROR_TEXT, value.code) ? value.code : 'response_invalid'} : {}),
+      finishReason: ['stop', 'length', 'tool_calls'].includes(value.finishReason) ? value.finishReason : 'unknown'};
+  }
+  return null;
+}
 const errorFor = reason => ({system_messages: 'request_format', tool_messages: 'request_format', tool_schema: 'request_format', stream_options: 'request_format',
   context_limit: 'context_overflow', model_unavailable: 'invalid_model', image_input: 'request_image', request_body: 'request_rejected', endpoint: 'request_endpoint'})[reason];
 

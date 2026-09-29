@@ -1,0 +1,150 @@
+
+> nubi@1.0.0-beta.5 prebuild:candidate
+> node scripts/build-browser-dom.mjs
+
+
+> nubi@1.0.0-beta.5 build:candidate
+> vite build --base=./ && node scripts/package.mjs --candidate
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 1436 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                  0.44 kB │ gzip:   0.33 kB
+dist/assets/noto-sans-kr-122-B5bX9d3o.woff2      8.30 kB
+dist/assets/noto-sans-kr-123-BHUVOYrQ.woff2      9.17 kB
+dist/assets/noto-sans-kr-121-Bd4ZsfxM.woff2     10.12 kB
+dist/assets/noto-sans-kr-118-DO7crlgc.woff2     12.18 kB
+dist/assets/noto-sans-kr-117-Dr2ufsTl.woff2     14.18 kB
+dist/assets/noto-sans-kr-021-DNkILo1k.woff2     14.46 kB
+dist/assets/noto-sans-kr-022-Be8jlQ51.woff2     14.66 kB
+dist/assets/noto-sans-kr-020-DvHAaAUg.woff2     16.20 kB
+dist/assets/noto-sans-kr-018-BcwVxkxL.woff2     16.21 kB
+dist/assets/noto-sans-kr-019-Czx6kN3B.woff2     16.27 kB
+dist/assets/noto-sans-kr-016-DApkhTZy.woff2     16.45 kB
+dist/assets/noto-sans-kr-017-DnhzVD4m.woff2     16.46 kB
+dist/assets/noto-sans-kr-023-C_6m2-od.woff2     16.68 kB
+dist/assets/noto-sans-kr-052-D7aEX-Z7.woff2     16.69 kB
+dist/assets/noto-sans-kr-119-DzzxDKB5.woff2     16.89 kB
+dist/assets/noto-sans-kr-015-DeeXajyY.woff2     17.46 kB
+dist/assets/noto-sans-kr-014-Bz2J7MHi.woff2     17.61 kB
+dist/assets/noto-sans-kr-012-B6hzfDSQ.woff2     18.06 kB
+dist/assets/noto-sans-kr-056-CrDDFHLC.woff2     18.14 kB
+dist/assets/noto-sans-kr-010-CWnd6wcQ.woff2     18.42 kB
+dist/assets/noto-sans-kr-059-BOzNPFw1.woff2     18.50 kB
+dist/assets/noto-sans-kr-081-KNqhDR8m.woff2     18.58 kB
+dist/assets/noto-sans-kr-114-ihdiE-sw.woff2     19.42 kB
+dist/assets/noto-sans-kr-011-CVosuT20.woff2     19.67 kB
+dist/assets/noto-sans-kr-060-HgLQPnZe.woff2     19.74 kB
+dist/assets/noto-sans-kr-067-DYiiYWHC.woff2     19.74 kB
+dist/assets/noto-sans-kr-098-CstSMSR0.woff2     19.83 kB
+dist/assets/noto-sans-kr-038-pcUlc7hZ.woff2     19.88 kB
+dist/assets/noto-sans-kr-013-DnDO1vGF.woff2     20.16 kB
+dist/assets/noto-sans-kr-057-_xElrv31.woff2     20.23 kB
+dist/assets/noto-sans-kr-002-D44PZdTN.woff2     20.49 kB
+dist/assets/noto-sans-kr-076-CJnF25Ox.woff2     20.60 kB
+dist/assets/noto-sans-kr-071-Bb2kolOu.woff2     20.70 kB
+dist/assets/noto-sans-kr-065-D2ndBBlz.woff2     20.78 kB
+dist/assets/noto-sans-kr-061-B8aQM0KO.woff2     20.92 kB
+dist/assets/noto-sans-kr-055-B6XNibcs.woff2     20.98 kB
+dist/assets/noto-sans-kr-087-CImCbZMD.woff2     21.01 kB
+dist/assets/noto-sans-kr-080-Cc2PlhZU.woff2     21.04 kB
+dist/assets/noto-sans-kr-070-Dh8YqAZX.woff2     21.08 kB
+dist/assets/noto-sans-kr-069-D_jDj1TO.woff2     21.11 kB
+dist/assets/noto-sans-kr-051-D0Nod484.woff2     21.28 kB
+dist/assets/noto-sans-kr-116-BsiGrPsV.woff2     21.32 kB
+dist/assets/noto-sans-kr-073-B8WEhlXz.woff2     21.33 kB
+dist/assets/noto-sans-kr-050-BQ3DsEFp.woff2     21.36 kB
+dist/assets/noto-sans-kr-049-CNljDv8x.woff2     21.36 kB
+dist/assets/noto-sans-kr-063-Ds0KCpXR.woff2     21.41 kB
+dist/assets/noto-sans-kr-072-C-IXS01q.woff2     21.42 kB
+dist/assets/noto-sans-kr-053-QVs81SbT.woff2     21.44 kB
+dist/assets/noto-sans-kr-058-D4Z4qIjx.woff2     21.47 kB
+dist/assets/noto-sans-kr-066-C8Hs8Bel.woff2     21.50 kB
+dist/assets/noto-sans-kr-028-D7pAhItn.woff2     21.50 kB
+dist/assets/noto-sans-kr-048-Dn9wUbC5.woff2     21.56 kB
+dist/assets/noto-sans-kr-030-B_Xt9mRz.woff2     21.66 kB
+dist/assets/noto-sans-kr-041-COQop0OG.woff2     21.95 kB
+dist/assets/noto-sans-kr-079-Brkp78oR.woff2     21.95 kB
+dist/assets/noto-sans-kr-074-CPkb-af3.woff2     22.05 kB
+dist/assets/noto-sans-kr-026-BtTu50RG.woff2     22.10 kB
+dist/assets/noto-sans-kr-062-CisIuWX8.woff2     22.20 kB
+dist/assets/noto-sans-kr-034-CuThq_3_.woff2     22.27 kB
+dist/assets/noto-sans-kr-068-RCgHYf1C.woff2     22.29 kB
+dist/assets/noto-sans-kr-109-Dc1zs_Pa.woff2     22.40 kB
+dist/assets/noto-sans-kr-025-olvHB9I9.woff2     22.67 kB
+dist/assets/noto-sans-kr-024-gICIGsXI.woff2     22.71 kB
+dist/assets/noto-sans-kr-027-CxFswjwr.woff2     22.76 kB
+dist/assets/noto-sans-kr-064-BC5F4RRq.woff2     22.84 kB
+dist/assets/noto-sans-kr-042-Bwniia0r.woff2     23.14 kB
+dist/assets/noto-sans-kr-054-MlF4wjtz.woff2     23.34 kB
+dist/assets/noto-sans-kr-035-D-9XnguA.woff2     23.54 kB
+dist/assets/noto-sans-kr-044-BNXqYhtq.woff2     23.55 kB
+dist/assets/noto-sans-kr-029-CcMq9J3c.woff2     23.59 kB
+dist/assets/noto-sans-kr-045-BoAdonrH.woff2     23.64 kB
+dist/assets/noto-sans-kr-078-C9Nbt4dY.woff2     23.80 kB
+dist/assets/noto-sans-kr-036-CsoKTgIH.woff2     24.07 kB
+dist/assets/noto-sans-kr-006-C9B_csKo.woff2     24.40 kB
+dist/assets/noto-sans-kr-040-BYvOljic.woff2     24.48 kB
+dist/assets/noto-sans-kr-077-DriWx1rc.woff2     24.51 kB
+dist/assets/noto-sans-kr-009-DCG_yG2L.woff2     24.75 kB
+dist/assets/noto-sans-kr-043-DZIqdvJw.woff2     24.79 kB
+dist/assets/noto-sans-kr-031-DicL0vd6.woff2     25.16 kB
+dist/assets/noto-sans-kr-047-DMSZNpMD.woff2     25.17 kB
+dist/assets/noto-sans-kr-008-Bwk-4itQ.woff2     25.23 kB
+dist/assets/noto-sans-kr-075-C4laA72l.woff2     25.25 kB
+dist/assets/noto-sans-kr-037-CVm75uzf.woff2     25.47 kB
+dist/assets/noto-sans-kr-005-DPlG-Gq_.woff2     25.58 kB
+dist/assets/noto-sans-kr-039-gwaK2bp7.woff2     25.64 kB
+dist/assets/noto-sans-kr-033-PxcBBeNg.woff2     25.91 kB
+dist/assets/noto-sans-kr-120-CZ1P3i-_.woff2     26.00 kB
+dist/assets/noto-sans-kr-004-yIk-xkbt.woff2     26.08 kB
+dist/assets/noto-sans-kr-003-BUnzX67h.woff2     26.27 kB
+dist/assets/noto-sans-kr-046-BREiG6LA.woff2     26.40 kB
+dist/assets/noto-sans-kr-007-BV6o_vl3.woff2     28.69 kB
+dist/assets/noto-sans-kr-113-LhQTABfI.woff2     29.06 kB
+dist/assets/noto-sans-kr-000-D06yvloL.woff2     34.28 kB
+dist/assets/noto-sans-kr-032-BlW3AcBF.woff2     35.98 kB
+dist/assets/noto-sans-kr-102-McHuBf-B.woff2     41.16 kB
+dist/assets/noto-sans-kr-110-lqvjLFoO.woff2     41.93 kB
+dist/assets/noto-sans-kr-112-CfCk7nA7.woff2     42.69 kB
+dist/assets/noto-sans-kr-111-DsGtjSva.woff2     44.99 kB
+dist/assets/noto-sans-kr-106-CBZPTWsE.woff2     45.02 kB
+dist/assets/noto-sans-kr-090-CYbqUrRD.woff2     45.52 kB
+dist/assets/noto-sans-kr-108-D3Fd3_EL.woff2     45.53 kB
+dist/assets/noto-sans-kr-107-_V-zytEf.woff2     46.46 kB
+dist/assets/noto-sans-kr-088-BSMUUut2.woff2     47.28 kB
+dist/assets/noto-sans-kr-100-DZCTVH03.woff2     48.02 kB
+dist/assets/noto-sans-kr-086-BReeBVHk.woff2     48.36 kB
+dist/assets/noto-sans-kr-084-CWhGYJ2i.woff2     48.38 kB
+dist/assets/noto-sans-kr-096-CxH4Pb6I.woff2     48.44 kB
+dist/assets/noto-sans-kr-094-BRcUMWZ8.woff2     48.58 kB
+dist/assets/noto-sans-kr-091-Dq-lIKz-.woff2     50.30 kB
+dist/assets/noto-sans-kr-101-CJo3UUYg.woff2     50.54 kB
+dist/assets/noto-sans-kr-099-C5D21FTw.woff2     51.00 kB
+dist/assets/noto-sans-kr-105-B7E1-Ec0.woff2     51.62 kB
+dist/assets/noto-sans-kr-085-BrksQ5yZ.woff2     51.74 kB
+dist/assets/noto-sans-kr-104-BlAw-6qA.woff2     52.55 kB
+dist/assets/noto-sans-kr-095-q_AHRG0H.woff2     52.61 kB
+dist/assets/noto-sans-kr-115-aqERMEsW.woff2     53.26 kB
+dist/assets/noto-sans-kr-092-Dsmj0w4F.woff2     54.44 kB
+dist/assets/noto-sans-kr-103-DLV_AXtC.woff2     54.48 kB
+dist/assets/noto-sans-kr-083-IxdJCmlc.woff2     56.06 kB
+dist/assets/noto-sans-kr-001-Bqp_kP4o.woff2     56.20 kB
+dist/assets/noto-sans-kr-093-JM9JBG-M.woff2     56.76 kB
+dist/assets/noto-sans-kr-089-D9VPS-IJ.woff2     56.89 kB
+dist/assets/noto-sans-kr-097-Bdi4I7EA.woff2     60.84 kB
+dist/assets/noto-sans-kr-082-FHC1ZHx-.woff2     64.46 kB
+dist/assets/document-worker-BgkHtUnQ.js        834.73 kB
+dist/assets/pdf.worker.min-Dswkl-cV.mjs      1,265.41 kB
+dist/assets/index-APzU4SJh.css                 573.06 kB │ gzip: 100.03 kB
+dist/assets/index-CvGCZMHn.js                1,045.02 kB │ gzip: 325.45 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.13s
+Extension folder: /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/dist
+ZIP: /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/candidate/nubi-beta-1.0.0-candidate.zip

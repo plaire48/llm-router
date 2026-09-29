@@ -1,3 +1,5 @@
+import {analysisHistory,restoreAnalysisHistory} from './analysis-history.mjs';
+import {interruptDocumentResearch} from './workspace-documents.mjs';
 import {importSkill} from './skill-import.mjs';
 import {skillCatalog} from './agent-capabilities.mjs';
 import {importVoc,queryVoc,readVoc} from './voc.mjs';
@@ -22,7 +24,9 @@ import {knowledgeStatus, recordKnowledge} from './knowledge-records.mjs';
 import {knowledgeMap,knowledgeQuery,initializeKnowledgeCatalog,exportKnowledgeMap} from './knowledge-map.mjs';
 import {databaseConnection} from './database-connections.mjs';
 import {Processes, shellProfiles} from './processes.mjs';
+import {preferredShell} from './environment-inspection.mjs';
 import {git, hash, fail, readSource, listFiles, scopedFile, relativeFile, snapshot} from './files.mjs';
+import {wikiUpdate} from './wiki-update.mjs';
 
 const exec = promisify(execFile);
 const id = () => randomUUID();
@@ -37,6 +41,8 @@ export class ProjectService {
     const projectId = hash(top).slice(7, 31), store = new Store(path.join(this.storageRoot, projectId));
     await this.collaborationServer?.close();this.collaborationServer=null;this.knowledge?.server.close(); this.knowledge=null; this.store?.close(); this.root = top; this.projectId = projectId;
     this.store = store;
+    interruptDocumentResearch(this.store);
+    restoreAnalysisHistory(this.store);
     this.computerPointer?.dispose();this.computerPointer=null;this.computerFallback=null;this.computerAdapter?.dispose?.();this.computerAdapter=null;this.computerLauncher?.dispose?.();this.computerLauncher=null;this.computerApps=new Map();this.databaseConnections=new Map();this.computerBinding=null;this.computerObservation=null;
     for(const action of this.store.list('computer-action:').filter(v=>v.state==='starting'))this.store.set('computer-action:'+action.id,{...action,state:'attention',execution:'unknown',error:'computer_outcome_unknown'});
     for(const action of this.store.list('computer-action:').filter(v=>v.review?.state==='running'))this.store.set('computer-action:'+action.id,{...action,review:{...action.review,state:'interrupted'}});
@@ -44,6 +50,10 @@ export class ProjectService {
     this.processes = new Processes(this.store,{onFinished:record=>this.processFinished?.(record)});
     // A restarted host cannot establish the outcome of an earlier process.
     for (const p of this.store.list('process:').filter(p => ['running','stopping','checking'].includes(p.state))) this.store.set('process:' + p.id, {...p, state: 'interrupted',execution:'unknown',recoveryState:'attention'});
+    for(const task of this.store.list('task:').filter(t=>['pending','connected'].includes(t.computerConnectionRequest?.state))){
+      const {bindingId,connectedAt,...request}=task.computerConnectionRequest;
+      this.store.set('task:'+task.id,{...task,state:task.state==='cancelled'?'cancelled':'waiting_input',computerConnectionRequest:{...request,state:task.state==='cancelled'?'cancelled':'pending'}});
+    }
     for (const task of this.store.list('task:').filter(t => t.state === 'running')) this.store.set('task:' + task.id, {...task, state: 'interrupted'});
     for(const operation of this.store.list('operation:').filter(o=>o.state==='started'))this.store.set('operation:'+operation.id,{...operation,state:'interrupted'});
     for(const repair of this.store.list('command-repair:').filter(r=>r.state==='starting'))this.store.set('command-repair:'+repair.id,{...repair,state:'attention',error:'execution_unknown'});
@@ -52,12 +62,21 @@ export class ProjectService {
     return this.overview();
   }
   ready() { if (!this.store) fail('project_missing'); }
+  shellPreference() { this.ready(); return this.store.get('setting:shell')?.profile; }
+  async setShellPreference({profile}) {
+    this.ready();
+    if(this.agent?.running||this.setupBusy)fail('agent_busy');
+    const profiles=await shellProfiles();
+    if(typeof profile!=='string'||!profiles.some(item=>item.id===profile))fail('shell_unavailable');
+    this.store.set('setting:shell',{profile});
+    return {profile};
+  }
   async overview() {
     this.ready();
     const [files, branch, status, profiles] = await Promise.all([listFiles(this.root), git(this.root, ['branch', '--show-current']), git(this.root, ['status', '--short']), shellProfiles()]);
     return {projectId: this.projectId, root: this.root, name: path.basename(this.root), branch: branch.trim() || 'detached', dirty: !!status,
       files: files.paths, truncated: files.truncated, wikiFiles: files.paths.filter(p => p.startsWith('openwiki/') && p.endsWith('.md')),
-      computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:[], tasks: this.store.list('task:').slice(0, 50), proposals: this.store.list('proposal:').slice(0, 50), processes: this.store.list('process:').slice(0, 20), comparisons: this.store.list('comparison:').slice(0, 20), commandRepairs:this.store.list('command-repair:').slice(0,30), profiles};
+      computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:[], tasks: this.store.list('task:').slice(0, 50), proposals: this.store.list('proposal:').slice(0, 50), processes: this.store.list('process:').slice(0, 20), comparisons: this.store.list('comparison:').slice(0, 20), commandRepairs:this.store.list('command-repair:').slice(0,30), profiles,defaultShell:preferredShell(profiles,process.platform,this.shellPreference())};
   }
   state() { this.ready(); return {computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:[], tasks: this.store.list('task:').slice(0,50), proposals: this.store.list('proposal:').slice(0,50), processes: this.store.list('process:').slice(0,20), comparisons: this.store.list('comparison:').slice(0,20),commandRepairs:this.store.list('command-repair:').slice(0,30)}; }
   task(taskId) { const task = this.store.get('task:' + taskId); if (!task) fail('task_missing'); return task; }
@@ -71,12 +90,25 @@ export class ProjectService {
     }
     return root;
   }
-  async read({path: rel, taskId, start = 1, end, full = false}) {
+  async read({path: rel, taskId, start = 1, end, full = false, room, measure = text => text.length}) {
     this.ready(); const root = await this.target(taskId), file = {...await readSource(root, rel),projectRules:await projectRules(root,rel)};
     if (full) return {...file, uri: pathToFileURL(path.join(root, rel)).href};
+    const requestedEnd = end;
     end ??= start + 199;
-    if (!Number.isInteger(start) || start < 1 || start > file.lines || !Number.isInteger(end) || end < start || end - start >= 200) fail('range_invalid');
-    return {...file, content: file.content.split('\n').slice(start - 1, end).join('\n'), start, end: Math.min(end, file.lines), truncated: start !== 1 || end < file.lines, nextStart: end < file.lines ? end + 1 : null, uri: pathToFileURL(path.join(root, rel)).href};
+    if (!Number.isInteger(start) || start < 1 || start > file.lines || !Number.isInteger(end) || end < start) throw Object.assign(new Error('range_invalid'),{details:{lines:file.lines}});
+    // A request beyond a limit is served from its start. A refusal costs a
+    // model call and says nothing that the result cannot say.
+    let limited = null;
+    if (end - start >= 200) { end = start + 199; limited = 'lines'; }
+    end = Math.min(end, file.lines);
+    const lines = file.content.split('\n').slice(start - 1, end);
+    if (Number.isFinite(room)) {
+      // The caller says how much the next request of the model can hold. The first line is always returned.
+      let size = 0, count = 0;
+      for (const text of lines) { size += measure(text); if (count && size > room) break; count++; }
+      if (count < lines.length) { lines.length = count; end = start + count - 1; limited = 'size'; }
+    }
+    return {...file, content: lines.join('\n'), start, end, truncated: start !== 1 || end < file.lines, nextStart: end < file.lines ? end + 1 : null, ...(limited ? {limited: {by: limited, ...(requestedEnd === undefined ? {} : {requestedEnd})}} : {}), uri: pathToFileURL(path.join(root, rel)).href};
   }
   async inspectPath({taskId,path}) {return inspectNewPath(await this.target(taskId),path);}
   async proposeNewFile(args) {return proposeNewFile.call(this,args);}
@@ -101,6 +133,7 @@ export class ProjectService {
   async readVoc(args) {return readVoc.call(this,args);}
 
   async computer(args) {return computer.call(this,args);}
+  async wikiUpdate(args) {return wikiUpdate.call(this,args);}
   async decideSetupAction(args) {return decideSetupAction.call(this,args);}
 
   async collaboration() {fail('a2a_not_enabled');}
@@ -186,7 +219,9 @@ export class ProjectService {
   }
   async comparison({id}) { this.ready(); const value=this.store.get('comparison:'+id); if(!value)fail('comparison_missing'); const [before,after,difference]=await Promise.all(['before','after','difference'].map(name=>readFile(path.join(value.directory,name+'.png')))); return {...value,beforeImage:'data:image/png;base64,'+before.toString('base64'),afterImage:'data:image/png;base64,'+after.toString('base64'),diffImage:'data:image/png;base64,'+difference.toString('base64')}; }
   async diff({taskId}) { const root = await this.target(taskId); return {diff: await git(root, ['diff', '--no-ext-diff', '--', '.']), status: await git(root, ['status', '--short']), root}; }
-  async run({taskId, script, profile, timeoutMs,autoDiagnose=true,repairOf}) { if(this.computerBusy||this.newFileBusy||this.setupBusy)fail('project_busy');if(this.unsettledOperations?.size)fail('tool_unsettled');if(this.task(taskId).question)fail('question_pending');const cwd = await this.target(taskId); return this.processes.start({cwd, taskId, script, profile, timeoutMs,autoDiagnose,repairOf}); }
+  async run({taskId, script, profile, timeoutMs,autoDiagnose=true,repairOf}) { if(this.computerBusy||this.newFileBusy||this.setupBusy)fail('project_busy');if(this.unsettledOperations?.size)fail('tool_unsettled');if(this.task(taskId).question)fail('question_pending');const cwd = await this.target(taskId); return this.processes.start({cwd, taskId, script, profile:profile||preferredShell(await shellProfiles(),process.platform,this.shellPreference()), timeoutMs,autoDiagnose,repairOf}); }
+  analysisHistory(args) { return analysisHistory.call(this,args); }
+
   async exportReport({taskId}) {
     const task = this.task(taskId), reports = path.join(this.store.directory, 'reports'); await mkdir(reports, {recursive: true});
     const comparisons = this.store.list('comparison:').filter(c => c.taskId === taskId);
@@ -194,7 +229,7 @@ export class ProjectService {
     const file = path.join(reports, task.id + '.md'); await writeFile(file, content); return {uri: pathToFileURL(file).href, hash: hash(content), content};
   }
   async invoke(method, args = {}) {
-    const allowed = new Set(['listSkills','importSkill','importVoc','queryVoc','readVoc','computer','applyNewFile','decideSetupAction','collaboration','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','open','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','read','search','wikiQuery','createTask','exportRequirement','createWorktree','propose','prepareProposal','proposalArtifacts','confirmProposal','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent']);
+    const allowed = new Set(['wikiUpdate','analysisHistory','listSkills','importSkill','importVoc','queryVoc','readVoc','computer','applyNewFile','decideSetupAction','collaboration','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','open','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','setShellPreference','read','search','wikiQuery','createTask','exportRequirement','createWorktree','propose','prepareProposal','proposalArtifacts','confirmProposal','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent']);
     if (method === 'poll') { this.ready(); return this.processes.poll(args.id); }
     if (method === 'stop') { this.ready(); return this.processes.stop(args.id); }
     if (method === 'events') { this.ready(); return this.store.events(args.after); }

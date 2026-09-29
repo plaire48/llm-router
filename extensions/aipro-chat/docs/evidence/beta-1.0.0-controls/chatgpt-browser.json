@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "CX login choices fit both 360px panel and desktop",
+    "real loopback redirect uses the extension page without debugger or socket; PKCE exchange is single-use",
+    "ChatGPT stream, usage, model selection and reload work with AI Pro history isolated",
+    "expired access token refreshes once before the next chat",
+    "ChatGPT calls the current-page tool and receives observed DOM through the Pi loop",
+    "account model restriction is reported safely without replay",
+    "mismatched OAuth state is rejected before token exchange"
+  ],
+  "chrome": "149.0.7827.55",
+  "actualChatGPTAccountVerified": false,
+  "syntheticUpstreams": true
+}

@@ -1,0 +1,32 @@
+{
+  "id": "K1-jeju-extra-fee",
+  "title": "한국어 Wiki 단일 사실",
+  "suite": "wiki",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "제주 지역 주문은 배송비가 얼마나 더 붙어?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "4,500",
+        "4500"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "openwiki/concepts/shipping-policy.md",
+        "src/shipping.mjs"
+      ],
+      "min": 1
+    },
+    "cited": {
+      "paths": [
+        "openwiki/concepts/shipping-policy.md",
+        "src/shipping.mjs"
+      ]
+    },
+    "unchanged_except": []
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "shippedManifestUnmodified": true,
+  "actualLocalRequests": true,
+  "version": "1.4.11",
+  "allowedConnections": [
+    "page/localhost",
+    "page/127.0.0.1",
+    "page/https",
+    "worker/localhost",
+    "worker/127.0.0.1",
+    "worker/https"
+  ],
+  "nonLoopbackHttpBlockedByCsp": true,
+  "policyWarnings": [],
+  "errors": []
+}

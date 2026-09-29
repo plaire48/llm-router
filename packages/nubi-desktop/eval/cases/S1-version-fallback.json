@@ -1,0 +1,27 @@
+{
+  "id": "S1-version-fallback",
+  "title": "상수 값 찾기",
+  "suite": "source",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "OpenWiki가 자기 package.json을 끝내 못 찾으면 버전 값으로 뭘 돌려줘? 상수 이름도 알려줘.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "0.0.0-unknown"
+      ],
+      [
+        "UNKNOWN_VERSION"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "src/version.ts"
+      ],
+      "min": 1
+    },
+    "unchanged_except": []
+  }
+}

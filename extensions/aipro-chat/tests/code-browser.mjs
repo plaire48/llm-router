@@ -1,0 +1,83 @@
+import assert from 'node:assert/strict';
+import {mkdtemp, mkdir, rm, writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {resolve} from 'node:path';
+import {chromium} from 'playwright';
+const profile = await mkdtemp(resolve(tmpdir(), 'nubi-code-'));
+const code = '// 페이지에서 제목을 읽습니다.\nconst title = await page.title();\nconst message = "누비가 확인했습니다";\n\nconsole.log({ title, message });';
+const python = 'def greet(name):\n    """누비의 인사"""\n    return f"안녕하세요, {name}"';
+const html = '<img src="x" onerror="globalThis.codeExecuted = true">\n<script>globalThis.codeExecuted = true</script>';
+const blocks = [['javascript', code], ['python', python], ['html', html], ['unlisted-language', 'name = "누비"\n\n  keep spaces'], ['javascript', `const long = "${'긴 문자열 '.repeat(50)}";`]];
+const markdown = '페이지 제목을 읽고 확인 결과를 출력합니다.\n\n' + blocks.map(([language, text]) => '```' + language + '\n' + text + '\n```').join('\n\n');
+const token = `header.${Buffer.from(JSON.stringify({exp: Math.floor(Date.now()/1000) + 3600})).toString('base64url')}.signature`;
+let context, worker, ui; const checks = [], errors = [];
+const check = text => {checks.push(text); console.log(`PASS ${text}`);};
+async function render(content) {
+  await worker.evaluate(async content => {const {chat} = await chrome.storage.local.get('chat'); await chrome.storage.local.set({chat: {...chat, messages: [{id: 'code-answer', role: 'assistant', state: 'done', modelId: 'GLM-5.2-NVFP4', content}]}});}, content);
+  await ui.locator('.code-block').first().waitFor();
+}
+try {
+  await mkdir('verification', {recursive: true});
+  context = await chromium.launchPersistentContext(profile, {headless: true, executablePath: process.env.CHROME_BINARY,
+    args: [`--disable-extensions-except=${resolve('dist')}`, `--load-extension=${resolve('dist')}`]});
+  context.setDefaultTimeout(12000);
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await context.route('https://aipro.sdsdev.co.kr/**', route => route.fulfill({json: {modelList: [{name: 'GLM-5.2-NVFP4', context_length: 524288}]}}));
+  worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker');
+  await worker.evaluate(token => chrome.storage.session.set({credential: {provider: 'aipro', mode: 'browser', token, receivedAt: 1}}), token);
+  ui = await context.newPage(); ui.on('pageerror', error => errors.push(error.message));
+  await ui.goto(`chrome-extension://${new URL(worker.url()).hostname}/index.html`);
+  await ui.getByRole('button', {name: '모델 변경', exact: true}).waitFor(); await render(markdown);
+  await ui.waitForFunction(() => document.querySelectorAll('.code-block').length === 5);
+  const cards = ui.locator('.code-block');
+  assert.equal(await cards.first().locator('.code-line').count(), 5);
+  assert.equal(await cards.first().locator('code').textContent(), code);
+  const palette = await cards.first().evaluate(el => Object.fromEntries(['keyword', 'string', 'comment'].map(kind => [kind, getComputedStyle(el.querySelector('.hljs-' + kind)).color])));
+  assert.equal(new Set(Object.values(palette)).size, 3);
+  assert.equal(await cards.nth(1).locator('code').textContent(), python);
+  assert(await cards.nth(1).locator('.hljs-keyword').count() > 0);
+  check('JavaScript and Python have distinct keyword, string and comment colors with original indentation and blank lines');
+  const lineMetrics = await cards.first().locator('.code-line').evaluateAll(lines => lines.map(el => ({height: el.getBoundingClientRect().height, line: parseFloat(getComputedStyle(el).lineHeight)})));
+  assert(lineMetrics.every(m => Math.abs(m.height - m.line) < 1), JSON.stringify(lineMetrics));
+  await cards.first().locator('.code-line').nth(2).hover();
+  assert.notEqual(await cards.first().locator('.code-line').nth(2).evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)');
+  assert.equal(await cards.first().locator('.code-line-number:not([aria-hidden="true"])').count(), 0);
+  const selected = await cards.first().locator('code').evaluate(el => {const range = document.createRange(); range.selectNodeContents(el); const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range); const value = selection.toString(); selection.removeAllRanges(); return value;});
+  assert.equal(selected, code);
+  await cards.first().getByRole('button', {name: '코드 복사', exact: true}).click();
+  await ui.getByText('코드를 복사했습니다.', {exact: true}).waitFor();
+  assert.equal(await ui.evaluate(() => navigator.clipboard.readText()), code);
+  check('hover highlights one row; line numbers are hidden from assistive text and excluded from selection and real clipboard copy');
+  assert.equal(await cards.nth(2).locator('img,script').count(), 0);
+  assert.equal(await cards.nth(2).locator('code').textContent(), html);
+  assert.equal(await ui.evaluate(() => globalThis.codeExecuted), undefined);
+  assert.equal(await cards.nth(3).locator('[class^="hljs-"]').count(), 0);
+  check('HTML is rendered as source, never executed; unknown languages remain readable');
+  for (const width of [360, 1100]) {
+    await ui.setViewportSize({width, height: 850});
+    await cards.first().scrollIntoViewIfNeeded();
+    assert.equal(await ui.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+    const pre = cards.last().locator('pre'); assert(await pre.evaluate(el => el.scrollWidth > el.clientWidth));
+    await pre.focus(); await pre.press('ArrowRight');
+    await ui.waitForFunction(() => [...document.querySelectorAll('.code-block pre')].at(-1).scrollLeft > 0);
+    await cards.first().scrollIntoViewIfNeeded();
+    await ui.screenshot({path: resolve(`verification/code-${width}.png`), animations: 'disabled'});
+    assert.equal(await cards.first().locator('code').evaluate(el => getComputedStyle(el).fontSize), '13px');
+  }
+  check('360px panel and wide chat keep readable 13px code with keyboard horizontal scrolling inside each block');
+  await ui.setViewportSize({width: 1100, height: 850}); await cards.first().screenshot({path: resolve('verification/code-card.png')});
+  await render('```js\nconst value = "아직 작성 중');
+  await ui.waitForFunction(() => document.querySelector('.code-source')?.textContent === 'const value = "아직 작성 중');
+  await render('```js\nconst value = "작성 완료";\n```');
+  await ui.waitForFunction(() => document.querySelector('.code-source')?.textContent === 'const value = "작성 완료";');
+  assert(await cards.first().locator('.hljs-string').count() > 0);
+  await ui.reload(); await cards.first().locator('.hljs-string').waitFor();
+  check('unfinished fenced code updates without errors and highlighting persists after conversation reload');
+  const large = 'x'.repeat(60001); await render('```js\n' + large + '\n```');
+  await ui.locator('.code-plain').waitFor(); assert.equal(await ui.locator('.code-plain').textContent(), large);
+  await cards.first().getByRole('button', {name: '코드 복사', exact: true}).click();
+  await ui.waitForFunction(value => navigator.clipboard.readText().then(text => text === value), large);
+  check('large source falls back to plain rendering while retaining the full code and exact copy');
+  assert.deepEqual(errors, []);
+  await writeFile('verification/code-browser.json', JSON.stringify({checks, errors, palette, realClipboard: true, syntheticTranscript: true}, null, 2));
+} finally {await context?.close(); await rm(profile, {recursive: true, force: true});}

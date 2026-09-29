@@ -1,0 +1,105 @@
+{
+  "startedAt": "2026-09-22T00:45:12.924Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:12.925Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2550
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:15.477Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 137
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:15.615Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2879
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:18.540Z",
+      "log": "conversations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12820
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:31.362Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4602
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:35.965Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17584
+    },
+    {
+      "name": "page-skills-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T00:45:53.550Z",
+      "log": "page-skills-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20315
+    }
+  ],
+  "selection": [
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "page-skills-browser",
+    "conversations-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.0",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.1",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "f41386021368a705e8478c4f589c3bb68c3aaf42e212da84679e9b2ea1586a1b",
+  "archiveSha256": "e6be3897a6c5098fccd859fc528017850ebdf2417a68645eb4046cfdd38dda73",
+  "finishedAt": "2026-09-22T00:46:13.919Z",
+  "excludedAttempts": [
+    {
+      "path": "verification/pre-release-2026-09-22T00-44-06-029Z/report.json",
+      "reason": "The existing browser assertion still expected the legacy exported skill format. Updated that assertion to nubi-browser-skill and reran the full selected matrix. Legacy import compatibility remains covered by the unit test."
+    }
+  ]
+}

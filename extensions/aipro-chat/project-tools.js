@@ -33,7 +33,7 @@ export function projectOrigin(value) {
 export function projectSummary(connection, now = Date.now()) {
   if (!connection?.project?.id || !connection?.token) return null;
   return {id: connection.project.id, name: connection.project.name, origin: connection.origin,
-    capabilities: connection.capabilities, ...(connection.features?.includes('wiki_query') ? {features: ['wiki_query']} : {}), expiresAt: connection.expiresAt,
+    capabilities: connection.capabilities, ...(connection.features ? {features: connection.features.filter(value => ['wiki_query','wiki_snapshot'].includes(value))} : {}), expiresAt: connection.expiresAt,
     status: Date.parse(connection.expiresAt) > now && !connection.rejected ? 'connected' : 'expired'};
 }
 
@@ -53,38 +53,56 @@ function remoteError(status, code) {
   if (status === 400 || status === 413 || status === 422) return 'project_arguments';
   return errors.has(code) ? code : 'project_unavailable';
 }
-async function limitedJSON(response) {
+async function limitedJSON(response, maxBytes = 160000) {
   if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('project_invalid');
-  if (Number(response.headers.get('content-length')) > 160000) throw new Error('project_invalid');
+  if (Number(response.headers.get('content-length')) > maxBytes) throw new Error('project_invalid');
   const reader = response.body?.getReader();
   if (!reader) throw new Error('project_invalid');
   let size = 0, body = ''; const decoder = new TextDecoder();
   try {
     for (;;) {
       const {value, done} = await reader.read(); if (done) break;
-      size += value.length; if (size > 160000) throw new Error('project_invalid');
+      size += value.length; if (size > maxBytes) throw new Error('project_invalid');
       body += decoder.decode(value, {stream: true});
     }
     body += decoder.decode();
     return JSON.parse(body);
-  } catch {await reader.cancel().catch(() => {}); throw new Error('project_invalid');}
+  } catch {void reader.cancel().catch(() => {}); throw new Error('project_invalid');}
   finally {reader.releaseLock();}
 }
-export async function projectRequest(origin, route, {token, body, fetchImpl = fetch} = {}) {
+export async function projectRequest(origin, route, {token, body, fetchImpl = fetch, signal, maxBytes = 160000} = {}) {
   const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 12000);
+  const requestSignal = signal ? AbortSignal.any([signal, controller.signal]) : controller.signal;
   try {
+    requestSignal.throwIfAborted();
     const response = await fetchImpl(`${projectOrigin(origin)}${API}${route}`, {
-      method: body === undefined ? 'GET' : 'POST', credentials: 'omit', cache: 'no-store', redirect: 'error', signal: controller.signal,
+      method: body === undefined ? 'GET' : 'POST', credentials: 'omit', cache: 'no-store', redirect: 'error', signal: requestSignal,
       headers: {Accept: 'application/json', ...(body === undefined ? {} : {'Content-Type': 'application/json'}), ...(token ? {Authorization: `Bearer ${token}`} : {})},
       ...(body === undefined ? {} : {body: JSON.stringify(body)}),
     });
-    const value = await limitedJSON(response);
+    if (requestSignal.aborted || [401, 403].includes(response.status)) {
+      // Authority comes from HTTP status, even if a proxy returns HTML or never finishes its body.
+      void response.body?.cancel().catch(() => {});
+      requestSignal.throwIfAborted();
+      throw new Error(remoteError(response.status));
+    }
+    const value = await limitedJSON(response, maxBytes);
+    requestSignal.throwIfAborted();
     if (!response.ok) throw new Error(remoteError(response.status, value?.error?.code));
     return value;
-  } catch (error) {throw new Error(errors.has(error.message) || error.message === 'project_address' ? error.message : 'project_unavailable');}
+  } catch (error) {throw new Error(signal?.aborted ? 'cancelled' : errors.has(error.message) || error.message === 'project_address' ? error.message : 'project_unavailable');}
   finally {clearTimeout(timer);}
 }
 const safeText = (value, max) => typeof value === 'string' && value.length <= max;
+export async function projectWikiSnapshot(connection, options = {}) {
+  if (projectSummary(connection)?.status !== 'connected') throw new Error('project_expired');
+  if (!connection.features?.includes('wiki_snapshot')) throw new Error('openwiki_upgrade_required');
+  const value = await projectRequest(connection.origin, 'wiki/snapshot', {...options, token:connection.token, maxBytes:32*1024*1024});
+  if (value.projectId !== connection.project.id || typeof value.sourceComplete !== 'boolean' || !Array.isArray(value.documents) || value.documents.length > 300 ||
+      value.documents.some(doc => doc.kind !== 'wiki' || !safeText(doc.id,500) || !safeText(doc.path,1000) || !safeText(doc.title,500) || !safeText(doc.text,4000000)) ||
+      value.documents.reduce((n,doc) => n+doc.text.length,0) > 8000000 || new Set(value.documents.map(doc=>doc.id)).size !== value.documents.length) throw new Error('project_invalid');
+  return {wikiId:`external:${connection.connectionId}`, documents:value.documents, sourceComplete:value.sourceComplete};
+}
 export function validateProjectInfo(value) {
   if (value?.protocol !== 1 || value.service !== 'openwiki' || !Array.isArray(value.capabilities) || !value.capabilities.includes('wiki') ||
       value.capabilities.some(cap => !['wiki', 'source'].includes(cap))) throw new Error('project_invalid');
@@ -96,7 +114,7 @@ export function pairedProject(origin, value, now = Date.now()) {
       !Number.isFinite(Date.parse(value.expiresAt)) || Date.parse(value.expiresAt) <= now || Date.parse(value.expiresAt) > now + 25 * 60 * 60 * 1000) throw new Error('project_invalid');
   validateProjectInfo({...value, service: 'openwiki'});
   return {origin: projectOrigin(origin), project: {id: value.project.id, name: value.project.name}, token: value.token,
-    expiresAt: value.expiresAt, capabilities: [...new Set(value.capabilities)], ...(Array.isArray(value.features) && value.features.includes('wiki_query') ? {features: ['wiki_query']} : {}), connectionId: crypto.randomUUID()};
+    expiresAt: value.expiresAt, capabilities: [...new Set(value.capabilities)], ...(Array.isArray(value.features) ? {features: value.features.filter(item => ['wiki_query','wiki_snapshot'].includes(item))} : {}), connectionId: crypto.randomUUID()};
 }
 
 function provenance(value, kind) {

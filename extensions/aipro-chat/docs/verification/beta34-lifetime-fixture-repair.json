@@ -1,0 +1,6 @@
+{
+  "issue": "The background lifecycle checks passed, but saving the report failed with ENOENT in a fresh checkout because background-execution was assumed to exist.",
+  "change": "The lifetime fixture creates its own output directory recursively before launching the isolated browser. All lifecycle and no-replay assertions remain unchanged.",
+  "productionSourceChanged": false,
+  "freshCheckoutRegression": "Passed: all five lifecycle assertions and report creation."
+}

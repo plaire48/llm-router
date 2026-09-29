@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "exitCode": 0,
+  "headed": true,
+  "suite": "clarification-browser",
+  "buildSha256": "57c904f665867284fde3f3f1d78caf23a67a59e106b0c0d72626b6c094d94e7e",
+  "actualBrowser": true,
+  "syntheticSite": true,
+  "syntheticModelResponses": true,
+  "actualModel": false,
+  "log": "clarification.log"
+}

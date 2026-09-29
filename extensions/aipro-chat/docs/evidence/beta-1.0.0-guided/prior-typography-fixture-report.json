@@ -1,0 +1,357 @@
+{
+  "startedAt": "2026-09-22T10:44:05.068Z",
+  "status": "failed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:05.069Z",
+      "log": "../pre-release-2026-09-22T10-44-05-067Z/unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2300
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:07.369Z",
+      "log": "../pre-release-2026-09-22T10-44-05-067Z/design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 140
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:07.509Z",
+      "log": "../pre-release-2026-09-22T10-44-05-067Z/candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2928
+    },
+    {
+      "name": "link-actions-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:10.479Z",
+      "log": "../pre-release-2026-09-22T10-44-05-067Z/link-actions-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26825
+    },
+    {
+      "name": "task-plan-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:45:55.765Z",
+      "log": "task-plan-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7528
+    },
+    {
+      "name": "clarification-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:45:55.765Z",
+      "log": "clarification-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13235
+    },
+    {
+      "name": "question-forms-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:45:55.765Z",
+      "log": "question-forms-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6012
+    },
+    {
+      "name": "script-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:01.782Z",
+      "log": "script-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7209
+    },
+    {
+      "name": "browser-specialist-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:03.295Z",
+      "log": "browser-specialist-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13566
+    },
+    {
+      "name": "browser-popups-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:08.992Z",
+      "log": "browser-popups-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22452
+    },
+    {
+      "name": "popup-approval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:09.003Z",
+      "log": "popup-approval-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17505
+    },
+    {
+      "name": "link-actions-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:31.444Z",
+      "log": "link-actions-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 27348
+    },
+    {
+      "name": "task-plan-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:31.444Z",
+      "log": "task-plan-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6848
+    },
+    {
+      "name": "clarification-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:31.444Z",
+      "log": "clarification-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12712
+    },
+    {
+      "name": "question-forms-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:38.293Z",
+      "log": "question-forms-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4842
+    },
+    {
+      "name": "script-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:43.136Z",
+      "log": "script-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7159
+    },
+    {
+      "name": "browser-specialist-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:44.161Z",
+      "log": "browser-specialist-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13634
+    },
+    {
+      "name": "browser-popups-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:50.295Z",
+      "log": "browser-popups-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22010
+    },
+    {
+      "name": "popup-approval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:46:57.795Z",
+      "log": "popup-approval-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17807
+    },
+    {
+      "name": "link-actions-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:15.602Z",
+      "log": "link-actions-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 27211
+    },
+    {
+      "name": "task-plan-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:15.602Z",
+      "log": "task-plan-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6665
+    },
+    {
+      "name": "clarification-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:15.602Z",
+      "log": "clarification-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12526
+    },
+    {
+      "name": "question-forms-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:22.268Z",
+      "log": "question-forms-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4846
+    },
+    {
+      "name": "script-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:27.115Z",
+      "log": "script-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7197
+    },
+    {
+      "name": "browser-specialist-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:28.129Z",
+      "log": "browser-specialist-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13543
+    },
+    {
+      "name": "browser-popups-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:34.312Z",
+      "log": "browser-popups-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22145
+    },
+    {
+      "name": "popup-approval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:41.673Z",
+      "log": "popup-approval-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17814
+    },
+    {
+      "name": "typography-browser",
+      "status": "failed",
+      "startedAt": "2026-09-22T10:47:59.487Z",
+      "log": "typography-browser.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8088
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:59.487Z",
+      "log": "approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 35880
+    },
+    {
+      "name": "code-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:47:59.487Z",
+      "log": "code-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3683
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:48:03.171Z",
+      "log": "accessibility-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5288
+    }
+  ],
+  "selection": [
+    "link-actions-browser",
+    "typography-browser",
+    "clarification-browser",
+    "question-forms-browser",
+    "task-plan-browser",
+    "script-recovery-browser",
+    "browser-specialist-browser",
+    "browser-popups-browser",
+    "popup-approval-browser",
+    "approval-browser",
+    "code-browser",
+    "accessibility-browser",
+    "ui-simplicity-browser",
+    "models-browser",
+    "fabrix-browser",
+    "chatgpt-browser",
+    "csp-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.8",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.11",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "b4b6060b0b70fbedcb04fbd23b122ee7edf91b860d29b9d83f8d67e9025404bd",
+  "archiveSha256": "16e73b5ddc18a5d128d9cc61ef3e90ab592e35f09b0e55d683b01bd838022214",
+  "resumedAt": "2026-09-22T10:45:55.687Z",
+  "priorReport": "verification/pre-release-2026-09-22T10-44-05-067Z/report.json",
+  "continuationReason": "Updated the planning fixture to accept ask_user alongside update_plan, matching the new missing-requirement flow. No packaged source changed after the candidate build.",
+  "concurrency": 3,
+  "failure": "typography-browser failed",
+  "finishedAt": "2026-09-22T10:48:35.369Z"
+}

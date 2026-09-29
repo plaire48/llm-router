@@ -1,0 +1,41 @@
+{
+  "date": "2026-09-22",
+  "openwiki": {
+    "build": "passed",
+    "tests": 34,
+    "files": [
+      "test/visualize/nubi.test.ts",
+      "test/visualize/server.test.ts",
+      "test/visualize/static-export.test.ts",
+      "test/cli/visualize-command.test.ts"
+    ],
+    "actualLocalServer": true,
+    "companyDataUsed": false
+  },
+  "upgrade": {
+    "previousRelease": "aipro-chat-v1.0.2",
+    "artifact": "aipro-chat-extension-1.0.2.zip",
+    "sameInstalledPath": true,
+    "syntheticStoredChat": true,
+    "liveAccountVerified": false
+  },
+  "visualInspection": {
+    "widths": [
+      320,
+      1100
+    ],
+    "surface": "settings",
+    "screenshotsReviewed": true
+  },
+  "cleanBuild": {
+    "freshInstallCommand": "npm ci --no-audit --no-fund",
+    "buildCommand": "npm run build:candidate",
+    "comparedActualFiles": 415,
+    "identical": true
+  },
+  "scope": {
+    "chromeWebStore": false,
+    "externalMcp": false,
+    "localPythonNodeExecution": false
+  }
+}

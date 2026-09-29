@@ -1,0 +1,5 @@
+PASS natural-language request discovers aria-hidden inline icons, compares actual numbered thumbnails despite restrictive website CSP, and pauses on two real choices
+PASS choices render responsively and download a passive SVG retaining the actual icon geometry and CSS color
+PASS question survives reload; keyboard choice resumes with exact selection, preserves draft and rejects stale answers
+PASS missing evidence produces a concise free-text question with no invented multiple-choice answers
+PASS local SVG sprites resolve to geometry and changed icon geometry invalidates old candidate refs

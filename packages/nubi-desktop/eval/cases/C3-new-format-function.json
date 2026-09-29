@@ -1,0 +1,30 @@
+{
+  "id": "C3-new-format-function",
+  "title": "새 파일",
+  "suite": "edit",
+  "split": "holdout",
+  "corpus": "order-service",
+  "request": "주문 금액을 '12,345원' 형식의 문자열로 바꾸는 formatWon 함수를 src/format.mjs에 새로 만들어 줘.",
+  "approvals": [
+    "new_file",
+    "patch"
+  ],
+  "expect": {
+    "state": "review",
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {formatWon} from '../src/format.mjs';\ntest('hidden check', () => {\n  assert.equal(formatWon(12345), '12,345원');\n  assert.equal(formatWon(0), '0원');\n  assert.equal(formatWon(1000000), '1,000,000원');\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/format.mjs",
+      "test/format.test.mjs",
+      "openwiki/architecture/modules.md"
+    ]
+  }
+}

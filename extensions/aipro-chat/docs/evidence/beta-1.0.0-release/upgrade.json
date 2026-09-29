@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "from": "1.0.2",
+  "to": "1.4.3",
+  "sameExtensionId": true,
+  "actualChromeRelaunch": true,
+  "storedFieldsPreserved": [
+    "activeProvider",
+    "chat",
+    "chatHistory",
+    "providerChats",
+    "settings",
+    "usageLedger"
+  ],
+  "historySelectable": true,
+  "reloadPreserved": true,
+  "sessionCredentialsCleared": true,
+  "errors": [],
+  "syntheticStoredChat": true,
+  "syntheticProvider": true,
+  "liveAccountVerified": false
+}

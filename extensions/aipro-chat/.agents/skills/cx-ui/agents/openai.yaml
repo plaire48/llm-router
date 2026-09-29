@@ -1,0 +1,4 @@
+interface:
+  display_name: "CX UI"
+  short_description: "설치된 CX 기준으로 화면을 구현하고 표·모달·토스트 동작까지 검증합니다"
+  default_prompt: "$cx-ui 설치된 CX의 컴포넌트와 템플릿으로 업무 검색·목록·상세 수정 화면을 만들고 기존 저장 함수에 연결해줘."

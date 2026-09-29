@@ -1,0 +1,8 @@
+PASS direct: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input
+PASS blocked: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input
+PASS blocked-choice: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input
+PASS observe-first: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input
+PASS planner: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input
+PASS stalled: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input
+PASS custom: text-only and read-only skills display the same question form without granting action tools
+PASS source: text-only and read-only skills display the same question form without granting action tools

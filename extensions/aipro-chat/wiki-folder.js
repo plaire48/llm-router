@@ -82,12 +82,12 @@ function mapFileError(error) {
   if (error?.name === 'NotFoundError' || error?.name === 'TypeMismatchError') return new Error('project_not_found');
   return new Error('wiki_folder_unavailable');
 }
-async function freshText(fileHandle) {
+async function freshText(fileHandle, maxBytes = WIKI_FOLDER_LIMITS.fileBytes) {
   try {
     const file = await fileHandle.getFile();
-    if (!Number.isFinite(file.size) || file.size > WIKI_FOLDER_LIMITS.fileBytes) fail('project_arguments');
+    if (!Number.isFinite(file.size) || file.size > maxBytes) fail('project_arguments');
     const bytes = new Uint8Array(await file.arrayBuffer());
-    if (bytes.byteLength > WIKI_FOLDER_LIMITS.fileBytes || bytes.includes(0)) fail('project_arguments');
+    if (bytes.byteLength > maxBytes || bytes.includes(0)) fail('project_arguments');
     let raw;
     try {raw = new TextDecoder('utf-8', {fatal: true, ignoreBOM: true}).decode(bytes);} catch {fail('project_arguments');}
     return {raw, bytes};
@@ -122,13 +122,13 @@ function chunk(raw, start = 1, requestedEnd = start + 199) {
   return {content: selected.join('\n'), start, end: actualEnd, totalLines: lines.length,
     truncated: actualEnd < lines.length, ...(actualEnd < lines.length ? {nextStart: actualEnd + 1} : {})};
 }
-async function traverse(handle, visit, {until = performance.now() + WIKI_FOLDER_LIMITS.searchMs} = {}) {
+async function traverse(handle, visit, {until = performance.now() + WIKI_FOLDER_LIMITS.searchMs, maxFileBytes = WIKI_FOLDER_LIMITS.fileBytes, maxBytes = WIKI_FOLDER_LIMITS.searchBytes} = {}) {
   const pending = [{handle, path: '', depth: 0}]; let entries = 0, files = 0, bytes = 0, truncated = false;
   while (pending.length) {
     const directory = pending.shift();
     try {
       for await (const [name, entry] of directory.handle.entries()) {
-        if (++entries > WIKI_FOLDER_LIMITS.entries || files >= WIKI_FOLDER_LIMITS.files || bytes >= WIKI_FOLDER_LIMITS.searchBytes || performance.now() > until) return {truncated: true};
+        if (++entries > WIKI_FOLDER_LIMITS.entries || files >= WIKI_FOLDER_LIMITS.files || bytes >= maxBytes || performance.now() > until) return {truncated: true};
         if (!permittedPart(name)) continue;
         const relative = directory.path ? `${directory.path}/${name}` : name;
         if (relative.length > 500) {truncated = true; continue;}
@@ -140,8 +140,8 @@ async function traverse(handle, visit, {until = performance.now() + WIKI_FOLDER_
         if (entry.kind !== 'file' || !markdown(name)) continue;
         files++;
         try {
-          const file = await freshText(entry); bytes += file.bytes.byteLength;
-          if (bytes > WIKI_FOLDER_LIMITS.searchBytes) return {truncated: true};
+          const file = await freshText(entry, maxFileBytes); bytes += file.bytes.byteLength;
+          if (bytes > maxBytes) return {truncated: true};
           if (await visit(relative, file)) return {truncated, stopped: true};
         } catch (error) {
           if (error.message === 'wiki_folder_permission') throw error;
@@ -153,6 +153,19 @@ async function traverse(handle, visit, {until = performance.now() + WIKI_FOLDER_
   }
   return {truncated};
 }
+export async function wikiFolderSnapshot(record) {
+  if (!validRecord(record)) fail('project_invalid');
+  await requirePermission(record.handle);
+  const documents = []; let characters = 0, incomplete = false;
+  const scan = await traverse(record.handle, async (path, file) => {
+    if (file.raw.length > 4000000 || characters + file.raw.length > 8000000) {incomplete = true; return false;}
+    characters += file.raw.length;
+    documents.push({id: path, path, title: titleOf(file.raw, path), text: file.raw, kind: 'folder'});
+    return false;
+  }, {until: performance.now() + 20000, maxFileBytes: 16 * 1024 * 1024, maxBytes: 32 * 1024 * 1024});
+  await requirePermission(record.handle);
+  return {wikiId: `external:${record.connectionId}`, documents, sourceComplete: !scan.truncated && !incomplete};
+}
 async function prepareWikiFolder(selected) {
   if (selected?.kind !== 'directory' || typeof selected.entries !== 'function') fail('project_invalid');
   await requirePermission(selected);
@@ -163,7 +176,8 @@ async function prepareWikiFolder(selected) {
   }
   await requirePermission(handle);
   let found = false;
-  const scan = await traverse(handle, (_, file) => {if (file.raw.trim()) {found = true; return true;} return false;});
+  const scan = await traverse(handle, (_, file) => {if (file.raw.length > 4000000) fail('project_arguments'); if (file.raw.trim()) {found = true; return true;} return false;},
+    {maxFileBytes:16 * 1024 * 1024, maxBytes:32 * 1024 * 1024});
   if (!found) fail(scan.truncated ? 'wiki_folder_scan_limit' : 'wiki_folder_empty');
   await requirePermission(handle);
   return {connectionId: crypto.randomUUID(), project: {id: crypto.randomUUID(), name: String(selected.name || 'OpenWiki').slice(0, 160)},

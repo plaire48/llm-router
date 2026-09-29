@@ -1,0 +1,84 @@
+import assert from 'node:assert/strict';
+import {mkdtemp,cp,readFile,writeFile,appendFile,rm,mkdir} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {resolve} from 'node:path';
+import {createServer} from 'node:http';
+import {chromium} from 'playwright';
+
+const profile=await mkdtemp(resolve(tmpdir(),'nubi-diagnostics-')),extension=resolve(profile,'extension');
+const checks=[];let context,worker,posts=0,requestId="diagnostics";
+const server=createServer((req,res)=>{
+  if(req.url.startsWith('/failure')){if(req.method==='POST')posts++;res.writeHead(503,{'Content-Type':'text/plain'});res.end('PRIVATE_RESPONSE_BODY');return;}
+  if(req.url==='/offline'){req.socket.destroy();return;}
+  res.writeHead(200,{'Content-Type':'text/html'});
+  res.end(`<title>Diagnostic fixture</title><button onclick="console.error('Service unavailable');console.warn('Authorization: Bearer PRIVATE_AUTH');console.error('https://api.test/failure?private=PRIVATE_QUERY');fetch('/failure?private=PRIVATE_QUERY',{method:'POST',headers:{'X-Private':'PRIVATE_HEADER'},body:'PRIVATE_REQUEST_BODY'});fetch('/offline').catch(()=>{});setTimeout(()=>{throw Error('Visible runtime failure')},0)">Preview</button><output>Pending</output>`);
+});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+const url=`http://127.0.0.1:${server.address().port}/`;
+try{
+  await cp(resolve('dist'),extension,{recursive:true});
+  const manifest=JSON.parse(await readFile(resolve(extension,'manifest.json'),'utf8'));
+  manifest.host_permissions.push('http://127.0.0.1/*');await writeFile(resolve(extension,'manifest.json'),JSON.stringify(manifest));
+  await appendFile(resolve(extension,'background.js'),'\nglobalThis.testBrowserAgent={runBrowserAgent,stopBrowserAgent,ready:()=>serial(()=>{})};\n');
+  context=await chromium.launchPersistentContext(profile,{headless:true,executablePath:process.env.CHROME_BINARY,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
+  await context.route('https://auth.openai.com/**',route=>route.fulfill({contentType:'text/html',body:'<p>Authentication fixture</p>'}));
+  worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');await worker.evaluate(()=>testBrowserAgent.ready());
+  await worker.evaluate(()=>chrome.storage.local.set({browserWorkMode:'current'}));
+  const page=await context.newPage();await page.goto(url);
+  const tabId=await worker.evaluate(async url=>(await chrome.tabs.query({})).find(t=>t.url===url).id,url);
+  const run=async(name,args={})=>(await worker.evaluate(({tabId,name,args,requestId})=>testBrowserAgent.runBrowserAgent(requestId,{tabId},name,args),{tabId,name,args,requestId})).result;
+  await page.evaluate(()=>history.replaceState(null,'','?page=2&token=PRIVATE_URL'));
+  let passive=await run('read_page');assert.equal(passive.url,url);assert(!JSON.stringify(passive).includes('PRIVATE_URL'));
+  passive=await run('wait_page',{condition:{kind:'url_is',expected:url+'?page=1&token=PRIVATE_URL'},timeout_ms:300});
+  assert.equal(passive.wait?.timedOut,true,JSON.stringify(passive));
+  passive=await run('wait_page',{condition:{kind:'url_is',expected:url+'?page=2&token=PRIVATE_URL'},timeout_ms:1000});
+  assert.equal(passive.wait?.matched,true,JSON.stringify(passive));assert(!JSON.stringify(passive).includes('PRIVATE_URL'));
+  await page.evaluate(()=>history.replaceState(null,'','/'));
+  checks.push('Passive URL checks compare exact host-only query identity while observations redact private values');
+  await run('browser_snapshot');
+  let result=await run('read_browser_diagnostics');assert.equal(result.ok,true,JSON.stringify(result));assert.deepEqual(result.events,[]);
+  const snapshot=await run('browser_snapshot'),ref=snapshot.frames.flatMap(f=>f.elements||[]).find(e=>e.name==='Preview').ref;
+  await run('click_element',{ref});
+  for(let i=0;i<100;i++){result=await run('read_browser_diagnostics');if(result.events.some(e=>e.status===503)&&result.events.some(e=>e.failed)&&result.events.some(e=>e.text==='Visible runtime failure'))break;await new Promise(r=>setTimeout(r,30));}
+  assert(result.events.some(e=>e.status===503),JSON.stringify(result));assert(result.events.some(e=>e.failed));
+  assert(result.events.some(e=>e.text==='Service unavailable'));assert(result.events.some(e=>e.text==='Visible runtime failure'));
+  assert(!JSON.stringify(result).includes('PRIVATE_'),JSON.stringify(result));assert.equal(posts,1);
+  checks.push('Actual extension Playwright captures console warning/error, uncaught error, HTTP 503 and failed requests after one observed click');
+  checks.push('No request/response body, headers, known secret or URL query reaches diagnostic output; reading never replays the POST');
+  const other=await context.newPage();await other.goto(url);await other.evaluate(()=>console.error('OTHER_TAB_ERROR'));
+  result=await run('read_browser_diagnostics');assert(!JSON.stringify(result).includes('OTHER_TAB_ERROR'));assert.equal(posts,1);
+  const paged=await run('read_browser_diagnostics',{limit:1});assert.equal(paged.events.length,1);assert(paged.remaining>0);
+  const next=await run('read_browser_diagnostics',{since:paged.next_cursor});assert(next.events.every(e=>e.id>paged.next_cursor));
+  await page.reload();result=await run('read_browser_diagnostics');assert(!result.events.some(e=>e.text==='Service unavailable'||e.status===503));
+  checks.push('Tab isolation, bounded cursor reads and main-document navigation reset work in Chrome');
+  await worker.evaluate(()=>testBrowserAgent.stopBrowserAgent('diagnostics'));
+  requestId='diagnostics-new';result=await run('read_browser_diagnostics');assert.deepEqual(result.events,[],JSON.stringify(result));assert.equal(posts,1);
+  checks.push('Stopping and starting the run removes earlier diagnostic evidence and never repeats a write');
+  await page.evaluate(()=>{const frame=document.createElement('iframe');frame.src='https://auth.openai.com/diagnostic-fixture';document.body.append(frame);});
+  await page.frameLocator('iframe').getByText('Authentication fixture').waitFor();
+  const authFrame=page.frames().find(frame=>frame.url().includes('auth.openai.com'));
+  await authFrame.evaluate(()=>console.error('RESTRICTED_FRAME_DETAIL'));
+  result=await run('read_browser_diagnostics');assert.equal(result.consoleCoverage,'limited_by_restricted_frames');
+  assert(!JSON.stringify(result).includes('RESTRICTED_FRAME_DETAIL'));
+  await page.locator('iframe').evaluate(frame=>frame.remove());
+  checks.push('An auth iframe prevents unattributed console collection and reports limited coverage instead of exposing its output');
+  await page.evaluate(()=>setTimeout(()=>{document.querySelector('output').textContent='Ready to inspect';},1200));
+  result=await run('wait_page',{condition:{kind:'text_present',expected:'Ready to inspect'},timeout_ms:4000});
+  assert.equal(result.wait?.matched,true,JSON.stringify(result));assert.equal(result.actionIssued,false);assert.equal(result.verified,undefined);
+  result=await run('wait_page',{condition:{kind:'text_present',expected:'Never appears'},timeout_ms:300});
+  assert.equal(result.wait?.timedOut,true,JSON.stringify(result));assert.equal(result.actionIssued,false);assert.equal(posts,1);
+  result=await run('wait_page',{condition:{kind:'url_is',expected:url+'?ignored=yes'},timeout_ms:1000});
+  assert.equal(result.wait?.timedOut,true,JSON.stringify(result));
+  result=await run('wait_page',{condition:{kind:'url_is',expected:url},timeout_ms:1000});
+  assert.equal(result.wait?.matched,true,JSON.stringify(result));
+  result=await run('wait_page',{condition:{kind:'text_present',expected:'x'},timeout_ms:20000});
+  assert.equal(result.error,'tool_arguments_invalid');
+  checks.push('Conditional waiting handles an update after 1.2s, reports missing evidence on timeout, and never claims final verification or replays writes');
+  const waiting=run('wait_page',{condition:{kind:'text_present',expected:'Never appears'},timeout_ms:15000});
+  await new Promise(resolve=>setTimeout(resolve,300));
+  await worker.evaluate(()=>testBrowserAgent.stopBrowserAgent('diagnostics-new'));
+  assert.equal((await waiting).error,'cancelled');
+  checks.push('User stop cancels an in-flight condition wait without starting another run');
+  await mkdir('verification',{recursive:true});await writeFile('verification/browser-diagnostics-browser.json',JSON.stringify({checks,actualBrowser:true,actualModelAccuracy:false,posts},null,2));
+  for(const check of checks)console.log('PASS '+check);
+}finally{await context?.close();await new Promise(resolve=>server.close(resolve));await rm(profile,{recursive:true,force:true});}

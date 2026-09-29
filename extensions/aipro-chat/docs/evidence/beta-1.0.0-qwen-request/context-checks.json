@@ -1,0 +1,12 @@
+{
+  "browser": "149.0.7827.55",
+  "checks": [
+    "AI Pro auto compaction preserves the original history and latest correction, and counts every summary request once",
+    "saved memory survives reload and is readable inside the existing context dialog at 360px",
+    "manual compression advances memory while preserving the unsent draft and desktop layout",
+    "real Playwright input is checkpointed with its plan before the next model response, without persisting scripts or DOM",
+    "reload performs no automatic action; explicit resume re-observes the live page and keeps the completed input from repeating"
+  ],
+  "errors": [],
+  "scope": "Installed extension with API fixtures and test-only origin grants; no real accounts or model-quality claim"
+}

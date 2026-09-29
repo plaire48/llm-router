@@ -1,0 +1,6 @@
+PASS JavaScript and Python have distinct keyword, string and comment colors with original indentation and blank lines
+PASS hover highlights one row; line numbers are hidden from assistive text and excluded from selection and real clipboard copy
+PASS HTML is rendered as source, never executed; unknown languages remain readable
+PASS 360px panel and wide chat keep readable 13px code with keyboard horizontal scrolling inside each block
+PASS unfinished fenced code updates without errors and highlighting persists after conversation reload
+PASS large source falls back to plain rendering while retaining the full code and exact copy

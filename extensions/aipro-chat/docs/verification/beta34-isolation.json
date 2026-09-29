@@ -1,0 +1,7 @@
+{
+  "reason": "Shared OpenWiki question source and browser tests were changed by concurrent work during verification. The interrupted run is not release evidence.",
+  "action": "Freeze the already prepared release checkout and restart the complete gate there. Do not overwrite concurrent edits.",
+  "sourceCut": "Matches the inputs and build captured at 2026-09-25T03:58:19.864Z, after both fixture repairs.",
+  "excluded": "Unreviewed changes introduced in the shared workspace after the source cut.",
+  "earlierPartialResultsReusedAsFinalProof": false
+}

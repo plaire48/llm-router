@@ -1,0 +1,49 @@
+{
+  "id": "A11-fill-four-fields",
+  "title": "네 칸을 한 번에 입력",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": {
+    "deny": [
+      "btn-save",
+      "btn-submit",
+      "btn-delete"
+    ]
+  },
+  "request": "연결한 경비 신청 앱에서 신청자를 이영희로, 금액을 61000으로, 사용일을 2026-09-25로, 메모를 '고객사 방문 교통비'로 바꿔 줘. 저장이나 제출은 하지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "app": {
+      "values": {
+        "txt-applicant": [
+          "이영희"
+        ],
+        "txt-amount": [
+          "61000"
+        ],
+        "txt-date": [
+          "2026-09-25"
+        ],
+        "txt-memo": [
+          "고객사 방문 교통비"
+        ]
+      },
+      "events": {
+        "excludes": [
+          "saved",
+          "submitted",
+          "deleted"
+        ]
+      },
+      "inputs": {
+        "only": [
+          "txt-applicant",
+          "txt-amount",
+          "txt-date",
+          "txt-memo"
+        ]
+      }
+    }
+  }
+}

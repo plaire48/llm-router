@@ -1,0 +1,28 @@
+✖ Qwen CLI continuation after a tool keeps one leading system message and the execution receipts (7040.341375ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7374.306792
+
+✖ failing tests:
+
+test at tests/output-recovery.test.mjs:51:1
+✖ Qwen CLI continuation after a tool keeps one leading system message and the execution receipts (7040.341375ms)
+  Error: network
+      at invokeAttempt (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/src/api.js:212:46)
+      at async pRetry.signal.signal (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/model-recovery.js:21:19)
+      at async pRetry (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/p-retry/index.js:245:19)
+      at async recoverModel (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/model-recovery.js:13:12)
+      at async invoke (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/src/api.js:233:22)
+      at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/src/api.js:318:24
+      at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/output-recovery.js:36:18
+      at async complete (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/src/api.js:321:19)
+      at async streamFn (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:259:20)
+      at async streamAssistantResponse (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:235:22) {
+    partial: '',
+    status: undefined
+  }

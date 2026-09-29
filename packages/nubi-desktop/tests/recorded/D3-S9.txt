@@ -1,0 +1,27 @@
+**`HTTP_PROXY`나 `HTTPS_PROXY`가 아니라, 모델 공급자의 Base URL 환경 변수를 회사 프록시·게이트웨이 주소로 설정하라고 되어 있습니다.**
+
+README.md 기준:
+
+- Anthropic: `ANTHROPIC_BASE_URL`
+- OpenAI: `OPENAI_BASE_URL`
+- Baseten: `BASETEN_BASE_URL`
+- Fireworks: `FIREWORKS_BASE_URL`
+- NVIDIA: `NVIDIA_BASE_URL`
+- Copilot: `COPILOT_BASE_URL`
+- OpenAI 호환 프록시: `OPENAI_COMPATIBLE_BASE_URL`
+  - 함께 `OPENWIKI_PROVIDER=openai-compatible`
+  - `OPENAI_COMPATIBLE_API_KEY`
+  - `OPENWIKI_MODEL_ID`
+
+ENTERPRISE.md 기준 사내 제공자:
+
+- AI Pro CLI: `AIPRO_CLI_BASE_URL`, `AIPRO_CLI_TOKEN`, `OPENWIKI_MODEL_ID`
+- FabriX: `FABRIX_BASE_URL`, `FABRIX_API_TOKEN`, `FABRIX_CLIENT_KEY`, `OPENWIKI_MODEL_ID`
+
+회사 프록시가 사내 CA 인증서를 사용한다면 추가로:
+
+```bash
+NODE_EXTRA_CA_CERTS=/path/to/company-ca.pem
+```
+
+문서는 TLS 검증을 끄지 말라고 명시합니다. 즉, 일반 네트워크 프록시 변수보다는 **해당 공급자의 `*_BASE_URL`을 회사 게이트웨이 주소로 지정**하는 방식입니다.

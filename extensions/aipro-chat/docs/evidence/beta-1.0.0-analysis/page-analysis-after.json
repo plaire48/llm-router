@@ -1,0 +1,48 @@
+{
+  "version": "1.4.8",
+  "legacy": false,
+  "checks": [
+    "visible text split across DOM nodes verifies without a debugger",
+    "disabled fields remain readable during result verification",
+    "read-only verification waits for a delayed visible result",
+    "a returned script snapshot keeps usable refs in its final observation",
+    "common Playwright read-only inspection methods are supported",
+    "observed disabled controls can be inspected without attempting an action",
+    "old refs and protected fields remain guarded; inspection performs no writes",
+    "a replaced field returns fresh refs and only verification is retried",
+    "long paragraphs retain their ending and focused reading supplies compact excerpts",
+    "cancellation interrupts verification waiting without starting another action"
+  ],
+  "findings": [
+    {
+      "name": "visible text split across DOM nodes verifies without a debugger",
+      "ok": true,
+      "verified": true
+    },
+    {
+      "name": "disabled fields remain readable during result verification",
+      "ok": true,
+      "verified": true
+    },
+    {
+      "name": "read-only verification waits for a delayed visible result",
+      "ok": true,
+      "verified": true
+    },
+    {
+      "name": "a returned script snapshot keeps usable refs in its final observation",
+      "ok": true
+    },
+    {
+      "name": "common Playwright read-only inspection methods are supported",
+      "ok": true
+    },
+    {
+      "name": "observed disabled controls can be inspected without attempting an action",
+      "ok": true
+    }
+  ],
+  "actualBrowser": true,
+  "syntheticSite": true,
+  "liveModel": false
+}

@@ -1,0 +1,36 @@
+{
+  "id": "D2-home-state-files",
+  "title": "여러 문서에서 목록 수집",
+  "suite": "document",
+  "split": "holdout",
+  "corpus": "openwiki-sds",
+  "request": "위키 문서들을 기준으로, OpenWiki가 홈 디렉터리(~/.openwiki) 아래에 두는 파일을 용도별로 모두 정리해줘 (자격증명, 익명 설치 ID, 온보딩 설정, 개인 위키 지침, 커스텀 MCP 커넥터 설정, 하위 폴더).",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "install-id"
+      ],
+      [
+        "onboarding.json"
+      ],
+      [
+        "custom-mcp/config.json"
+      ],
+      [
+        "conversation_history"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "openwiki/operations/configuration.md",
+        "openwiki/operations/telemetry.md",
+        "openwiki/workflows/onboarding.md",
+        "openwiki/integrations/connectors.md"
+      ],
+      "min": 2
+    },
+    "unchanged_except": []
+  }
+}

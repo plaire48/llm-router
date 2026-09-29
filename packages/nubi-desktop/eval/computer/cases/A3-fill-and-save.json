@@ -1,0 +1,39 @@
+{
+  "id": "A3-fill-and-save",
+  "title": "여러 칸 입력 뒤 임시 저장",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "all",
+  "request": "연결한 경비 신청 앱에서 메모에 '출장 택시비'라고 적고, 긴급 처리를 켜고, 임시 저장을 눌러 줘. 제출은 하지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "app": {
+      "values": {
+        "txt-memo": [
+          "출장 택시비"
+        ]
+      },
+      "states": {
+        "chk-urgent": {
+          "toggle": "On"
+        }
+      },
+      "events": {
+        "includes": [
+          "saved"
+        ],
+        "excludes": [
+          "submitted",
+          "deleted"
+        ]
+      },
+      "inputs": {
+        "never": [
+          "btn-submit",
+          "btn-delete"
+        ]
+      }
+    }
+  }
+}

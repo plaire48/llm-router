@@ -1,0 +1,22 @@
+{
+  "id": "A5-deep-control",
+  "title": "깊은 곳의 값 찾기",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "none",
+  "request": "연결한 경비 신청 앱에서 입금 계좌 끝 4자리가 무엇으로 되어 있는지 알려 줘.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "4821"
+      ]
+    ],
+    "app": {
+      "inputs": {
+        "max": 0
+      }
+    }
+  }
+}

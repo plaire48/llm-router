@@ -9,19 +9,19 @@ export function ProviderIcon({provider}) {
   if (provider === 'aipro-cli' || provider === 'compatible') return <Icon name="code" size={20} className="connection-logo"/>;
   return <img className="connection-logo" src={`./icons/${providerIcons[provider] || providerIcons.aipro}`} alt="" width="20" height="20"/>;
 }
-export function ModelPicker({data, loading, disabled, open, onOpen, onRefresh, providerLabels = PROVIDER_LABELS}) {
+export function ModelPicker({data, loading, disabled, open, onOpen, onRefresh, showProviderName = false, providerLabels = PROVIDER_LABELS}) {
   const models = data.catalog?.models || [], selected = models.find(model => model.name === data.settings.modelId);
   const empty = data.catalog?.models?.length === 0 && !data.catalog.error;
   const unnamed = empty && data.catalog?.diagnostics?.summary?.received > 0;
   return <div className="model-picker">
     <CxButton className="model-trigger" aria-label="모델 변경" aria-haspopup="dialog" aria-expanded={open} title={`${providerLabels[data.activeProvider]}\n${selected?.displayName || (data.activeProvider === 'fabrix' ? '모델 선택' : data.settings.modelId)}\n모델 변경`} disabled={disabled} onClick={onOpen}>
-      <ProviderIcon provider={data.activeProvider}/><span>{empty ? unnamed ? '목록 확인 필요' : '모델 없음' : selected?.displayName || (data.activeProvider === 'fabrix' ? '모델 선택' : data.settings.modelId)}</span><Icon name="chevronDown" size={16}/>
+      <ProviderIcon provider={data.activeProvider}/><span className="model-trigger-label">{showProviderName && <strong>{providerLabels[data.activeProvider]}</strong>}<span>{empty ? unnamed ? '목록 확인 필요' : '모델 없음' : selected?.displayName || (data.activeProvider === 'fabrix' ? '모델 선택' : data.settings.modelId)}</span></span><Icon name="chevronDown" size={16}/>
     </CxButton>
     {loading ? <span className="status-spinner" role="status" aria-label="모델 불러오는 중"/> : (data.catalog?.error || empty) && <ActionButton action="refresh" label="모델 목록 다시 불러오기" onClick={onRefresh}/>}
   </div>;
 }
 
-export function ModelSelection({data, initialProvider, loading, disabled, onProviderSelect, onSelect, onRefresh, onLogin, onLogout, onCancelLogin, onClose, providerLabels = PROVIDER_LABELS}) {
+export function ModelSelection({data, initialProvider, loading, disabled, onProviderSelect, onSelect, onRefresh, onLogin, onLogout, onCancelLogin, onClose, showProviderNames = false, providerLabels = PROVIDER_LABELS}) {
   const [provider, setProvider] = useState(initialProvider || data.activeProvider);
   const [query, setQuery] = useState(''), [saving, setSaving] = useState(false), [error, setError] = useState('');
   const rows = useRef(null), providerTabs = useRef(null), restoreTabFocus = useRef(false);
@@ -107,7 +107,7 @@ export function ModelSelection({data, initialProvider, loading, disabled, onProv
     </div>;
   return <DetailPanel title="모델 선택" variant="modal" className="deck-dialog model-dialog" busy={saving} hideHelp footer={accountActions} initialFocus={connected ? searchable ? '#model-search' : '.model-option[aria-pressed="true"]' : '#model-provider-tabs [aria-selected="true"]'} onClose={() => {if (!saving) onClose();}}>
     <div className="provider-toolbar">
-    <AgentTabs provider containerRef={providerTabs} items={Object.entries(providerLabels).map(([key, label]) => ({key, label: <span className="provider-tab-icon" title={label}><ProviderIcon provider={key}/><span className="visually-hidden">{label}</span></span>}))} active={provider} onChange={changeProvider} label="모델 제공자" idPrefix="provider-tab" panelId="provider-model-panel" disabled={blocked}/>
+    <AgentTabs provider containerRef={providerTabs} items={Object.entries(providerLabels).map(([key, label]) => ({key, label: <span className={`provider-tab-icon${showProviderNames ? ' with-name' : ''}`} title={label}><ProviderIcon provider={key}/><span className={showProviderNames ? 'provider-tab-name' : 'visually-hidden'}>{label}</span></span>}))} active={provider} onChange={changeProvider} label="모델 제공자" idPrefix="provider-tab" panelId="provider-model-panel" disabled={blocked}/>
     </div>
     <div key={provider} className="provider-model-panel" role="tabpanel" id="provider-model-panel" aria-labelledby={`provider-tab-${provider}`}>
       {problem && <CxNotice tone="danger">{problem}</CxNotice>}

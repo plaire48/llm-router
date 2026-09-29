@@ -1,0 +1,20 @@
+PASS a fresh populated cache reproduces the five reported CLI/rag/general labels
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+    at poll (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/model-catalog-refresh-browser.mjs:15:196)
+    at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/model-catalog-refresh-browser.mjs:44:3 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

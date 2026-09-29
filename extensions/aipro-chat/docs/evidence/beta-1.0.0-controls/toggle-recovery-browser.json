@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "hidden native checkbox labels, ARIA switches, pressed buttons and mixed state are observed",
+    "state-setting and continuation do not flip an already-correct toggle; actual state is verified",
+    "unchanged and disabled toggles return a recoverable reason; screenshots include matching control bounds",
+    "Qwen wire receives a fresh image after target failure and resumes after HTTP 503 without a user message or repeated click"
+  ],
+  "errors": [],
+  "actualBrowser": true,
+  "actualModel": false,
+  "syntheticModel": "QWEN3.8-27B-FP8-256K",
+  "imageSeen": true,
+  "transientFailureRecovered": true
+}

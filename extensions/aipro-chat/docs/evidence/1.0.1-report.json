@@ -1,0 +1,121 @@
+{
+  "version": "1.0.1",
+  "checks": [
+    "answer and code buttons write the exact text to Chrome clipboard, show a check and one CX toast without moving focus",
+    "success feedback expires and the original copy control returns",
+    "pending copy cannot duplicate or claim success; denied copy keeps a visible retry path after its toast expires",
+    "diagnostic copy is sanitized and the common toast stays keyboard-operable inside the modal without closing it",
+    "model selection uses CX selected color and only successful changes/refreshes announce completion",
+    "the page icon toggles a real fixture connection and its selected state matches storage",
+    "skill save confirms persistence, applies its accent and retains draft with no success message on failure",
+    "chat and modal toasts stay at the viewport top center at 320, 360 and 1100px without overflow",
+    "trace statuses use icons plus text, cards remain readable across three widths, reduced motion and reload preserve the correct UI state"
+  ],
+  "toastPositions": [
+    {
+      "surface": "chat",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "x": 12,
+      "y": 12,
+      "width": 336,
+      "height": 50,
+      "inModal": false
+    },
+    {
+      "surface": "modal",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "x": 12,
+      "y": 12,
+      "width": 336,
+      "height": 50,
+      "inModal": true
+    },
+    {
+      "surface": "chat",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "x": 12,
+      "y": 12,
+      "width": 336,
+      "height": 50,
+      "inModal": false
+    },
+    {
+      "surface": "modal",
+      "viewport": {
+        "width": 360,
+        "height": 800
+      },
+      "x": 12,
+      "y": 12,
+      "width": 336,
+      "height": 50,
+      "inModal": true
+    },
+    {
+      "surface": "chat",
+      "viewport": {
+        "width": 1100,
+        "height": 850
+      },
+      "x": 429.125,
+      "y": 24,
+      "width": 241.75,
+      "height": 58,
+      "inModal": false
+    },
+    {
+      "surface": "modal",
+      "viewport": {
+        "width": 1100,
+        "height": 850
+      },
+      "x": 429.125,
+      "y": 24,
+      "width": 241.75,
+      "height": 58,
+      "inModal": true
+    },
+    {
+      "surface": "chat",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "x": 12,
+      "y": 12,
+      "width": 296,
+      "height": 50,
+      "inModal": false
+    },
+    {
+      "surface": "modal",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "x": 12,
+      "y": 12,
+      "width": 296,
+      "height": 50,
+      "inModal": true
+    }
+  ],
+  "actualClipboardSuccess": true,
+  "syntheticClipboardFailure": true,
+  "syntheticModelResponses": true,
+  "fixtureSiteAccessPregranted": true,
+  "actualCompanyVerified": false,
+  "archive": {
+    "name": "aipro-chat-extension-1.0.1.zip",
+    "sha256": "976bf65b8bd0035c75f041ae3c84658f4b0fc575ace3cb38ff370ca9d4124ba5"
+  }
+}

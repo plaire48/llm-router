@@ -3,6 +3,7 @@ import {promisify} from 'node:util';
 import {lstat} from 'node:fs/promises';
 import {listFiles,relativeFile,scopedFile,readSource,fail} from './files.mjs';
 const exec=promisify(execFile);
+const MAX_EXCERPTS_PER_FILE=3,MAX_EXCERPTS=40;
 
 export async function searchSource({query,kind='all',mode='content',within,taskId,signal}){
   this.ready();
@@ -14,10 +15,13 @@ export async function searchSource({query,kind='all',mode='content',within,taskI
     return {results:matches.slice(0,100).map(path=>({path,kind:'path'})),scanned:files.length,skipped:0,total:files.length,truncated:listed.truncated||matches.length>100,engine:'git-paths',instruction:'Path candidates only. Read current source before planning or editing.'};
   }
   let rgPath;try{({rgPath}=await import('@vscode/ripgrep'));}catch{fail('search_unavailable');}
-  const results=[],deadline=Date.now()+10000;let scanned=0,skipped=0,limited=false;
+  // Excerpts are capped per file so a few files cannot crowd out the rest;
+  // `matched` still counts every file, which keeps the breadth visible.
+  // When one file holds every match, the search is a search within it and shows its matches up to the whole limit.
+  const results=[],matched=new Map(),found=[],deadline=Date.now()+10000;let scanned=0,skipped=0,limited=false,omittedExcerpts=0;
   for(let offset=0;offset<files.length;offset+=128){
     if(signal?.aborted)throw new Error('cancelled');
-    if(Date.now()>=deadline||results.length>=40){limited=true;break;}
+    if(Date.now()>=deadline||matched.size>=200){limited=true;break;}
     const batch=files.slice(offset,offset+128),safe=[];
     // Explicit rg file arguments can follow links. Validate before any search.
     for(let at=0;at<batch.length;at+=16){
@@ -31,22 +35,29 @@ export async function searchSource({query,kind='all',mode='content',within,taskI
     let stdout;
     try{({stdout}=await exec(rgPath,['--json','--fixed-strings','--ignore-case','--no-config','--no-ignore','--hidden','--threads','1','--max-count','40','--max-filesize','1M','-e',query,'--',...safe],{cwd:root,encoding:'utf8',maxBuffer:2*1024*1024,timeout:Math.max(1,deadline-Date.now()),signal,windowsHide:true}));}
     catch(error){if(signal?.aborted)throw new Error('cancelled');if(error.code===1)stdout=error.stdout;else if(error.code==='ENOENT')fail('search_unavailable');else{stdout=error.stdout||'';limited=true;}}
-    const candidates=new Set(safe),cache=new Map();
+    const candidates=new Set(safe);
     for(const line of stdout.split('\n')){
-      if(results.length>=40){limited=true;break;}
       let record;try{record=JSON.parse(line);}catch{continue;}
       if(record.type!=='match')continue;
       const data=record.data,rel=data.path?.text?.replaceAll('\\','/');
       if(!candidates.has(rel))continue;
-      try{
-        if(!cache.has(rel))cache.set(rel,await readSource(root,rel));
-        const file=cache.get(rel),actual=file.content.split('\n')[data.line_number-1];
-        // Reread disk for truthful hashes and reject results invalidated in flight.
-        if(typeof actual!=='string'||!actual.toLowerCase().includes(query.toLowerCase())){limited=true;continue;}
-        results.push({path:rel,line:data.line_number,excerpt:actual.slice(0,500),hash:file.hash,kind:rel.startsWith('openwiki/')?'wiki':'source',freshness:'unverified'});
-      }catch{limited=true;}
+      const file=matched.get(rel)||{path:rel,matches:0,shown:0};matched.set(rel,file);file.matches++;
+      if(file.matches<=MAX_EXCERPTS)found.push({rel,line:data.line_number});
     }
-    if(limited)break;
   }
-  return {results,scanned,skipped,total:files.length,truncated:listed.truncated||limited||scanned<files.length||skipped>0,engine:'ripgrep',instruction:'Static search candidates with current file hashes, not executed behavior or edit authorization. If truncated, narrow within to a directory or use a more specific query. mode=path finds filenames before reading them.'};
+  const perFile=matched.size===1?MAX_EXCERPTS:MAX_EXCERPTS_PER_FILE,cache=new Map();
+  for(const {rel,line} of found){
+    if(signal?.aborted)throw new Error('cancelled');
+    const entry=matched.get(rel);
+    if(entry.shown>=perFile||results.length>=MAX_EXCERPTS)continue;
+    try{
+      if(!cache.has(rel))cache.set(rel,await readSource(root,rel));
+      const file=cache.get(rel),actual=file.content.split('\n')[line-1];
+      // Reread disk for truthful hashes and reject results invalidated in flight.
+      if(typeof actual!=='string'||!actual.toLowerCase().includes(query.toLowerCase())){limited=true;continue;}
+      results.push({path:rel,line,excerpt:actual.slice(0,500),hash:file.hash,kind:rel.startsWith('openwiki/')?'wiki':'source',freshness:'unverified'});entry.shown++;
+    }catch{limited=true;}
+  }
+  omittedExcerpts=[...matched.values()].reduce((sum,file)=>sum+file.matches-file.shown,0);
+  return {results,files:[...matched.values()].sort((a,b)=>a.path<b.path?-1:1),omittedExcerpts,scanned,skipped,total:files.length,truncated:listed.truncated||limited||scanned<files.length||skipped>0||omittedExcerpts>0,engine:'ripgrep',instruction:'Static search candidates with current file hashes, not executed behavior or edit authorization. files lists every file with a match and its count. When several files match, at most 3 excerpts per file are shown: compare the listed files, then read one or search within it to see all of its matches. If truncated, narrow within to a directory or use a more specific query. mode=path finds filenames before reading them.'};
 }

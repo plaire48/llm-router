@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "historical model calls, source reads and coordinator progress use phase labels without a live spinner or false final verification; actual main/synthesis handoffs remain visible",
+    "132 real IndexedDB events remain available in 50/50/32 pages while chat retains only 32 steps",
+    "reload restores durable history; 320/360/1100px share typography, fit width and support keyboard disclosure",
+    "final sequence acknowledges a rejected tail without inventing events or replaying a cancelled task",
+    "provider/conversation/message ownership rejects foreign reads; deletion removes actual IDB events; metadata excludes source text and images"
+  ],
+  "errors": [],
+  "actualBrowser": true,
+  "actualIndexedDB": true,
+  "seededPublicEvents": true,
+  "liveProvider": false,
+  "modelAccuracyMeasured": false
+}

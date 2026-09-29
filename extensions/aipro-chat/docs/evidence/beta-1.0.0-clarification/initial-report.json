@@ -1,0 +1,226 @@
+{
+  "startedAt": "2026-09-22T07:33:11.332Z",
+  "status": "failed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:11.332Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2399
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:13.732Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 144
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:13.878Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2937
+    },
+    {
+      "name": "clarification-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:16.857Z",
+      "log": "clarification-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5986
+    },
+    {
+      "name": "question-forms-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:22.844Z",
+      "log": "question-forms-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4789
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:27.634Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26718
+    },
+    {
+      "name": "clarification-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:33:54.353Z",
+      "log": "clarification-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5888
+    },
+    {
+      "name": "question-forms-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:34:00.241Z",
+      "log": "question-forms-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4768
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:34:05.009Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26630
+    },
+    {
+      "name": "clarification-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:34:31.639Z",
+      "log": "clarification-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5888
+    },
+    {
+      "name": "question-forms-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:34:37.528Z",
+      "log": "question-forms-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4728
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:34:42.257Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26735
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:35:08.993Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7115
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:35:16.108Z",
+      "log": "approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 35314
+    },
+    {
+      "name": "context-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:35:51.423Z",
+      "log": "context-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6979
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:35:58.402Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17679
+    },
+    {
+      "name": "image-choice-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:36:16.082Z",
+      "log": "image-choice-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7537
+    },
+    {
+      "name": "page-skills-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:36:23.619Z",
+      "log": "page-skills-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20531
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "failed",
+      "startedAt": "2026-09-22T07:36:44.150Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 127
+    }
+  ],
+  "selection": [
+    "clarification-browser",
+    "question-forms-browser",
+    "harness-browser",
+    "approval-browser",
+    "image-choice-browser",
+    "page-skills-browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "context-browser",
+    "openwiki-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.4",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.7",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "ebeff3b58295c45e0c2213a91f96492386373f28659737dba5f9398ef5c51c36",
+  "archiveSha256": "ddc5c8d90bb7306a4c849cb83fb8b50ba938857f80f14a8af067b368a4abc5ea",
+  "failure": "openwiki-browser failed; see /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/pre-release-2026-09-22T07-33-11-331Z/openwiki-browser.log",
+  "finishedAt": "2026-09-22T07:36:44.278Z"
+}

@@ -1,0 +1,30 @@
+{
+  "id": "C2-free-shipping-threshold",
+  "title": "단일 파일 수정",
+  "suite": "edit",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "무료 배송 기준을 50,000원에서 70,000원으로 바꿔 줘.",
+  "approvals": [
+    "patch"
+  ],
+  "expect": {
+    "state": "review",
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {shippingFee} from '../src/shipping.mjs';\ntest('hidden check', () => {\n  assert.equal(shippingFee(69999, 'seoul'), 3000);\n  assert.equal(shippingFee(70000, 'seoul'), 0);\n  assert.equal(shippingFee(70000, 'jeju'), 4500);\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/shipping.mjs",
+      "test/shipping.test.mjs",
+      "test/order.test.mjs",
+      "openwiki/concepts/shipping-policy.md"
+    ]
+  }
+}

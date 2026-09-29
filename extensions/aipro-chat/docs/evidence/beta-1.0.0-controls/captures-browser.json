@@ -1,0 +1,19 @@
+{
+  "version": "1.4.11",
+  "checks": [
+    "direct capture and both captures inside a generated script appear during the pending reply",
+    "capture contains only the browser viewport, masks password fields and omits URL parameters from metadata",
+    "card downloads the original PNG byte-for-byte with a unique filename and started feedback",
+    "CX preview supports original-size scrolling, fit, gallery navigation, Escape and focus return at desktop and panel widths",
+    "capture attachments survive reload and respect reduced motion",
+    "failed download keeps an inline retry and succeeds on the next click",
+    "the native Chrome side panel displays, expands and downloads the same PNG successfully",
+    "a missing image has an explicit reload action and recovers without changing the reply",
+    "storage limits reject new images without silently evicting existing attachments",
+    "browser restart retains archived and inactive provider images after reauthentication",
+    "new conversation retains images; deleting its history removes only its PNGs without touching other providers"
+  ],
+  "realBrowserCaptures": true,
+  "syntheticQwenResponses": true,
+  "liveAiProVerified": false
+}

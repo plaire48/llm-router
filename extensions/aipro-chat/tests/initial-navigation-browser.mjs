@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+import {createServer} from 'node:http';
+import {mkdtemp, cp, readFile, writeFile, appendFile, mkdir, rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {resolve} from 'node:path';
+let targetVisits=0;
+const server=createServer((request,response)=>{
+  if(request.url==='/target')targetVisits++;
+  response.setHeader('Content-Type','text/html; charset=utf-8');
+  response.end(request.url==='/target'?'<title>Target</title><h1>Destination</h1>':'<title>Connected search</title><label>Search<input name="q"></label><button>Search</button>');
+});
+await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+const origin=`http://127.0.0.1:${server.address().port}`;
+const profile=await mkdtemp(resolve(tmpdir(),'nubi-initial-navigation-')),extension=resolve(profile,'extension');
+let browser;
+try {
+  await cp(resolve('dist'),extension,{recursive:true});
+  const manifest=JSON.parse(await readFile(resolve(extension,'manifest.json'),'utf8'));
+  manifest.host_permissions.push(`${origin}/*`);
+  await writeFile(resolve(extension,'manifest.json'),JSON.stringify(manifest));
+  await appendFile(resolve(extension,'background.js'),'\nglobalThis.navigationProbe={runBrowserAgent,stopBrowserAgent,ready:serial(()=>Promise.resolve())};\n');
+  browser=await chromium.launchPersistentContext(profile,{headless:true,executablePath:process.env.CHROME_BINARY,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
+  const page=await browser.newPage();await page.goto(origin);
+  const worker=browser.serviceWorkers()[0]||await browser.waitForEvent('serviceworker');
+  await worker.evaluate(async()=>{await navigationProbe.ready;await chrome.storage.local.set({browserWorkMode:'current'});});
+  const tabId=await worker.evaluate(async url=>(await chrome.tabs.query({})).find(tab=>tab.url===url).id,page.url());
+  const run=()=>worker.evaluate(async({tabId,url})=>(await navigationProbe.runBrowserAgent('navigation-probe',{tabId},'navigate_page',{url})).result,{tabId,url:origin+'/target'});
+  const first=await run();
+  assert.equal(first.yielded,true);assert.equal(first.actionIssued,false);
+  assert.equal(targetVisits,0);assert.equal(page.url(),origin+'/');
+  assert(first.observation.frames.some(frame=>frame.elements?.some(el=>el.kind==='field'&&el.name==='Search')));
+  assert.match(first.instruction,/Navigation was NOT issued/);
+  const second=await run();
+  assert.equal(page.url(),origin+'/target');assert.equal(targetVisits,1);
+  assert(!second.error);
+  await worker.evaluate(()=>navigationProbe.stopBrowserAgent('navigation-probe'));
+  const cancelled=await run();
+  assert(cancelled.error);assert.equal(targetVisits,1);
+  await mkdir('verification/five-task-repair-2026-09-28',{recursive:true});
+  await writeFile('verification/five-task-repair-2026-09-28/initial-navigation-browser.json',JSON.stringify({actualBrowser:true,actualModel:false,syntheticSite:true,firstNavigationWithheld:true,connectedControlObserved:true,subsequentExplicitNavigationWorks:true,cancelledRequestNotResumed:true},null,2));
+  console.log('PASS initial navigation observes connected controls before moving, explicit retry navigates once, cancellation remains final');
+} finally {await browser?.close();server.close();await rm(profile,{recursive:true,force:true});}

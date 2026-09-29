@@ -1,0 +1,16 @@
+PASS ordinary text chat exposes optional browser tools without connecting, inspecting or transmitting the current page
+PASS plain current-page analysis automatically connects and reads real DOM without a link click or skill selection
+PASS a new natural-language request reconnects after disconnect, navigation and chat reload using fresh page evidence
+PASS the original link icon still manually connects the current source page
+PASS plain chat, automatic analysis, manual page linking and reloaded analysis never attach a debugger
+PASS mail workflow opens an observed link in a new tab, composes recipients/subject/body across shadow DOM and cross-origin iframe, checks and selects without sending
+PASS Playwright produces trusted click, keyboard and rich-editor input events and observes the resulting draft state
+PASS execution, planning, intermediate review and final review contribute usage while context remains the last request
+PASS automation debugger attachments end after the completed task
+PASS tab discovery/switch, hover, scrolling, navigation, back and wait execute through the same observed action loop
+PASS generated Playwright JavaScript runs in the packaged WASM VM, receives a locator error, corrects the script and verifies a draft across shadow DOM and iframe
+PASS Qwen receives one PNG image_url and a screenshot-bound point click activates a canvas control with trusted input
+PASS stop interrupts a pending Playwright script and prevents subsequent actions
+PASS a simulated native cancel event aborts the live chat through the session observer and prevents subsequent actions
+PASS completed work survives UI reload without persisting browser handles or credentials
+PASS CX skill registration shows explicit automation capability and persists it at panel and desktop sizes

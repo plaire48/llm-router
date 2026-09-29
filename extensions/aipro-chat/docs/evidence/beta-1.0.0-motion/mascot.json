@@ -1,0 +1,89 @@
+{
+  "version": "1.4.5",
+  "checks": [
+    "all expression frames load locally with transparent art and the toolbar PNG sizes stay valid",
+    "hover greeting returns to flight without moving the pointer away",
+    "toolbar has no motion toggle; legacy pause is removed and settings login opens provider tabs",
+    "20 seconds of inactivity closes the eyes with breathing and Z marks; keyboard interaction wakes the bird",
+    "icon-only logout stays inside settings without horizontal overflow at 320, 360 and 1100 pixels",
+    "wide empty chat keeps the logo and welcome bird flying while typing",
+    "side panel keeps the logo and welcome bird flying with a draft focused",
+    "working bird keeps flapping during a pending response with composer focus",
+    "running tasks disable logout; completion smile remains visible with composer focus for 4.2 seconds and does not replay on reload",
+    "failure shows sad eyes and tears alongside the actual error; OS reduced motion keeps the expression and stops all decorative animations",
+    "logout clears credentials but saves an immediate draft; history survives reload and the draft returns after reconnection"
+  ],
+  "motionSamples": [
+    {
+      "label": "wide empty chat keeps the logo and welcome bird flying while typing",
+      "duration": 8200,
+      "samples": [
+        {
+          "selector": ".nubi-logo .agent-mark",
+          "frames": 985,
+          "allRunning": true,
+          "allFocused": true,
+          "minWing": 0,
+          "maxWing": 0.998025,
+          "minY": -8.99994,
+          "maxY": 0
+        },
+        {
+          "selector": ".welcome-emblem .agent-mark",
+          "frames": 985,
+          "allRunning": true,
+          "allFocused": true,
+          "minWing": 0,
+          "maxWing": 0.999625,
+          "minY": -9,
+          "maxY": 0
+        }
+      ]
+    },
+    {
+      "label": "side panel keeps the logo and welcome bird flying with a draft focused",
+      "duration": 8200,
+      "samples": [
+        {
+          "selector": ".nubi-logo .agent-mark",
+          "frames": 985,
+          "allRunning": true,
+          "allFocused": true,
+          "minWing": 0,
+          "maxWing": 0.996142,
+          "minY": -8.99999,
+          "maxY": 0
+        },
+        {
+          "selector": ".welcome-emblem .agent-mark",
+          "frames": 985,
+          "allRunning": true,
+          "allFocused": true,
+          "minWing": 0,
+          "maxWing": 0.999542,
+          "minY": -9,
+          "maxY": 0
+        }
+      ]
+    },
+    {
+      "label": "working bird keeps flapping during a pending response with composer focus",
+      "duration": 3000,
+      "samples": [
+        {
+          "selector": ".nubi-logo .agent-mark",
+          "frames": 361,
+          "allRunning": true,
+          "allFocused": true,
+          "minWing": 0,
+          "maxWing": 0.994946,
+          "minY": -5.99979,
+          "maxY": 0
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "syntheticAuthAndResponses": true,
+  "liveProvidersVerified": false
+}

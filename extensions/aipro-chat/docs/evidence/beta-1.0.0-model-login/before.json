@@ -1,0 +1,44 @@
+{
+  "dialog": {
+    "x": 12,
+    "y": 262.5,
+    "width": 336,
+    "height": 275,
+    "top": 262.5,
+    "right": 348,
+    "bottom": 537.5,
+    "left": 12
+  },
+  "button": {
+    "x": 164,
+    "y": 444.5,
+    "width": 32,
+    "height": 32,
+    "top": 444.5,
+    "right": 196,
+    "bottom": 476.5,
+    "left": 164
+  },
+  "state": {
+    "x": 29,
+    "y": 400.5,
+    "width": 302,
+    "height": 120,
+    "top": 400.5,
+    "right": 331,
+    "bottom": 520.5,
+    "left": 29
+  },
+  "icon": {
+    "x": 170,
+    "y": 450.5,
+    "width": 20,
+    "height": 20,
+    "top": 450.5,
+    "right": 190,
+    "bottom": 470.5,
+    "left": 170
+  },
+  "label": "로그인",
+  "text": "로그인"
+}

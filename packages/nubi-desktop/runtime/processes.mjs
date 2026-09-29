@@ -7,8 +7,14 @@ import {promisify} from 'node:util';
 import {StringDecoder} from 'node:string_decoder';
 import {startElevated,stopElevated} from './elevated-process.mjs';
 const executeFile=promisify(execFile);
+export const hostShell = (platform=process.platform) => platform==='win32'?'powershell':'bash';
 
 export function shellArguments(shell, profile, script) {
+  if(profile==='cmd'){
+    const command='chcp 65001>nul & '+script;
+    if(command.length>7600)throw Object.assign(new Error('shell_command_limit'),{code:'shell_command_limit'});
+    return [...shell.args,command];
+  }
   if(profile!=='powershell')return [...shell.args,script];
   // Windows PowerShell otherwise emits the console code page into UTF-8 pipes.
   // EncodedCommand also preserves Korean paths and literal quotes in argv.
@@ -18,16 +24,18 @@ export function shellArguments(shell, profile, script) {
   return ['-NoLogo','-NoProfile','-NonInteractive','-EncodedCommand',encoded];
 }
 
-export async function shellProfiles() {
-  if (process.platform !== 'win32') return [{id: 'bash', label: 'Bash', executable: '/bin/bash', args: ['--noprofile', '--norc', '-c']}];
-  const profiles = [{id: 'powershell', label: 'PowerShell', executable: path.join(process.env.SystemRoot || 'C:\\Windows', 'System32/WindowsPowerShell/v1.0/powershell.exe'), args: ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command']}];
-  const candidates = [process.env.NUBI_BASH_PATH, 'C:\\Program Files\\Git\\bin\\bash.exe', path.join(process.env.LOCALAPPDATA || '', 'Programs/Git/bin/bash.exe')].filter(Boolean);
-  for (const executable of candidates) { try { await access(executable); profiles.unshift({id: 'bash', label: 'Git Bash', executable, args: ['--noprofile', '--norc', '-c']}); break; } catch {} }
+export async function shellProfiles({platform=process.platform,bashCandidates}={}) {
+  if (platform !== 'win32') return [{id: 'bash', label: 'Bash', executable: '/bin/bash', args: ['--noprofile', '--norc', '-c']}];
+  const system32=path.join(process.env.SystemRoot || 'C:\\Windows','System32');
+  const profiles = [{id: 'powershell', label: 'PowerShell', executable: path.join(system32,'WindowsPowerShell/v1.0/powershell.exe'), args: ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command']},
+    {id:'cmd',label:'CMD',executable:path.join(system32,'cmd.exe'),args:['/D','/Q','/C']}];
+  const candidates = bashCandidates || [process.env.NUBI_BASH_PATH, 'C:\\Program Files\\Git\\bin\\bash.exe', path.join(process.env.LOCALAPPDATA || '', 'Programs/Git/bin/bash.exe')].filter(Boolean);
+  for (const executable of candidates) { try { await access(executable); profiles.push({id: 'bash', label: 'Git Bash', executable, args: ['--noprofile', '--norc', '-c']}); break; } catch {} }
   return profiles;
 }
 export class Processes {
   constructor(store,{onFinished=()=>{},profiles=shellProfiles}={}) { this.store = store; this.active = new Map(); this.records = new Map(); this.pending=new Set();this.preflights=new Map();this.disposed=false;this.onFinished=onFinished;this.profiles=profiles; }
-  async start({cwd, script, profile = 'bash', taskId, timeoutMs = 0,autoDiagnose=true,repairOf,setupActionId,privilege='user'}) {
+  async start({cwd, script, profile = hostShell(), taskId, timeoutMs = 0,autoDiagnose=true,repairOf,setupActionId,privilege='user'}) {
     if(this.disposed)throw new Error('host_disconnected');
     if(privilege==='administrator')return startElevated(this,{cwd,script,profile,taskId,setupActionId});
     if(privilege!=='user')throw new Error('elevation_approval_required');

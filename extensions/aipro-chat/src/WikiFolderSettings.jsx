@@ -96,12 +96,11 @@ export function WikiFolderSettings({folder, statusError, serverProject, rpc, cli
           {folder && <ActionButton action="close" label="OpenWiki 폴더 연결 해제" title="폴더 연결 해제" busy={busy === 'clear'} disabled={blocked} onClick={clearFolder}/>}
         </div>
       </div>
-      <p>필요한 문서를 찾아 브라우저 작업에 활용합니다.</p>
-      <p className="wiki-folder-disclosure">읽은 발췌는 선택한 모델에 전달합니다.</p>
+      <p className="wiki-folder-disclosure">필요한 문서 발췌를 선택한 모델에 전달합니다.</p>
       {folder?.status === 'permission_required' && !displayedError && <CxNotice tone="info">폴더 접근을 다시 허용해 주세요.</CxNotice>}
       {displayedError && <CxNotice tone="danger">{displayedError}</CxNotice>}
       {needsTab && <div className="wiki-folder-fallback"><span>전체 화면에서 폴더를 선택해 주세요.</span><ActionButton action="openExternal" label="전체 화면에서 폴더 선택" title="전체 화면에서 폴더 선택" disabled={blocked} onClick={openInTab}/></div>}
-      <details className="wiki-server-settings" open={initialServerOpen || undefined}><summary>서버 연결</summary><div className="wiki-folder-row"><span className="wiki-folder-name">{serverProject?.name || 'OpenWiki 서버'}</span><ActionButton action="login" iconOnly label="프로젝트 연결" title="OpenWiki 서버 연결" disabled={blocked} onClick={onServerOpen}/></div></details>
+      <details className="wiki-server-settings deck-subsection" open={initialServerOpen || undefined}><summary>서버 연결</summary><div className="wiki-folder-row"><span className="wiki-folder-name">{serverProject?.name || 'OpenWiki 서버'}</span><ActionButton action="login" iconOnly label="프로젝트 연결" title="OpenWiki 서버 연결" disabled={blocked} onClick={onServerOpen}/></div></details>
     </div>
   </details>;
 }

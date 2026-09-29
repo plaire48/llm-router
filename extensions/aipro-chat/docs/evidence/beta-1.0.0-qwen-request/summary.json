@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0-beta.11",
+  "extensionVersion": "1.4.14",
+  "status": "passed",
+  "unitTests": 326,
+  "browserRuns": 23,
+  "suites": [
+    "output-recovery-browser",
+    "vision-routing-browser",
+    "task-plan-browser",
+    "analysis-recovery-browser",
+    "clarification-browser",
+    "harness-browser",
+    "context-browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "side-panel-browser",
+    "page-skills-browser"
+  ],
+  "repeats": 3,
+  "actualModel": false,
+  "liveAccount": false,
+  "officialQwenTemplateExecuted": true,
+  "parallelSubagentsImplemented": false,
+  "buildSha256": "4a5969c0ad7ce458f533f770f2fd99ce17249c1f42e1f911db5e63769b66bfb4",
+  "archiveSha256": "ce9d1fb014c5eb7608dc58e04b4e7956ab65e4e26dfd6b1b9ce4affbb4643dd2",
+  "earlierFailures": [
+    "Missing Playwright default browser: used installed Chrome for Testing with CHROME_BINARY.",
+    "Context fixture expected plan completion before verification: now asserts deferral and updates only after a successful check."
+  ],
+  "mergedLocalSource": {
+    "build": "passed",
+    "unitTests": 326,
+    "preserved": [
+      "src/App.jsx extraction",
+      "src/api.js completion reader extraction"
+    ]
+  }
+}

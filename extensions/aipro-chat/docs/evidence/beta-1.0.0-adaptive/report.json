@@ -1,0 +1,444 @@
+{
+  "startedAt": "2026-09-22T09:54:55.694Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:54:55.694Z",
+      "log": "logs/unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2751
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:54:58.447Z",
+      "log": "logs/design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 156
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:54:58.603Z",
+      "log": "logs/candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3138
+    },
+    {
+      "name": "task-plan-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:55:01.786Z",
+      "log": "logs/task-plan-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6149
+    },
+    {
+      "name": "analysis-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:55:07.936Z",
+      "log": "logs/analysis-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1629
+    },
+    {
+      "name": "clarification-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:55:09.565Z",
+      "log": "logs/clarification-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6625
+    },
+    {
+      "name": "browser-workflows-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:55:16.192Z",
+      "log": "logs/browser-workflows-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 90649
+    },
+    {
+      "name": "browser-specialist-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:56:46.842Z",
+      "log": "logs/browser-specialist-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13753
+    },
+    {
+      "name": "browser-agent-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:57:00.595Z",
+      "log": "logs/browser-agent-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 51817
+    },
+    {
+      "name": "browser-popups-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:57:52.412Z",
+      "log": "logs/browser-popups-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22392
+    },
+    {
+      "name": "popup-approval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T09:58:14.804Z",
+      "log": "logs/popup-approval-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17666
+    },
+    {
+      "name": "script-preflight-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:04:44.083Z",
+      "log": "logs/script-preflight-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55910
+    },
+    {
+      "name": "script-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:04:44.083Z",
+      "log": "logs/script-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7477
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:04:44.083Z",
+      "log": "logs/harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 31298
+    },
+    {
+      "name": "task-plan-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:05:39.994Z",
+      "log": "logs/task-plan-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7020
+    },
+    {
+      "name": "analysis-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:05:39.994Z",
+      "log": "logs/analysis-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2458
+    },
+    {
+      "name": "clarification-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:05:39.994Z",
+      "log": "logs/clarification-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7510
+    },
+    {
+      "name": "browser-workflows-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:05:42.454Z",
+      "log": "logs/browser-workflows-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 90850
+    },
+    {
+      "name": "browser-specialist-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:05:47.014Z",
+      "log": "logs/browser-specialist-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13388
+    },
+    {
+      "name": "browser-agent-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:05:47.505Z",
+      "log": "logs/browser-agent-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 50992
+    },
+    {
+      "name": "browser-popups-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:06:00.402Z",
+      "log": "logs/browser-popups-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22267
+    },
+    {
+      "name": "popup-approval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:06:22.669Z",
+      "log": "logs/popup-approval-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 18013
+    },
+    {
+      "name": "script-preflight-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:06:38.497Z",
+      "log": "logs/script-preflight-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55639
+    },
+    {
+      "name": "script-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:06:40.683Z",
+      "log": "logs/script-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6924
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:06:47.607Z",
+      "log": "logs/harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 30770
+    },
+    {
+      "name": "task-plan-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:34.136Z",
+      "log": "logs/task-plan-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7008
+    },
+    {
+      "name": "analysis-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:34.136Z",
+      "log": "logs/analysis-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2433
+    },
+    {
+      "name": "clarification-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:34.136Z",
+      "log": "logs/clarification-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7576
+    },
+    {
+      "name": "browser-workflows-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:36.570Z",
+      "log": "logs/browser-workflows-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 90826
+    },
+    {
+      "name": "browser-specialist-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:41.144Z",
+      "log": "logs/browser-specialist-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13457
+    },
+    {
+      "name": "browser-agent-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:41.714Z",
+      "log": "logs/browser-agent-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 51197
+    },
+    {
+      "name": "browser-popups-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:07:54.601Z",
+      "log": "logs/browser-popups-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22406
+    },
+    {
+      "name": "popup-approval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:08:17.007Z",
+      "log": "logs/popup-approval-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17945
+    },
+    {
+      "name": "script-preflight-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:08:32.912Z",
+      "log": "logs/script-preflight-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55467
+    },
+    {
+      "name": "script-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:08:34.952Z",
+      "log": "logs/script-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6918
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:08:41.871Z",
+      "log": "logs/harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 30819
+    },
+    {
+      "name": "csp-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:09:28.379Z",
+      "log": "logs/csp-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1315
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:09:28.379Z",
+      "log": "logs/chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 42443
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:09:28.379Z",
+      "log": "logs/approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 35803
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:09:29.694Z",
+      "log": "logs/fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17289
+    }
+  ],
+  "selection": [
+    "clarification-browser",
+    "browser-popups-browser",
+    "popup-approval-browser",
+    "browser-agent-browser",
+    "browser-specialist-browser",
+    "browser-workflows-browser",
+    "task-plan-browser",
+    "analysis-recovery-browser",
+    "script-preflight-browser",
+    "script-recovery-browser",
+    "harness-browser",
+    "approval-browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "csp-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.7",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.10",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "57c904f665867284fde3f3f1d78caf23a67a59e106b0c0d72626b6c094d94e7e",
+  "archiveSha256": "5e361ea74643b2af6d1279c9cafa2e990e5b62908480aaab2e6aba77e2b6fadd",
+  "resumedAt": "2026-09-22T10:04:44.039Z",
+  "priorReport": "prior-failed-report.json",
+  "continuationReason": "Updated the dialog-close fixture to assert a yielded script and a new observed decision before the next click. No packaged source changed after the candidate build.",
+  "concurrency": 3,
+  "finishedAt": "2026-09-22T10:10:10.853Z"
+}

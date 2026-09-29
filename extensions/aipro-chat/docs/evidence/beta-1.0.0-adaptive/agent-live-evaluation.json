@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "startedAt": "2026-09-22T09:55:42.502Z",
+  "model": "GLM-5.2-NVFP4",
+  "syntheticSite": true,
+  "actualModel": false,
+  "status": "not_configured",
+  "cases": [],
+  "reason": "NUBI_EVAL_TOKEN is not configured. No inference or browser actions were executed."
+}

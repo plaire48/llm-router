@@ -1,0 +1,2 @@
+# Development-only, never installed by the extension.
+webarena-verified==1.2.3

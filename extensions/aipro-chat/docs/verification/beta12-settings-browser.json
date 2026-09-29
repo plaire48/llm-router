@@ -1,0 +1,392 @@
+{
+  "startedAt": "2026-09-23T09:00:04.270Z",
+  "status": "passed",
+  "repeats": 3,
+  "concurrency": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:04.286Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25220
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:29.507Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 163
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:29.670Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3531
+    },
+    {
+      "name": "integrations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:33.248Z",
+      "log": "integrations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5482
+    },
+    {
+      "name": "a2a-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:33.248Z",
+      "log": "a2a-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2726
+    },
+    {
+      "name": "typography-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:33.248Z",
+      "log": "typography-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12015
+    },
+    {
+      "name": "csp-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:35.976Z",
+      "log": "csp-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1487
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:37.464Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5785
+    },
+    {
+      "name": "browser-debugger-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:38.730Z",
+      "log": "browser-debugger-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 11892
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:43.249Z",
+      "log": "approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 23358
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:45.264Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3069
+    },
+    {
+      "name": "chatgpt-side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:48.333Z",
+      "log": "chatgpt-side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2149
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:50.482Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 18619
+    },
+    {
+      "name": "account-usage-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:50.623Z",
+      "log": "account-usage-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4093
+    },
+    {
+      "name": "image-choice-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:00:54.717Z",
+      "log": "image-choice-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8481
+    },
+    {
+      "name": "page-images-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:03.198Z",
+      "log": "page-images-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8019
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:06.607Z",
+      "log": "conversations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10974
+    },
+    {
+      "name": "code-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:09.102Z",
+      "log": "code-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3562
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:11.218Z",
+      "log": "browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22852
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:12.665Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7392
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:17.583Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13468
+    },
+    {
+      "name": "mascot-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:20.058Z",
+      "log": "mascot-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 74902
+    },
+    {
+      "name": "welcome-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:31.051Z",
+      "log": "welcome-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10084
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:34.070Z",
+      "log": "accessibility-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3324
+    },
+    {
+      "name": "models-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:37.395Z",
+      "log": "models-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6165
+    },
+    {
+      "name": "chat-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:41.136Z",
+      "log": "chat-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4241
+    },
+    {
+      "name": "usage-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:43.560Z",
+      "log": "usage-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4192
+    },
+    {
+      "name": "page-skills-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:45.378Z",
+      "log": "page-skills-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 16136
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:47.752Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10131
+    },
+    {
+      "name": "openwiki-ui-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:01:57.884Z",
+      "log": "openwiki-ui-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5141
+    },
+    {
+      "name": "openwiki-screen-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:02:01.514Z",
+      "log": "openwiki-screen-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3220
+    },
+    {
+      "name": "wiki-folder-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:02:03.027Z",
+      "log": "wiki-folder-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5519
+    },
+    {
+      "name": "wiki-folder-persistence-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T09:02:04.736Z",
+      "log": "wiki-folder-persistence-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4014
+    }
+  ],
+  "selection": [
+    "integrations-browser",
+    "a2a-browser",
+    "typography-browser",
+    "csp-browser",
+    "chatgpt-browser",
+    "browser-debugger-browser",
+    "approval-browser",
+    "side-panel-browser",
+    "chatgpt-side-panel-browser",
+    "fabrix-browser",
+    "account-usage-browser",
+    "image-choice-browser",
+    "page-images-browser",
+    "conversations-browser",
+    "code-browser",
+    "browser",
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "mascot-browser",
+    "welcome-browser",
+    "accessibility-browser",
+    "models-browser",
+    "chat-browser",
+    "usage-browser",
+    "page-skills-browser",
+    "openwiki-browser",
+    "openwiki-ui-browser",
+    "openwiki-screen-browser",
+    "wiki-folder-browser",
+    "wiki-folder-persistence-browser"
+  ],
+  "fullMatrix": false,
+  "inputSha256": {
+    "tests": "b975c0b1d6af1bd229263abbeb0e6ce6a50c70eb8721de02bba98609220dbb84",
+    "package.json": "ecccd92acd43a9d30d148e34f256880fd7d78751e909d63814f3cdc1280f4356",
+    "package-lock.json": "137320a934c61c1d0fcea1686f77e09f581cd552929fe94fa4cda30b0957e9e8",
+    "scripts/verify-browser.mjs": "64de09fe270e602131d4c08e4b3a86395b5aa480740fac19f9fd9ec7e82ea548"
+  },
+  "name": "nubi",
+  "version": "1.0.0-beta.12",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.15",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "9ceb4fb0a0c58902dc3bba6a7b5cfcd37a5203bb69dfc65584501ec31b3db15c",
+  "archiveSha256": "d1fc1aa6cdd375ab4444e28d246ec2469981003bcde9fb4f687557f6075e9e53",
+  "finishedAt": "2026-09-23T09:02:35.025Z"
+}

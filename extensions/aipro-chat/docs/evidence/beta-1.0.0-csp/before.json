@@ -1,0 +1,10 @@
+{
+  "passed": false,
+  "shippedManifestUnmodified": true,
+  "actualLocalRequests": true,
+  "version": "1.4.3",
+  "policyWarnings": [
+    "The source list for the Content Security Policy directive 'connect-src' contains an invalid source: 'http://[::1]:*'. It will be ignored."
+  ],
+  "errors": []
+}

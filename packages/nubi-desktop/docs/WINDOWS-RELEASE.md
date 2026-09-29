@@ -51,3 +51,9 @@ On the English Windows runner, WScript.Shell read the old ASCII shortcut correct
 The user-approved product name is 누비 workspace and its display version is beta 1.0.0. The release title and catalog use 누비 workspace beta 1.0.0. Shortcuts use the product name, while the uninstall entry and window title also include the display version. Package locks, installed Electron version and Windows file metadata must agree on 1.0.0. The stable app ID, executable and state paths preserve upgrade identity. No new dependency is needed.
 
 This release's workflow upgrades the SHA-256-pinned 0.1.1 verified installer from build run 35864493370, with read-only Actions access. The matching previous release remains archived in AI Workspace. CI artifacts expire: for later releases, update this baseline to an accessible verified release or a retained successful run and checksum. Do not remove the upgrade gate.
+
+## 1.1.0
+
+Display version beta 1.1.0; package locks, the installed Electron version and Windows file metadata agree on 1.1.0. The name, app ID, executable and state paths are unchanged, so 1.0.0 installations upgrade in place.
+
+The upgrade gate now installs the verified 1.0.0 installer from build run 35870591663 (artifact `nubi-workspace-windows-x64`, retained until 2026-12-22, SHA-256 `2cf070446d301a20e57b0722a8fa15400f6e18947b1f3c63813dc379a45ea59e`), then this candidate over it. The published 1.0.0 release in AI Workspace holds the same file. For a later release, move the baseline to 1.1.0 before that artifact expires.

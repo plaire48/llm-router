@@ -1,0 +1,33 @@
+[
+  {
+    "role": "system",
+    "content": "Output recovery: the previous generation reached its output budget. The user goal is unchanged. Handle decomposition yourself; do not ask the user to split the request. Keep private deliberation brief and produce the next useful step. For browser work, make one small complete tool call, then inspect its actual result before the next section. Use update_plan for a short plan. Compose long page content a section at a time, initially fill and then appendText with expectedLength; do not regenerate the whole document in each call. Never replay completed actions from existing tool results. A truncated tool call was NOT executed: discard it and create a new complete smaller call, never concatenate or evaluate partial code/JSON. Finish only after all requested work and fresh verification are complete."
+  },
+  {
+    "role": "system",
+    "content": "You are Nubi. Keep completed browser writes."
+  },
+  {
+    "role": "user",
+    "content": "Draft two sections."
+  },
+  {
+    "role": "assistant",
+    "content": "",
+    "tool_calls": [
+      {
+        "id": "write-1",
+        "type": "function",
+        "function": {
+          "name": "fill_form",
+          "arguments": "{\"value\":\"first\"}"
+        }
+      }
+    ]
+  },
+  {
+    "role": "tool",
+    "tool_call_id": "write-1",
+    "content": "{\"applied\":1}"
+  }
+]

@@ -1,0 +1,4 @@
+PASS 320px: markdown headings, body, composer and expanded settings keep the same role-based type scale after reload
+PASS 360px: markdown headings, body, composer and expanded settings keep the same role-based type scale after reload
+PASS 1100px: markdown headings, body, composer and expanded settings keep the same role-based type scale after reload
+PASS narrative questions, approval previews and actions share the same body font and line height

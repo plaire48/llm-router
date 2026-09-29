@@ -1,0 +1,93 @@
+{
+  "startedAt": "2026-09-22T10:44:05.068Z",
+  "status": "failed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:05.069Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2300
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:07.369Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 140
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:07.509Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2928
+    },
+    {
+      "name": "link-actions-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T10:44:10.479Z",
+      "log": "link-actions-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26825
+    },
+    {
+      "name": "task-plan-browser-1",
+      "status": "failed",
+      "startedAt": "2026-09-22T10:44:37.306Z",
+      "log": "task-plan-browser-1.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1693
+    }
+  ],
+  "selection": [
+    "link-actions-browser",
+    "typography-browser",
+    "clarification-browser",
+    "question-forms-browser",
+    "task-plan-browser",
+    "script-recovery-browser",
+    "browser-specialist-browser",
+    "browser-popups-browser",
+    "popup-approval-browser",
+    "approval-browser",
+    "code-browser",
+    "accessibility-browser",
+    "ui-simplicity-browser",
+    "models-browser",
+    "fabrix-browser",
+    "chatgpt-browser",
+    "csp-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.8",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.11",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "b4b6060b0b70fbedcb04fbd23b122ee7edf91b860d29b9d83f8d67e9025404bd",
+  "archiveSha256": "16e73b5ddc18a5d128d9cc61ef3e90ab592e35f09b0e55d683b01bd838022214",
+  "failure": "task-plan-browser-1 failed; see /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/pre-release-2026-09-22T10-44-05-067Z/task-plan-browser-1.log",
+  "finishedAt": "2026-09-22T10:44:38.999Z"
+}

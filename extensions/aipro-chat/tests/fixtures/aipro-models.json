@@ -1,0 +1,114 @@
+{
+  "modelList": [
+    {
+      "id": 42,
+      "name": "GPT-OSS-128K_general",
+      "display_name": "GPT-OSS-128K_general",
+      "sort_seq": 1,
+      "target": "general",
+      "max_input_tokens": 98304,
+      "context_length": 128000,
+      "is_agent": false
+    },
+    {
+      "id": 51,
+      "name": "QWEN3-CODER-480B-A35B-INSTRUCT-FP8-128K_rag",
+      "display_name": "Qwen3-Coder_rag",
+      "sort_seq": 1,
+      "target": "rag",
+      "max_input_tokens": 98304,
+      "context_length": 128000,
+      "is_agent": false
+    },
+    {
+      "id": 69,
+      "name": "glm-5.2",
+      "display_name": "glm-5.2_CLI",
+      "sort_seq": 1,
+      "target": "open_api",
+      "max_input_tokens": 460800,
+      "context_length": 524288,
+      "is_agent": false
+    },
+    {
+      "id": 71,
+      "name": "QWEN3.8-27B-FP8-256K",
+      "display_name": "QWEN3.8-27B-256K",
+      "sort_seq": 1,
+      "target": "chat",
+      "max_input_tokens": 221184,
+      "context_length": 262144,
+      "is_agent": false
+    },
+    {
+      "id": 43,
+      "name": "QWEN3-CODER-128K_general",
+      "display_name": "QWEN3-CODER-128K_general",
+      "sort_seq": 2,
+      "target": "general",
+      "max_input_tokens": 98304,
+      "context_length": 131072,
+      "is_agent": false
+    },
+    {
+      "id": 70,
+      "name": "GLM-5.2-NVFP4",
+      "display_name": "GLM-5.2-512K",
+      "sort_seq": 2,
+      "target": "chat",
+      "max_input_tokens": 460800,
+      "context_length": 524288,
+      "is_agent": false
+    },
+    {
+      "id": 72,
+      "name": "qwen3.8-27b",
+      "display_name": "qwen3.8-27b_CLI",
+      "sort_seq": 2,
+      "target": "open_api",
+      "max_input_tokens": 221184,
+      "context_length": 262144,
+      "is_agent": false
+    },
+    {
+      "id": 54,
+      "name": "GPT-OSS-120B-128K",
+      "display_name": "GPT-OSS-128K",
+      "sort_seq": 3,
+      "target": "chat",
+      "max_input_tokens": 98304,
+      "context_length": 131072,
+      "is_agent": false
+    },
+    {
+      "id": 57,
+      "name": "gpt-oss-120b",
+      "display_name": "GPT-OSS-128K_CLI",
+      "sort_seq": 4,
+      "target": "open_api",
+      "max_input_tokens": 98304,
+      "context_length": 131072,
+      "is_agent": false
+    },
+    {
+      "id": 62,
+      "name": "aipro-fast-model",
+      "display_name": "aipro-fast-model",
+      "sort_seq": 9,
+      "target": "pull",
+      "max_input_tokens": 221184,
+      "context_length": 262144,
+      "is_agent": false
+    }
+  ],
+  "env": [
+    {
+      "key": "THINK_TIME_MS",
+      "value": "700"
+    },
+    {
+      "key": "COMPLETION_EXT",
+      "value": "java,py,js,jsx,ts,tsx,vue"
+    }
+  ]
+}

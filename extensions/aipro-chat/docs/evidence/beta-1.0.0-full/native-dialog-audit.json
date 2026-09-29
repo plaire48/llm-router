@@ -1,0 +1,115 @@
+{
+  "verification": {
+    "ok": false,
+    "verified": false,
+    "checks": [
+      {
+        "index": 0,
+        "kind": "text_present",
+        "passed": false
+      }
+    ],
+    "error": "verification_failed",
+    "scope": "Fresh visible page evidence only. Input values and expected text are not returned. DOM retention and visible application confirmation are not an independent backend audit.",
+    "observation": {
+      "title": "Native dialog test",
+      "url": "https://dialog.example.test/",
+      "frames": [
+        {
+          "frame": 0,
+          "url": "https://dialog.example.test/",
+          "elements": [
+            {
+              "ref": "e-98305775-0-0",
+              "name": "Preview",
+              "accessibleName": "Preview",
+              "role": "button",
+              "kind": "control",
+              "tag": "button",
+              "type": "submit",
+              "disabled": false
+            }
+          ],
+          "text": "Preview\nPreview cancelled",
+          "truncated": false,
+          "regions": [],
+          "alerts": [
+            {
+              "role": "status",
+              "text": "Preview cancelled"
+            }
+          ],
+          "omittedControls": 0
+        }
+      ],
+      "scope": "Observed DOM including accessible frames and open shadow roots. Input values and credentials omitted. References belong to this observation only."
+    }
+  },
+  "status": "gap_confirmed",
+  "build": "1.4.2",
+  "syntheticSite": true,
+  "actualModel": false,
+  "testConnectionHandledDialog": false,
+  "dialogs": [
+    {
+      "type": "confirm",
+      "message": "Continue preview?"
+    }
+  ],
+  "pageResult": "Preview cancelled",
+  "ok": true,
+  "reason": null,
+  "modelResultHasDialogEvent": false,
+  "result": {
+    "ok": true,
+    "value": null,
+    "logs": [],
+    "calls": 1,
+    "execution": {
+      "commands": [
+        {
+          "index": 1,
+          "method": "click",
+          "state": "returned",
+          "actionIssued": true
+        }
+      ],
+      "omitted": 0,
+      "scope": "Host command receipts only, not proof of the requested outcome. Returned means the call returned. Check current state before repeating any issued action."
+    },
+    "actionIssued": true,
+    "observation": {
+      "title": "Native dialog test",
+      "url": "https://dialog.example.test/",
+      "frames": [
+        {
+          "frame": 0,
+          "url": "https://dialog.example.test/",
+          "elements": [
+            {
+              "ref": "e-61a10d4d-0-0",
+              "name": "Preview",
+              "accessibleName": "Preview",
+              "role": "button",
+              "kind": "control",
+              "tag": "button",
+              "type": "submit",
+              "disabled": false
+            }
+          ],
+          "text": "Preview\nPreview cancelled",
+          "truncated": false,
+          "regions": [],
+          "alerts": [
+            {
+              "role": "status",
+              "text": "Preview cancelled"
+            }
+          ],
+          "omittedControls": 0
+        }
+      ],
+      "scope": "Observed DOM including accessible frames and open shadow roots. Input values and credentials omitted. References belong to this observation only."
+    }
+  }
+}

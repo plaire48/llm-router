@@ -1,0 +1,17 @@
+{
+  "checks": [
+    "live tool row changes from spinner to completion in place and public progress text remains visible",
+    "a missing model plan is generated and durably displayed before the first browser read",
+    "plan steps advance before their tools and track actual input without repeating writes",
+    "completion waits for result review and tool records remain grouped by goal step",
+    "completed plans survive the next reply, reload, and conversation selection without appearing on ordinary chat",
+    "waiting for the user preserves pending steps, stops progress motion, and fits 320px with reduced motion",
+    "paused plan rendering and reload never turn unfinished work into completion (seeded interruption state)"
+  ],
+  "errors": [],
+  "realBrowser": true,
+  "syntheticModel": true,
+  "actualModelAccuracy": false,
+  "headed": true,
+  "buildSha256": "75e78e0d590e78a990e0df029787cb9bd5e2c6d8be2d529de0df5c0bfe452314"
+}

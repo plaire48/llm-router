@@ -1,0 +1,6 @@
+PASS syntax, unsupported late APIs and missing await fail before every write or debugger attachment, with a fresh passive observation
+PASS a missing later target preserves the earlier trusted write and identifies the failed command without replaying it
+PASS an obstructing dialog is distinguished from a missing target and a corrected script closes it before one trusted click
+PASS disabled and readonly fields retain separate recovery instructions and are never forced writable
+PASS normal auto-wait still accepts controls that become enabled or appear later, with no duplicate earlier input
+PASS the final page values and visible save state pass independent verification

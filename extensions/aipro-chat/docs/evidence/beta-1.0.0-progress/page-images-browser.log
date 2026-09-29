@@ -1,0 +1,7 @@
+PASS text-only model selects picture/currentSrc, cross-origin cached image, CSS SVG and shadow-root image through the complete agent loop
+PASS WebP, PNG, SVG and JPEG download byte-for-byte; download controls remain icons without host labels or success checks
+PASS responsive cards and image viewer support concise labels, navigation, zoom and focus return
+PASS original image attachments survive extension page reload
+PASS blob, data, GIF and cross-origin frame images are retrievable
+PASS stale source, fabricated refs and HTML disguised as an image are rejected
+PASS clearing the conversation removes original image blobs

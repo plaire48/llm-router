@@ -1,0 +1,22 @@
+PASS AI Pro auto compaction preserves the original history and latest correction, and counts every summary request once
+PASS saved memory survives reload and is readable inside the existing context dialog at 360px
+PASS manual compression advances memory while preserving the unsent draft and desktop layout
+PASS real Playwright input is checkpointed with its plan before the next model response, without persisting scripts or DOM
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(current.chat.task.plan.every(s=>s.status==='completed'))
+
+    at file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/context-browser.mjs:84:106 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

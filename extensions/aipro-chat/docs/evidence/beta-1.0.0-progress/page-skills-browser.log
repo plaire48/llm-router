@@ -1,0 +1,14 @@
+PASS five built-in skills and Markdown import/edit persist across reload with icon-only entry points
+PASS declining optional access preserves the draft and sends no page or model request
+PASS source and structure skills automatically connect the original website after opening full-screen chat without a link click
+PASS model-driven inspect and fill proposal make no page changes before review or after cancellation
+PASS tool results omit form values, hidden content, scripts, secret inputs and URL query values
+PASS edits made after proposal invalidate the whole plan before any field changes
+PASS approved fields dispatch input events and report actual changes without submitting; stale plans are rejected
+PASS navigation to another document cannot receive an old approved fill plan
+PASS browser agent inspects DOM, reads selected site storage, proposes values and verifies the applied DOM; trace survives reload without tool payloads
+PASS storage tools enforce prior key listing, secret filtering, nested serialized JSON filtering and bounded results across local/session storage
+PASS post-action verification catches a site reverting the field asynchronously and returns failure evidence to the model
+PASS browser download/import round trip shares instructions and capabilities without page data or credentials; capabilities are reviewable before save
+PASS Playwright skill reconnects after navigation and advertises its packaged executor
+PASS the unchanged distribution without a site grant receives a real Chrome injection denial on the fixture origin

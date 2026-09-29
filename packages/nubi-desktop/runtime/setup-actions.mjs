@@ -2,6 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {fail,hash,readSource} from './files.mjs';
 import {shellProfiles} from './processes.mjs';
 import Ajv from 'ajv';
+import {preferredShell} from './environment-inspection.mjs';
 
 const text = maxLength => ({type:'string',minLength:1,maxLength});
 export const SETUP_ACTION_SCHEMA = {
@@ -9,7 +10,7 @@ export const SETUP_ACTION_SCHEMA = {
   properties:{title:text(120),kind:{type:'string',enum:['inspect','install','configure','build','start','verify']},profile:text(40),script:text(16000),reason:text(1000),effects:text(1500),verification:text(1000),
     privilege:{type:'string',enum:['user','administrator']},privilegeReason:text(1000),
     references:{type:'array',minItems:1,maxItems:10,items:{type:'object',additionalProperties:false,properties:{path:text(1000),hash:text(100)},required:['path','hash']}}},
-  required:['title','kind','profile','script','reason','effects','verification','references']
+  required:['title','kind','script','reason','effects','verification','references']
 };
 
 const validate=new Ajv().compile(SETUP_ACTION_SCHEMA);
@@ -18,14 +19,21 @@ const validate=new Ajv().compile(SETUP_ACTION_SCHEMA);
 export async function prepareSetupAction(service,taskId,args,observations) {
   if(!validate(args))fail('setup_invalid');
   if(service.task(taskId).question)fail('question_pending');
+  const profiles=await shellProfiles();args={...args,profile:args.profile||preferredShell(profiles,process.platform,service.shellPreference())};
   if(args.privilege==='administrator'){
     if(process.platform!=='win32'||args.profile!=='powershell')fail('elevation_unavailable');
     if(!args.privilegeReason||args.script.length>3000||args.kind==='start')fail('elevation_command_limit');
   }
   const workspace=await service.target(taskId);
-  if(!(await shellProfiles()).some(p=>p.id===args.profile))fail('shell_unavailable');
+  if(!profiles.some(p=>p.id===args.profile))fail('shell_unavailable');
+  const references=new Map(args.references.map(ref=>[ref.path,ref]));
   for(const ref of args.references){
-    const observed=observations?.files.get(ref.path);
+    const inspected=observations?.environment?.get(ref.path);
+    if(inspected?.hash===ref.hash)for(const dependency of inspected.dependencies||[])references.set(dependency.path,dependency);
+  }
+  args={...args,references:[...references.values()]};
+  for(const ref of args.references){
+    const observed=observations?.files.get(ref.path)?.hash===ref.hash?observations.files.get(ref.path):observations?.environment?.get(ref.path);
     if(!observed||observed.hash!==ref.hash)fail('source_read_required');
     if((await readSource(workspace,ref.path)).hash!==ref.hash)fail('source_stale');
   }

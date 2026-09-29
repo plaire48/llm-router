@@ -1,0 +1,163 @@
+{
+  "startedAt": "2026-09-22T07:12:30.174Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:12:30.175Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2466
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:12:32.643Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 152
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:12:32.795Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2905
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:12:35.741Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24735
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:13:00.477Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24823
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:13:25.300Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24940
+    },
+    {
+      "name": "csp-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:13:50.240Z",
+      "log": "csp-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1095
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:13:51.335Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1667
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:13:53.003Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17564
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:14:10.568Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4653
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:14:15.222Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17740
+    },
+    {
+      "name": "welcome-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:14:32.962Z",
+      "log": "welcome-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 18920
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:14:51.882Z",
+      "log": "accessibility-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5145
+    }
+  ],
+  "selection": [
+    "provider-switch-browser",
+    "ui-simplicity-browser",
+    "accessibility-browser",
+    "feedback-browser",
+    "welcome-browser",
+    "fabrix-browser",
+    "side-panel-browser",
+    "csp-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.3",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.6",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "b5376ad13a961f097d1874913ed80e4c86f67c0a5859e49df202129bd6cccab2",
+  "archiveSha256": "13a6b566e5c5045fda3ca8623dc2470eea70469f2e0393066a8e171c406de935",
+  "finishedAt": "2026-09-22T07:14:57.055Z"
+}

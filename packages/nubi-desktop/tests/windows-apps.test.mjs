@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {EventEmitter} from 'node:events';
 import {fixture} from './fixtures.mjs';
 import {WindowsApps,localExecutable,appEnvironment} from '../runtime/windows-apps.mjs';
-import {WinappComputer,proposeComputerLaunch} from '../runtime/computer-use.mjs';
+import {WinappComputer,proposeComputerLaunch,winappEnvironment} from '../runtime/computer-use.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {readFile} from 'node:fs/promises';
@@ -32,6 +32,7 @@ test('launch accepts only an exact local EXE and excludes shell, URI, UNC and in
   for(const bad of ['calc.exe','C:calc.exe','C:\\a.cmd','https://a/app.exe','\\\\server\\app.exe','C:\\a.exe:other.exe','C:\\a\n.exe'])assert.throws(()=>localExecutable(bad),/computer_app_invalid/);
   assert.equal(localExecutable('C:\\Program Files\\한국어.exe'),'C:\\Program Files\\한국어.exe');
   assert.deepEqual(appEnvironment({SystemRoot:'C:\\Windows',PATH:'injected',NODE_OPTIONS:'--import evil',AIPRO_ACCESS_TOKEN:'secret',APPDATA:'C:\\user'}),{SystemRoot:'C:\\Windows',APPDATA:'C:\\user'});
+  assert.deepEqual(winappEnvironment({SystemRoot:'C:\\Windows',PATH:'injected',NODE_OPTIONS:'--import evil',AIPRO_ACCESS_TOKEN:'secret',APPDATA:'C:\\user',WINAPP_UI_WORKFLOW_ID:'foreign'},'nubi-test'),{SystemRoot:'C:\\Windows',APPDATA:'C:\\user',WINAPP_UI_WORKFLOW_ID:'nubi-test'});
 });
 test('launch is inert until approval; duplicate approvals spawn once and window verification does not grant control',async t=>{
   const {service,data,app,propose,decide}=await setup(t),p=await propose();assert.equal(data.started,0);

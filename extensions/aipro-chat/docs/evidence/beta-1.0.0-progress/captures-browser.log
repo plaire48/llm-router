@@ -1,0 +1,11 @@
+PASS direct capture and both captures inside a generated script appear during the pending reply
+PASS capture contains only the browser viewport, masks password fields and omits URL parameters from metadata
+PASS card downloads the original PNG byte-for-byte with a unique filename and started feedback
+PASS CX preview supports original-size scrolling, fit, gallery navigation, Escape and focus return at desktop and panel widths
+PASS capture attachments survive reload and respect reduced motion
+PASS failed download keeps an inline retry and succeeds on the next click
+PASS the native Chrome side panel displays, expands and downloads the same PNG successfully
+PASS a missing image has an explicit reload action and recovers without changing the reply
+PASS storage limits reject new images without silently evicting existing attachments
+PASS browser restart retains archived and inactive provider images after reauthentication
+PASS new conversation retains images; deleting its history removes only its PNGs without touching other providers

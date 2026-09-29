@@ -1,0 +1,9 @@
+
+> nubi@1.0.0-beta.6 design:check
+> cx-check src
+
+{
+  "scope": "/private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/src",
+  "issues": [],
+  "note": "Checks explicit color/font literals and selected internal overrides. Browser layout, accessibility, contrast and behavior still require review."
+}

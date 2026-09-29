@@ -1,0 +1,9 @@
+PASS the model receives the new window before composing and continues without repeating the opening click
+PASS popup: draft and parent identity remain after final-action approval pauses the browser connection
+PASS popup: after chat reload and a different active page, pencil edits only the original draft without reopening it
+PASS popup: approval clicks once, follows the closed child back to its known parent and verifies the result
+PASS the model receives the new window before composing and continues without repeating the opening click
+PASS noopener: draft and parent identity remain after final-action approval pauses the browser connection
+PASS noopener: after chat reload and a different active page, pencil edits only the original draft without reopening it
+PASS noopener: approval clicks once, follows the closed child back to its known parent and verifies the result
+PASS a child closed between model tool calls reconnects to its known parent and continues without page_changed

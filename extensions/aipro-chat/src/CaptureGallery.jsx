@@ -6,7 +6,7 @@ import {QuestionForm} from './QuestionForm.jsx';
 import './captures.css';
 
 const sizeLabel = bytes => bytes < 1048576 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1048576).toFixed(1)} MB`;
-const imageLabel = capture => capture.source === 'page-image' ? capture.label || capture.filename : capture.mode === 'page' ? '전체 페이지 캡처' : '브라우저 캡처';
+const imageLabel = capture => capture.source === 'page-image' ? capture.label || capture.filename : capture.mode === 'page' ? '전체 페이지 캡처' : capture.mode === 'region' ? '화면 일부 캡처' : '브라우저 캡처';
 function useCapture(id) {
   const [media, setMedia] = useState({}), [revision, retry] = useState(0);
   useEffect(() => {

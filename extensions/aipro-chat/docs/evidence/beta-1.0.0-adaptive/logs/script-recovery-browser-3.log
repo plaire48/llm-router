@@ -1,0 +1,6 @@
+PASS a real sandbox syntax failure shows its short reason while keeping the unfinished task in an error state
+PASS syntax, unavailable page.evaluate, ambiguous locator and non-editable target failures return distinct repair guidance with fresh observations
+PASS already-authorized semantic tools complete the requested draft after script failures with exactly two trusted writes and independent result review
+PASS verified recovery clears the warning appearance while preserving the original failure receipts
+PASS recovered state persists after reload in both side-panel and desktop layouts
+PASS identical failing code pauses for clarification after an intermediate review and three no-progress attempts without replaying earlier writes

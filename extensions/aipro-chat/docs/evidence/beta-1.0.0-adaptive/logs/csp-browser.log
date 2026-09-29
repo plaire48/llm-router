@@ -1,0 +1,1 @@
+PASS shipped CSP parses without warnings, page/worker loopback and HTTPS work, non-loopback HTTP stays blocked

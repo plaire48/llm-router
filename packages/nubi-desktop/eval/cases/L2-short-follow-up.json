@@ -1,0 +1,30 @@
+{
+  "id": "L2-short-follow-up",
+  "title": "짧은 후속 요청",
+  "suite": "conversation",
+  "split": "holdout",
+  "corpus": "order-service",
+  "request": "무료 배송 기준을 70,000원으로 올리려고 해. 단, 검사 파일과 위키 문서는 내가 직접 고칠 테니 너는 고치지 마. 먼저 어느 파일의 무엇을 바꿔야 하는지만 알려 줘.",
+  "followUps": [
+    "좋아, 그대로 진행해 줘."
+  ],
+  "approvals": [
+    "patch"
+  ],
+  "expect": {
+    "state": "review",
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {shippingFee} from '../src/shipping.mjs';\ntest('hidden check', () => {\n  assert.equal(shippingFee(69999, 'seoul'), 3000);\n  assert.equal(shippingFee(70000, 'seoul'), 0);\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/shipping.mjs"
+    ]
+  }
+}

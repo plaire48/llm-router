@@ -13,7 +13,7 @@ async function inspect(handle, original, {focused = false, typing = false} = {})
   return state;
 }
 
-export async function keyboardInput(handle, page, method, value, options = {}, {cancelled = () => false, onIssued = () => {}} = {}) {
+export async function keyboardInput(handle, page, method, value, options = {}, {cancelled = () => false, onIssued = () => {}, beforeIssued} = {}) {
   const typing = method === 'pressSequentially';
   // Sequential text is a short widget interaction, never a hidden Enter/Tab
   // submission or a replacement for efficient large-body fill/appendText.
@@ -28,6 +28,12 @@ export async function keyboardInput(handle, page, method, value, options = {}, {
     checkCancelled();
     await inspect(handle, original, {typing, focused: true});
     checkCancelled();
+    if (beforeIssued) {
+      await beforeIssued();
+      checkCancelled();
+      await inspect(handle, original, {typing, focused:true});
+      checkCancelled();
+    }
     onIssued();
     if (typing) await page.keyboard.type(part);
     else await page.keyboard.press(part);

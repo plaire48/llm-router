@@ -1,0 +1,6 @@
+PASS a denied picker result leaves no folder connection and displays a recoverable settings error
+PASS settings stores a real directory handle in IndexedDB and the service worker reads its openwiki child through structured clone
+PASS Wiki-only natural-language chat uses local folder search/read without a website, local server or debugger
+PASS folder choice survives extension reload and changed Markdown is read again with a fresh matching hash
+PASS the same agent reads the selected Wiki, fills a real form with trusted input and verifies retained fields and draft status without submitting
+PASS cancelled replacement preserves the folder; removal clears IndexedDB and rejects Wiki tool calls in subsequent requests

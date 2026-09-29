@@ -43,7 +43,7 @@ export function FabrixConnection({initial, rpc, onClose, onConnected, requestPer
     finally {if (alive.current) setConnecting(false);}
   }
   return <DetailPanel title="FabriX 연결" variant="modal" className="deck-dialog fabrix-dialog" hideHelp onClose={() => {if (!connecting) onClose();}} footer={<>
-    {testing ? <ActionButton action="cancel" label="테스트 중지" onClick={cancel}/> : <CxButton disabled={connecting} onClick={test}>연결 테스트</CxButton>}
+    {testing ? <CxButton onClick={cancel}>테스트 중지</CxButton> : <CxButton disabled={connecting} onClick={test}>연결 테스트</CxButton>}
     <ActionButton action="login" iconOnly className="icon-commit" label="연결" title="FabriX 연결" disabled={!result || testing} busy={connecting} onClick={connect}/>
   </>}>
     <form ref={formRef} className="fabrix-fields" onSubmit={event => {event.preventDefault(); test();}}>

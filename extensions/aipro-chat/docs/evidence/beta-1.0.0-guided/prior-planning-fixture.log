@@ -1,0 +1,28 @@
+{"round":1,"errors":[],"failure":"Expected values to be strictly deep-equal:\n+ actual - expected\n\n  [\n+   'ask_user',\n    'update_plan'\n  ]\n","last":{"content":"작성 화면의 입력란부터 확인하겠습니다.","error":"upstream","finishReason":null,"id":"6464ce8c-6578-44c7-8df2-85ea03c70d53","modelId":"GLM-5.2-NVFP4","modelName":"GLM-5.2","pageId":"","requestId":"6464ce8c-6578-44c7-8df2-85ea03c70d53","role":"assistant","skillId":"browser-agent","state":"error","trace":[],"usage":null},"screen":"본문으로 이동\nbeta\n대화 이력\n새 대화\n전체 화면으로 열기\n설정\n교육 안내 제목에 10월 교육 안내를 입력하고 반영됐는지 확인해줘. 등록하지 마.\nGLM-5.2\n\n작성 화면의 입력란부터 확인하겠습니다.\n\nAI 서버에서 오류가 발생했습니다. 연결 진단을 확인해 주세요.\n2번째 메시지 복사\n재시도\n메시지\n파일 첨부\nGLM-5.2"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
+  [
++   'ask_user',
+    'update_plan'
+  ]
+
+    at file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/task-plan-browser.mjs:36:14
+    at async Promise.all (index 1)
+    at async RouteHandler._handleInternal (/private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/playwright-core/lib/coreBundle.js:59784:27)
+    at async RouteHandler._handleImpl (/private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/playwright-core/lib/coreBundle.js:59753:18)
+    at async RouteHandler.handle (/private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/playwright-core/lib/coreBundle.js:59747:16)
+    at async _BrowserContext._onRoute (/private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/playwright-core/lib/coreBundle.js:61965:27) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [ 'ask_user', 'update_plan' ],
+  expected: [ 'update_plan' ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

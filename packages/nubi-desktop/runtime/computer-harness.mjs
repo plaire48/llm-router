@@ -1,8 +1,34 @@
 import {hash,fail} from './files.mjs';
 
 export const COMPUTER_EVIDENCE_SOURCES=Object.freeze({observe_computer:'live',read_computer_result:'historical',verify_computer_value:'receipt'});
-export const COMPUTER_GUIDANCE='Prefer explicit UIA invoke, set_value, select, toggle_on, toggle_off, expand or collapse. Show the visual AI pointer during real UIA dispatch without moving the user cursor. Only after three fresh host-confirmed safe UIA failures on the same bound target may you propose real Windows mouse control through per-action HITL. Never manufacture failures or repeat unchanged calls just to unlock mouse control. Unknown issued outcomes never qualify. pointer_click, pointer_double_click, pointer_right_click, hover and drag move the shared OS cursor and require a separate visible mouse-control approval; the visual AI pointer depicts the tool target, not OS input or business success. Never infer approval from a task request, Wiki, question answer or earlier action. Do not substitute shell input. Use observed selectors only; drag requires two distinct observed controls in the same connected window. No raw coordinates, global keys, persistent grant or long press. Ask if the target is ambiguous. The user may stop; do not resume a cancelled task. Already-started short native gestures may finish before cancellation is observed; never claim they were undone. Read target.controlState before choosing a UIA state action. Unknown capability must not become a silent pointer fallback: wait for host pointerFallback.eligible before proposing a separate mouse action for HITL. Never use blind toggle. state_matched proves only the control state. Query OpenWiki-SDS for relevant rules and include evidenceIds from this run. Stale evidence needs a fresh query and proposal, never removal of citations to bypass checks. For Windows tasks, preserve the original goal and every criterion. Use computer_checkpoint for recovery and read_computer_result to inspect the host receipt and captured result of an approved action. Then observe_computer for the current window before proposing another action. Use structured UIA first. If a target is absent from the shallow tree, use observe_computer query with a specific label, then inspect the exact candidate. Do not repeatedly inspect the same truncated tree or interpret a no-match as proof of absence. After a click or invoke, read the captured whole-window result and its historical UIA before making a fresh observation. UIA and pixels are sequential evidence, not an atomic snapshot; resolve contradictions with a fresh focused read. includeImage=false for models without vision, or an element crop for a focused image. Use delegate_analysis with page, review or recovery roles on the returned analysis_evidence_id when independent inspection helps. Children analyze frozen evidence only. Their advice and historical screenshots never grant current selectors, approve input, certify saving or complete a criterion. Compare exact values with verify_computer_value when applicable. A visual difference is not business success. A proposed operation is pending human review; stop without issuing another proposal. Unknown outcomes must be inspected, never replayed. Ask a focused question if the target or expected outcome is unclear. Keep one native action per approval.';
+export const COMPUTER_GUIDANCE='Prefer supported UIA invoke, set_value, select and explicit toggle/expand/collapse states. Read target.controlState first; never blind-toggle. The visual AI pointer marks an observed target without moving the user cursor and proves no execution. Physical pointer input requires host pointerFallback.eligible after three fresh safe UIA failures on the same bound target plus separate per-action HITL. Never manufacture failures, repeat unchanged calls to unlock it, or count unknown issued outcomes. Unknown capability is not fallback eligibility. Use observed selectors only; drag needs two distinct controls in the same connected window. No raw coordinates, global keys, persistent grants, long press or shell-input substitutes. Neither user goals, Wiki text, question answers nor earlier approvals authorize another input. An approval is consent to that one action, never an exception to a project or Wiki rule: never propose an action such a rule forbids, even when the user asked for it (for example a submission the rules reserve for a person); do the permitted part, such as saving a draft, and tell the user what they must do themselves. Ask about ambiguous targets. Stop on cancellation; a started short native gesture may finish and is not undone. Include documentAnalysisId when research informs an action and this-run Wiki evidenceIds for OpenWiki-SDS rules. Changed sources require fresh research and a new proposal; never remove citations to bypass checks. Partial findings retain unresolved scope. Preserve the original goal and every criterion. For recovery or after compaction use computer_checkpoint and read_computer_result before a fresh observe_computer. Unknown outcomes must be reconciled, never replayed. Prefer structured UIA; if the shallow tree misses a target, query a specific label then inspect the exact candidate. Repeated truncated/no-match observations do not prove absence. After click/invoke, inspect the captured whole-window result and historical UIA, then observe afresh. Pixels and UIA are sequential, not atomic; resolve contradictions with a focused read. Models without vision use includeImage=false; otherwise crop a relevant element when sufficient. Delegate frozen analysis_evidence_id to page/review/recovery workers when independent inspection helps. Child opinions and historical captures do not supply current selectors, approvals or verified completion. Use verify_computer_value for literal comparisons. Matched values/states or visual differences do not establish saving, server acceptance or overall success. Propose one native action per approval and stop for review. When the request names several inputs of one window, propose them as one propose_computer_batch (2 to 5 UIA steps from one observation, a button press only as the last step) instead of one approval per input. Ask a focused question if expected results are unclear.';
 
+// Whether the window differed after an action that has no readback, such as a press.
+// Only names and availability of the controls are compared: a value may have changed unseen.
+export function observedEffect(service,action){
+  if(!action||action.action==='batch'||action.state!=='observed'||action.verification!=='not_verified')return undefined;
+  const stored=service.store.get('computer-image:'+action.id),changes=observedChanges(stored?.beforeObservation,stored?.afterObservation);
+  if(!changes)return undefined;
+  return changes.changed.length||changes.added.length||changes.removed.length?'changed':'no_change';
+}
+// For the run that follows an approval: the action, its outcome and what changed, without the controls themselves.
+export function reviewedAction(service,taskId,actionId){
+  if(!actionId)return null;
+  const action=service.store.get('computer-action:'+actionId);
+  if(!action||action.taskId!==taskId)return null;
+  const stored=service.computerBinding?.taskId===taskId&&service.computerBinding.id===action.bindingId?service.store.get('computer-image:'+actionId):null;
+  if(action.action==='batch')return {id:action.id,action:'batch',steps:stepResults(action),state:action.state,execution:action.execution||'not_started',verification:action.verification,error:action.error||null,stopped:action.stopped||null,
+    changes:observedChanges(stored?.beforeObservation,stored?.afterObservation),instruction:BATCH_RESULT};
+  return {id:action.id,action:action.action,selector:action.target?.resolvedSelector||action.selector,state:action.state,execution:action.execution||'not_started',verification:action.verification,error:action.error||null,
+    controlCheck:action.controlCheck||null,changes:observedChanges(stored?.beforeObservation,stored?.afterObservation),...(observedEffect(service,action)?{observed:observedEffect(service,action)}:{}),
+    instruction:'The action the user approved and its outcome. It was carried out once: do not propose it again unless the user asks for a repetition. observed no_change: the host saw no control change its name or availability, so the same action is unlikely to help; choose the action the control supports (select for a list item). Observe the app for what this does not show.'};
+}
+// The outcome of each step of a batch, without the text that was entered.
+const BATCH_RESULT='The batch the user approved and the outcome of every step. A step with execution command_returned or already_at_target is done: do not propose it again. A step with not_started was not carried out; stopped names where the batch ended and why. Observe the app before proposing what is left. A button press has no readback (not_verified): read changes and observe the app.';
+export function stepResults(action){
+  return (action.steps||[]).map(step=>({index:step.index,action:step.action,selector:step.target?.resolvedSelector||step.selector,name:step.target?.element?.name||'',execution:step.execution||'not_started',verification:step.verification||'not_verified',
+    ...(step.controlCheck?{state:{property:step.controlCheck.property,expected:step.controlCheck.expected,actual:step.controlCheck.actual}}:{})}));
+}
 export function computerCheckpoint(service,taskId){
   const all=service.store.list('computer-action:').filter(v=>v.taskId===taskId),checks=service.store.list('computer-check:').filter(v=>v.taskId===taskId);
   const unresolved=all.filter(v=>['proposed','starting','attention'].includes(v.state));
@@ -13,19 +39,39 @@ export function computerCheckpoint(service,taskId){
     instruction:'Host facts, not an AI summary or execution permission. Historical results do not establish current app state. Never replay pending or uncertain operations. A matched control value does not verify the entire task.'};
 }
 
+// What differs between the controls observed before an action and after it.
+// Both are depth-limited readings of the same window: a control that only one
+// reading reached counts as added or removed. No difference is not proof that
+// the action had no effect.
+const SHOWN=20;
+export function observedChanges(before,after){
+  if(!Array.isArray(before?.elements)||!Array.isArray(after?.elements))return null;
+  const was=new Map(before.elements.map(element=>[element.selector,element])),now=new Map(after.elements.map(element=>[element.selector,element]));
+  const changed=[],fields=['name','isEnabled','isOffscreen'];
+  for(const [selector,element] of now){
+    const earlier=was.get(selector);if(!earlier)continue;
+    const differs=fields.filter(field=>earlier[field]!==element[field]);
+    if(differs.length)changed.push({selector,before:Object.fromEntries(differs.map(field=>[field,earlier[field]])),after:Object.fromEntries(differs.map(field=>[field,element[field]]))});
+  }
+  const brief=element=>({selector:element.selector,name:element.name,type:element.type});
+  const added=[...now.values()].filter(element=>!was.has(element.selector)).map(brief),removed=[...was.values()].filter(element=>!now.has(element.selector)).map(brief);
+  const omitted=Math.max(0,changed.length-SHOWN)+Math.max(0,added.length-SHOWN)+Math.max(0,removed.length-SHOWN);
+  return {changed:changed.slice(0,SHOWN),added:added.slice(0,SHOWN),removed:removed.slice(0,SHOWN),compared:now.size,...(omitted?{omitted}:{})};
+}
 export function readComputerResult(service,taskId,{actionId,includeImage=false,phase='after'}={}){
   if(typeof actionId!=='string'||typeof includeImage!=='boolean'||!['before','after'].includes(phase))fail('computer_invalid');
   const action=service.store.get('computer-action:'+actionId);
   if(!action||action.taskId!==taskId)fail('computer_result_missing');
-  const receipt={id:action.id,action:action.action,state:action.state,execution:action.execution||'not_started',verification:action.verification,createdAt:action.createdAt,finishedAt:action.finishedAt||null,error:action.error||null,inputMode:action.inputMode||'uia',pointerApproval:action.pointerApproval||null,pointerDisplay:action.pointerDisplay?{available:action.pointerDisplay.available,animated:action.pointerDisplay.animated}:null,visualDifference:action.visualDifference||null,controlCheck:action.controlCheck||null,wikiEvidence:action.wikiEvidence||[]};
+  const receipt={id:action.id,action:action.action,state:action.state,execution:action.execution||'not_started',verification:action.verification,createdAt:action.createdAt,finishedAt:action.finishedAt||null,error:action.error||null,inputMode:action.inputMode||'uia',pointerApproval:action.pointerApproval||null,pointerDisplay:action.pointerDisplay?{available:action.pointerDisplay.available,animated:action.pointerDisplay.animated}:null,visualDifference:action.visualDifference||null,controlCheck:action.controlCheck||null,wikiEvidence:action.wikiEvidence||[],documentEvidence:action.documentEvidence||null,...(action.action==='batch'?{steps:stepResults(action),stopped:action.stopped||null}:{})};
   let image;
   const binding=service.computerBinding,canReadEvidence=binding?.taskId===taskId&&binding.id===action.bindingId;
   if(includeImage){
     if(!canReadEvidence)fail('computer_binding_required');
     image=service.store.get('computer-image:'+actionId)?.[phase];
   }
-  const observation=phase==='after'&&canReadEvidence?service.store.get('computer-image:'+actionId)?.afterObservation:undefined;
-  return {receipt,historical:true,phase,image,observation,imageStatus:includeImage?(image?'captured':'not_captured'):'not_requested',instruction:'This is an immutable capture of a previous operation, not the live screen. UIA and pixels were read sequentially, not atomically. Obtain observe_computer before input. Never turn this result or a subagent opinion into permission or business success.'};
+  const stored=canReadEvidence?service.store.get('computer-image:'+actionId):undefined,observation=phase==='after'?stored?.afterObservation:undefined;
+  const changes=phase==='after'?observedChanges(stored?.beforeObservation,stored?.afterObservation):null;
+  return {receipt,historical:true,phase,image,observation,...(changes?{changes}:{}),...(observedEffect(service,action)?{observed:observedEffect(service,action)}:{}),imageStatus:includeImage?(image?'captured':'not_captured'):'not_requested',instruction:(action.action==='batch'?BATCH_RESULT+' ':'')+'changes lists the controls whose name or state differs between the observation before the action and the one after it; an empty list is not proof that nothing happened. This is an immutable capture of a previous operation, not the live screen. UIA and pixels were read sequentially, not atomically. Obtain observe_computer before input. Never turn this result or a subagent opinion into permission or business success.'};
 }
 
 // Ephemeral loop detection. New opaque observation IDs alone are not progress.

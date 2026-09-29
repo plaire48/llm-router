@@ -1,0 +1,92 @@
+{
+  "name": "order-service",
+  "schema": 1,
+  "createdAt": "2026-09-28T22:45:27.591Z",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "6d8c958eb2b637053cd65250753772cbf044c54664b35e0180cfc4db63c6cbd8",
+      "bytes": 396
+    },
+    {
+      "path": "README.md",
+      "sha256": "5c3605c6b213bfb45cf05a372d12469e584b8b88d48e462938c1c1558eeceb71",
+      "bytes": 210
+    },
+    {
+      "path": "openwiki/architecture/modules.md",
+      "sha256": "048adc64eca561ed1c1bea26fb62c579b05ee4e30a1df03b70f28ae4c1fa804d",
+      "bytes": 613
+    },
+    {
+      "path": "openwiki/concepts/discount-policy.md",
+      "sha256": "d8ddcbaecf37034cd082aa6965986121ca9dc4522a3ebc5d8a565f50222633c3",
+      "bytes": 947
+    },
+    {
+      "path": "openwiki/concepts/order-status.md",
+      "sha256": "4ff1bc74b87436c5061906a6b0b8c8588a22f47d3ec0bfd742d9b331c63b2d55",
+      "bytes": 766
+    },
+    {
+      "path": "openwiki/concepts/shipping-policy.md",
+      "sha256": "163e86607003e9f690d7c6be4a332cb25f57ed9519a5d00fb14a64d26af1804d",
+      "bytes": 992
+    },
+    {
+      "path": "openwiki/operations/release-rules.md",
+      "sha256": "69d3e7ae4fa903a159fb9978d9dcf1d8b0f561ad0d9638f1179aef84a6ba8e8a",
+      "bytes": 454
+    },
+    {
+      "path": "openwiki/quickstart.md",
+      "sha256": "7323b02e3fb5089cbf1f6b88d028c40ee1b693d76010b53c5018e6365701f6a6",
+      "bytes": 796
+    },
+    {
+      "path": "package.json",
+      "sha256": "8094b3912447040221543c5124c0f73e4260754080fbb750fe75df5f3b3d0165",
+      "bytes": 137
+    },
+    {
+      "path": "src/discount.mjs",
+      "sha256": "e965fd4603a4780ea8bb9b23c6235b9a71c58a71d70aaaa38c0018938187a3c1",
+      "bytes": 553
+    },
+    {
+      "path": "src/legacy/export.mjs",
+      "sha256": "eedda5d2463ccb066fbef9a517d143df3e309ff655660b1f488361b7a0ae9106",
+      "bytes": 338
+    },
+    {
+      "path": "src/order.mjs",
+      "sha256": "389bea371dcd7598e71194e8b206177efa3da120681137ba1ed1742ff51bf6ec",
+      "bytes": 529
+    },
+    {
+      "path": "src/shipping.mjs",
+      "sha256": "ff4aca93023cd888dbf9bdc8a9b4ab063db2141e4c02d71a1cd3e5a3a403de56",
+      "bytes": 542
+    },
+    {
+      "path": "src/status.mjs",
+      "sha256": "f7212f62f6614dc894abed37e8890b0a591c8df65ebc7de238848d5752a3ce2b",
+      "bytes": 386
+    },
+    {
+      "path": "test/discount.test.mjs",
+      "sha256": "30212484346f14fff5e95441984bba05300a4c1689cbd9901acba37cffa6a54f",
+      "bytes": 704
+    },
+    {
+      "path": "test/order.test.mjs",
+      "sha256": "def2b3b9956d0b4eeeb52c4727f9c71c5c413e64cbc60f0b2b5c74285212de99",
+      "bytes": 1060
+    },
+    {
+      "path": "test/shipping.test.mjs",
+      "sha256": "3de489763bce7e12adeb00a48e4ec54bb29ab675786afd717063e65f2e81946f",
+      "bytes": 444
+    }
+  ]
+}

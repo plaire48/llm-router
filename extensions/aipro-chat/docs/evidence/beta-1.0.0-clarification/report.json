@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "displayVersion": "Beta 1.0.0",
+  "chromeVersion": "1.4.7",
+  "unitTests": 288,
+  "browserSuites": 10,
+  "browserRuns": 16,
+  "fullMatrix": false,
+  "buildSha256": "ebeff3b58295c45e0c2213a91f96492386373f28659737dba5f9398ef5c51c36",
+  "archiveSha256": "697f0cbbce1c6c105a8c25e2f417409906094657e17072eee4d3fb4d442cbe34",
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "reports": [
+    "initial-report.json",
+    "final-report.json"
+  ],
+  "selection": [
+    "clarification-browser",
+    "question-forms-browser",
+    "harness-browser",
+    "approval-browser",
+    "image-choice-browser",
+    "page-skills-browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "context-browser",
+    "openwiki-browser"
+  ],
+  "notes": [
+    "Initial OpenWiki test could not start because its isolated fixture build was absent. Build completed and the OpenWiki test passed.",
+    "Clarification screenshots now wait for fonts and finite entrance animations; the final test repeated three times.",
+    "The unchanged build hash allows using earlier passing suites. Final clarification results replace the earlier three runs.",
+    "Initial 16K-context fixture crossed the hard limit after prompt growth. Its history was reduced from 44K to 42K characters to retain its intended recoverable-summary scenario."
+  ]
+}

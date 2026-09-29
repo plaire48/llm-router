@@ -1,0 +1,288 @@
+{
+  "startedAt": "2026-09-22T13:19:46.582Z",
+  "status": "failed",
+  "repeats": 3,
+  "concurrency": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:19:46.583Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 15560
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:02.144Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 150
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:02.295Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2921
+    },
+    {
+      "name": "output-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:05.257Z",
+      "log": "output-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10237
+    },
+    {
+      "name": "vision-routing-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:05.257Z",
+      "log": "vision-routing-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 11022
+    },
+    {
+      "name": "task-plan-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:05.257Z",
+      "log": "task-plan-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7050
+    },
+    {
+      "name": "analysis-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:12.310Z",
+      "log": "analysis-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1754
+    },
+    {
+      "name": "clarification-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:14.065Z",
+      "log": "clarification-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12142
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:15.496Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 31078
+    },
+    {
+      "name": "output-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:46.575Z",
+      "log": "output-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10690
+    },
+    {
+      "name": "vision-routing-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:46.575Z",
+      "log": "vision-routing-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 11661
+    },
+    {
+      "name": "task-plan-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:46.575Z",
+      "log": "task-plan-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7572
+    },
+    {
+      "name": "analysis-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:54.148Z",
+      "log": "analysis-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2107
+    },
+    {
+      "name": "clarification-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:56.255Z",
+      "log": "clarification-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12400
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:20:57.266Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 31212
+    },
+    {
+      "name": "output-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:21:28.479Z",
+      "log": "output-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10259
+    },
+    {
+      "name": "vision-routing-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:21:28.479Z",
+      "log": "vision-routing-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 11029
+    },
+    {
+      "name": "task-plan-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:21:28.479Z",
+      "log": "task-plan-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7028
+    },
+    {
+      "name": "analysis-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:21:35.508Z",
+      "log": "analysis-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1813
+    },
+    {
+      "name": "clarification-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:21:37.321Z",
+      "log": "clarification-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12177
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:21:38.738Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 31084
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:22:09.827Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8144
+    },
+    {
+      "name": "context-browser",
+      "status": "failed",
+      "startedAt": "2026-09-22T13:22:09.827Z",
+      "log": "context-browser.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7569
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:22:09.827Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2280
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:22:12.109Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24225
+    }
+  ],
+  "selection": [
+    "output-recovery-browser",
+    "vision-routing-browser",
+    "task-plan-browser",
+    "analysis-recovery-browser",
+    "clarification-browser",
+    "harness-browser",
+    "context-browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "side-panel-browser",
+    "page-skills-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.11",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.14",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "4a5969c0ad7ce458f533f770f2fd99ce17249c1f42e1f911db5e63769b66bfb4",
+  "archiveSha256": "bac6aa989dadc8553114c001ade6d9f6092602e7e53c5d9a30f66114d63bcaa6",
+  "failure": "context-browser failed; see /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/pre-release-2026-09-22T13-19-46-582Z/context-browser.log",
+  "finishedAt": "2026-09-22T13:22:36.336Z"
+}

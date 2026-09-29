@@ -1,0 +1,9 @@
+PASS answer and code buttons write the exact text to Chrome clipboard, show a check and one CX toast without moving focus
+PASS success feedback expires and the original copy control returns
+PASS pending copy cannot duplicate or claim success; denied copy keeps a visible retry path after its toast expires
+PASS diagnostic copy is sanitized and the common toast stays keyboard-operable inside the modal without closing it
+PASS model selection uses CX selected color and only successful changes/refreshes announce completion
+PASS the page icon toggles a real fixture connection and its selected state matches storage
+PASS skill save confirms persistence, applies its accent and retains draft with no success message on failure
+PASS chat and modal toasts stay at the viewport top center at 320, 360 and 1100px without overflow
+PASS trace statuses use icons plus text, cards remain readable across three widths, reduced motion and reload preserve the correct UI state

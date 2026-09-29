@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "tests": 10,
+  "suite": "test/visualize/nubi.test.ts",
+  "build": "pnpm build",
+  "testCommand": "pnpm exec vitest run test/visualize/nubi.test.ts",
+  "freshInstall": "prior pnpm install --frozen-lockfile in isolated release checkout; lock unchanged",
+  "actualProvider": false,
+  "scope": "Shared question core and read-only visualization API compiled; API contracts passed. No real account inference."
+}

@@ -1,0 +1,52 @@
+**회사 프록시·API 게이트웨이를 거치려면 해당 서비스의 Base URL 환경 변수를 설정합니다.**
+
+README.md의 OpenAI 호환 게이트웨이:
+
+```bash
+OPENWIKI_PROVIDER=openai-compatible
+OPENAI_COMPATIBLE_API_KEY=<게이트웨이 API 키>
+OPENAI_COMPATIBLE_BASE_URL=<회사 게이트웨이 URL>
+OPENWIKI_MODEL_ID=<모델 ID>
+```
+
+제공자별 게이트웨이는 API 키와 함께 다음 중 해당하는 변수를 사용합니다.
+
+- `ANTHROPIC_BASE_URL`
+- `OPENAI_BASE_URL`
+- `BASETEN_BASE_URL`
+- `FIREWORKS_BASE_URL`
+- `NVIDIA_BASE_URL`
+- `COPILOT_BASE_URL`
+
+ENTERPRISE.md의 회사 환경 설정:
+
+```bash
+# AI Pro CLI
+OPENWIKI_PROVIDER=aipro-cli
+AIPRO_CLI_BASE_URL=<회사 엔드포인트>
+AIPRO_CLI_TOKEN=<토큰>
+OPENWIKI_MODEL_ID=<모델 ID>
+
+# FabriX
+OPENWIKI_PROVIDER=fabrix
+FABRIX_API_TOKEN=<API 토큰>
+FABRIX_CLIENT_KEY=<클라이언트 키>
+FABRIX_BASE_URL=<회사 엔드포인트>
+OPENWIKI_MODEL_ID=<모델 ID>
+```
+
+일반 AI Pro는 별도 Base URL 없이 다음 조합입니다.
+
+```bash
+OPENWIKI_PROVIDER=aipro
+AIPRO_ACCESS_TOKEN=<토큰>
+OPENWIKI_MODEL_ID=<모델 ID>
+```
+
+회사 CA 인증서가 필요하면 추가로 설정합니다.
+
+```bash
+NODE_EXTRA_CA_CERTS=<회사 CA 인증서 경로>
+```
+
+근거: `README.md` 405–431행, 454–461행, `ENTERPRISE.md` 118–129행.

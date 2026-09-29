@@ -1,0 +1,31 @@
+{
+  "id": "A4-already-on",
+  "title": "이미 켜진 설정",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "all",
+  "request": "연결한 경비 신청 앱에서 영수증 첨부가 켜져 있게 해 줘.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "이미",
+        "켜져 있",
+        "켜진",
+        "On",
+        "선택되어"
+      ]
+    ],
+    "app": {
+      "states": {
+        "chk-receipt": {
+          "toggle": "On"
+        }
+      },
+      "inputs": {
+        "max": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "startedAt": "2026-09-22T06:54:51.882Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:54:51.883Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2472
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:54:54.356Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 148
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:54:54.504Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2986
+    },
+    {
+      "name": "csp-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:54:57.532Z",
+      "log": "csp-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1162
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:54:58.695Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1611
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:55:00.306Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4597
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:55:04.903Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17531
+    },
+    {
+      "name": "mascot-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:55:22.434Z",
+      "log": "mascot-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 71159
+    },
+    {
+      "name": "welcome-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:56:33.593Z",
+      "log": "welcome-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 19078
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:56:52.672Z",
+      "log": "accessibility-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5154
+    },
+    {
+      "name": "chat-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:56:57.826Z",
+      "log": "chat-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4067
+    }
+  ],
+  "selection": [
+    "mascot-browser",
+    "welcome-browser",
+    "accessibility-browser",
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "chat-browser",
+    "side-panel-browser",
+    "csp-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.2",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.5",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "c85b1e64f0768bb19d26323b00acaf2de28a26ed5776ce401549d091213e3faa",
+  "archiveSha256": "e8c7b41f976f70d3e6d85976e67bd2ed43021951624f6a1c3816b1e4537e4ced",
+  "finishedAt": "2026-09-22T06:57:01.921Z"
+}

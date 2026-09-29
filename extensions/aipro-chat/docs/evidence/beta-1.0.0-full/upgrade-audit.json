@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "from": "1.4.1",
+  "to": "1.4.2",
+  "sameExtensionId": true,
+  "actualChromeRelaunch": true,
+  "localStatePreserved": [
+    "activeProvider",
+    "chat",
+    "chatHistory",
+    "providerChats",
+    "settings"
+  ],
+  "noActualAccount": true
+}

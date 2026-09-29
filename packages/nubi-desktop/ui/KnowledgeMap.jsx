@@ -24,12 +24,12 @@ export function KnowledgeMap({api,taskId,openPath,onError,onNotice}){
   return <section className="nubi-map" aria-label="프로젝트 관계">
     <div className="nubi-map-heading"><h2>프로젝트 관계</h2><ActionButton action="refresh" label="관계 새로고침" disabled={busy} onClick={()=>act(refresh)}/></div>
     <p className="nubi-muted">업무에서 연결된 코드와 DB, Wiki를 찾으세요.</p>
-    <div className="nubi-task-actions"><CxButton onClick={()=>setDbOpen(!dbOpen)} aria-expanded={dbOpen}>DB 연결</CxButton><CxButton disabled={busy} onClick={()=>act(async()=>{const file=map?.configured?{path:map.catalogPath}:await api('initializeKnowledgeCatalog',{taskId});await openPath(file.path,taskId);await refresh();})}>{map?.configured?'지식 목록 편집':'지식 목록 만들기'}</CxButton>{!!map?.nodes.length&&<CxButton disabled={busy} onClick={()=>act(async()=>{await api('exportKnowledgeMap',{taskId,expectedFingerprint:map.fingerprint});await refresh();onNotice('관계 지도를 Wiki에 저장했어요.');})}>관계를 Wiki에 기록</CxButton>}{map?.baselinePath&&<CxButton onClick={()=>act(()=>openPath(map.baselinePath,taskId))}>관계 기록 열기</CxButton>}</div>
+    <div className="nubi-task-actions"><CxButton onClick={()=>setDbOpen(!dbOpen)} aria-expanded={dbOpen}>DB 연결</CxButton><CxButton disabled={busy} onClick={()=>act(async()=>{const file=map?.configured?{path:map.catalogPath}:await api('initializeKnowledgeCatalog',{taskId});await openPath(file.path,taskId);await refresh();})}>{map?.configured?'지식 목록 편집':'지식 목록 만들기'}</CxButton>{!!map?.nodes.length&&<CxButton disabled={busy} onClick={()=>act(async()=>{await api('exportKnowledgeMap',{taskId,expectedFingerprint:map.fingerprint});await refresh();onNotice('관계 지도를 Wiki에 저장했어요.');})}>관계를 Wiki에 기록</CxButton>}{map?.baselinePath&&<ActionButton action="read" label="관계 기록 열기" onClick={()=>act(()=>openPath(map.baselinePath,taskId))}/>}</div>
     {dbOpen&&<DatabaseConnections api={api} onChanged={refresh}/>}
     {!map&&<p role="status" className="nubi-muted">연결된 근거를 읽고 있어요.</p>}
     {map&&!map.nodes.length&&<p className="nubi-muted">DB를 연결하거나 지식 목록에 자료를 추가해 주세요.</p>}
     {!!map?.nodes.length&&<>
-      <div className="nubi-map-controls"><label>연결된 항목 찾기<CxInput aria-label="관계 항목 찾기" value={query} onChange={e=>setQuery(e.target.value)} placeholder="고객, 주문, 테이블 이름…"/></label><CxSelect aria-label="관계 중심 항목" value={focus} onChange={e=>e.target.value&&select(e.target.value)}><option value="">항목을 선택하세요</option>{matches.map(n=><option value={n.id} key={n.id}>{n.label} ({kinds[n.kind]})</option>)}</CxSelect></div>
+      <div className="nubi-map-controls"><label>연결된 항목 찾기<CxInput aria-label="관계 항목 찾기" value={query} onChange={e=>setQuery(e.target.value)} placeholder="고객, 주문, 테이블 이름…"/></label><label>확인할 항목<CxSelect aria-label="관계 중심 항목" value={focus} onChange={e=>e.target.value&&select(e.target.value)}><option value="">항목을 선택하세요</option>{matches.map(n=><option value={n.id} key={n.id}>{n.label} ({kinds[n.kind]})</option>)}</CxSelect></label></div>
       <div className="nubi-map-meta nubi-muted"><span>항목 {map.nodes.length}개</span><span>관계 {map.edges.length}개</span><span>{new Date(map.generatedAt).toLocaleTimeString('ko-KR')} 확인</span>{map.nodes.some(n=>n.change==='changed')&&<span>Wiki 기록 이후 원본 변경</span>}</div>
       {selected&&<div className="nubi-map-focus"><div><DeckStatus>{kinds[selected.kind]}</DeckStatus><strong>{selected.label}</strong><small>{origins[selected.origin]}{selected.dataType?` (${selected.dataType})`:''}{selected.primary?', 기본 키':''}</small></div>{selected.path&&<ActionButton action="read" label="원본 열기" onClick={()=>act(()=>openPath(selected.path,taskId))}/>}{selected.description&&<p>{selected.description}</p>}{selected.change==='changed'&&<p>Wiki 기록 이후 근거가 바뀌었어요.</p>}{selected.evidence?.filter(e=>e.collectedAt).map(e=><small key={e.resource}>DB 수집 시점: {new Date(e.collectedAt).toLocaleString('ko-KR')}</small>)}</div>}
       {selected&&<><ul className="nubi-map-relations" aria-label="직접 연결된 관계">{direct.map(e=><li key={e.id}><CxButton onClick={()=>select(e.from)}>{byId.get(e.from)?.label}</CxButton><span>→ {relationLabels[e.type]} →<small>{origins[e.origin]}</small></span><CxButton onClick={()=>select(e.to)}>{byId.get(e.to)?.label}</CxButton></li>)}</ul>{!direct.length&&<p className="nubi-muted">아직 연결한 관계가 없어요.</p>}<DeckDisclosure title="함께 확인할 항목"><p className="nubi-muted">등록된 관계를 기준으로 찾았습니다. 실제 영향은 테스트로 확인해 주세요.</p>{packet.nodes.filter(n=>n.id!==focus).map(n=><CxButton className="nubi-file-link" key={n.id} onClick={()=>select(n.id)}>{n.label} ({kinds[n.kind]})</CxButton>)}{packet.truncated&&<p>일부 연결만 표시했어요. 다른 항목을 선택해 더 확인하세요.</p>}</DeckDisclosure></>}
@@ -40,16 +40,41 @@ export function KnowledgeMap({api,taskId,openPath,onError,onNotice}){
 }
 
 function DatabaseConnections({api,onChanged}){
-  const [connections,setConnections]=useState([]),[form,setForm]=useState({id:'project-db',engine:'postgres',host:'localhost',port:5432,database:'',schema:'public',user:'',password:'',tls:true}),[busy,setBusy]=useState(false),[error,setError]=useState('');
-  const alive=useRef(true),lock=useRef(false);
-  useEffect(()=>{alive.current=true;api('databaseConnection').then(s=>{if(alive.current)setConnections(s.connections);}).catch(()=>{if(alive.current)setError('연결 상태를 확인하지 못했어요.');});return()=>{alive.current=false;};},[]);
+  const [connections,setConnections]=useState([]),[form,setForm]=useState({id:'project-db',engine:'postgres',host:'localhost',port:5432,database:'',schema:'public',user:'',password:'',tls:true}),[busy,setBusy]=useState(false),[error,setError]=useState(''),[statusError,setStatusError]=useState('');
+  const alive=useRef(true),lock=useRef(false),statusRevision=useRef(0);
+  async function readStatus(processed=false){const revision=++statusRevision.current;try{const state=await api('databaseConnection');if(alive.current&&revision===statusRevision.current){setConnections(state.connections);setStatusError('');}}catch{if(alive.current&&revision===statusRevision.current)setStatusError(processed?'요청은 처리됐지만 연결 목록을 갱신하지 못했어요.':'연결 상태를 확인하지 못했어요.');}}
+  useEffect(()=>{alive.current=true;void readStatus();return()=>{alive.current=false;statusRevision.current++;};},[]);
+  async function retryStatus(){if(lock.current)return;lock.current=true;setBusy(true);try{await readStatus();}finally{lock.current=false;if(alive.current)setBusy(false);}}
   const update=(key,value)=>setForm(f=>({...f,[key]:value}));
   async function run(action,id){if(lock.current)return;lock.current=true;setBusy(true);setError('');try{
-    const {id:unused,...input}=form;await api('databaseConnection',{action,id,input:action==='connect'?input:undefined});
-    if(!alive.current)return;setForm(f=>({...f,password:''}));setConnections((await api('databaseConnection')).connections);await onChanged();
+    const {id:unused,...input}=form;input.host=input.host.trim();input.database=input.database.trim();input.user=input.user.trim();input.schema=['mysql','mariadb'].includes(input.engine)?input.database:input.engine==='oracle'?input.user.toUpperCase():input.schema.trim();statusRevision.current++;const receipt=await api('databaseConnection',{action,id,input:action==='connect'?input:undefined});
+    if(!alive.current)return;setForm(f=>({...f,password:''}));
+    if(action==='disconnect')setConnections(current=>current.filter(c=>c.id!==id));
+    else setConnections(current=>[...current.filter(c=>c.id!==id),{id,engine:action==='connect'?input.engine:current.find(c=>c.id===id)?.engine,schema:action==='connect'?input.schema:current.find(c=>c.id===id)?.schema,tables:receipt.tables,collectedAt:receipt.collectedAt}]);
+    await readStatus(true);await onChanged();
   }catch(e){if(alive.current)setError(dbErrors[e.message]||'DB 정보를 읽지 못했어요. 연결 정보를 확인해 주세요.');}finally{lock.current=false;if(alive.current)setBusy(false);}}
   return <div className="nubi-db-connect"><p className="nubi-muted">테이블 구조만 읽습니다. 접속 정보는 앱을 닫으면 사라집니다.</p>{connections.map(c=><div className="nubi-db-connected" key={c.id}><span><strong>{c.id}</strong> ({engineLabels[c.engine]})<small>{c.tables}개 테이블<br/>{new Date(c.collectedAt).toLocaleTimeString('ko-KR')} 수집</small></span><ActionButton action="refresh" label="DB 다시 읽기" disabled={busy} onClick={()=>run('refresh',c.id)}/><CxButton disabled={busy} onClick={()=>run('disconnect',c.id)}>연결 해제</CxButton></div>)}
-    <form onSubmit={e=>{e.preventDefault();run('connect',form.id);}}><div className="nubi-db-fields"><label>DB 종류<CxSelect aria-label="DB 종류" value={form.engine} onChange={e=>{const engine=e.target.value;setForm(f=>({...f,engine,port:ports[engine],schema:engine==='postgres'?'public':engine==='sqlserver'?'dbo':engine==='oracle'?f.user.toUpperCase():f.database}));}}>{Object.entries(engineLabels).map(([key,label])=><option key={key} value={key}>{label}</option>)}</CxSelect></label>{[['id','연결 ID'],['host','서버 주소'],['port','포트'],['database',form.engine==='oracle'?'서비스 이름':'DB 이름'],['schema',form.engine==='oracle'?'스키마 (로그인 사용자)':'스키마'],['user','사용자'],['password','비밀번호']].map(([key,label])=><label key={key}>{label}<CxInput aria-label={label} required={key!=='password'} type={key==='password'?'password':key==='port'?'number':'text'} autoComplete="off" value={form[key]} onChange={e=>update(key,key==='port'?Number(e.target.value):e.target.value)}/></label>)}</div><label className="nubi-db-tls"><input type="checkbox" checked={form.tls} onChange={e=>update('tls',e.target.checked)}/> TLS 암호화 연결</label>{error&&<CxNotice tone="danger">{error}</CxNotice>}<CxButton type="submit" variant="primary" busy={busy} disabled={busy}>{busy?'DB 구조 읽는 중':'연결해서 읽기'}</CxButton></form>
+    {statusError&&<div><CxNotice tone="danger">{statusError}</CxNotice><CxButton type="button" disabled={busy} onClick={retryStatus}>연결 상태 다시 확인</CxButton></div>}
+    <form aria-label="DB 연결 정보" onSubmit={e=>{e.preventDefault();run('connect',form.id);}} onInvalidCapture={e=>{const details=e.target.closest('details');if(details)details.open=true;}}>
+      <div className="nubi-db-fields">
+        <label>DB 종류<CxSelect aria-label="DB 종류" disabled={busy} value={form.engine} onChange={e=>{const engine=e.target.value;setForm(f=>({...f,engine,port:ports[engine],schema:engine==='postgres'?'public':engine==='sqlserver'?'dbo':''}));}}>{Object.entries(engineLabels).map(([key,label])=><option key={key} value={key}>{label}</option>)}</CxSelect></label>
+        <label>서버 주소<CxInput aria-label="서버 주소" required disabled={busy} autoComplete="off" spellCheck={false} value={form.host} onChange={e=>update('host',e.target.value)} placeholder="예: db.company.local"/></label>
+        <label>{form.engine==='oracle'?'서비스 이름':'DB 이름'}<CxInput aria-label={form.engine==='oracle'?'서비스 이름':'DB 이름'} required disabled={busy} autoComplete="off" value={form.database} onChange={e=>update('database',e.target.value)} placeholder={form.engine==='oracle'?'예: ORCL':'예: project'}/></label>
+        <label>사용자<CxInput aria-label="사용자" required disabled={busy} autoComplete="off" value={form.user} onChange={e=>update('user',e.target.value)} placeholder="접속 계정"/></label>
+        <label>비밀번호<CxInput aria-label="비밀번호" type="password" disabled={busy} autoComplete="off" value={form.password} onChange={e=>update('password',e.target.value)}/></label>
+      </div>
+      <details className="deck-subsection nubi-db-options"><summary>연결 옵션</summary>
+        <div className="nubi-db-fields">
+          <label>연결 ID<CxInput aria-label="연결 ID" required disabled={busy} pattern={String.raw`[a-zA-Z0-9_\-]{1,80}`} title="영문, 숫자, 밑줄, 하이픈을 사용해 주세요." value={form.id} onChange={e=>update('id',e.target.value)}/></label>
+          <label>포트<CxInput aria-label="포트" type="number" required min={1} max={65535} disabled={busy} value={form.port} onChange={e=>update('port',e.target.value===''?'':Number(e.target.value))}/></label>
+          {['postgres','sqlserver'].includes(form.engine)&&<label>스키마<CxInput aria-label="스키마" required disabled={busy} value={form.schema} onChange={e=>update('schema',e.target.value)}/></label>}
+        </div>
+        <label className="nubi-db-tls"><input type="checkbox" disabled={busy} checked={form.tls} onChange={e=>update('tls',e.target.checked)}/> TLS 암호화 연결</label>
+        <small className="nubi-muted">포트와 스키마는 DB 기본값을 사용합니다. 다른 설정이 필요한 경우에만 바꾸세요.</small>
+      </details>
+      {error&&<CxNotice tone="danger">{error}</CxNotice>}
+      <CxButton type="submit" variant="primary" busy={busy} disabled={busy}>{busy?'DB 구조 읽는 중':'연결해서 읽기'}</CxButton>
+    </form>
     <small className="nubi-muted">SQLite와 메타데이터 JSON은 지식 목록에서 연결하세요.</small>
   </div>;
 }

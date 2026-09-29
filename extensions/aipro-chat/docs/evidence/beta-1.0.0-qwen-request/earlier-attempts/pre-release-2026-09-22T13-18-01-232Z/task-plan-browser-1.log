@@ -1,0 +1,20 @@
+{"round":0,"errors":[],"last":null,"screen":""}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+browserType.launchPersistentContext: Executable doesn't exist at /Users/ganadi/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/task-plan-browser.mjs:27:13 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v25.4.0

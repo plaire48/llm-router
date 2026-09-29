@@ -101,6 +101,22 @@ test('computer proposals require actually retrieved Wiki references and revalida
   await assert.rejects(()=>proposeComputerAction(service,task.id,args,observations),/wiki_evidence_stale/);
 });
 
+for(const phase of ['move','pulse'])test('Wiki changes during visual pointer '+phase+' stop native input',async t=>{
+  const {service,task,data,decide}=await setup(t),observations={};
+  const row=(await service.wikiQuery({query:'welcome',taskId:task.id})).results[0];assert(row);
+  rememberWikiEvidence(observations,[row]);
+  const o=await observeComputer(service,task.id);
+  const proposal=await proposeComputerAction(service,task.id,{observationId:o.observationId,selector:data.control.selector,action:'invoke',reason:'Wiki에서 확인한 안내를 엽니다.',evidenceIds:[row.evidenceId]},observations);
+  const events=[];
+  const change=async()=>writeFile(service.root+'/'+row.path,'# Updated\nA changed instruction during approval.');
+  service.computerPointer={dispose(){},async move(){events.push('move');if(phase==='move')await change();return {available:true};},async pulse(){events.push('pulse');if(phase==='pulse')await change();},async hide(){events.push('hide');return {available:true};}};
+  await decide(proposal);await decide(proposal);
+  const receipt=readComputerResult(service,task.id,{actionId:proposal.id}).receipt;
+  assert.equal(data.acted,0);assert.equal(receipt.state,'stale');assert.equal(receipt.execution,'not_started');assert.equal(receipt.error,'wiki_evidence_stale');
+  assert.deepEqual(events,['move','pulse','hide']);
+  assert.equal(service.store.get('computer-image:'+proposal.id).after,undefined);
+});
+
 test('Pi carries its own Wiki evidence into an approved UIA state action and reads the receipt',async t=>{
   const {service,task,data,decide}=await setup(t);let round=0,evidenceId;
   data.properties={ToggleState:'Off'};data.transition=()=>{data.properties.ToggleState='On';};
@@ -270,14 +286,16 @@ test('new observation IDs and repeated successful reads do not erase unchanged n
 
 test('three unchanged Windows failures pause the same task in existing HITL without input',async t=>{
   const {service,task,data}=await setup(t);let calls=0;
-  service.computerBinding=null;
+  data.status.processId=777; // Bound identity has changed; setup absence is handled separately.
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async()=>{calls++;return {content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name:'observe_computer',arguments:JSON.stringify({includeImage:!!(calls%2)})}}]};}};
   await service.startAgent({taskId:task.id});await service.agent.promise;
   assert.equal(service.task(task.id).state,'waiting_input');assert(service.task(task.id).question);assert.equal(calls,3);assert.equal(data.acted,0);
 });
 
 test('a pending or uncertain newer operation blocks continuation from an older result',async t=>{
-  const {service,task,data,propose,decide}=await setup(t);const first=await propose();await decide(first);const next=await propose();
+  const {service,task,data,propose,decide}=await setup(t);const first=await propose();await decide(first);
+  // The first action changed nothing that the host saw: the same proposal is warned about once, then accepted.
+  await assert.rejects(()=>propose(),/computer_no_effect_repeat/);const next=await propose();
   const args={method:'review_result',taskId:task.id,id:first.id,fingerprint:first.fingerprint};
   await assert.rejects(()=>service.computer(args),/computer_review_required/);
   data.failAction=true;await decide(next);await assert.rejects(()=>service.computer(args),/computer_review_required/);
@@ -477,6 +495,32 @@ test('visual pointer movement cannot bypass a changed target and cannot pulse a 
   const p=await propose('click');await decide(p);assert.deepEqual(events,['move','hide']);assert.equal(data.acted,0);
   assert.equal(service.store.get('computer-action:'+p.id).execution,'not_started');
   data.properties={ToggleState:'On'};events.length=0;const q=await propose('toggle_on');await decide(q);assert.deepEqual(events,[]);
+});
+
+for(const phase of ['move','pulse'])test('user edits during pointer '+phase+' prevent stale value dispatch without replay',async t=>{
+  const {service,data,propose,decide}=await setup(t),events=[];
+  service.computerPointer={
+    async move(){events.push('move');if(phase==='move')data.text='User changed this value';return {available:true};},
+    async pulse(){events.push('pulse');if(phase==='pulse')data.text='User changed this value';},
+    async hide(){events.push('hide');return {available:true};},dispose(){},
+  };
+  const proposal=await propose('set_value',{value:'Agent replacement'});
+  assert.equal(proposal.documentEvidence,undefined,'ordinary input must receive the same final conflict check');
+  await decide(proposal);await decide(proposal);
+  assert.equal(data.text,'User changed this value');assert.equal(data.acted,0);
+  const receipt=service.store.get('computer-action:'+proposal.id);
+  assert.equal(receipt.state,'stale');assert.equal(receipt.execution,'not_started');
+  assert.equal(receipt.error,'computer_target_changed');assert.deepEqual(events,['move','pulse','hide']);
+  assert(!service.store.get('computer-image:'+proposal.id).after);
+});
+
+test('target changes during pointer pulse prevent stale native dispatch',async t=>{
+  const {service,data,propose,decide}=await setup(t);let hidden=0;
+  service.computerPointer={async move(){return {available:true};},async pulse(){data.control.x++;},async hide(){hidden++;return {available:true};},dispose(){}};
+  const proposal=await propose('click');await decide(proposal);await decide(proposal);
+  assert.equal(data.acted,0);assert.equal(hidden,1);
+  const receipt=service.store.get('computer-action:'+proposal.id);
+  assert.equal(receipt.state,'stale');assert.equal(receipt.execution,'not_started');
 });
 
 test('failed pointer hide preserves returned input receipt and does not capture misleading evidence',async t=>{

@@ -1,21 +1,25 @@
+import {processOutputPreview} from './process-output.mjs';
 import {randomUUID} from 'node:crypto';
 import {recoverModel,createModelCooldown} from '../../../extensions/aipro-chat/model-recovery.js';
 import {safeError} from '../../nubi-office/worker/connection-errors.mjs';
 import {hash,fail} from './files.mjs';
 import {shellProfiles} from './processes.mjs';
 
-export const READ_TOOLS=new Set(['list_skill_resources','discover_capabilities','use_skill','read_skill','read_conversation','search_voc','read_voc','computer_checkpoint','read_computer_result','list_computer_apps','inspect_path','code_outline','source_search','read_source','wiki_query','knowledge_query','recovery_snapshot']);
+export const READ_TOOLS=new Set(['ask_openwiki','inspect_environment','inspect_workspace_changes','read_process_output','read_document_analysis','analyze_documents','list_skill_resources','discover_capabilities','use_skill','read_skill','read_conversation','search_voc','read_voc','computer_checkpoint','read_computer_result','list_computer_apps','inspect_path','code_outline','source_search','read_source','wiki_query','knowledge_query','recovery_snapshot']);
 const recoverableProcesses=new Set(['failed','timed_out','interrupted']);
 const now=()=>new Date().toISOString();
 export const recoveryCode=error=>safeError(error);
 
 // Reuse Nubi's p-retry transport. Only inference is repeated; tool receipts
 // already in the transcript are never executed by a transport retry.
-export function modelTransport(service,{signal,onRetry}){
+export function modelTransport(service,{signal,onRetry,metrics}){
   const cooldown=createModelCooldown();
-  return (messages,tools,childSignal=signal)=>recoverModel(async ({signal:attemptSignal,activity})=>{
-    try{return await service.providers.complete(messages,tools,attemptSignal,activity,activity);}
-    catch(error){const code=safeError(error);throw Object.assign(new Error(({network_error:'network',network_timeout:'model_timeout'})[code]||code),{status:error.status,retryAfterMs:error.retryAfterMs});}
+  // Telemetry reads the model name defensively: it must not add a failure path.
+  const modelName=()=>{try{return service.providers.status().model;}catch{return null;}};
+  return (messages,tools,childSignal=signal,purpose='actor')=>recoverModel(async ({signal:attemptSignal,activity,attempt})=>{
+    const measured=metrics?.beginModel({purpose,attempt,messages,tools,model:modelName()});
+    try{const result=await service.providers.complete(messages,tools,attemptSignal,activity,activity);measured?.end(result);return result;}
+    catch(error){const code=safeError(error);measured?.fail(code);throw Object.assign(new Error(({network_error:'network',network_timeout:'model_timeout'})[code]||code),{status:error.status,retryAfterMs:error.retryAfterMs});}
   },{signal:childSignal,cooldown,retries:2,...service.recoveryOptions?.model,onRetry});
 }
 
@@ -44,7 +48,7 @@ export async function recoverySnapshot({taskId}){
   }
   return {taskId,request:task.request,criteria:task.criteria,workspace:root,checkpoint:task.checkpoint||null,
     operations:this.store.list('operation:').filter(o=>o.taskId===taskId).slice(0,30),proposals,
-    processes:this.store.list('process:').filter(p=>p.taskId===taskId).slice(0,10).map(p=>({id:p.id,profile:p.profile,script:p.script,state:p.state,execution:p.execution||'unknown',fault:p.fault,exitCode:p.exitCode,stopReason:p.stopReason,output:p.output.slice(-8000),logIncomplete:!!p.logIncomplete})),
+    processes:this.store.list('process:').filter(p=>p.taskId===taskId).slice(0,10).map(p=>({id:p.id,profile:p.profile,script:p.script,state:p.state,execution:p.execution||'unknown',fault:p.fault,exitCode:p.exitCode,stopReason:p.stopReason,...processOutputPreview(p)})),
     shells:(await shellProfiles()).map(({id,label})=>({id,label})),
     instruction:'Current disk checks and process receipts, not approval or task completion. Failed/interrupted commands may have changed files. Never replay a command automatically. Keep original criteria, inspect current files and correct only unfinished work. Host restart does not prove earlier subprocess exit.'};
 }
@@ -71,7 +75,7 @@ export function installRecovery(ProjectService){
       const record=this.store.get('process:'+id);if(!record){this.recoveryQueue.delete(id);continue;}
       const task=this.task(record.taskId);
       if(task.state==='cancelled'){this.recoveryQueue.delete(id);record.recoveryState='cancelled';this.store.set('process:'+id,record);continue;}
-      if(task.question)continue;
+      if(task.question||['pending','connected'].includes(task.computerConnectionRequest?.state))continue;
       this.recoveryQueue.delete(id);record.recoveryState='diagnosing';this.store.set('process:'+id,record);
       try{await this.startAgent({taskId:record.taskId,recoveryProcessId:id});}
       catch{record.recoveryState='attention';this.store.set('process:'+id,record);}

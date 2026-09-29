@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "320px queued/running/delivered states, keyboard disclosure and shared typography",
+    "320px Wiki partition, repair, synthesis and actual source/image read details",
+    "360px queued/running/delivered states, keyboard disclosure and shared typography",
+    "360px Wiki partition, repair, synthesis and actual source/image read details",
+    "1100px queued/running/delivered states, keyboard disclosure and shared typography",
+    "1100px Wiki partition, repair, synthesis and actual source/image read details",
+    "partial/failure/cancellation never count as success; verified main completion collapses and persists through reload"
+  ],
+  "errors": [],
+  "actualBrowser": true,
+  "syntheticState": true,
+  "liveProvider": false
+}

@@ -1,0 +1,5397 @@
+{
+  "checks": [
+    "320px login, FabriX fields, settings and collapsed help fit; keyboard disclosure and Escape return work",
+    "360px login, FabriX fields, settings and collapsed help fit; keyboard disclosure and Escape return work",
+    "1100px login, FabriX fields, settings and collapsed help fit; keyboard disclosure and Escape return work",
+    "320px model login is icon-only; skills, context, usage and history stay compact with accessible details",
+    "360px model login is icon-only; skills, context, usage and history stay compact with accessible details",
+    "1100px model login is icon-only; skills, context, usage and history stay compact with accessible details"
+  ],
+  "surfaces": [
+    {
+      "name": "fabrix",
+      "width": 320,
+      "height": 640,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "FabriX 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "Endpoint *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Client Key *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "API Token *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 테스트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "설정",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "계정",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 진단",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "데이터 보관",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Beta 1.0.0",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "settings-expanded",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "설정",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "계정",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 진단",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "로그인 필요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "아직 응답을 확인하지 못했습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "기록 없음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "데이터 보관",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화와 이미지는 이 브라우저에 저장됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "로그인 정보는 브라우저를 종료하면 삭제됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Beta 1.0.0",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "도움말",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "처음 시작하기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기와 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "파일 첨부",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화 보관과 이어가기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이미지와 캡처",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "스킬 등록과 공유",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델과 사용량",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "잘 안될 때",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "help-expanded",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "도움말",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "처음 시작하기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기와 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "파일 첨부",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화 보관과 이어가기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이미지와 캡처",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "스킬 등록과 공유",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델과 사용량",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "잘 안될 때",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지를 읽지 못해요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Chrome 확장 관리에서 사이트 접근을 허용하세요. 대상 페이지로 이동한 뒤 연결 아이콘을 눌러 다시 연결하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "응답이 중단됐어요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "답변 아래 이어가기나 재시도 아이콘을 누르세요. 작업 중에는 채팅창을 닫거나 새로고침하지 마세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델 목록이 비어 있어요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델 선택에서 새로고침하세요. 로그인 만료나 인증 오류가 표시되면 다시 연결하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 코드 실행이 실패해요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "작업 목록을 펼쳐 원인을 확인하세요. 누비가 수정 후 결과까지 확인하면 복구됨으로 표시합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "FabriX 도구 응답 오류가 나요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "응답 형식을 한 번 자동 교정합니다. 계속 실패하면 설정의 연결 진단을 확인하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "디버깅 표시줄이 보여요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 조작과 캡처 도구를 쓸 때 표시될 수 있습니다. 완료 후 해제되며, 표시줄에서 취소하면 작업도 멈춥니다. 로",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 오류가 계속돼요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "설정 → 연결 진단에서 진단을 복사하세요. 로그인 정보와 대화 원문은 포함되지 않습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "fabrix",
+      "width": 360,
+      "height": 800,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "FabriX 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "Endpoint *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Client Key *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "API Token *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 테스트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "설정",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "계정",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 진단",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "데이터 보관",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Beta 1.0.0",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "settings-expanded",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "설정",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "계정",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 진단",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "로그인 필요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "아직 응답을 확인하지 못했습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "기록 없음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "데이터 보관",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화와 이미지는 이 브라우저에 저장됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "로그인 정보는 브라우저를 종료하면 삭제됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Beta 1.0.0",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "도움말",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "처음 시작하기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기와 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "파일 첨부",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화 보관과 이어가기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이미지와 캡처",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "스킬 등록과 공유",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델과 사용량",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "잘 안될 때",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "help-expanded",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "도움말",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "처음 시작하기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기와 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "파일 첨부",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화 보관과 이어가기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이미지와 캡처",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "스킬 등록과 공유",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델과 사용량",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "잘 안될 때",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지를 읽지 못해요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Chrome 확장 관리에서 사이트 접근을 허용하세요. 대상 페이지로 이동한 뒤 연결 아이콘을 눌러 다시 연결하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "응답이 중단됐어요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "답변 아래 이어가기나 재시도 아이콘을 누르세요. 작업 중에는 채팅창을 닫거나 새로고침하지 마세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델 목록이 비어 있어요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델 선택에서 새로고침하세요. 로그인 만료나 인증 오류가 표시되면 다시 연결하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 코드 실행이 실패해요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "작업 목록을 펼쳐 원인을 확인하세요. 누비가 수정 후 결과까지 확인하면 복구됨으로 표시합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "FabriX 도구 응답 오류가 나요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "응답 형식을 한 번 자동 교정합니다. 계속 실패하면 설정의 연결 진단을 확인하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "디버깅 표시줄이 보여요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 조작과 캡처 도구를 쓸 때 표시될 수 있습니다. 완료 후 해제되며, 표시줄에서 취소하면 작업도 멈춥니다. 로",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 오류가 계속돼요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "설정 → 연결 진단에서 진단을 복사하세요. 로그인 정보와 대화 원문은 포함되지 않습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "fabrix",
+      "width": 1100,
+      "height": 850,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "FabriX 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "Endpoint *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Client Key *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "API Token *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 테스트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "settings",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "설정",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "계정",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 진단",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "데이터 보관",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Beta 1.0.0",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "settings-expanded",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "설정",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "계정",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 진단",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "로그인 필요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "아직 응답을 확인하지 못했습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "기록 없음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "데이터 보관",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화와 이미지는 이 브라우저에 저장됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "로그인 정보는 브라우저를 종료하면 삭제됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Beta 1.0.0",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "help",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "도움말",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "처음 시작하기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기와 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "파일 첨부",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화 보관과 이어가기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이미지와 캡처",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "스킬 등록과 공유",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델과 사용량",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "잘 안될 때",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "help-expanded",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "도움말",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "처음 시작하기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기와 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "파일 첨부",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "OpenWiki 폴더",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "대화 보관과 이어가기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이미지와 캡처",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "스킬 등록과 공유",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델과 사용량",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "잘 안될 때",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지를 읽지 못해요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Chrome 확장 관리에서 사이트 접근을 허용하세요. 대상 페이지로 이동한 뒤 연결 아이콘을 눌러 다시 연결하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "응답이 중단됐어요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "답변 아래 이어가기나 재시도 아이콘을 누르세요. 작업 중에는 채팅창을 닫거나 새로고침하지 마세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델 목록이 비어 있어요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델 선택에서 새로고침하세요. 로그인 만료나 인증 오류가 표시되면 다시 연결하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 코드 실행이 실패해요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "작업 목록을 펼쳐 원인을 확인하세요. 누비가 수정 후 결과까지 확인하면 복구됨으로 표시합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "FabriX 도구 응답 오류가 나요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "응답 형식을 한 번 자동 교정합니다. 계속 실패하면 설정의 연결 진단을 확인하세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "디버깅 표시줄이 보여요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 조작과 캡처 도구를 쓸 때 표시될 수 있습니다. 완료 후 해제되며, 표시줄에서 취소하면 작업도 멈춥니다. 로",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결 오류가 계속돼요",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "설정 → 연결 진단에서 진단을 복사하세요. 로그인 정보와 대화 원문은 포함되지 않습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "models-connected",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "모델 선택",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "GPT-5.3 Codex Spark",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.5",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Luna",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Sol",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Terra",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-6 Astra",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": true,
+          "radius": "28%",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "모델 선택",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        }
+      ]
+    },
+    {
+      "name": "skills",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "자동",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 작업",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "소스 확인",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "구조 분석",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "입력란 채우기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Playwright 작업",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "skill-editor",
+      "width": 320,
+      "height": 640,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬 등록",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "이름",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "지침",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 내용을 확인하고 필요한 항목을 정리합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "사이트 저장 정보 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 입력 제안",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "skill-error",
+      "width": 320,
+      "height": 640,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬 등록",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "저장하지 못했습니다. 다시 시도해 주세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이름",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "지침",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 내용을 확인하고 필요한 항목을 정리합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "사이트 저장 정보 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 입력 제안",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "context",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "컨텍스트",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "새 대화",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "value",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "24px",
+          "line": "31.2px"
+        },
+        {
+          "text": "/ 272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰 상세",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "자동 압축",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "context-expanded",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "컨텍스트",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "새 대화",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "value",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "24px",
+          "line": "31.2px"
+        },
+        {
+          "text": "/ 272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰 상세",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Sol",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "컨텍스트 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "최대 입력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "미제공",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "메시지를 입력하면 표시됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "자동 압축",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "usage",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "사용량",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "ChatGPT 잔여 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "5시간",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "75% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "7일",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "40% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "오늘",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "전체",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "AI Pro",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "ChatGPT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "FabriX",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "이 확장에서 사용한 토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "usage-expanded",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "사용량",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "ChatGPT 잔여 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "5시간",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "75% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "7일",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "40% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "오늘",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "전체",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "AI Pro",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "ChatGPT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "0회 호출",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "입력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "출력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "FabriX",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "이 확장에서 사용한 토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "history",
+      "width": 320,
+      "height": 640,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "대화 이력",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "글꼴 확인용 대화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "9월 22일",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "delete-confirmation",
+      "width": 320,
+      "height": 640,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "대화를 삭제할까요?",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "‘글꼴 확인용 대화’의 대화와 첨부 이미지가 삭제됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "취소",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "19.6px"
+        },
+        {
+          "text": "삭제",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "19.6px"
+        }
+      ]
+    },
+    {
+      "name": "models-connected",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "모델 선택",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "GPT-5.3 Codex Spark",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.5",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Luna",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Sol",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Terra",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-6 Astra",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": true,
+          "radius": "28%",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "모델 선택",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        }
+      ]
+    },
+    {
+      "name": "skills",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "자동",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 작업",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "소스 확인",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "구조 분석",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "입력란 채우기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Playwright 작업",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "skill-editor",
+      "width": 360,
+      "height": 800,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬 등록",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "이름",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "지침",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 내용을 확인하고 필요한 항목을 정리합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "사이트 저장 정보 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 입력 제안",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "skill-error",
+      "width": 360,
+      "height": 800,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬 등록",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "저장하지 못했습니다. 다시 시도해 주세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이름",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "지침",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 내용을 확인하고 필요한 항목을 정리합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "사이트 저장 정보 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 입력 제안",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "context",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "컨텍스트",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "새 대화",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "value",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "24px",
+          "line": "31.2px"
+        },
+        {
+          "text": "/ 272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰 상세",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "자동 압축",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "context-expanded",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "컨텍스트",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "새 대화",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "value",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "24px",
+          "line": "31.2px"
+        },
+        {
+          "text": "/ 272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰 상세",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Sol",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "컨텍스트 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "최대 입력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "미제공",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "메시지를 입력하면 표시됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "자동 압축",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "usage",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "사용량",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "ChatGPT 잔여 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "5시간",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "75% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "7일",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "40% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "오늘",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "전체",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "AI Pro",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "ChatGPT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "FabriX",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "이 확장에서 사용한 토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "usage-expanded",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "사용량",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "ChatGPT 잔여 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "5시간",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "75% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "7일",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "40% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "오늘",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "전체",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "AI Pro",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "ChatGPT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "0회 호출",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "입력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "출력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "FabriX",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "이 확장에서 사용한 토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "history",
+      "width": 360,
+      "height": 800,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "대화 이력",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "글꼴 확인용 대화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "9월 22일",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "delete-confirmation",
+      "width": 360,
+      "height": 800,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "대화를 삭제할까요?",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "‘글꼴 확인용 대화’의 대화와 첨부 이미지가 삭제됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "취소",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "19.6px"
+        },
+        {
+          "text": "삭제",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "19.6px"
+        }
+      ]
+    },
+    {
+      "name": "models-connected",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "모델 선택",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "GPT-5.3 Codex Spark",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.5",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Luna",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Sol",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Terra",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-6 Astra",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "models",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": true,
+          "radius": "28%",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "모델 선택",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        }
+      ]
+    },
+    {
+      "name": "skills",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "자동",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 작업",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "소스 확인",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "구조 분석",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "입력란 채우기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "Playwright 작업",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "skill-editor",
+      "width": 1100,
+      "height": 850,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬 등록",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "이름",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "지침",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 내용을 확인하고 필요한 항목을 정리합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "사이트 저장 정보 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 입력 제안",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "skill-error",
+      "width": 1100,
+      "height": 850,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        },
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px",
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "스킬 등록",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "저장하지 못했습니다. 다시 시도해 주세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "이름",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "지침",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 내용을 확인하고 필요한 항목을 정리합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "사이트 저장 정보 읽기",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "페이지 입력 제안",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "브라우저 자동화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "context",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "컨텍스트",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "새 대화",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "value",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "24px",
+          "line": "31.2px"
+        },
+        {
+          "text": "/ 272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰 상세",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "자동 압축",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "context-expanded",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "컨텍스트",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "새 대화",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "value",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "24px",
+          "line": "31.2px"
+        },
+        {
+          "text": "/ 272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰 상세",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "모델",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "GPT-5.6 Sol",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "컨텍스트 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "272,000 토큰",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "최대 입력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "미제공",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "메시지를 입력하면 표시됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "자동 압축",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ]
+    },
+    {
+      "name": "usage",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "사용량",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "ChatGPT 잔여 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "5시간",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "75% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "7일",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "40% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "오늘",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "전체",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "AI Pro",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "ChatGPT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "FabriX",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "이 확장에서 사용한 토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "usage-expanded",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "사용량",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "ChatGPT 잔여 한도",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "5시간",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "75% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "7일",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "40% 남음",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "오늘",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "전체",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "AI Pro",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "ChatGPT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "0회 호출",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "입력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "출력",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "FabriX",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "0",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        },
+        {
+          "text": "이 확장에서 사용한 토큰",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "history",
+      "width": 1100,
+      "height": 850,
+      "fields": [
+        {
+          "shadow": "none",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif"
+        }
+      ],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        },
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [
+        "14px"
+      ],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "대화 이력",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "글꼴 확인용 대화",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "9월 22일",
+          "kind": "metadata",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "12px",
+          "line": "16px"
+        }
+      ]
+    },
+    {
+      "name": "delete-confirmation",
+      "width": 1100,
+      "height": 850,
+      "fields": [],
+      "controls": [
+        {
+          "connectTile": false,
+          "radius": "12px",
+          "motion": "cubic-bezier(0.22, 0.61, 0.36, 1)"
+        }
+      ],
+      "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+      "titleSize": "16px",
+      "titleLine": "24px",
+      "inputs": [],
+      "opacity": "1",
+      "background": "rgb(255, 255, 255)",
+      "within": true,
+      "overflow": false,
+      "unlabeled": 0,
+      "typography": [
+        {
+          "text": "대화를 삭제할까요?",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "‘글꼴 확인용 대화’의 대화와 첨부 이미지가 삭제됩니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "취소",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "19.6px"
+        },
+        {
+          "text": "삭제",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "19.6px"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "syntheticAccount": true,
+  "liveAccountVerified": false
+}

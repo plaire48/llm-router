@@ -1,0 +1,128 @@
+{
+  "startedAt": "2026-09-21T16:42:54.794Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:42:54.795Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2417
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:42:57.214Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 145
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:42:57.359Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1900
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:42:59.289Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4828
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:04.118Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17389
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:21.507Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7671
+    },
+    {
+      "name": "openwiki-ui-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:29.178Z",
+      "log": "openwiki-ui-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10408
+    },
+    {
+      "name": "openwiki-screen-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:39.587Z",
+      "log": "openwiki-screen-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2225
+    },
+    {
+      "name": "wiki-folder-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:41.812Z",
+      "log": "wiki-folder-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4998
+    },
+    {
+      "name": "wiki-folder-persistence-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:46.811Z",
+      "log": "wiki-folder-persistence-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3970
+    }
+  ],
+  "selection": [
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "openwiki-browser",
+    "openwiki-ui-browser",
+    "openwiki-screen-browser",
+    "wiki-folder-browser",
+    "wiki-folder-persistence-browser"
+  ],
+  "fullMatrix": false,
+  "version": "1.1.1",
+  "buildSha256": "986b86e53ae26ae6ed514f9c9328e7ef5fb6cb2ee66b5461d925ed4475abe921",
+  "archiveSha256": "fa52e554adb8e00e2fe2e86617a70c6a56457594102821efe393e6e1fddbbed8",
+  "finishedAt": "2026-09-21T16:43:50.795Z"
+}

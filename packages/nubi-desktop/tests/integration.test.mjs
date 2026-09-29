@@ -7,6 +7,7 @@ import os from 'node:os';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 import {git} from '../runtime/files.mjs';
+import {fixtureReview,fixturePlan} from './fixtures.mjs';
 installAgent(ProjectService);
 const plan=(criterionId)=>({summary:'Improve welcome while preserving existing content',requirements:[{id:'R1',text:'Improve the requested welcome',...(criterionId?{criterionId}:{})}],targets:[{path:'app.txt',reason:'Observed welcome implementation',requirementIds:['R1']}],checks:[{requirementId:'R1',method:'test',description:'Read saved content and verify welcome text'}],assumptions:[]});
 async function setup(t){
@@ -20,6 +21,7 @@ test('shared Pi loop reads actual source before proposing, then pauses and resum
   const {service}=await setup(t);let step=0,seenHash;
   const calls=(name,args)=>({content:'',calls:[{id:'call-'+(++step),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},async complete(messages){
+    const review=fixturePlan(messages)||fixtureReview(messages);if(review)return review;
     if(step===0)return calls('read_source',{path:'app.txt'});
     if(step===1){const result=messages.findLast(m=>m.role==='tool');assert.ok(result);assert.match(result.content,/Welcome old/);seenHash=/sha256:[a-f0-9]{64}/.exec(result.content)[0];return calls('record_change_plan',plan('AC-1'));}
     if(step===2)return calls('propose_edit',{path:'app.txt',expectedHash:seenHash,content:'Welcome new',reason:'요청한 문구 개선'});
@@ -47,6 +49,7 @@ test('the real Pi tool boundary rejects a partial-read rewrite and lets the mode
   await writeFile(path.join(root,'app.txt'),content);let step=0,hash;
   const call=(name,args)=>({content:'',calls:[{id:'guard-'+(++step),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},async complete(messages){
+    const review=fixturePlan(messages)||fixtureReview(messages);if(review)return review;
     if(step===0)return call('read_source',{path:'app.txt',start:1,end:10});
     if(step===1){hash=/sha256:[a-f0-9]{64}/.exec(messages.findLast(m=>m.role==='tool').content)[0];return call('propose_edit',{path:'app.txt',expectedHash:hash,content:'truncated rewrite',reason:'unsafe fixture'});}
     if(step===2){assert.match(messages.findLast(m=>m.role==='tool').content,/source_read_required/);return call('record_change_plan',plan());}

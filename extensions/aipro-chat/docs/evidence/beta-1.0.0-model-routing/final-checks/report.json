@@ -1,0 +1,100 @@
+{
+  "startedAt": "2026-09-22T12:29:56.548Z",
+  "status": "passed",
+  "repeats": 3,
+  "concurrency": 2,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:29:56.548Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 15627
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:12.178Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 153
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:12.331Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2984
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:15.356Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24313
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:15.356Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5179
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:20.537Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17042
+    },
+    {
+      "name": "models-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:30:37.580Z",
+      "log": "models-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7063
+    }
+  ],
+  "selection": [
+    "fabrix-browser",
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "models-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.9",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.12",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "de7a5807ad4d17b4b4278abf3f3c7be5d096de5c4f5a0e9e0cd64be6d2302df0",
+  "archiveSha256": "61ae7076fbd356d8b3fd576d0dce05247484d3ee1475aa5b8c2b6c299bdf8d7f",
+  "finishedAt": "2026-09-22T12:30:44.673Z"
+}

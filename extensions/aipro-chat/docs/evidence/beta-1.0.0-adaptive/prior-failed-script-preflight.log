@@ -1,0 +1,20 @@
+PASS syntax, unsupported late APIs and missing await fail before every write or debugger attachment, with a fresh passive observation
+PASS a missing later target preserves the earlier trusted write and identifies the failed command without replaying it
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 1
+
+    at file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/script-preflight-browser.mjs:59:65 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

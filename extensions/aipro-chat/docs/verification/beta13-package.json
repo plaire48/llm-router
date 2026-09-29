@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "archiveSha256": "f731e492190500173138b8fb55f7dd49c77a65153153b413197f59a07f88a82e",
+  "matchesCandidateReport": true,
+  "files": 559,
+  "zipIntegrityError": null,
+  "manifestVersion": "1.4.16",
+  "manifestChanges": [
+    "version"
+  ],
+  "nativeMessaging": false,
+  "unexpectedFiles": [],
+  "archiveMatchesTestedDist": true
+}

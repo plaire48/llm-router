@@ -1,0 +1,313 @@
+{
+  "checks": [
+    "320px address and proposed project fit, typography matches, Escape restores focus",
+    "360px address and proposed project fit, typography matches, Escape restores focus",
+    "1100px address and proposed project fit, typography matches, Escape restores focus",
+    "Invalid and denied origins do not connect; failed connections keep input and expose retry",
+    "Busy modal rejects close; success closes and toasts, exact-origin permission only, connected chip omits address; reconnect, address editing and disconnect work",
+    "Expired connections show recovery in shared typography; in-flight chat blocks connect and disconnect"
+  ],
+  "surfaces": [
+    {
+      "name": "address",
+      "width": 296,
+      "height": 640,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "OpenWiki 주소 *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "candidate",
+      "width": 296,
+      "height": 640,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "누비 화면과 코드를 함께 확인하는 프로젝트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "address",
+      "width": 336,
+      "height": 800,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "OpenWiki 주소 *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "candidate",
+      "width": 336,
+      "height": 800,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "누비 화면과 코드를 함께 확인하는 프로젝트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "address",
+      "width": 560,
+      "height": 850,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "OpenWiki 주소 *",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "INPUT",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "candidate",
+      "width": 560,
+      "height": 850,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "누비 화면과 코드를 함께 확인하는 프로젝트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "connected",
+      "width": 560,
+      "height": 850,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "누비 브라우저 프로젝트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "프로젝트를 연결했습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22.4px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    },
+    {
+      "name": "expired",
+      "width": 296,
+      "height": 640,
+      "typography": [
+        {
+          "text": "프로젝트 연결",
+          "kind": "title",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "24px"
+        },
+        {
+          "text": "누비 브라우저 프로젝트",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "연결이 만료되었습니다. 다시 연결해 주세요.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22px"
+        },
+        {
+          "text": "프로젝트를 연결했습니다.",
+          "kind": "body",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "22.4px"
+        }
+      ],
+      "within": true,
+      "opacity": "1",
+      "overflow": false,
+      "unlabeled": 0
+    }
+  ],
+  "errors": [],
+  "syntheticProjectRpc": true,
+  "nativePermissionPromptVerified": false
+}

@@ -7,6 +7,8 @@ import {ProjectService} from '../runtime/project-service.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 import {Store} from '../runtime/store.mjs';
 import path from 'node:path';
+import {writeFile} from 'node:fs/promises';
+import {git} from '../runtime/files.mjs';
 installAgent(ProjectService);
 const summary={goal:'문서 초안',constraints:[],decisions:[],completed:[],pending:['현재 파일 확인'],references:[]};
 const summarize=async()=>({content:JSON.stringify(summary),calls:[]});
@@ -121,21 +123,33 @@ test('desktop run reuses durable history, displays real summary progress and ret
   assert.equal(service.task(task.id).state,'review');assert.equal(summaries,prior);
   assert.equal(service.store.list('operation:').filter(op=>op.tool==='read_conversation').length,1);
 });
+// User decision 2026-09-29: after a compaction a read authorizes a patch only
+// while its text is still in the conversation the model sees
+// (tests/compaction-observations.test.mjs). Here the first range was replaced
+// by a reference before the overflow; only later ranges stay in view, so a
+// patch of line 1 needs a fresh read.
 test('overflow compacts only inference and old source observations cannot authorize a patch',async t=>{
-  const {service}=await fixture(t),task=await service.createTask({request:'Keep original scope',criteria:['Do not apply automatically']});
+  const {service,root}=await fixture(t),task=await service.createTask({request:'Keep original scope',criteria:['Do not apply automatically']});
   task.messages=Array.from({length:6},(_,i)=>({role:i%2?'assistant':'user',content:'Old source notes '+('details '.repeat(300))}));service.store.set('task:'+task.id,task);
-  let round=0,summaries=0,hash;
+  await writeFile(path.join(root,'long.md'),Array.from({length:400},(_,i)=>`line ${i+1} of a long reference document that fills the recent span`).join('\n'));
+  await git(root,['add','-A']);await git(root,['commit','-qm','long document']);
+  let round=0,summaries=0,hash,visible=null;
   const call=(name,args)=>({content:'',calls:[{id:'step-'+round,type:'function',function:{name,arguments:JSON.stringify(args)}}]});
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async messages=>{
     if(messages[0].content.startsWith('Summarize conversation')){summaries++;return summarize();}
-    if(round++===0)return call('read_source',{path:'app.txt'});
-    if(round===2){hash=JSON.parse(messages.findLast(m=>m.role==='tool').content).hash;throw new Error('context_overflow');}
-    if(round===3)return call('propose_patch',{path:'app.txt',expectedHash:hash,edits:[{oldText:'first',newText:'new'}],reason:'Check stale read'});
+    if(round===1)hash=JSON.parse(messages.findLast(m=>m.role==='tool').content).hash;
+    if(round<=4){round++;return call('read_source',{path:'long.md',start:(round-1)*60+1,end:round*60});}
+    if(round++===5)throw new Error('context_overflow');
+    if(round===7){
+      visible=messages.some(m=>m.role==='tool'&&(()=>{try{const value=JSON.parse(m.content);return value.path==='long.md'&&value.start===1&&typeof value.content==='string';}catch{return false;}})());
+      return call('propose_patch',{path:'long.md',expectedHash:hash,edits:[{oldText:'line 1 of a long',newText:'first line of a long'}],reason:'Check stale read'});
+    }
     assert.match(messages.findLast(m=>m.role==='tool').content,/source_read_required/);return {content:'현재 소스를 다시 읽어야 합니다.',calls:[]};
   }};
   await service.startAgent({taskId:task.id});await service.agent.promise;
-  assert.equal(service.task(task.id).state,'review');assert(summaries>0);
-  assert.equal(service.store.list('operation:').filter(op=>op.tool==='read_source').length,1);
+  assert.equal(service.task(task.id).state,'review',service.task(task.id).error);assert(summaries>0);
+  assert.equal(visible,false,'the first range is not in view');
+  assert.equal(service.store.list('operation:').filter(op=>op.tool==='read_source').length,5);
   assert.equal(service.state().proposals.length,0);
 });
 test('resuming an interrupted summary clears the stale progress state without pretending compaction succeeded',async t=>{

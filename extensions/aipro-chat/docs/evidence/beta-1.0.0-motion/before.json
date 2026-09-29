@@ -1,0 +1,41 @@
+{
+  "version": "1.4.4",
+  "before": [
+    {
+      "mood": "idle",
+      "playState": "running",
+      "wingPlayState": "running",
+      "time": 198.77699986919762,
+      "wingTime": 198.77699986919762
+    },
+    {
+      "mood": "idle",
+      "playState": "running",
+      "wingPlayState": "running",
+      "time": 565.9769998691976,
+      "wingTime": 565.9769998691976
+    }
+  ],
+  "focused": [
+    {
+      "mood": "idle",
+      "playState": "paused",
+      "wingPlayState": "paused",
+      "time": 608.4769998691976,
+      "wingTime": 608.4769998691976
+    },
+    {
+      "mood": "idle",
+      "playState": "paused",
+      "wingPlayState": "paused",
+      "time": 608.4769998691976,
+      "wingTime": 608.4769998691976
+    }
+  ],
+  "hovering": {
+    "mood": "celebrate",
+    "playState": "paused",
+    "wingPlayState": "paused",
+    "time": 0
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "status": "resolved_fixture_and_ui_findings",
+  "actualModel": false,
+  "findings": [
+    {
+      "issue": "Service worker dynamic import rejected by HTML specification",
+      "scope": "test fixture",
+      "change": "Static test probe import for large documents; extension-page import for IndexedDB history",
+      "evidence": "First large-document and trace-journal Chrome fixture logs retained separately"
+    },
+    {
+      "issue": "Empty source details rendered numeric zero",
+      "scope": "product UI",
+      "change": "Boolean conditional for empty details; screenshot review and browser regression"
+    },
+    {
+      "issue": "Large cited document result truncated before goal review; missing citations could be usable",
+      "scope": "product",
+      "change": "Bounded document-reference handling matching existing Wiki evidence policy; citation-required regression"
+    },
+    {
+      "issue": "Large document offsets beyond 40000 lost during context compaction",
+      "scope": "product",
+      "change": "Shared 4M limit, distinct original/text hashes, post-compaction authorized reread regression"
+    },
+    {
+      "issue": "Cancelled final public events can be rejected before journal append",
+      "scope": "product",
+      "change": "Final sequence records missing tail without replaying actions or reviving cancelled tasks"
+    },
+    {
+      "issue": "Capture fixture counted the new history disclosure as a third capture",
+      "scope": "test selector",
+      "change": "Exclude journal disclosures from capture count/expansion while preserving all image, pixel, download and approval assertions"
+    },
+    {
+      "issue": "Final coordinator handoff dropped from recent 32 steps when active pin was released",
+      "scope": "product progress summary",
+      "change": "Retain the 32 most recently updated identities while displaying them in original start order. Preserve final coordinator/parent completion and short nested fill/verify order; internal revisions never enter public events."
+    },
+    {
+      "issue": "Task-plan fixture selected nested journal summary as well as outer trace summary",
+      "scope": "test selectors",
+      "change": "Use direct-child summary selectors for task-plan, script-recovery, page-skills and feedback. Keep original task completion/reload/step assertions."
+    },
+    {
+      "issue": "Chrome managed policy read delayed boot while a slow page response remained pending",
+      "scope": "product startup and capture fixture",
+      "change": "Bound UI wait to five seconds, single-flight raw reads, fail closed until known, generation-check late responses. Capture fixture starts extension before opening intentionally held page."
+    },
+    {
+      "issue": "New policy fixture incorrectly expected policy in GET_STATE",
+      "scope": "test contract",
+      "change": "Read state via GET_STATE and actual policy via existing GET_BROWSER_ROUTINES."
+    },
+    {
+      "issue": "Policy-unknown error lost at script error normalization; managed revocation waited for policy I/O",
+      "scope": "product",
+      "change": "Preserve browser_policy_invalid classification and immediately cancel active work when policy changes, independently of the pending policy read."
+    },
+    {
+      "issue": "GET_STATE received after a long tool was queued but before it started could wait behind a native dialog until its timeout",
+      "scope": "product observer queue",
+      "change": "Reserve queued/running long tool operations before enqueue, release on every outcome, and let trusted UI read current state without recovery while any reservation exists. Actual-host deterministic regression covers the queued boundary, denied untrusted observers and multiple/error releases."
+    }
+  ]
+}

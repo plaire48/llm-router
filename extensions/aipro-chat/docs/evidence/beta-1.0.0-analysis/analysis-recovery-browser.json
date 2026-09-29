@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "failed batches do not execute later writes",
+    "independent checkpoint redirects failed scripts to passive reading",
+    "final review catches an omitted requirement and repairs only the answer",
+    "reading completes without debugger attachment, page writes or redundant verify_page"
+  ],
+  "errors": [],
+  "checkpoints": 1,
+  "finalReviews": 2,
+  "realBrowser": true,
+  "syntheticModel": true,
+  "actualModelAccuracy": false
+}

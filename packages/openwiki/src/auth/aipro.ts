@@ -115,6 +115,8 @@ export async function fetchAiproModels(
       headers: {
         Authorization: `Bearer ${readAiproToken(token)}`,
         Accept: "application/json",
+        // The AI Pro browser client sends this with model discovery.
+        "X-REASONING": "true",
       },
       redirect: "error",
       cache: "no-store",

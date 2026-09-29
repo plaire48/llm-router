@@ -1,0 +1,754 @@
+{
+  "schemaVersion": 2,
+  "items": [
+    {
+      "id": "NQ-16",
+      "title": "회귀 점수와 프로세스 종료 근거 일치",
+      "state": "implemented",
+      "acceptance": "실패 종료/시간 초과/시그널을 통과로 세지 않고 종료 근거 누락은 미검증 처리",
+      "order": 1,
+      "checks": [
+        "unit"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-17",
+      "title": "항목별 검사 근거와 다음 행동 연결",
+      "state": "implemented",
+      "acceptance": "유효한 순서/검사명/완료 조건과 다음 행동을 검증하고 동일 후보의 단계별 로그 연결",
+      "order": 2,
+      "checks": [
+        "unit"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-15",
+      "order": 3,
+      "title": "하위 분석 보고서와 근거 반환의 독립 사본",
+      "state": "implemented",
+      "acceptance": "반환 보고서/출처/읽은 범위/이미지를 수정해도 재조회 원본은 불변. 부분 결과와 만료 판정 유지",
+      "checks": [
+        "unit",
+        "analysis-retention-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-13",
+      "order": 4,
+      "title": "현재 소스와 검증 근거를 자동 대조하는 작업 목록",
+      "state": "implemented",
+      "acceptance": "단일 동일 후보의 v8 핵심 gate 또는 필수 기준을 모두 포함한 전체 gate만 인정. 오래된 해시/부분 검사/중복 단계/최근 실패 거부",
+      "checks": [
+        "unit"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-14",
+      "order": 5,
+      "title": "Pi 0.87.1 업그레이드와 질문/승인 중지 경계",
+      "state": "implemented",
+      "acceptance": "finishTurn 전환 후 질문/승인 추가 호출 0, 오류/취소 유지, 읽기 병렬과 인계 회귀",
+      "checks": [
+        "unit",
+        "clarification-browser",
+        "popup-approval-browser",
+        "role-agents-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-01",
+      "order": 6,
+      "title": "동일 후보 핵심 회귀",
+      "state": "implemented",
+      "acceptance": "v8 핵심의 단위/디자인/후보 빌드와 29종 3회+20종을 단일 동일 후보로 검증. 전체 gate는 같은 필수 기준을 포함하고 모든 추가 단계까지 통과해야 인정",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-02",
+      "order": 7,
+      "title": "실제 Qwen 업무 성공률",
+      "state": "external",
+      "acceptance": "전용 평가 인증과 회사망에서 8과제 3회, 독립 정답과 수신 근거",
+      "checks": [],
+      "nextAction": "회사망의 평가 전용 인증을 연결하고 8개 정답 과제를 각각 3회 실행해 실제 Qwen 결과를 채점"
+    },
+    {
+      "id": "NQ-03",
+      "order": 8,
+      "title": "내장/외부 Wiki와 긴 문서 위임",
+      "state": "implemented",
+      "acceptance": "실제 Chrome 검색/위임/인용/범위 확인. 의미 정확도는 NQ-02와 별도",
+      "checks": [
+        "openwiki-agent-browser",
+        "wiki-folder-persistence-browser",
+        "document-retrieval-browser",
+        "wiki-quality-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-04",
+      "order": 9,
+      "title": "실제 사이트 저장/등록 완료",
+      "state": "external",
+      "acceptance": "사용자 대표 사이트/업무와 서버 영수증 계약. 로컬 입력은 서버 저장 근거가 아님",
+      "checks": [],
+      "nextAction": "대표 사이트와 저장/등록 완료를 판정할 서버 영수증 계약 확보 후 검증"
+    },
+    {
+      "id": "NQ-05",
+      "order": 10,
+      "title": "worker 및 Chrome 종료 후 미확정 입력",
+      "state": "implemented",
+      "acceptance": "재관찰로 대상/값 확인, 중복 쓰기 0. 사이트 세션 복원은 별도",
+      "checks": [
+        "restart-write-browser",
+        "background-lifetime-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-06",
+      "order": 11,
+      "title": "native 확인창과 사용자 답변",
+      "state": "implemented",
+      "acceptance": "확인/취소/재진입/응답형식 검증, 취소 후 재실행 없음",
+      "checks": [
+        "native-dialog-approval-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-07",
+      "order": 12,
+      "title": "실계정 SSO와 Windows/Edge 설치",
+      "state": "external",
+      "acceptance": "각 대상 환경에서 로그인/모델 선택/실제 요청/업데이트 검증",
+      "checks": [],
+      "nextAction": "Windows/Edge 환경과 각 제공자 실계정으로 로그인/모델 선택/설치 업데이트 검증"
+    },
+    {
+      "id": "NQ-08",
+      "order": 13,
+      "title": "공식 WebArena 독립 평가",
+      "state": "external",
+      "acceptance": "공식 Docker 환경/평가 인증과 누비 실행 후 독립 grader 성공률",
+      "checks": [],
+      "nextAction": "공식 WebArena Docker 환경과 평가 인증을 연결하고 독립 grader 실행"
+    },
+    {
+      "id": "C01-C08",
+      "order": 14,
+      "title": "진단/파일 전송/알림/녹화/예약/조직 정책",
+      "state": "implemented",
+      "acceptance": "Chrome 합성 업무와 권한/취소/영수증 검증. 정책 초기화 지연 시 제한 모드와 늦은 정책 복구 확인. OS 배너와 실제 정책 배포는 별도",
+      "checks": [
+        "browser-routines-browser",
+        "browser-diagnostics-browser",
+        "browser-policy-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "C10-C12",
+      "order": 15,
+      "title": "녹화 종료와 저장 복구",
+      "state": "implemented",
+      "acceptance": "만료/탭 종료/저장 실패 체크포인트/중복 저장 방지",
+      "checks": [
+        "browser-routines-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-10",
+      "order": 16,
+      "title": "반복 감지와 필수 조건 보존",
+      "state": "implemented",
+      "acceptance": "반복 상태를 진전으로 처리하지 않음, 명시 조건과 미확정 쓰기 보존",
+      "checks": [
+        "context-browser",
+        "harness-repair-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-11",
+      "order": 17,
+      "title": "하위 분석 원래 조건과 배치 검증",
+      "state": "implemented",
+      "acceptance": "assignment 재조회, TypeBox 입력 검증, effort 변경 중복 실행 방지",
+      "checks": [
+        "analysis-retention-browser",
+        "role-agents-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-12",
+      "order": 18,
+      "title": "압축 후 하위 분석 재조회",
+      "state": "implemented",
+      "acceptance": "두 번 압축 후 원래 조건과 부분 결과 조회, 미완료 우선/취소 상태 보존",
+      "checks": [
+        "analysis-retention-browser",
+        "context-browser"
+      ],
+      "nextAction": "소스 변경 시 연결된 검사와 동일 후보 핵심 회귀를 다시 검증"
+    },
+    {
+      "id": "NQ-18",
+      "order": 19,
+      "title": "큰 첨부 문서 분할 조사와 압축 후 최종 근거",
+      "state": "implemented",
+      "acceptance": "ask_documents가 선택 문서만 독립 워커로 나누고 부분 실패/미열람/원래 조건을 유지. 압축 뒤 문서 근거를 재조회하고 최종 요구사항 검토에 연결. 실모델 정확도는 별도",
+      "checks": [
+        "unit",
+        "large-document-browser",
+        "context-browser"
+      ],
+      "nextAction": "현재 후보의 v5 핵심 또는 전체 gate에서 문서 범위/압축/최종 근거 회귀를 검증",
+      "latestRevision": {
+        "version": "1.0.0-beta.36",
+        "reference": "docs/CACHED-FILL-CONTEXT-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "NQ-19",
+      "order": 20,
+      "title": "역할별 워커 진행과 전체 실행 기록",
+      "state": "implemented",
+      "acceptance": "분할/조사/누락 보완/합성/전달을 실제 이벤트로 구분. 최근 32개와 별도 저널 페이지/재진입/소유권/삭제/보관 한도/취소 tail 누락을 검증",
+      "checks": [
+        "unit",
+        "subagent-progress-browser",
+        "trace-journal-browser"
+      ],
+      "nextAction": "현재 후보의 v5 핵심 또는 전체 gate에서 역할 표시와 전체 기록 회귀를 검증"
+    },
+    {
+      "id": "NQ-20",
+      "order": 21,
+      "title": "미확정 쓰기의 원래 탭과 문서 범위 보존",
+      "state": "implemented",
+      "acceptance": "원래 탭/최상위 문서/대상 iframe과 검증 결과 문서가 일치할 때만 해소. 식별 근거가 없거나 worker가 중단되면 중복 쓰기 없이 미확정 유지",
+      "checks": [
+        "unit",
+        "uncertain-frame-browser",
+        "restart-write-browser"
+      ],
+      "nextAction": "같은 URL의 다른 탭/재로딩/iframe 교체와 worker 중단을 새 후보에서 검증"
+    },
+    {
+      "id": "NQ-21",
+      "order": 22,
+      "title": "열린 녹화와 예약 화면의 실제 상태 갱신",
+      "state": "implemented",
+      "acceptance": "녹화 만료와 예약 상태가 열린 화면에 반영되고 작성 중인 절차/예약 입력은 보존. 조회 실패에는 다시 읽기 제공",
+      "checks": [
+        "unit",
+        "browser-routines-browser"
+      ],
+      "nextAction": "실제 Chrome alarm과 storage 변경 중 열린 화면 및 초안 보존 확인"
+    },
+    {
+      "id": "NQ-22",
+      "order": 23,
+      "title": "페이지 캡처 전체 기한과 취소",
+      "state": "implemented",
+      "acceptance": "레이아웃과 screenshot을 단일 기한에서 종료. 취소/시간 초과 뒤 새 이미지와 화면 클릭 ID를 만들지 않음",
+      "checks": [
+        "unit",
+        "full-page-captures-browser"
+      ],
+      "nextAction": "보류된 레이아웃 조회와 실제 Chrome 전체 캡처를 함께 검증"
+    },
+    {
+      "id": "NQ-23",
+      "order": 24,
+      "title": "최종 검토의 사용자 참고 이미지 보존",
+      "state": "implemented",
+      "acceptance": "여러 턴의 사용자 이미지를 순서대로 최종 검토에 포함. 문맥 한도를 넘으면 완료 주장을 거부",
+      "checks": [
+        "unit",
+        "completion-review-browser"
+      ],
+      "nextAction": "다중 이미지 요청과 예산 부족의 검토 계약을 동일 후보로 검증",
+      "latestRevision": {
+        "version": "1.0.0-beta.36",
+        "reference": "docs/PDF-VISUAL-EVIDENCE-FOLLOWUP-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "NQ-24",
+      "order": 25,
+      "title": "녹화 시작부터 저장까지 한눈에 보이는 흐름",
+      "state": "implemented",
+      "acceptance": "설정에서 현재 단계의 주동작이 보이고, 녹화 중 사이트/동작 수/종료가 누비 화면에 유지된다. 초안은 명시적 확인 없이는 덮어쓰지 않고, 100단계는 축약 표시하며 저장 결과와 실행 위치를 알려준다",
+      "checks": [
+        "unit",
+        "browser-routines-browser"
+      ],
+      "nextAction": "동일 후보의 실제 Chrome 320/360/1280px과 녹화-확인-저장 경로를 검증하고 identity gate에서 키보드를 확인"
+    },
+    {
+      "id": "NQ-25",
+      "order": 26,
+      "title": "막힌 예약을 명시적으로 다시 예약",
+      "state": "implemented",
+      "acceptance": "다른 작업·대화 전환으로 멈춘 예약은 자동 재실행하지 않고 기존 내용과 ID를 보존해 새 시각을 사용자가 지정한다. 실행 결과 미확인은 중복 실행을 막는다",
+      "checks": [
+        "unit",
+        "browser-routines-browser"
+      ],
+      "nextAction": "실제 Chrome에서 중단 상태와 사용자 재예약, 알람 등록을 검증"
+    },
+    {
+      "id": "NQ-26",
+      "order": 27,
+      "title": "예약 결과의 검증 수준을 정확히 표시",
+      "state": "implemented",
+      "acceptance": "일반 응답은 응답 도착, 독립 검토가 통과한 경우만 결과 확인됨으로 표시하고 실패·승인 대기·미확정을 분리",
+      "checks": [
+        "unit",
+        "browser-routines-browser"
+      ],
+      "nextAction": "합성 모델 응답과 실제 검토 상태에 따른 표시를 회귀 검증"
+    },
+    {
+      "id": "NQ-27",
+      "order": 28,
+      "title": "월말과 윤년을 보존하는 월·연 예약",
+      "state": "implemented",
+      "acceptance": "월·연 주기를 선택할 수 있고 원래 지정한 날짜를 기준으로 월말·윤년을 계산해 다음 알람을 등록",
+      "checks": [
+        "unit",
+        "browser-routines-browser"
+      ],
+      "nextAction": "달력 경계 단위 검사와 실제 Chrome 저장 경로를 검증"
+    },
+    {
+      "id": "NQ-28",
+      "order": 29,
+      "title": "사용자 프롬프트 바로가기와 슬래시 재사용",
+      "state": "implemented",
+      "acceptance": "사용자가 저장·편집·삭제한 일반 프롬프트를 /p: 메뉴에서 초안으로 불러오며 자동 실행하지 않는다. 기존 스킬 명령과 충돌하지 않고 다중 창 저장을 직렬화한다",
+      "checks": [
+        "unit",
+        "prompt-shortcuts-browser"
+      ],
+      "nextAction": "실제 Chrome에서 저장·재진입·명령 선택·기존 스킬·동시 창 경계를 최종 후보로 확인"
+    },
+    {
+      "id": "NQ-29",
+      "order": 30,
+      "title": "저장한 프롬프트에서 예약 폼 열기",
+      "state": "implemented",
+      "acceptance": "바로가기의 이름과 요청을 예약 폼에 전달하고 관찰한 연결 페이지 주소만 후보로 사용한다. 시각과 사이트 권한은 사용자가 정하며 버튼만 눌러 실행·예약하지 않는다",
+      "checks": [
+        "prompt-shortcuts-browser",
+        "browser-routines-browser"
+      ],
+      "nextAction": "실제 Chrome에서 바로가기 예약 버튼, 360px 폼, 빈 시작 주소와 예약 미생성을 검증"
+    },
+    {
+      "id": "NQ-30",
+      "order": 31,
+      "title": "시각 모델의 화면 일부 읽기",
+      "state": "implemented",
+      "acceptance": "뷰포트 안 정수 좌표 영역만 PNG로 캡처하고 비밀 입력을 가린다. 스크롤 위치와 실제 픽셀을 검증하며 잘린 이미지는 클릭 좌표로 사용할 수 없다",
+      "checks": [
+        "unit",
+        "capture-coverage-browser"
+      ],
+      "nextAction": "실제 Chrome의 스크롤된 화면에서 영역 색상·마스킹·잘린 이미지 클릭 차단을 검증",
+      "latestRevision": {
+        "version": "1.0.0-beta.38",
+        "reference": "docs/SCOPE-SOURCE-PDF-RECOVERY-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "D01",
+      "order": 32,
+      "title": "Pi 세션 분기/전체 하네스 교체",
+      "state": "not_selected",
+      "acceptance": "현재 IndexedDB 대화/승인/실행 경계를 교체할 재현 결함이나 사용자 분기 요구 없음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토"
+    },
+    {
+      "id": "D02",
+      "order": 33,
+      "title": "Pi 도구 진행 이벤트 별도 도입",
+      "state": "not_selected",
+      "acceptance": "기존 호스트 실제 단계 이벤트 유지. 추가 세부 이벤트 생산자 없이 가짜 진행 상태를 만들지 않음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토"
+    },
+    {
+      "id": "D03",
+      "order": 34,
+      "title": "Pi 스킬 파일 로더로 교체",
+      "state": "not_selected",
+      "acceptance": "기존 ZIP/폴더 가져오기/검증/MiniSearch 조회 유지. Node 파일 환경 의존성 추가 효과 없음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토"
+    },
+    {
+      "id": "D04",
+      "order": 35,
+      "title": "외부 telemetry SDK 도입",
+      "state": "not_selected",
+      "acceptance": "기존 usage와 하위 분석 호출/입력/토큰 계측 유지. 외부 전송/중복 계측 도입 근거 없음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토"
+    },
+    {
+      "id": "D05",
+      "order": 36,
+      "title": "검색 엔진/DeepAgents/UI 도구 일괄 최신화",
+      "state": "not_selected",
+      "acceptance": "현 정답/회귀에서 교체 필요 미확인. 새 버전 존재만으로 기존 동작을 변경하지 않음",
+      "checks": [],
+      "nextAction": "새 사용자 요구나 재현 결함이 생기면 기존 비채택 근거를 다시 검토"
+    },
+    {
+      "id": "NQ-31",
+      "order": 37,
+      "title": "질문 입력 대기와 답변 재개",
+      "state": "implemented",
+      "acceptance": "Enter 조기 전송 방지, 질문/답변 결합, 직전 동일 폼 반복 방지, 인간 검토 중 타이머 정지. 새 질문/명시적 승인/취소는 유지",
+      "checks": [
+        "unit",
+        "design",
+        "clarification-browser"
+      ],
+      "nextAction": "동일 후보 회귀와 별도로 실제 모델의 의미상 반복 질문과 실사이트 작성 흐름 검증"
+    },
+    {
+      "id": "NQ-32",
+      "order": 38,
+      "title": "탭 재사용과 채팅 흐름 7개 개선",
+      "state": "implemented",
+      "acceptance": "기존 누비/소유 작업 탭 재사용, 첫 입력창 하단, 첨부파일 설정, 원문 기반 인라인 편집, 하위 분석 원 목표, 원형 하단 이동, 실제 무응답만 대기 표시",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "popup-approval-browser",
+        "role-agents-browser",
+        "context-browser",
+        "subagent-progress-browser"
+      ],
+      "nextAction": "docs/UX-HARNESS-RECHECK-2026-09-26.md의 화면 회귀를 실행하고 실제 모델의 지연과 업무 완료율은 별도 실측"
+    },
+    {
+      "id": "NQ-33",
+      "order": 39,
+      "title": "가상 커서 연속 표시와 소유 작업 탭 따라가기",
+      "state": "implemented",
+      "acceptance": "같은 문서의 커서 유지, 대기 중 사용자 입력 미추적, 캡처 픽셀 제외/복원, 사용자 탭 선택 존중, 배경 작업 창 안에서만 현재 페이지 선택",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build"
+      ],
+      "nextAction": "docs/POINTER-CONTINUITY-2026-09-26.md의 실제 Chrome 표시/탭 회귀와 별도로 OS 전면 포커스 및 실계정 장시간 흐름 검증"
+    },
+    {
+      "id": "NQ-34",
+      "order": 40,
+      "title": "완료 검토 실패 분리와 읽기 전용 복구",
+      "state": "implemented",
+      "acceptance": "동일 모델의 결과 스키마 복구, 근거 검증 유지, 미검토 답변 숨김, 읽기 전용 재확인과 호스트 쓰기 차단, 반복 실패 시 기존 질문 대기, 원래 조건/작업 보존",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "completion-review-browser"
+      ],
+      "nextAction": "docs/REVIEW-RECOVERY-2026-09-26.md의 Chrome 재현 회귀 후 실제 사용자 모델/업무의 실패 원인과 개선율 별도 실측",
+      "latestRevision": {
+        "version": "1.0.0-beta.38",
+        "reference": "docs/SCOPE-SOURCE-PDF-RECOVERY-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "NQ-35",
+      "order": 41,
+      "title": "추가 지시 채팅 표시와 진행 기록 분리",
+      "state": "implemented",
+      "acceptance": "수락된 steer를 안정된 입력 ID로 한 번 표시하고 모델 반영 전 상태/수정/삭제와 원 실행의 독립 진행 기록 유지",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "agent-input-browser"
+      ],
+      "nextAction": "docs/STEERING-TRANSCRIPT-2026-09-26.md의 접수/반영/새로고침 Chrome 검증과 전체 identity gate 확인; 실제 모델 성능과 별도",
+      "latestRevision": {
+        "version": "1.0.0-beta.36",
+        "reference": "docs/DEBUG-PROGRESS-UI-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "NQ-36",
+      "order": 42,
+      "title": "추가 지시가 섞인 대기열 정렬과 폼 답변 전달 검증",
+      "state": "implemented",
+      "acceptance": "숨겨진 같은 실행의 steer 위치를 유지하고 queue만 재정렬, 이전 순서/다른 실행/계정 경계 거부, 키보드 안내의 화면 순서 일치, 새로고침 뒤 질문 ID와 답변 원문의 모델 전달 확인",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "agent-input-browser",
+        "form-workflow-browser"
+      ],
+      "nextAction": "docs/APP-RETEST-2026-09-26.md의 현재 후보 핵심 및 화면 검증 확인; 실모델 업무 품질은 별도 측정"
+    },
+    {
+      "id": "NQ-37",
+      "order": 43,
+      "title": "첫 계획 단계의 브라우저 대상 관찰과 복구 위임",
+      "state": "implemented",
+      "acceptance": "닫힌 영역이 실제 입력/버튼 관찰을 누락시키지 않음, CSS collapse 대상 제외, 웹 원문 URL/hash/ranges는 이동 뒤 보존하고 새 버전만 교체, 반복 타깃 오류의 읽기 전용 recovery 자동 위임과 사용자 정정 취소, 부분 인계의 미확인/다음 행동 보존; 오류 문서에서 소유 탭 조회/전환으로 복구하되 임의 사용자 탭/정책 차단/미확정 쓰기를 우회하지 않음; revise로 확인된 반복 단계 검토는 사용자 질문 전 동일 근거당 읽기 전용 복구 분석 1회와 새 읽기/재검토를 수행; 첫 계획 응답의 도구/전체 JSON을 같은 스키마로 검증하고 형식 실패만 구체적인 피드백으로 복구하되 인증 실패/취소/혼합 도구를 행동으로 전환하지 않음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "source-reference-browser",
+        "browser-dom-actionability-browser",
+        "harness-seven-browser",
+        "review-recovery-browser",
+        "script-recovery-browser",
+        "role-agents-browser",
+        "browser-policy-browser",
+        "task-plan-browser"
+      ],
+      "nextAction": "docs/PLAN-ACTION-QUALITY-2026-09-26.md의 동일 후보 core gate 확인 후 실제 선택 모델의 첫 계획 완료율/전체 성공률/모델 호출 시간 별도 실측"
+    },
+    {
+      "id": "NQ-38",
+      "order": 44,
+      "title": "입력창 추가 메뉴 통합과 진행 Markdown 가독성",
+      "state": "implemented",
+      "acceptance": "파일 첨부/페이지 연결/스킬을 +로 펼치고 기존 동작과 키보드 초점 복귀 유지; 계획과 하위 작업 Markdown, 진행 설명 줄바꿈을 320px에서도 읽을 수 있음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "subagent-progress-browser"
+      ],
+      "nextAction": "docs/COMPOSER-ADD-MENU-2026-09-26.md의 composer-add-browser 및 전체 identity 보고서 확인; UI 합성 검사와 실모델 완주 검증은 별도"
+    },
+    {
+      "id": "NQ-39",
+      "order": 45,
+      "title": "비교 조사 원문 확보와 단계 완료 기준 분리",
+      "state": "implemented",
+      "acceptance": "읽기 전용 비교에서 연 페이지 원문을 문서 ID에 연결해 보존하고 서로 다른 두 출처를 읽기 전용 워커로 위임; 단계 검토는 해당 단계 조건만, 최종 검토는 전체 요청 평가; 검색 쿼리별 출처와 문서 변경을 구분하고 취소/미확정 쓰기는 우회하지 않음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "source-reference-browser",
+        "role-agents-browser",
+        "review-recovery-browser",
+        "task-plan-browser"
+      ],
+      "nextAction": "docs/RESEARCH-COMPLETION-2026-09-26.md의 research-source-browser와 실제 Luna 재시험을 별도 확인. 원문 확보 및 첫 단계 합성 통과를 실모델 완주로 계산하지 않음",
+      "latestRevision": {
+        "version": "1.0.0-beta.38",
+        "reference": "docs/SCOPE-SOURCE-PDF-RECOVERY-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "NQ-40",
+      "order": 46,
+      "title": "Claude 루프 분석 기반 최종 검토 복구와 종료 진단",
+      "state": "implemented",
+      "acceptance": "같은 근거의 반복 revise에는 고정 근거 복구 워커 한 번과 검토/조언의 동시 전달 후 새 판단; blocked는 실제 질문, 반복 기술 실패는 다시 확인/중지로 구분; 사용자 정정 시 낡은 분석 취소; 검토 범위/결과와 답변/사용자 대기/오류/취소를 원문 없는 세션 진단으로 기록; 남은 계획 결과 검토와 정확한 저장 확인 뒤 최종 답변 검토. 화면의 자동 완료 채움 금지. 3/3과 최종 답변 표시 및 새로고침 유지 확인",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "review-recovery-browser",
+        "role-agents-browser",
+        "task-plan-browser"
+      ],
+      "nextAction": "docs/PLAN-COMPLETION-2026-09-27.md의 단계 완료/저장/최종 답변/재진입 계약을 같은 후보의 실모델로 검증. review-budget-browser 합성 3/3과 실제 품질을 구분"
+    },
+    {
+      "id": "NQ-41",
+      "order": 47,
+      "title": "두 출처 이후 비교 분석 자동 위임 지속",
+      "state": "implemented",
+      "acceptance": "서로 다른 관찰 출처를 최대 16개까지 자동 분석하고 실행/미전달 6개와 동시 실행 2개 제한을 유지; 전달 완료 작업은 새 배정을 막지 않으며 동일 출처/실패를 자동 반복하지 않음; 정정/쓰기/질문 경계 유지",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "role-agents-browser",
+        "analysis-delivery-browser",
+        "analysis-retention-browser"
+      ],
+      "nextAction": "docs/MULTISOURCE-DIAGNOSTICS-2026-09-26.md의 9출처 Pi 통합 및 research-source-browser 근거 확인. 실제 모델 완주율은 별도 실측"
+    },
+    {
+      "id": "NQ-42",
+      "order": 48,
+      "title": "브라우저 재시작 후 검토와 종료 진단 보존",
+      "state": "implemented",
+      "acceptance": "소유 실행의 허용된 검토/종료 값만 idb에 원자 순번으로 기록; 요청별 400개/전체 10000개/256개 실행 제한과 대화 삭제 연계; 원문/인증값 제외; 저장 실패는 결과를 깨뜨리지 않고 기록으로 실행을 재개하지 않음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "trace-journal-browser",
+        "review-recovery-browser"
+      ],
+      "nextAction": "docs/MULTISOURCE-DIAGNOSTICS-2026-09-26.md의 agent-diagnostic-journal-browser 실제 Chrome 종료/재시작 및 소유권 검사 확인. 네이버 평가에서 agentDiagnostics와 진단 누락을 별도로 읽음"
+    },
+    {
+      "id": "NQ-43",
+      "order": 49,
+      "title": "재방문 거짓 진전 제거와 반복 읽기 복구",
+      "state": "implemented",
+      "acceptance": "문서 식별자/본문 동일성을 분리하고 원문 인용/이어읽기/미확정 쓰기 계약 유지; 실제 읽기 근거의 반복에 고정 근거 워커 한 번 뒤 새 조회/최종 검토; 정정 시 취소하고 계속 반복하면 요구사항 재입력 대신 기술적 대기",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "source-reference-browser",
+        "uncertain-frame-browser",
+        "error-recovery-browser",
+        "role-agents-browser",
+        "completion-review-browser"
+      ],
+      "nextAction": "docs/READ-LOOP-RECOVERY-2026-09-26.md의 변경 전 실패 재현과 read-loop-recovery-browser 근거 확인. 실제 모델 네이버 완주와 비용/속도는 별도 실측"
+    },
+    {
+      "id": "NQ-44",
+      "order": 50,
+      "title": "분석 대기열 포화 복구와 사용자 정정 수용",
+      "state": "implemented",
+      "acceptance": "결과 미전달을 포함한 6개 제한과 동시 실행 2개를 유지; 포화 시 실제 결과 수집 후 복구 배정 한 번 재시도; 취소 가능한 비소비 대기와 원문 보존; 자동/명시 수집 중 정정 반영; 조언을 완료나 승인으로 처리하지 않음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "analysis-delivery-browser",
+        "role-agents-browser",
+        "agent-input-browser",
+        "review-recovery-browser"
+      ],
+      "nextAction": "docs/ANALYSIS-BACKPRESSURE-2026-09-26.md와 analysis-backpressure-browser의 재현/검증 확인. 실제 모델 완주율과 서버 저장 성공은 별도 실측"
+    },
+    {
+      "id": "NQ-45",
+      "order": 51,
+      "title": "클릭/입력 복구의 포화 대기와 배정 확인",
+      "state": "implemented",
+      "acceptance": "복구 배정이 실제 승인된 뒤에만 시도 기록; 포화이면 기존 보고 수집 후 읽기 전용 복구 1개 배정; 정정/취소/미확정 쓰기 경계와 동시 실행 제한 유지; 실패 동작 재전송 없음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "action-pressure-browser",
+        "analysis-backpressure-browser",
+        "script-recovery-browser",
+        "role-agents-browser"
+      ],
+      "nextAction": "docs/ACTION-RECOVERY-ADMISSION-2026-09-26.md의 코드 대조/회귀와 baseline v7 확인. 실제 선택 모델 네이버 완주는 별도 실측"
+    },
+    {
+      "id": "NQ-46",
+      "order": 52,
+      "title": "실행별 검토와 종료 진단 화면",
+      "state": "implemented",
+      "acceptance": "소유 실행의 로컬 진단만 펼쳐 조회; 응답 종료/사용자 대기/중지/실패와 최종 검토 구분; 보관 누락/읽기 실패 표시; 새로고침은 읽기만 수행; 50개 페이지와 좁은 화면/키보드 유지",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "agent-diagnostic-journal-browser",
+        "trace-journal-browser"
+      ],
+      "nextAction": "docs/AGENT-DIAGNOSTIC-UI-2026-09-26.md의 출처/화면/검증 확인. 진단 조회를 실모델 완주 해결이나 재시작 실행 복원으로 계산하지 않음",
+      "latestRevision": {
+        "version": "1.0.0-beta.36",
+        "reference": "docs/DEBUG-PROGRESS-UI-2026-09-28.md",
+        "realModelVerified": false
+      }
+    },
+    {
+      "id": "NQ-47",
+      "order": 53,
+      "title": "재시작 작업의 탭 연결과 관찰 범위 보호",
+      "state": "implemented",
+      "acceptance": "이전 브라우저 작업의 탭 연결이 없으면 다른 활성 탭으로 재개하지 않음; 명시 연결 뒤 원래 목표/계획/미확정 영수증 보존; 문서와 Wiki 전용 작업은 브라우저 관찰 생략; 기존 주소는 현재 문서나 승인 근거로 사용하지 않음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "resume-target-browser",
+        "restart-write-browser",
+        "context-browser",
+        "uncertain-frame-browser"
+      ],
+      "nextAction": "docs/RESUME-TARGET-2026-09-26.md의 변경 전 재현과 baseline v8 확인. 전체 worker 문맥 복원과 실모델 완주 검증은 별도"
+    },
+    {
+      "id": "NQ-48",
+      "order": 54,
+      "title": "재개 시 하위 분석의 미해결 상태 전달",
+      "state": "implemented",
+      "acceptance": "소유 실행의 제한된 trace 힌트와 취소/부분 상태를 재개 문맥 및 다음 체크포인트에 보존. 이전 워커/근거 ID를 실행 권한이나 완료 증거로 재사용하지 않음",
+      "checks": [
+        "unit",
+        "resume-target-browser"
+      ],
+      "nextAction": "전체 워커 복원과 구분하고 동일 후보 재개 회귀로 확인"
+    },
+    {
+      "id": "NQ-49",
+      "order": 55,
+      "title": "재시작 후 하위 분석의 전체 작업 조건과 출처 재연결",
+      "state": "implemented",
+      "acceptance": "원래 assignment/제약/완료 조건과 읽은 범위 및 미해결 보고를 소유 실행에 보존하고 현재 출처 버전 확인 후 이어감. 취소 자동 재개와 미확정 쓰기 재전송 없음",
+      "checks": [
+        "unit",
+        "design",
+        "candidate-build",
+        "resume-target-browser",
+        "openwiki-agent-browser"
+      ],
+      "nextAction": "docs/RESEARCH-RESUME-2026-09-26.md의 출처 재연결/DeepAgents 체크포인트와 동일 후보 회귀 확인. 실모델 및 외부 환경 검증은 NQ-02/04/07/08/50에 남김"
+    },
+    {
+      "id": "NQ-50",
+      "order": 56,
+      "title": "선택한 실제 모델의 네이버 업무 완주 재측정",
+      "state": "external",
+      "acceptance": "현재 후보와 사용자 선택 모델의 실계정 실행에서 첫 계획 및 전체 요구사항을 독립 확인. HTTP 성공이나 합성 회귀를 완주로 계산하지 않음",
+      "checks": [],
+      "nextAction": "우선 쉬운 E-01~E-10을 같은 후보/선택 모델에서 계획 전체 완료, 최종 답변 표시, 독립 채점까지 10/10 통과. docs/EASY10-QUALITY-2026-09-27.md에 실패→수정→재검증 기록. 이후 전체30개24개 이상 목표로 확대"
+    }
+  ]
+}

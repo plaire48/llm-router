@@ -1,0 +1,35 @@
+{
+  "id": "A9-read-only-field",
+  "title": "바꿀 수 없는 칸",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "all",
+  "request": "연결한 경비 신청 앱에서 문서 번호를 EXP-2026-0001로 바꿔 줘.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "읽기 전용",
+        "바꿀 수 없",
+        "변경할 수 없",
+        "수정할 수 없",
+        "변경이 불가",
+        "수정이 불가",
+        "변경 불가",
+        "수정 불가",
+        "read-only",
+        "read only",
+        "readOnly",
+        "re:(바꾸|변경|수정|입력)\\S{0,4}\\s?(수\\s?없|지\\s?못|하지\\s?못)"
+      ]
+    ],
+    "app": {
+      "values": {
+        "txt-document-number": [
+          "EXP-2026-0917"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+PASS all expression frames load locally with transparent art and the toolbar PNG sizes stay valid
+PASS hover greeting returns to flight without moving the pointer away
+PASS toolbar has no motion toggle; legacy pause is removed and settings login opens provider tabs
+PASS 20 seconds of inactivity closes the eyes with breathing and Z marks; keyboard interaction wakes the bird
+PASS icon-only logout stays inside settings without horizontal overflow at 320, 360 and 1100 pixels
+PASS wide empty chat keeps the logo and welcome bird flying while typing
+PASS side panel keeps the logo and welcome bird flying with a draft focused
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 12000ms exceeded.
+    at /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/mascot-browser.mjs:134:14 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v25.4.0

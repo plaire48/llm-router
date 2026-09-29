@@ -1,0 +1,374 @@
+{
+  "startedAt": "2026-09-23T10:45:05.737Z",
+  "status": "passed",
+  "repeats": 3,
+  "concurrency": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:05.769Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24972
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:30.741Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 151
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:30.892Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3307
+    },
+    {
+      "name": "harness-repair-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:34.248Z",
+      "log": "harness-repair-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5847
+    },
+    {
+      "name": "document-retrieval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:34.248Z",
+      "log": "document-retrieval-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3440
+    },
+    {
+      "name": "analysis-delivery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:34.248Z",
+      "log": "analysis-delivery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4417
+    },
+    {
+      "name": "review-context-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:37.689Z",
+      "log": "review-context-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5541
+    },
+    {
+      "name": "retrieval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:38.667Z",
+      "log": "retrieval-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2476
+    },
+    {
+      "name": "context-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:40.095Z",
+      "log": "context-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5356
+    },
+    {
+      "name": "role-agents-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:41.144Z",
+      "log": "role-agents-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3469
+    },
+    {
+      "name": "analysis-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:43.231Z",
+      "log": "analysis-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2117
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:45:44.613Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 18469
+    },
+    {
+      "name": "harness-repair-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:03.085Z",
+      "log": "harness-repair-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5096
+    },
+    {
+      "name": "document-retrieval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:03.085Z",
+      "log": "document-retrieval-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2735
+    },
+    {
+      "name": "analysis-delivery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:03.085Z",
+      "log": "analysis-delivery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3672
+    },
+    {
+      "name": "review-context-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:05.820Z",
+      "log": "review-context-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5392
+    },
+    {
+      "name": "retrieval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:06.758Z",
+      "log": "retrieval-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2280
+    },
+    {
+      "name": "context-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:08.181Z",
+      "log": "context-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5030
+    },
+    {
+      "name": "role-agents-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:09.039Z",
+      "log": "role-agents-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3334
+    },
+    {
+      "name": "analysis-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:11.213Z",
+      "log": "analysis-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2142
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:12.374Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 18446
+    },
+    {
+      "name": "harness-repair-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:30.821Z",
+      "log": "harness-repair-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5009
+    },
+    {
+      "name": "document-retrieval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:30.821Z",
+      "log": "document-retrieval-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2722
+    },
+    {
+      "name": "analysis-delivery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:30.821Z",
+      "log": "analysis-delivery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3681
+    },
+    {
+      "name": "review-context-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:33.544Z",
+      "log": "review-context-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5330
+    },
+    {
+      "name": "retrieval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:34.503Z",
+      "log": "retrieval-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2318
+    },
+    {
+      "name": "context-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:35.830Z",
+      "log": "context-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4951
+    },
+    {
+      "name": "role-agents-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:36.822Z",
+      "log": "role-agents-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3262
+    },
+    {
+      "name": "analysis-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:38.876Z",
+      "log": "analysis-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2089
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:40.085Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 18517
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:58.602Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8613
+    },
+    {
+      "name": "openwiki-screen-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:58.602Z",
+      "log": "openwiki-screen-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3589
+    },
+    {
+      "name": "wiki-folder-browser",
+      "status": "passed",
+      "startedAt": "2026-09-23T10:46:58.602Z",
+      "log": "wiki-folder-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5754
+    }
+  ],
+  "selection": [
+    "analysis-delivery-browser",
+    "role-agents-browser",
+    "context-browser",
+    "document-retrieval-browser",
+    "retrieval-browser",
+    "review-context-browser",
+    "analysis-recovery-browser",
+    "harness-repair-browser",
+    "harness-browser",
+    "openwiki-browser",
+    "openwiki-screen-browser",
+    "wiki-folder-browser"
+  ],
+  "fullMatrix": false,
+  "inputSha256": {
+    "tests": "2b2222d1b695b7553c34a7c0f5468bc23ad0456547fb99aeddb0e33d31f4c646",
+    "package.json": "a429a96aa98f08193c669ab7a3f19bc59b7c3084a8ce437a394ec63553f9359d",
+    "package-lock.json": "1b78993cf7d6d35b23a2b01895f5db43e8f2e5e0d3647d559834d040c11587c7",
+    "scripts/verify-browser.mjs": "c086da8edf2b98f411b76300104e6faa9f204d6d19d018ef1446d68c5bef6958"
+  },
+  "name": "nubi",
+  "version": "1.0.0-beta.13",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.16",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "24ac6705641e82d4861b51c925ca708df71f78d06c9c4e478a7a3178cc21cfdb",
+  "archiveSha256": "22d2b336fc0f69a80a51e3e04cbde1f7525d5002892578781d481924d9b17bd8",
+  "finishedAt": "2026-09-23T10:47:07.278Z"
+}

@@ -1,0 +1,8 @@
+PASS selecting files stores them locally without a model call; unsupported image sends preserve the draft
+PASS responsive previews, syntax highlighting, focus restoration and downloaded source bytes work without executing the file
+PASS draft-only conversations and IndexedDB file bytes survive navigation, reload and a full browser restart
+PASS unsupported, oversized and binary selections do not replace existing attachments
+PASS AI Pro receives exact image and source contents through the Pi loop; local transcript stores references only
+PASS a selected text model automatically routes image history to Qwen and preserves source text
+PASS ChatGPT receives input_image, FabriX receives text only, and provider histories remain isolated
+PASS deleting a conversation removes its file bytes; attachment flows never attach a debugger

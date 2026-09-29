@@ -1,8 +1,8 @@
 import {imageFile} from './image-files.js';
 import {supportsBrowserVision} from './skills.js';
 
-export const ATTACHMENT_LIMITS = Object.freeze({count: 4, imageBytes: 4 * 1024 * 1024, textBytes: 128 * 1024,
-  documentBytes: 8 * 1024 * 1024, textChars: 40000, batchBytes: 8 * 1024 * 1024, storedCount: 80, storedBytes: 80 * 1024 * 1024});
+import {ATTACHMENT_LIMITS} from './attachment-limits.js';
+export {ATTACHMENT_LIMITS} from './attachment-limits.js';
 const textExtensions = ['txt', 'md', 'mdx', 'js', 'jsx', 'mjs', 'cjs', 'ts', 'tsx', 'json', 'css', 'scss', 'html', 'htm', 'xml', 'svg', 'yaml', 'yml', 'py', 'java', 'kt', 'go', 'rs', 'c', 'h', 'cpp', 'cs', 'sql', 'sh', 'vue', 'svelte', 'csv', 'log', 'toml'];
 export const ATTACHMENT_ACCEPT = ['image/png', 'image/jpeg', 'image/webp', '.pdf', '.docx', ...textExtensions.map(ext => `.${ext}`)].join(',');
 export const PASTE_LIMITS = Object.freeze({characters: 2000, lines: 30});
@@ -81,7 +81,7 @@ export function decodeAttachment(payload) {
     validateDocument(bytes, name);
     const text = payload.text;
     if (typeof text !== 'string' || !text.trim()) throw new Error('attachment_document_empty');
-    if (text.length > ATTACHMENT_LIMITS.textChars || new TextEncoder().encode(text).length > ATTACHMENT_LIMITS.textBytes) throw new Error('attachment_document_size');
+    if (text.length > ATTACHMENT_LIMITS.textChars || new TextEncoder().encode(text).length > ATTACHMENT_LIMITS.extractedBytes) throw new Error('attachment_document_size');
     return {name, kind, bytes, source, text, mimeType: /\.pdf$/i.test(name) ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'};
   }
   if (kind === 'image') {

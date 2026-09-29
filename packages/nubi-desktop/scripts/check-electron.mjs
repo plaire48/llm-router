@@ -12,8 +12,8 @@ const app=await _electron.launch({...(installed?{executablePath:installed}:{}),a
 const errors=[];app.process().stderr.on('data',d=>errors.push(String(d)));app.process().stdout.on('data',d=>errors.push(String(d)));
 app.on('window',p=>p.on('console',msg=>errors.push(msg.type()+': '+msg.text())));
 try{
- const page=await app.firstWindow({timeout:90000});await page.getByRole('button',{name:'Yes, I trust the authors',exact:true}).click({timeout:45000});await page.getByRole('button',{name:'소스와 Wiki 살펴보기',exact:true}).waitFor({timeout:45000}).catch(async error=>{await page.screenshot({path:'verification/electron-failure.png'});errors.push(await page.locator('body').innerText());throw error;});
- await page.getByRole('button',{name:'소스와 Wiki 살펴보기',exact:true}).click();
+ const page=await app.firstWindow({timeout:90000});await page.getByRole('button',{name:'Yes, I trust the authors',exact:true}).click({timeout:45000});await page.getByRole('button',{name:'프로젝트 자료',exact:true}).waitFor({timeout:45000}).catch(async error=>{await page.screenshot({path:'verification/electron-failure.png'});errors.push(await page.locator('body').innerText());throw error;});
+ await page.getByRole('button',{name:'프로젝트 자료',exact:true}).click();
  await page.getByRole('button',{name:'작업 이력',exact:true}).waitFor();
  const facts=await app.evaluate(({app})=>({packaged:app.isPackaged,name:app.getName(),version:app.getVersion(),node:process.versions.node,electron:process.versions.electron,provenance:JSON.parse(process.getBuiltinModule('node:fs').readFileSync(process.getBuiltinModule('node:path').join(app.getAppPath(),'lib/runtime-provenance.json'),'utf8'))}));
  assert.equal(facts.provenance.openwiki.name,'openwiki-sds');

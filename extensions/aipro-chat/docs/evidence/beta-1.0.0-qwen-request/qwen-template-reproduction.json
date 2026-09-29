@@ -1,0 +1,18 @@
+{
+  "source": "https://huggingface.co/Qwen/Qwen3.8-27B/resolve/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0/chat_template.jinja",
+  "commit": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+  "sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+  "before": {
+    "status": "reproduced",
+    "error": "System message must be at the beginning.",
+    "exception": "ValueError"
+  },
+  "actualModel": false,
+  "templateExecution": true,
+  "after": {
+    "status": "passed",
+    "systemMessages": 1,
+    "toolReceiptsUnchanged": true,
+    "outputCharacters": 1386
+  }
+}

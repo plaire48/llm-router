@@ -12,7 +12,7 @@ Versions are pinned in the package lock. Original source notices and installed p
 | TypeScript | 5.9.3 | Apache-2.0 | In-memory JS/TS syntax diagnostics and declaration outlines |
 | jsonc-parser | 3.3.1 | MIT | Strict JSON and explicit JSONC syntax checks |
 | p-retry / is-network-error | 8.0.1 / 1.3.2 | MIT | Shared Nubi inference-only retry, cancellation and network failure classification |
-| OpenWiki local source | repository-pinned `packages/openwiki` | MIT | Retrieval, Claims validation, repository evidence resolution and read-only pairing API |
+| OpenWiki local source | repository-pinned `packages/openwiki` | MIT | Retrieval, Claims validation, repository evidence resolution, read-only pairing and partitioned document research |
 | Zod (through OpenWiki) | 4.4.3 | MIT | Existing OpenWiki Claims validator; full license in vendor/licenses/Zod-LICENSE.txt |
 | MiniSearch | 7.2.0 | MIT | OpenWiki structural BM25 retrieval |
 | Playwright | 1.58.2 | Apache-2.0 | Local browser verification |
@@ -39,3 +39,36 @@ The development dependency overrides are explicit in package.json. `vendor/decom
 Windows packaging additionally uses electron-builder 26.15.3 (MIT) and Microsoft winapp source d626d2b53b9e (MIT; its license is bundled with the driver). DOMPurify 3.4.15 (Apache-2.0 OR MPL-2.0) replaces Monaco's embedded sanitizer through the application build hook. The pinned UUID 11.1.1 (MIT) and Mocha jsdiff 8.0.3 (BSD-3-Clause) retain their upstream notices.
 
 User skill package import uses yauzl 3.4.0 (MIT), pinned as a direct dependency. It reads bounded ZIP entry streams; Nubi checks paths, byte limits and CRC before storing skill resources. Upstream notice: Copyright (c) 2014 Josh Wolfe. The complete MIT notice is retained in the distributed dependency license inventory.
+
+
+## Read-only document research
+
+The existing OpenWiki-SDS researcher uses the following MIT components from `extensions/aipro-chat/package-lock.json`. The build checks installed versions against that lock and resolves both the generated test module and packaged runtime to the same extension dependencies. The packaged runtime bundles the original research source once rather than importing its prebuilt copy alongside shared agent source. `generated/runtime-provenance.json` records the versions and original OpenWiki source hash. Original license texts are retained under `vendor/licenses` and copied into the host's `lib/licenses`.
+
+| Component | Version | Purpose |
+|---|---|---|
+| DeepAgents | 1.13.2 | Read-only researcher execution with restricted tools |
+| LangChain | 1.5.10 | Model and tool middleware |
+| @langchain/core | 1.2.9 | Existing Nubi model adapter |
+| @langchain/langgraph | 1.4.17 | DeepAgents execution graph |
+| @langchain/langgraph-checkpoint | 1.1.5 | Framework checkpoint types and internal execution support |
+| @langchain/langgraph-sdk | 1.11.2 | LangGraph transitive framework support |
+| @langchain/protocol | 0.0.19 | Shared framework protocol types |
+| @langchain/textsplitters | 1.0.1 | Shared retrieval dependency |
+| LangSmith | 0.9.0 | Transitive LangChain runtime dependency; no LangSmith account or hosted service is configured by this feature |
+| Zod | 4.4.3 | Research plan and result contracts |
+
+The LangSmith npm package omits a license file. Its retained MIT notice comes from upstream `langchain-ai/langsmith-sdk` commit `3930fd235a767c0b849bccbeb9fa1201c522994b`, the npm `langsmith@0.9.0` gitHead, with `js/package.json` version checked. The other notices are copied unchanged from the installed pinned packages. These frameworks do not grant children filesystem, shell, native input or approval authority; the supplied read-only tools are the available execution surface.
+
+## OpenWiki update runner
+
+The runner of `openwiki --update` is a separate file, `lib/backend/openwiki-update/index.mjs`, loaded only when the user runs an approved Wiki update. It bundles the original OpenWiki source once; LangChain, DeepAgents, LangSmith and Zod resolve to the pinned copies listed above. `generated/runtime-provenance.json` records its OpenWiki source hash under `openwikiUpdate`. Beside it, `openwiki-update/openwiki/` holds files that OpenWiki reads next to its modules: its bundled skills (MIT, part of OpenWiki), a package name and version, and the Noto Sans KR font style of its sign-in page (SIL OFL 1.1, license text inside the file).
+
+Additional components from `packages/openwiki/pnpm-lock.yaml`:
+
+| Component | Version | License | Purpose |
+|---|---|---|---|
+| fast-glob with @nodelib/fs.scandir, fs.stat, fs.walk, fastq, glob-parent, is-glob, is-extglob, merge2, queue-microtask, reusify, run-parallel | 3.3.3 | MIT; fastq and glob-parent ISC | Repository file listing |
+| ci-info | 4.4.0 | MIT | OpenWiki's environment check; no event is sent |
+
+Not included: Mermaid and jsdom (optional OpenWiki peers; without them OpenWiki checks diagrams by rules), the model SDKs of the OpenWiki CLI providers (replaced by modules that fail when used; Desktop passes its own model), and the PostHog client (replaced by a module that sends nothing).

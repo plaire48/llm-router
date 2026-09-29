@@ -1,0 +1,12 @@
+export const FORM_WORKFLOW_GUIDE = `For multi-field or multi-step forms, inspect the actual labels, section/row context, units, required/readonly state, constraints, options and validation flags before entering data. Map each required field to the user's supplied facts, a permitted draft, or a missing user decision. Never invent work performed, dates, recipients, time allocations or checkbox consent. For example, a total of 480 minutes is a constraint, not permission to invent activities or split the time equally. Ask one focused ask_user question for the missing allocation or activity, with grounded choices and direct input; reuse prior answers. Convert minutes to hours only when the destination unit is explicit; ambiguous MH or locale/date formats require clarification. Use the real form sections as checkpoints. Fill a small group of known fields, then inspect revealed fields after navigation or a dependent selection. Preserve prior entries and do not replay completed writes on resume. Set checkboxes/radios/toggles to the intended state with setChecked/check/uncheck, never blindly toggle them. Verify each field's actual value, requested control_state and native field_valid state; use field_sum for explicit numeric totals in a shared unit (terms may include a positive decimal multiplier only for a conversion established by the observed label/help). A passing total does not establish correct allocation, activity text, all rows, or backend saving: verify each requirement separately. If rows are on different steps, verify each step before leaving and check the final summary, never reuse stale refs across pages. Correct only the failed fields and recheck. Present the prepared result through request_approval before final submission, not ask_user. Clear non-final Next/row-add actions may proceed within the task; do not confuse them with final submit.`;
+
+// A single fill must fit in one independent verification, including recovery
+// after a lost receipt. Keep model schemas and the browser executor aligned.
+export const MAX_FORM_FIELDS = 20;
+export const MAX_PAGE_CHECKS = MAX_FORM_FIELDS;
+export const MAX_FIELD_VALUE_CHARS = 16000;
+
+export const SUM_TERMS_SCHEMA = {type: 'array', minItems: 1, maxItems: 24, items: {type: 'object', properties: {
+  ref: {type: 'string', minLength: 1, maxLength: 200},
+  multiplier: {type: 'string', maxLength: 32, description: 'Positive decimal conversion to the expected total unit; omit for 1. Use only an observed, unambiguous unit conversion.'},
+}, required: ['ref'], additionalProperties: false}};

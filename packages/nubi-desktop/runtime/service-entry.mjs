@@ -1,5 +1,7 @@
-import {ProjectService} from './project-service.mjs';
-import {installAgent} from './agent.mjs';
+import {disableHostedTracing} from './worker-environment.mjs';
+disableHostedTracing(process.env);
+const {ProjectService}=await import('./project-service.mjs');
+const {installAgent}=await import('./agent.mjs');
 installAgent(ProjectService);
 const service = new ProjectService({storageRoot:process.env.NUBI_STORAGE_ROOT});
 process.on('message', async message => {

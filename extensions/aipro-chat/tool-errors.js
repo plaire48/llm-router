@@ -26,5 +26,6 @@ export function rejectedToolFeedback(unavailable = false, issues) {
     recovery: {strategy: 'replan', execution: 'not_started'},
     ...(!unavailable && issues?.length ? {issues} : {}),
     instruction: unavailable ? 'This tool is not connected and was NOT executed. Choose from the currently declared tools, or select_tools to inspect existing authorized groups. Never invent another tool or assume extra permissions.' :
-      'The tool was NOT executed. Correct its arguments using the declared JSON schema and observed targets, then request only the corrected next step.'};
+      'The tool was NOT executed. Correct its arguments using the declared JSON schema and observed targets, then request only the corrected next step.' +
+      (issues?.some(issue => issue.objectSchemas?.length) ? ' objectSchemas lists only host-declared property names at objectSchemaPath. Remove unsupported fields and supply the required fields of the applicable schema. These are separate schema fragments: satisfy the applicable anyOf/oneOf branch and every allOf condition, not a merged set of required fields. When schemaHintsTruncated is true, consult the full declared schema for omitted names. No arguments were automatically removed, converted or executed. Correct this tool call; a successful page read does not repair its argument format.' : '')};
 }

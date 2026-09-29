@@ -1,0 +1,100 @@
+{
+  "actualModel": false,
+  "kind": "small lexical discovery probe, not autonomous model evaluation",
+  "checks": [
+    {
+      "query": "입력란 채우기",
+      "expected": "fill_form",
+      "matches": [
+        "fill_form",
+        "verify_form",
+        "select_option"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "메뉴 호버",
+      "expected": "hover_element",
+      "matches": [
+        "click_element",
+        "drag_element",
+        "hover_element",
+        "press_key",
+        "scroll_page"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "링크 클릭",
+      "expected": "click_element",
+      "matches": [
+        "click_element",
+        "drag_element",
+        "hover_element",
+        "press_key",
+        "scroll_page"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "페이지 이동",
+      "expected": "navigate_page",
+      "matches": [
+        "navigate_page",
+        "list_tabs",
+        "switch_tab",
+        "go_back",
+        "list_page_storage"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "스크롤",
+      "expected": "scroll_page",
+      "matches": [
+        "click_element",
+        "drag_element",
+        "hover_element",
+        "press_key",
+        "scroll_page"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "드래그",
+      "expected": "drag_element",
+      "matches": [
+        "click_element",
+        "drag_element",
+        "hover_element",
+        "press_key",
+        "scroll_page"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "화면 캡처",
+      "expected": "capture_page",
+      "matches": [
+        "find_images",
+        "attach_images",
+        "inspect_images",
+        "capture_page",
+        "click_at"
+      ],
+      "exposed": true
+    },
+    {
+      "query": "이미지 다운로드",
+      "expected": "attach_images",
+      "matches": [
+        "find_images",
+        "attach_images",
+        "inspect_images",
+        "capture_page",
+        "click_at"
+      ],
+      "exposed": true
+    }
+  ]
+}

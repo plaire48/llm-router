@@ -1,0 +1,32 @@
+{
+  "id": "W4-stale-provider-list",
+  "title": "뒤처진 내용",
+  "suite": "wiki",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "지금 OpenWiki에서 선택할 수 있는 모델 제공자는 몇 개야? 위키에 안 나오는 제공자가 있으면 같이 알려줘.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "aipro"
+      ],
+      [
+        "fabrix"
+      ],
+      [
+        "re:(?<![\\d.\\-])17(?![\\d.\\-])",
+        "seventeen",
+        "열일곱"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "src/config/constants.ts"
+      ],
+      "min": 1
+    },
+    "unchanged_except": []
+  }
+}

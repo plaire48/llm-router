@@ -35,7 +35,7 @@ export function captureRecord({screenshot, image, requestId, provider, traceId})
   if (!width || !height || width > 32768 || height > 32768 || !Number.isFinite(screenshot.at)) throw new Error('capture_save_failed');
   const date = new Date(screenshot.at).toISOString().replace(/[:.]/g, '-');
   const metadata = {id: screenshot.id, source: 'browser-tab', host: url.host, width, height, capturedAt: screenshot.at,
-    ...(screenshot.mode === 'page' ? {mode: 'page'} : {}),
+    ...(['page','region'].includes(screenshot.mode) ? {mode: screenshot.mode} : {}),
     ...(normalizeTraceId(traceId) ? {traceId} : {}),
     bytes: bytes.length, filename: `browser-capture-${date}-${screenshot.id.slice(0, 8)}.png`};
   return {...metadata, requestId, provider, blob: new Blob([bytes], {type: 'image/png'})};
@@ -71,6 +71,27 @@ export async function readCapture(id) {
   return transaction('readonly', (store, done) => {
     const request = store.get(id);
     request.onsuccess = () => done(request.result?.blob || null);
+  });
+}
+// Revalidate already attached screenshots without returning their bytes or
+// treating a stored capture as a fresh observation of the current page.
+export async function attachedScreenshotRecords(ids, {requestId, provider}) {
+  if (!Array.isArray(ids) || !ids.length || ids.length > 4 || new Set(ids).size !== ids.length ||
+    ids.some(id => typeof id !== 'string' || !/^[a-z0-9-]{8,80}$/i.test(id)) ||
+    !requestId || !['aipro', 'chatgpt', 'fabrix'].includes(provider)) return null;
+  return transaction('readonly', (store, done) => {
+    const records = new Array(ids.length); let remaining = ids.length;
+    ids.forEach((id, index) => {
+      const request = store.get(id);
+      request.onsuccess = () => {
+        const record = request.result;
+        records[index] = record?.id === id && record.source === 'browser-tab' && record.requestId === requestId &&
+          record.provider === provider && record.blob instanceof Blob && record.blob.type === 'image/png' &&
+          record.blob.size > 0 && record.blob.size === record.bytes
+          ? {id, availableInChat: true} : null;
+        if (--remaining === 0) done(records.every(Boolean) ? records : null);
+      };
+    });
   });
 }
 export async function deleteCaptures(ids) {

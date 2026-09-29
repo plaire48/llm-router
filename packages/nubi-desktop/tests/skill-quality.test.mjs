@@ -88,6 +88,7 @@ test('Pi routes resource paging, binary facts and changed-reference recovery wit
   await service.importSkill({source:folder});let round=0,entry,page,reference;
   const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000,maxOutputTokens:4096}]}),dispose(){},async complete(messages,definitions){
+    if(messages[0]?.content.startsWith('Summarize conversation'))return {content:JSON.stringify({goal:'등록 스킬의 자료 확인',constraints:['실행이나 파일 변경 없음'],decisions:[],completed:['스킬과 자료 목록 조회'],pending:['변경된 참조 다시 읽기'],references:['.agents/skills/writing/SKILL.md']}),calls:[]};
     const last=messages.findLast(m=>m.role==='tool');
     if(round++===0){assert.ok(definitions.some(d=>d.function.name==='list_skill_resources'));return call('discover_capabilities',{query:'문서'});}
     if(round===2){entry=JSON.parse(last.content).results.find(r=>r.kind==='skill');return call('use_skill',{path:entry.path,expectedHash:entry.hash});}

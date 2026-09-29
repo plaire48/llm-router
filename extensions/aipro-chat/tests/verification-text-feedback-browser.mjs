@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+import {createServer} from 'node:http';
+import {mkdtemp,cp,readFile,writeFile,appendFile,mkdir,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {resolve} from 'node:path';
+const title='펜싱 남자 사브르, 세계선수권 은메달…종합 2위';
+const server=createServer((_,res)=>{res.setHeader('Content-Type','text/html; charset=utf-8');res.end(`<title>Source</title><main><h1>${title}</h1><p>입력 2026.07.30 (21:51)</p><input value="PRIVATE_INPUT"><div hidden>PRIVATE_HIDDEN</div></main><script>window.actions=0;for(const type of ['input','click','submit'])document.addEventListener(type,()=>actions++);</script>`);});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const origin=`http://127.0.0.1:${server.address().port}`;
+const profile=await mkdtemp(resolve(tmpdir(),'nubi-text-feedback-')),extension=resolve(profile,'extension');let context;
+try{
+ await cp(resolve('dist'),extension,{recursive:true});
+ const manifest=JSON.parse(await readFile(resolve(extension,'manifest.json'),'utf8'));manifest.host_permissions.push(`${origin}/*`);
+ await writeFile(resolve(extension,'manifest.json'),JSON.stringify(manifest));
+ await appendFile(resolve(extension,'background.js'),'\nglobalThis.textProbe={runBrowserAgent,ready:serial(()=>Promise.resolve())};\n');
+ context=await chromium.launchPersistentContext(profile,{headless:true,executablePath:process.env.CHROME_BINARY,args:[`--disable-extensions-except=${extension}`,`--load-extension=${extension}`]});
+ const page=await context.newPage();await page.goto(origin);
+ const worker=context.serviceWorkers()[0]||await context.waitForEvent('serviceworker');
+ await worker.evaluate(async()=>{await textProbe.ready;await chrome.storage.local.set({browserWorkMode:'current'});});
+ const tabId=await worker.evaluate(async url=>(await chrome.tabs.query({})).find(t=>t.url===url).id,page.url());
+ const run=(name,args)=>worker.evaluate(async p=>(await textProbe.runBrowserAgent('text-feedback',{tabId:p.tabId},p.name,p.args)).result,{tabId,name,args});
+ await run('browser_snapshot',{});
+ const failed=await run('verify_page',{checks:[{kind:'text_present',expected:'펜싱 남자 사브르 세계선수권 우승'},{kind:'text_present',expected:'입력 2026.07.30'}]});
+ assert.equal(failed.verified,false);assert.equal(failed.checks[0].passed,false);assert.equal(failed.checks[1].passed,true);
+ assert.equal(failed.textFeedback.length,1);assert.equal(failed.textFeedback[0].checkIndex,0);
+ assert(failed.textFeedback[0].candidates.some(c=>c.text===title&&c.candidateOnly&&c.documentId));
+ assert(!JSON.stringify(failed).includes('PRIVATE_'));
+ const corrected=await run('verify_page',{checks:[{kind:'text_present',expected:title},{kind:'text_present',expected:'입력 2026.07.30'}]});
+ assert.equal(corrected.verified,true);assert.equal(corrected.textFeedback,undefined);
+ assert.equal(await page.evaluate(()=>actions),0);assert.equal(await page.locator('input').inputValue(),'PRIVATE_INPUT');
+ await mkdir('verification/browser-30',{recursive:true});
+ await writeFile('verification/browser-30/text-feedback-browser.json',JSON.stringify({actualBrowser:true,actualModel:false,syntheticSite:true,failedLiteralStayedFailed:true,actualTextCandidate:true,correctedExactCheckPassed:true,inputsExcluded:true,actions:0},null,2));
+ console.log('PASS failed literal stays failed, actual visible candidate guides exact recheck with zero actions');
+}finally{await context?.close();server.close();await rm(profile,{recursive:true,force:true});}

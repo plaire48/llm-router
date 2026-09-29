@@ -1,0 +1,12 @@
+PASS compose, fill and verify a real browser draft without a repeated user request; final registration pauses and detaches debugger
+PASS approval and actual draft preview survive chat reload, preserve composer text and fit narrow and wide layouts
+PASS wrong conversation, wrong question and replacement credentials cannot reuse a pending approval
+PASS approval executes exactly one trusted click, verifies the visible result and rejects replay without clearing composer text
+PASS cancel needs no model call, preserves the page draft and revokes the pending approval
+PASS unverified final script clicks are refused; the model verifies the draft before an approval can appear
+PASS a written revision retains the original goal, updates the draft, revokes the old grant and requests fresh approval
+PASS closing the editor retains changes, offers continue editing instead of publishing stale content, and uses shared typography at 320/360/1100px
+PASS the pencil opens full draft fields; edited values are applied and verified with fresh approval, without final submission
+PASS draft edits, iframe edits, replaced controls, same-URL reloads and expired grants all refuse stale approved actions
+PASS script clicks are guarded and catching the pause cannot run subsequent writes
+PASS visual-only final actions can request explicit screenshot-point approval; moved targets are rejected and unchanged targets execute once

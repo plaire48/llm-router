@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ActionButton, CxField, CxInput, CxNotice, DetailPanel, Icon, notifyToast} from '@e2e/cx-design-system';
 import {ERROR_TEXT} from '../core.js';
 import {projectOrigin} from '../project-tools.js';
+import {DeckGuidance} from './DeckSurfaces.jsx';
 
 const connectionError = cause => ERROR_TEXT[cause.message] || ({
   project_address: '이 PC에서 실행한 OpenWiki 주소를 입력해 주세요.',
@@ -58,7 +59,7 @@ export function ProjectConnection({project, rpc, disabled, onClose, onChanged, o
       {loading ? <p className="project-loading" role="status"><span className="status-spinner" aria-hidden="true"/>열린 프로젝트 확인 중</p> : <>
         {(project || candidate) && <div className="project-connection-summary"><span className="project-connection-icon"><Icon name="code" size={22}/></span><span className="project-connection-name" title={name}>{name}</span><ActionButton action="edit" label="프로젝트 주소 변경" title="프로젝트 주소 변경" disabled={busy || disabled} onClick={() => {setEditing(value => !value); setError('');}}/></div>}
         {showAddress && <CxField label="OpenWiki 주소" required><CxInput type="url" value={address} placeholder="http://localhost:3000" autoComplete="off" spellCheck={false} required disabled={busy || disabled} onChange={event => {setAddress(event.target.value); setError('');}}/></CxField>}
-        <p className="project-sharing-note">질문에 필요한 문서와 코드 발췌를 선택한 모델에 전달합니다.</p>
+        <DeckGuidance icon="code" lead={<>필요한 문서와 코드 발췌를 <strong>선택한 모델</strong>에 전달합니다.</>}/>
         {project?.status === 'expired' && <CxNotice tone="info">연결이 만료되었습니다. 다시 연결해 주세요.</CxNotice>}
         {error && <CxNotice tone="danger">{error}</CxNotice>}
       </>}

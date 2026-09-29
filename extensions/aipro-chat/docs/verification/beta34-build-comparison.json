@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-09-25T06:25:06.215385+00:00",
+  "independentDependencyInstall": true,
+  "files": 700,
+  "allFileBytesMatch": true,
+  "finalGateInputsUnchanged": true,
+  "buildSha256": "6189c38ac4133779fef80ec6e576796e8df5d6ad5f8b0a328d53acb043b79d31",
+  "environment": {
+    "os": "macOS 15.6 (24G84)",
+    "node": "25.4.0",
+    "chrome": "151.0.7922.34"
+  },
+  "scope": "Independent original-workspace build compared byte-for-byte to frozen release-checkout build; full gate used frozen inputs. ZIP timestamp differences excluded."
+}

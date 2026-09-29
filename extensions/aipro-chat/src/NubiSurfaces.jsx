@@ -9,7 +9,7 @@ export function NubiHeaderActions({history, expand, usage, settings}) {
     <ActionButton action="history" label="대화 이력" title="대화 이력과 새 대화" aria-haspopup="dialog" {...history}/>
     {expand && <ActionButton action="openExternal" label="전체 화면으로 열기" {...expand}/>}
     <CxButton className="composer-icon" aria-label="사용량" title="토큰 사용량과 계정 한도" aria-haspopup="dialog" {...usage}><Icon name="chartColumn" size={20}/></CxButton>
-    <ActionButton action="more" label="설정" aria-haspopup="dialog" {...settings}/>
+    <CxButton className="composer-icon" data-action="settings" aria-label="설정" title="설정" aria-haspopup="dialog" {...settings}><Icon name="sliders" size={20}/></CxButton>
   </>;
 }
 
@@ -26,7 +26,7 @@ export function NubiLogin({mood, intro, error, pending, onLogin, onCancel, child
 }
 
 export function NubiComposerInput({inputRef,id='message-input',label='메시지',...props}) {
-  return <><label className="visually-hidden" htmlFor={id}>{label}</label><CxTextarea ref={inputRef} id={id} className="aipro-message-input" rows={2} maxLength={16000} placeholder="무엇이든 물어보세요" title={'Enter 전송\nShift + Enter 줄바꿈'} {...props}/></>;
+  return <><label className="visually-hidden" htmlFor={id}>{label}</label><CxTextarea ref={inputRef} id={id} className="aipro-message-input" rows={2} maxLength={16000} placeholder="메시지 입력" title={'Enter 전송\nShift + Enter 줄바꿈'} {...props}/></>;
 }
 
 export function NubiComposerBar({leading,tools}) {

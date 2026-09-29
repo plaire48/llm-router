@@ -2,7 +2,8 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
-import {fixture} from './fixtures.mjs';
+import {fixture,fixtureReview} from './fixtures.mjs';
+import {REVIEW_PROMPT} from '../runtime/result-review.mjs';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 import {contextTokens} from '../../../extensions/aipro-chat/context-manager.js';
@@ -11,9 +12,15 @@ const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'functi
 const status=()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000,maxInputTokens:24000,maxOutputTokens:4096}]});
 
 test('desktop reuses two concurrent isolated Pi researchers; child reads do not authorize leader edits', {timeout:15000}, async t=>{
-  const {service,root}=await fixture(t);let parentRound=0,childStarts=0,seenHash,release;
+  const {service,root}=await fixture(t,{scriptedReview:true});let parentRound=0,childStarts=0,seenHash,release,reviewed=false;
   const parallel=new Promise(resolve=>{release=resolve;});
   service.providers={status,dispose(){},async complete(messages,tools){
+    if(messages[0].content.startsWith(REVIEW_PROMPT)){
+      reviewed=true;assert.deepEqual(tools,[]);
+      const handoffs=JSON.parse(messages[1].content).advisoryHandoffs;assert.equal(handoffs.length,2);assert.ok(handoffs.every(item=>item.uncertainties.includes('Cross-check original requirements')));
+      assert.ok(JSON.parse(messages[1].content).evidence.every(e=>!['read_source','wiki_query'].includes(e.tool)),'child reads cannot become leader evidence');
+      return fixtureReview(messages);
+    }
     if(messages[0].content.includes('isolated research analyst')){
       assert.doesNotMatch(JSON.stringify(messages),/PARENT_ONLY_HISTORY/);
       assert.ok(tools.every(tool=>['read_analysis_evidence','read_source','source_search','wiki_query'].includes(tool.function.name)));
@@ -21,7 +28,7 @@ test('desktop reuses two concurrent isolated Pi researchers; child reads do not 
       if(!last){if(++childStarts===2)release();await parallel;return messages[1].content.includes('source branch')?call('read_source',{path:'app.txt'}):call('wiki_query',{query:'welcome'});}
       const packet=JSON.parse(last.content);assert.equal(packet.source_status,'observed');
       if(packet.tool==='read_source'){const source=JSON.parse(packet.text).result;seenHash=source.hash;assert.equal(packet.provenance.path,'app.txt');}
-      return {content:JSON.stringify({status:'complete',summary:'Observed project reference',findings:[{text:'The welcome implementation uses app.txt.',evidence_ids:[packet.evidence_id]}],uncertainties:[],next_step:''}),calls:[]};
+      return {content:JSON.stringify({status:'complete',summary:'Observed project reference',findings:[{text:'The welcome implementation uses app.txt.',evidence_ids:[packet.evidence_id]}],uncertainties:['Cross-check original requirements'],next_step:''}),calls:[]};
     }
     parentRound++;
     if(parentRound===1){assert.ok(tools.some(tool=>tool.function.name==='delegate_analysis'));return call('delegate_analysis',{tasks:['source branch','wiki branch'].map(task=>({role:'research',task,done_when:'Cite a current project reference',evidence_ids:[]}))});}
@@ -32,8 +39,15 @@ test('desktop reuses two concurrent isolated Pi researchers; child reads do not 
     return call('propose_edit',{path:'app.txt',expectedHash:seenHash,content:'Unobserved leader rewrite',reason:'Fixture must be refused'});
   }};
   const task=await service.createTask({request:'PARENT_ONLY_HISTORY: compare source and Wiki'});await service.startAgent({taskId:task.id});await service.agent.promise;
-  assert.equal(childStarts,2);assert.equal(service.task(task.id).state,'review');assert.equal(service.state().proposals.length,0);
+  assert.equal(childStarts,2);assert.equal(reviewed,true);assert.equal(service.task(task.id).state,'review');assert.equal(service.state().proposals.length,0);
   assert.equal(service.task(task.id).trace.filter(e=>e.tool==='analysis_research'&&e.status==='done').length,2);
+  const history=service.analysisHistory({taskId:task.id});
+  const roles=history.records.find(record=>record.kind==='roles');
+  assert.equal(roles.workers.length,2);assert.equal(roles.state,'partial'); // Unresolved original requirements remain partial after collection.
+  assert.ok(roles.workers.every(worker=>worker.analysis.outcome==='partial'));
+  const review=history.records.find(record=>record.kind==='review');assert.equal(review.state,'ready');assert.equal(review.advisoryCount,2);
+  for(const worker of roles.workers){assert.equal(worker.analysis.delivered,true);assert.equal(worker.analysis.reads,1);assert.equal(worker.analysis.doneWhen,'Cite a current project reference');}
+  assert.doesNotMatch(JSON.stringify(history),/PARENT_ONLY_HISTORY/);
   assert.match(await readFile(path.join(root,'app.txt'),'utf8'),/^first\n/);
 });
 

@@ -1,0 +1,13 @@
+{
+  "archive": "nubi-beta-1.0.0.zip",
+  "sha256": "ae6d8f87df9aaf064ebaa76a9f28d195d77ca5cbea01be98c761b021e995107c",
+  "bytes": 8105323,
+  "fileCount": 418,
+  "distSha256": "7ae148782ee089957e79ea6c965b238a0ce06ae27d9ea31437a4516d36f58ed8",
+  "archiveMatchesEveryTestedDistFile": true,
+  "rebuiltAfterValidation": false,
+  "unitTests": 310,
+  "browserRuns": 41,
+  "headedRuns": 3,
+  "actualModel": false
+}

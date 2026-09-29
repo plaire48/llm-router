@@ -1,0 +1,29 @@
+{
+  "version": "1.1.1",
+  "checks": [
+    "a denied picker result leaves no folder connection and displays a recoverable settings error",
+    "settings stores a real directory handle in IndexedDB and the service worker reads its openwiki child through structured clone",
+    "Wiki-only natural-language chat uses local folder search/read without a website, local server or debugger",
+    "folder choice survives extension reload and changed Markdown is read again with a fresh matching hash",
+    "the same agent reads the selected Wiki, fills a real form with trusted input and verifies retained fields and draft status without submitting",
+    "cancelled replacement preserves the folder; removal clears IndexedDB and rejects Wiki tool calls in subsequent requests"
+  ],
+  "settingsWidths": [
+    320,
+    360,
+    1100
+  ],
+  "realChromeExtension": true,
+  "realDirectoryHandles": true,
+  "indexedDbStructuredCloneAndWorkerReads": true,
+  "directoryHandleFixture": "Origin private file system",
+  "nativeOsDirectoryPickerVerified": false,
+  "pickerErrorPathsSimulated": true,
+  "broadSitePermissionDeniedByFixture": true,
+  "fixturePageOriginPregranted": true,
+  "nativeSitePermissionDialogVerified": false,
+  "syntheticModelResponses": true,
+  "actualCompanyModelVerified": false,
+  "realBrowserForm": true,
+  "serverRequired": false
+}

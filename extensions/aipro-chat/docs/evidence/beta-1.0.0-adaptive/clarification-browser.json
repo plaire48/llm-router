@@ -1,0 +1,14 @@
+{
+  "version": "1.4.10",
+  "checks": [
+    "direct: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input",
+    "blocked: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input",
+    "observe-first: question pauses before all writes, survives reload, preserves the original goal and resumes with one verified input",
+    "custom: text-only and read-only skills display the same question form without granting action tools",
+    "source: text-only and read-only skills display the same question form without granting action tools"
+  ],
+  "errors": [],
+  "actualBrowser": true,
+  "syntheticModel": true,
+  "liveProvider": false
+}

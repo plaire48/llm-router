@@ -19,7 +19,7 @@
 .code-source :is(.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-meta) { color: var(--deck-blue-deep); }
 .code-source :is(.hljs-string, .hljs-regexp, .hljs-addition) { color: var(--code-green); }
 .code-source :is(.hljs-number, .hljs-symbol, .hljs-attr, .hljs-attribute) { color: var(--code-violet); }
-.code-source :is(.hljs-title, .hljs-built_in, .hljs-type, .hljs-name, .hljs-selector-class) { color: var(--bird-ink); }
+.code-source :is(.hljs-title, .hljs-built_in, .hljs-type, .hljs-name, .hljs-selector-class) { color: var(--brand-ink); }
 .code-source :is(.hljs-comment, .hljs-quote) { color: var(--layout-muted); font-style: italic; }
 .code-source .hljs-deletion { color: var(--cx-danger); }
 .code-source .hljs-emphasis { font-style: italic; }

@@ -156,7 +156,10 @@ class ReadScope {
     }
     return false;
   }
-  async read(relativeValue: unknown): Promise<string> {
+  async read(
+    relativeValue: unknown,
+    maxBytes = MAX_FILE_BYTES,
+  ): Promise<string> {
     const relative = checkedPath(relativeValue);
     if (
       restricted(relative) ||
@@ -209,10 +212,10 @@ class ReadScope {
       try {
         const info = await handle.stat();
         if (!info.isFile()) error(400, "not_file", "Choose a text file.");
-        if (info.size > MAX_FILE_BYTES)
+        if (info.size > maxBytes)
           error(413, "file_too_large", "This file is too large to read.");
         // Bounded read protects against a file growing after stat.
-        const bytes = Buffer.alloc(MAX_FILE_BYTES + 1);
+        const bytes = Buffer.alloc(maxBytes + 1);
         let bytesRead = 0;
         while (bytesRead < bytes.length) {
           const read = await handle.read(
@@ -224,7 +227,7 @@ class ReadScope {
           if (!read.bytesRead) break;
           bytesRead += read.bytesRead;
         }
-        if (bytesRead > MAX_FILE_BYTES)
+        if (bytesRead > maxBytes)
           error(413, "file_too_large", "This file is too large to read.");
         const after = await realpath(candidate);
         const current = await stat(after);
@@ -527,7 +530,7 @@ export async function createNubiApi(options: NubiOptions): Promise<NubiApi> {
             protocol: 1,
             service: "openwiki",
             capabilities,
-            features: ["wiki_query"],
+            features: ["wiki_query", "wiki_snapshot"],
           });
           return;
         }
@@ -562,7 +565,7 @@ export async function createNubiApi(options: NubiOptions): Promise<NubiApi> {
               expiresAt: new Date(expires).toISOString(),
               project,
               capabilities,
-              features: ["wiki_query"],
+              features: ["wiki_query", "wiki_snapshot"],
             });
             return;
           }
@@ -574,6 +577,44 @@ export async function createNubiApi(options: NubiOptions): Promise<NubiApi> {
           if (route === "disconnect" && req.method === "POST") {
             sessions.delete(digest(auth[1]));
             json(res, 200, { ok: true });
+            return;
+          }
+          if (route === "wiki/snapshot" && req.method === "GET") {
+            const documents = [];
+            let characters = 0,
+              sourceComplete = true;
+            for (const node of options.getGraph().nodes) {
+              if (documents.length >= 300) {
+                sourceComplete = false;
+                break;
+              }
+              try {
+                const relative = `${checkedPath(node.id)}.md`;
+                const text = await wiki.read(relative, 16 * 1024 * 1024);
+                if (
+                  text.length > 4_000_000 ||
+                  characters + text.length > 8_000_000
+                ) {
+                  sourceComplete = false;
+                  continue;
+                }
+                characters += text.length;
+                documents.push({
+                  id: node.id,
+                  title: node.title,
+                  path: relative,
+                  kind: "wiki",
+                  text,
+                });
+              } catch {
+                sourceComplete = false;
+              }
+            }
+            json(res, 200, {
+              projectId: project.id,
+              documents,
+              sourceComplete,
+            });
             return;
           }
           if (route === "wiki/query" && req.method === "POST") {

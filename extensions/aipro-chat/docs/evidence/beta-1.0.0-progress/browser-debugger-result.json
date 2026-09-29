@@ -1,0 +1,19 @@
+{
+  "checks": [
+    "DOM reads, snapshots and tab discovery include iframe/shadow controls without attaching a debugger",
+    "ending a read-only request clears document references without ever starting a debugger",
+    "the first real click attaches once, binds the original observed node and dispatches a trusted click",
+    "content-script references promote across shadow roots and a cross-origin frame with trusted input retained",
+    "a replacement with the same label and id is rejected instead of receiving the old action",
+    "same-URL reload invalidates document-bound references",
+    "a user-cancel detach event cancels the matching lease, closes the connection and rejects reattachment",
+    "finish detaches before storage access even when persistence fails",
+    "recover detaches before storage access even when persistence fails"
+  ],
+  "errors": [],
+  "realBrowserActions": true,
+  "syntheticPages": true,
+  "detachEventSimulated": true,
+  "nativeBannerClicked": false,
+  "actualCompanyPageVerified": false
+}

@@ -1,0 +1,32 @@
+{
+  "name": "expense-office",
+  "schema": 1,
+  "createdAt": "2026-09-29T11:31:29.599Z",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "58769258ca87a6a04413e5381666c9aa416cd0deafc9c5c2eed3c4c57c9d3c36",
+      "bytes": 173
+    },
+    {
+      "path": "README.md",
+      "sha256": "e1ab80f804cd278271930a80fc6e5bf54886d1ef8c197bbca379ec117a841680",
+      "bytes": 181
+    },
+    {
+      "path": "openwiki/apps/expense-form.md",
+      "sha256": "5fdba4600f78523d9add0c6f5ec23df165f9e80ca13b4d68d99488251c82b510",
+      "bytes": 808
+    },
+    {
+      "path": "openwiki/policies/expense-rules.md",
+      "sha256": "62f0edfccf91933cab716bfec7f439021e4651fc83803935955acbd72d7eb4d3",
+      "bytes": 1029
+    },
+    {
+      "path": "openwiki/quickstart.md",
+      "sha256": "8f25e94c01e99f830b93c4fb52696d36d78c5e34ce8238ba3a9059bb01a59081",
+      "bytes": 378
+    }
+  ]
+}

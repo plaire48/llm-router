@@ -1,0 +1,20 @@
+{
+  "headed": true,
+  "actualBrowser": true,
+  "syntheticModel": true,
+  "liveProvider": false,
+  "stages": [
+    {
+      "name": "link-actions-browser",
+      "exitCode": 0,
+      "durationMs": 28193
+    },
+    {
+      "name": "clarification-browser",
+      "exitCode": 0,
+      "durationMs": 12521
+    }
+  ],
+  "archiveSha256": "8a66852ccafa789ea010eb905d5e83dd9613c5e139c58ed2a7f01e288f95e5af",
+  "status": "passed"
+}

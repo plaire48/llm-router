@@ -2,7 +2,7 @@ import {httpError} from './core.js';
 import {normalizeUsage} from './usage.js';
 import {completionStreamError} from './completion-errors.js';
 
-export async function readCompletion(response, onText = () => {}, onUsage = () => {}, onPhase = () => {}, onFinish = () => {}, onTools, onMeasurement = () => {}) {
+export async function readCompletion(response, onText = () => {}, onUsage = () => {}, onPhase = () => {}, onFinish = () => {}, onTools, onMeasurement = () => {}, onActivity = () => {}, {drainMs = 1000} = {}) {
   if (!response.ok) throw Object.assign(new Error(httpError(response.status)), {status: response.status});
   const toolParts = new Map();
   function validateFinish(reason, hasTools = false) {
@@ -52,7 +52,7 @@ export async function readCompletion(response, onText = () => {}, onUsage = () =
   }
   if (!response.body) throw new Error('response_invalid');
   const reader = response.body.getReader(), decoder = new TextDecoder();
-  let pending = '', content = '', complete = false, doneFrame = false, usage = null, finishReason = null, phase = '';
+  let pending = '', content = '', complete = false, doneFrame = false, usage = null, finishReason = null, phase = '', finishedAt = null;
   function progress(next) {
     if (phase === 'responding' || phase === next) return;
     phase = next; onPhase(next);
@@ -72,14 +72,28 @@ export async function readCompletion(response, onText = () => {}, onUsage = () =
     validateFinish(choice?.finish_reason, !!(choice?.delta?.tool_calls?.length || choice?.delta?.function_call));
     if (choice?.delta?.function_call) throw new Error('tools_unavailable');
     collectTools(choice?.delta?.tool_calls);
+    const delta = choice?.delta;
+    if ([delta?.content, delta?.reasoning, delta?.reasoning_content].some(value => typeof value === 'string' && value.length) ||
+        delta?.tool_calls?.some(part => [part.id, part.function?.name, part.function?.arguments].some(value => typeof value === 'string' && value.length))) onActivity();
     if (choice?.delta?.reasoning || choice?.delta?.reasoning_content) progress('thinking');
     if (typeof choice?.delta?.content === 'string' && choice.delta.content) { content += choice.delta.content; progress('responding'); onText(content); }
     if (content.length > 400000) throw new Error('too_long');
-    if (choice?.finish_reason) {complete = true; finishReason = choice.finish_reason;}
+    if (choice?.finish_reason) {complete = true; finishReason = choice.finish_reason; finishedAt ??= performance.now();}
   }
   try {
     while (true) {
-      const {done, value} = await reader.read();
+      // A finish_reason is terminal. Allow trailing usage, but do not wait
+      // forever for a provider/proxy to close its keepalive connection.
+      let drainTimer, chunk;
+      try {
+        if (finishedAt !== null) {
+          const remaining = drainMs - (performance.now() - finishedAt);
+          if (remaining <= 0) break;
+          chunk = await Promise.race([reader.read(), new Promise(resolve => {drainTimer = setTimeout(() => resolve(null), remaining);})]);
+          if (!chunk) break;
+        } else chunk = await reader.read();
+      } finally {clearTimeout(drainTimer);}
+      const {done, value} = chunk;
       pending += decoder.decode(value, {stream: !done});
       pending = pending.replace(/\r\n/g, '\n');
       let index;
@@ -91,5 +105,5 @@ export async function readCompletion(response, onText = () => {}, onUsage = () =
     if (!complete) throw new Error('model_stream_incomplete');
     return finish(content, usage, finishReason);
   } catch (error) { throw Object.assign(error, {partial: content}); }
-  finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
+  finally { void reader.cancel().catch(() => {}); reader.releaseLock(); }
 }

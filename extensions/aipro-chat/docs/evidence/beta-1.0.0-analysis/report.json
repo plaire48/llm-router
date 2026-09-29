@@ -1,0 +1,369 @@
+{
+  "startedAt": "2026-09-22T08:17:43.921Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:17:43.921Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2485
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:17:46.407Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 142
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:17:46.550Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2899
+    },
+    {
+      "name": "page-analysis-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:17:49.491Z",
+      "log": "page-analysis-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8238
+    },
+    {
+      "name": "analysis-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:17:57.730Z",
+      "log": "analysis-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1655
+    },
+    {
+      "name": "clarification-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:17:59.385Z",
+      "log": "clarification-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5022
+    },
+    {
+      "name": "browser-specialist-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:18:04.407Z",
+      "log": "browser-specialist-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13243
+    },
+    {
+      "name": "browser-popups-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:18:17.650Z",
+      "log": "browser-popups-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22081
+    },
+    {
+      "name": "script-preflight-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:18:39.731Z",
+      "log": "script-preflight-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55226
+    },
+    {
+      "name": "script-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:19:34.957Z",
+      "log": "script-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7896
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:19:42.854Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 30747
+    },
+    {
+      "name": "page-analysis-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:20:13.601Z",
+      "log": "page-analysis-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8144
+    },
+    {
+      "name": "analysis-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:20:21.746Z",
+      "log": "analysis-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1684
+    },
+    {
+      "name": "clarification-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:20:23.430Z",
+      "log": "clarification-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5007
+    },
+    {
+      "name": "browser-specialist-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:20:28.437Z",
+      "log": "browser-specialist-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13177
+    },
+    {
+      "name": "browser-popups-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:20:41.615Z",
+      "log": "browser-popups-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 21812
+    },
+    {
+      "name": "script-preflight-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:21:03.427Z",
+      "log": "script-preflight-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55332
+    },
+    {
+      "name": "script-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:21:58.760Z",
+      "log": "script-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8396
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:22:07.157Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 30787
+    },
+    {
+      "name": "page-analysis-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:22:37.944Z",
+      "log": "page-analysis-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8092
+    },
+    {
+      "name": "analysis-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:22:46.038Z",
+      "log": "analysis-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1800
+    },
+    {
+      "name": "clarification-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:22:47.838Z",
+      "log": "clarification-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5023
+    },
+    {
+      "name": "browser-specialist-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:22:52.862Z",
+      "log": "browser-specialist-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13363
+    },
+    {
+      "name": "browser-popups-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:23:06.225Z",
+      "log": "browser-popups-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 21665
+    },
+    {
+      "name": "script-preflight-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:23:27.891Z",
+      "log": "script-preflight-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 55487
+    },
+    {
+      "name": "script-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:24:23.379Z",
+      "log": "script-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7885
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:24:31.264Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 30707
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:25:01.971Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7456
+    },
+    {
+      "name": "browser-debugger-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:25:09.428Z",
+      "log": "browser-debugger-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10703
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:25:20.131Z",
+      "log": "approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 35336
+    },
+    {
+      "name": "output-recovery-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:25:55.467Z",
+      "log": "output-recovery-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 9674
+    },
+    {
+      "name": "context-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:26:05.142Z",
+      "log": "context-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6149
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T08:26:11.291Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 16939
+    }
+  ],
+  "selection": [
+    "page-analysis-browser",
+    "analysis-recovery-browser",
+    "script-recovery-browser",
+    "harness-browser",
+    "browser-specialist-browser",
+    "browser-popups-browser",
+    "script-preflight-browser",
+    "clarification-browser",
+    "browser-debugger-browser",
+    "approval-browser",
+    "fabrix-browser",
+    "chatgpt-browser",
+    "context-browser",
+    "output-recovery-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.5",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.8",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "f6417e7fdbb5e3247e85abef297960b394b765ffe9aaf1726a5bd27e5f2fb33d",
+  "archiveSha256": "a39af515e8d825bbb95589ff5257d40c082a6ce088282b875047de301202cda9",
+  "finishedAt": "2026-09-22T08:26:28.257Z"
+}

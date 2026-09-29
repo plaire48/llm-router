@@ -1,0 +1,12 @@
+{
+  "checks": [
+    "text choices pause the actual agent loop, fit 320/360/1100px and resume by keyboard without consuming the composer draft",
+    "short answers survive reload, ignore IME composition Enter and reject stale submissions",
+    "narrative answers preserve newlines and failed-send input, survive conversation switching, reject cross-owner writes, and retain separate composer text/files",
+    "every choice form accepts a custom answer and multiline paste expands without losing line breaks"
+  ],
+  "errors": [],
+  "actualBrowser": true,
+  "syntheticModel": true,
+  "liveProvider": false
+}

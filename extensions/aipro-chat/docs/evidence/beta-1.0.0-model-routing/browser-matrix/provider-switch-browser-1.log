@@ -1,0 +1,8 @@
+PASS AI Pro callback login works; cancelled or failed ChatGPT login retains the active connection and immediate draft
+PASS connected provider tabs switch without another login and restore each draft, model and isolated transcript
+PASS HTML-inspired soft tab backgrounds slide and crossfade; reduced motion keeps selection visible without animation
+PASS three icon tabs fit 320–1100px; FabriX supports cancel, test and connect; keyboard tabs restore focus and never mix provider messages
+PASS settings logout opens provider choices immediately; expired inactive connections can be removed without logging out another provider
+PASS running replies block both UI and RPC switching; refresh preserves connections while UI state and local storage contain no credentials
+PASS browser restart clears all provider credentials but preserves each conversation and draft
+PASS AI Pro, ChatGPT and FabriX login, switching and logout make zero debugger calls

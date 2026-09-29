@@ -1,7 +1,31 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {Processes,shellArguments} from '../runtime/processes.mjs';
+import {Processes,shellArguments,shellProfiles,hostShell} from '../runtime/processes.mjs';
 import {fixture} from './fixtures.mjs';
+import {ProjectService} from '../runtime/project-service.mjs';
+import {writeFile} from 'node:fs/promises';
+import path from 'node:path';
+
+test('Windows prefers PowerShell even when Git Bash is available',async t=>{
+  const {root}=await fixture(t),gitBash=path.join(root,'git-bash');await writeFile(gitBash,'');
+  const profiles=await shellProfiles({platform:'win32',bashCandidates:[gitBash]});
+  assert.deepEqual(profiles.map(item=>item.id),['powershell','cmd','bash']);
+  assert.equal(hostShell('win32'),'powershell');
+  assert.equal(hostShell('darwin'),'bash');
+});
+
+test('project shell setting rejects unavailable choices and survives host restart',async t=>{
+  const {service,root,directory}=await fixture(t);
+  const choice=process.platform==='win32'?'cmd':'bash';
+  await assert.rejects(service.invoke('setShellPreference',{profile:'invented'}),/shell_unavailable/);
+  assert.deepEqual(await service.invoke('setShellPreference',{profile:choice}),{profile:choice});
+  assert.equal((await service.overview()).defaultShell,choice);
+  assert.equal(service.shellPreference(),choice);
+  service.dispose();service.store.close();
+  const restored=new ProjectService({storageRoot:path.join(directory,'state')});t.after(()=>{restored.dispose();restored.store?.close();});
+  await restored.open(root);
+  assert.equal((await restored.overview()).defaultShell,choice);
+});
 
 test('PowerShell transport preserves literal Korean and quotes with explicit UTF-8 output',()=>{
   const script="Write-Output '한글 \"literal\" $value'; exit 7";
@@ -10,6 +34,8 @@ test('PowerShell transport preserves literal Korean and quotes with explicit UTF
   const decoded=Buffer.from(args.at(-1),'base64').toString('utf16le');
   assert.ok(decoded.endsWith(script));assert.match(decoded,/OutputEncoding/);assert.doesNotMatch(decoded,/ExecutionPolicy|RunAs/);
   assert.deepEqual(shellArguments({args:['--norc','-c']},'bash','echo hi'),['--norc','-c','echo hi']);
+  assert.deepEqual(shellArguments({args:['/D','/Q','/C']},'cmd','echo 한글'),['/D','/Q','/C','chcp 65001>nul & echo 한글']);
+  assert.throws(()=>shellArguments({args:['/D','/Q','/C']},'cmd','x'.repeat(7600)),/shell_command_limit/);
 });
 
 test('oversized encoded PowerShell is rejected before spawn with a recoverable receipt',async t=>{

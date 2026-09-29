@@ -1,0 +1,6 @@
+PASS visible text split across DOM nodes verifies without a debugger
+PASS disabled fields remain readable during result verification
+PASS read-only verification waits for a delayed visible result
+PASS a returned script snapshot keeps usable refs in its final observation
+PASS common Playwright read-only inspection methods are supported
+PASS observed disabled controls can be inspected without attempting an action

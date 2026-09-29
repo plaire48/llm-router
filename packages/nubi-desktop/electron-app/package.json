@@ -1,9 +1,9 @@
 {
   "name": "@nubi/electron-app",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "dependencies": {
-    "@nubi/theia-extension": "1.0.0",
+    "@nubi/theia-extension": "1.1.0",
     "@theia/core": "1.75.0",
     "@theia/editor": "1.75.0",
     "@theia/electron": "1.75.0",
@@ -46,7 +46,7 @@
     "target": "electron",
     "frontend": {
       "config": {
-        "applicationName": "누비 workspace beta 1.0.0",
+        "applicationName": "누비 workspace beta 1.1.0",
         "defaultTheme": "light",
         "defaultIconTheme": "theia-file-icons",
         "preferences": {

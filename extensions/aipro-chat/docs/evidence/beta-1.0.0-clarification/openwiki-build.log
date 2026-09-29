@@ -1,0 +1,17 @@
+
+> openwiki-sds@0.6.0 prebuild
+> npm run clean
+
+
+> openwiki-sds@0.6.0 clean
+> node -e "require('fs').rmSync('dist', { recursive: true, force: true })"
+
+
+> openwiki-sds@0.6.0 build
+> tsc -p tsconfig.json && tsc -p tsconfig.client.json && node scripts/copy-visualize-assets.cjs
+
+copy-visualize-assets: copied 2 assets
+
+> openwiki-sds@0.6.0 postbuild
+> node -e "require('fs').chmodSync('dist/cli/cli.js', 0o755)"
+

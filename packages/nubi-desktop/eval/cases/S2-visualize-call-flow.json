@@ -1,0 +1,35 @@
+{
+  "id": "S2-visualize-call-flow",
+  "title": "호출 흐름 추적",
+  "suite": "source",
+  "split": "holdout",
+  "corpus": "openwiki-sds",
+  "request": "`openwiki visualize openwiki --project-root .`로 서버를 띄운 뒤 `/api/nubi/v1/wiki/query`로 질문을 보내면, CLI 진입부터 실제 위키 검색 함수까지 호출 흐름이 어떻게 돼?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "runVisualizeCommand"
+      ],
+      [
+        "runVisualizeServer"
+      ],
+      [
+        "createNubiApi"
+      ],
+      [
+        "retrieveWikiEvidence"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "src/cli/runners.ts",
+        "src/visualize/server.ts",
+        "src/visualize/nubi.ts"
+      ],
+      "min": 2
+    },
+    "unchanged_except": []
+  }
+}

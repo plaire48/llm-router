@@ -1,0 +1,475 @@
+{
+  "version": "1.2.0",
+  "status": "passed",
+  "unitTests": 277,
+  "browserSuites": 20,
+  "browserExecutions": 34,
+  "report": "verification/pre-release-2026-09-21T17-48-35-803Z/report.json",
+  "archive": "releases/aipro-chat-extension-1.2.0.zip",
+  "archiveSha256": "4a86c7857105b2b82f58b105a0fef03cecab8978fafd0bcd55b4334a1962ac27",
+  "filesComparedToDist": 414,
+  "actualChrome": true,
+  "actualModel": false,
+  "liveAccount": false,
+  "nativeClipboardVerified": false,
+  "nativeFilePickerVerified": false,
+  "fixtureSiteAccessPregranted": true,
+  "checks": {
+    "attachments": {
+      "synthetic": true,
+      "actualChrome": true,
+      "actualModel": false,
+      "fixtureSiteAccessPregranted": true,
+      "assertions": [
+        "selecting files stores them locally without a model call; unsupported image sends preserve the draft",
+        "responsive previews, syntax highlighting, focus restoration and downloaded source bytes work without executing the file",
+        "draft-only conversations and IndexedDB file bytes survive navigation, reload and a full browser restart",
+        "unsupported, oversized and binary selections do not replace existing attachments",
+        "AI Pro receives exact image and source contents through the Pi loop; local transcript stores references only",
+        "switching to a text model explicitly marks historical images unavailable and keeps source text",
+        "ChatGPT receives input_image, FabriX receives text only, and provider histories remain isolated",
+        "deleting a conversation removes its file bytes; attachment flows never attach a debugger"
+      ],
+      "errors": []
+    },
+    "clipboard-documents": {
+      "syntheticModel": true,
+      "actualChrome": true,
+      "syntheticClipboardAndDropEvents": true,
+      "nativeClipboardNotVerified": true,
+      "assertions": [
+        "long clipboard text and copied image become previewable attachments while short paste keeps native input behavior",
+        "bundled parsers read real PDF and Korean DOCX locally, preview extracted text and preserve original download bytes",
+        "all attachment types align in one compact row and share preview typography and actions at 320, 360 and 1100 pixels",
+        "pasted content and extracted documents survive reload and reach the model with explicit text-only provenance",
+        "no-text PDF and corrupt Word show actionable errors without storing junk; dropped files use the same attachment path"
+      ],
+      "errors": []
+    }
+  },
+  "regression": {
+    "startedAt": "2026-09-21T17:48:35.804Z",
+    "status": "passed",
+    "repeats": 3,
+    "evidence": {
+      "actualBrowser": true,
+      "syntheticSite": true,
+      "actualModel": false,
+      "liveAccount": false
+    },
+    "releaseApproved": false,
+    "stages": [
+      {
+        "name": "unit",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:48:35.804Z",
+        "log": "unit.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 2556
+      },
+      {
+        "name": "design",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:48:38.362Z",
+        "log": "design.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 137
+      },
+      {
+        "name": "candidate-build",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:48:38.499Z",
+        "log": "candidate-build.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 2841
+      },
+      {
+        "name": "attachments-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:48:41.380Z",
+        "log": "attachments-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 6359
+      },
+      {
+        "name": "clipboard-documents-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:48:47.740Z",
+        "log": "clipboard-documents-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 5224
+      },
+      {
+        "name": "browser-agent-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:48:52.966Z",
+        "log": "browser-agent-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 51378
+      },
+      {
+        "name": "harness-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:49:44.344Z",
+        "log": "harness-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 26779
+      },
+      {
+        "name": "login-redirect-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:50:11.123Z",
+        "log": "login-redirect-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 3327
+      },
+      {
+        "name": "chatgpt-login-redirect-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:50:14.450Z",
+        "log": "chatgpt-login-redirect-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 2135
+      },
+      {
+        "name": "provider-switch-browser-1",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:50:16.585Z",
+        "log": "provider-switch-browser-1.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 20093
+      },
+      {
+        "name": "attachments-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:50:36.679Z",
+        "log": "attachments-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 5622
+      },
+      {
+        "name": "clipboard-documents-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:50:42.301Z",
+        "log": "clipboard-documents-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 7003
+      },
+      {
+        "name": "browser-agent-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:50:49.304Z",
+        "log": "browser-agent-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 51228
+      },
+      {
+        "name": "harness-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:51:40.533Z",
+        "log": "harness-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 26776
+      },
+      {
+        "name": "login-redirect-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:52:07.309Z",
+        "log": "login-redirect-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 3378
+      },
+      {
+        "name": "chatgpt-login-redirect-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:52:10.687Z",
+        "log": "chatgpt-login-redirect-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 2156
+      },
+      {
+        "name": "provider-switch-browser-2",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:52:12.843Z",
+        "log": "provider-switch-browser-2.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 20113
+      },
+      {
+        "name": "attachments-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:52:32.956Z",
+        "log": "attachments-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 5506
+      },
+      {
+        "name": "clipboard-documents-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:52:38.462Z",
+        "log": "clipboard-documents-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 6915
+      },
+      {
+        "name": "browser-agent-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:52:45.378Z",
+        "log": "browser-agent-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 51081
+      },
+      {
+        "name": "harness-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:53:36.459Z",
+        "log": "harness-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 26807
+      },
+      {
+        "name": "login-redirect-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:03.266Z",
+        "log": "login-redirect-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 3366
+      },
+      {
+        "name": "chatgpt-login-redirect-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:06.632Z",
+        "log": "chatgpt-login-redirect-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 2142
+      },
+      {
+        "name": "provider-switch-browser-3",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:08.775Z",
+        "log": "provider-switch-browser-3.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 20049
+      },
+      {
+        "name": "chatgpt-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:28.824Z",
+        "log": "chatgpt-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 5732
+      },
+      {
+        "name": "context-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:34.556Z",
+        "log": "context-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 6862
+      },
+      {
+        "name": "side-panel-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:41.418Z",
+        "log": "side-panel-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 1535
+      },
+      {
+        "name": "chatgpt-side-panel-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:42.953Z",
+        "log": "chatgpt-side-panel-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 1368
+      },
+      {
+        "name": "fabrix-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:54:44.321Z",
+        "log": "fabrix-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 17657
+      },
+      {
+        "name": "image-choice-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:01.979Z",
+        "log": "image-choice-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 8100
+      },
+      {
+        "name": "page-images-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:10.079Z",
+        "log": "page-images-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 8057
+      },
+      {
+        "name": "captures-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:18.138Z",
+        "log": "captures-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 10226
+      },
+      {
+        "name": "conversations-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:28.364Z",
+        "log": "conversations-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 11014
+      },
+      {
+        "name": "code-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:39.380Z",
+        "log": "code-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 3377
+      },
+      {
+        "name": "ui-simplicity-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:42.757Z",
+        "log": "ui-simplicity-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 4639
+      },
+      {
+        "name": "chat-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:47.397Z",
+        "log": "chat-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 4025
+      },
+      {
+        "name": "wiki-folder-browser",
+        "status": "passed",
+        "startedAt": "2026-09-21T17:55:51.422Z",
+        "log": "wiki-folder-browser.log",
+        "exitCode": 0,
+        "signal": null,
+        "timedOut": false,
+        "durationMs": 5131
+      }
+    ],
+    "selection": [
+      "attachments-browser",
+      "clipboard-documents-browser",
+      "harness-browser",
+      "provider-switch-browser",
+      "login-redirect-browser",
+      "chatgpt-login-redirect-browser",
+      "browser-agent-browser",
+      "chatgpt-browser",
+      "context-browser",
+      "side-panel-browser",
+      "chatgpt-side-panel-browser",
+      "fabrix-browser",
+      "conversations-browser",
+      "captures-browser",
+      "image-choice-browser",
+      "page-images-browser",
+      "chat-browser",
+      "ui-simplicity-browser",
+      "code-browser",
+      "wiki-folder-browser"
+    ],
+    "fullMatrix": false,
+    "version": "1.2.0",
+    "buildSha256": "6acd132414d12925b5d12dcb8e786fd89e35884e14a4f0975897ecd4073e836a",
+    "archiveSha256": "4a86c7857105b2b82f58b105a0fef03cecab8978fafd0bcd55b4334a1962ac27",
+    "finishedAt": "2026-09-21T17:55:56.579Z"
+  },
+  "excludedAttempts": [
+    {
+      "report": "verification/pre-release-2026-09-21T17-11-04-425Z/report.json",
+      "reason": "Stopped intentionally to implement clipboard and document scope; not counted."
+    },
+    {
+      "report": "verification/pre-release-2026-09-21T17-32-00-723Z/report.json",
+      "reason": "Stopped intentionally for user-requested attachment UI consistency; not counted."
+    },
+    {
+      "report": "verification/pre-release-2026-09-21T17-44-05-131Z/report.json",
+      "reason": "Excluded: long source preview clipping discovered; attempted interruption raced with the next stage, so source/build changed during the run. No results from this run certify the final candidate."
+    }
+  ]
+}

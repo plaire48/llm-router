@@ -1,0 +1,628 @@
+{
+  "version": "1.0.0",
+  "status": "passed",
+  "aggregateOfRuns": true,
+  "uninterruptedRun": false,
+  "sourceReports": [
+    {
+      "id": "pre-release-2026-09-21T14-28-49-471Z",
+      "status": "failed"
+    },
+    {
+      "id": "pre-release-2026-09-21T14-48-58-995Z",
+      "status": "failed"
+    },
+    {
+      "id": "pre-release-2026-09-21T14-57-35-569Z",
+      "status": "failed"
+    },
+    {
+      "id": "pre-release-2026-09-21T14-59-33-264Z",
+      "status": "passed"
+    }
+  ],
+  "buildSha256": "528ce5737b5382ead8fc963a6f752d84b39c44bc0d44815cfea3fb5166433c70",
+  "archiveSha256": "1c44d8885e5caf3854eb45038d58cc9454f5bb5398aa07cdc663f3aedcee4a99",
+  "archiveFiles": 193,
+  "unitTestsPassed": 245,
+  "designIssues": 0,
+  "browserSuites": 34,
+  "browserExecutionsPassed": 54,
+  "coreSuites": 10,
+  "coreRepeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "nativePermissionPromptVerified": false,
+  "windowsEdgeVerified": false,
+  "fixtureUpdates": [
+    "Model cache migration uses the current contract version and model names use accessible labels; details and recovery follow the current UI.",
+    "Chat limits exercise automatic continuation, not obsolete manual continuation copy.",
+    "Skills exercise pregranted real DOM writes and a separate unchanged extension profile verifies actual missing-grant denial."
+  ],
+  "stages": [
+    {
+      "name": "browser-workflows-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:28:53.804Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86561
+    },
+    {
+      "name": "browser-specialist-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:30:20.366Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13260
+    },
+    {
+      "name": "browser-agent-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:30:33.626Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 54238
+    },
+    {
+      "name": "browser-popups-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:31:27.865Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 21850
+    },
+    {
+      "name": "popup-approval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:31:49.716Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17073
+    },
+    {
+      "name": "script-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:32:06.790Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7971
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:32:14.762Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26600
+    },
+    {
+      "name": "login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:32:41.363Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3233
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:32:44.597Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2065
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:32:46.663Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26842
+    },
+    {
+      "name": "browser-workflows-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:33:13.505Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86362
+    },
+    {
+      "name": "browser-specialist-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:34:39.868Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13297
+    },
+    {
+      "name": "browser-agent-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:34:53.166Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 54240
+    },
+    {
+      "name": "browser-popups-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:35:47.406Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22012
+    },
+    {
+      "name": "popup-approval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:36:09.419Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17006
+    },
+    {
+      "name": "script-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:36:26.425Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8008
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:36:34.433Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26682
+    },
+    {
+      "name": "login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:37:01.116Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3273
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:37:04.390Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2065
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:37:06.455Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26888
+    },
+    {
+      "name": "browser-workflows-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:37:33.344Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86409
+    },
+    {
+      "name": "browser-specialist-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:38:59.753Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 13145
+    },
+    {
+      "name": "browser-agent-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:39:12.898Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 54291
+    },
+    {
+      "name": "browser-popups-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:40:07.189Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 21966
+    },
+    {
+      "name": "popup-approval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:40:29.155Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17210
+    },
+    {
+      "name": "script-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:40:46.367Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8043
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:40:54.410Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26647
+    },
+    {
+      "name": "login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:41:21.057Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3290
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:41:24.347Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2086
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:41:26.434Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26906
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:41:53.340Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5570
+    },
+    {
+      "name": "browser-debugger-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:41:58.911Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10452
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:42:09.364Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 32480
+    },
+    {
+      "name": "output-recovery-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:03.379Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 9539
+    },
+    {
+      "name": "context-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:12.918Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6781
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:19.700Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1469
+    },
+    {
+      "name": "chatgpt-side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:21.169Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1331
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:22.501Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24263
+    },
+    {
+      "name": "account-usage-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:46.764Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4550
+    },
+    {
+      "name": "image-choice-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:51.314Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7997
+    },
+    {
+      "name": "page-images-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:49:59.312Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7988
+    },
+    {
+      "name": "captures-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:50:07.300Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10085
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:50:17.385Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 9178
+    },
+    {
+      "name": "code-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:50:26.564Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3326
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:50:29.890Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 22098
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:50:51.988Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5499
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:50:57.487Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 14257
+    },
+    {
+      "name": "mascot-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:51:11.744Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 34532
+    },
+    {
+      "name": "welcome-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:51:46.276Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20426
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:52:06.702Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4281
+    },
+    {
+      "name": "models-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:57:39.954Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5708
+    },
+    {
+      "name": "chat-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:57:45.663Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3898
+    },
+    {
+      "name": "usage-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:57:49.561Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4331
+    },
+    {
+      "name": "page-skills-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T14:59:37.589Z",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 42534
+    }
+  ],
+  "testSourceSha256": {
+    "tests/accessibility-browser.mjs": "015208c5d0bde277c78b4c4e0deb8612805578b07f9517c50ca987574ad050bb",
+    "tests/account-usage-browser.mjs": "cdeaf3a6c0eb45126d804f8c4b05f08918569e9642a70126160ddca9ea32b359",
+    "tests/account-usage.test.mjs": "9209abf17140ea9173abe28f59e6b5adf82296f8f3ef30c520875a40a1e37e9c",
+    "tests/agent-harness.test.mjs": "889b0773133cc9e3010f6f9b6b05e6a1b9a1eda4ddf7f9c034b9ad9c2c1de1e1",
+    "tests/agent-runtime.test.mjs": "bec59ca388b71b8d158bacae0f05f45beeb025c243ea528c3b76dcaf85be9fae",
+    "tests/approval-browser.mjs": "c02a2515ef24ab7fc539a1ada1b87803fe0ef40a38bb9fd9578193838f849479",
+    "tests/approval.test.mjs": "3abe480ded0cc16aaee42ba8e91d0dda75d3286393be6925371122c0ebb8a465",
+    "tests/auth-trace-browser.mjs": "680e1e419717e0c6c20f3bd1aec43f45e12c603c2dec54fc87cafdb7fc888a6a",
+    "tests/auth-trace.test.mjs": "33240e6a6fa016f9742fad0cbba9a45cc91dfd55b86c191bd18c8cadb2203496",
+    "tests/browser-agent-browser.mjs": "f5b67cf34c12039ebfc6bfc56c468d1982657d110aa4bcda9d2945f9ad97672a",
+    "tests/browser-debugger-browser.mjs": "6363d2c26d0abb37511dc328ba668cf4d9696c225e280b6d3e6be8907cac32b7",
+    "tests/browser-popups-browser.mjs": "a851b96eba04f3e82e580779042164c5a11b83bcb0ad8accb2d4ea090853039d",
+    "tests/browser-popups.test.mjs": "eb079cd676fe7b3b931ab0a7731cb8d83f8924395fb4e2d72fcbfc2f6e6e95ae",
+    "tests/browser-specialist-browser.mjs": "3c42a692179f0e67d9e53199dfe7d66c56f664cb02b6a96f579b9a74339367d2",
+    "tests/browser-workflows-browser.mjs": "9c8078af071d3022c10dd6a565c5a15c5814d9f64a40d61c6a0062202dbb067e",
+    "tests/browser.mjs": "0dc8ba624699f631936af21637a8681cd2f8c526283f481cd952229c90f71566",
+    "tests/callback.test.mjs": "2f4c8a2a9aff8e4ef42d153d34dde33f7f24843b99f439ae7df0c0c70223dda1",
+    "tests/captures-browser.mjs": "86e1f647bef483c268c56aa1acb70965a1ab7287ebb9dfb1329bde23e901a4b7",
+    "tests/captures.test.mjs": "ef86ab9e2f3e977aed5b0271f0b9e158d28afe32a0d69dbf52a6a630a5605c80",
+    "tests/chat-browser.mjs": "e1efb9ea33380907700cc8e7dd5a43ba26ce3d3075a99e5ba7b5e64f8121cb00",
+    "tests/chat.test.mjs": "4d5e95205541c8bf3b3857800d8c8fc74abce399c847632d34b581a6e8a5b715",
+    "tests/chatgpt-api.test.mjs": "5e3af0a3b0efe66323b443ca94db3003fdd3fba35fa4eb907464168443e480ba",
+    "tests/chatgpt-auth.test.mjs": "dfe076aaabb27113e8cd60061b8332d7c7e58a9ccec720f466874a516cf219da",
+    "tests/chatgpt-browser.mjs": "671c00eb0bba069d73a8db735f38c6c52d06f8d01fb69b9ff326902adc2a29e6",
+    "tests/chatgpt-login-redirect-browser.mjs": "e60ccf8810d0b65438970208a7daa4a036d14e1627ef7b428204d77f381228aa",
+    "tests/chatgpt-side-panel-browser.mjs": "372b9df739a945beab151061bd13d1917be3b4c53d9db4b0bda2f4ea8662069b",
+    "tests/code-browser.mjs": "7a2e29e793e49f883368b897cef4414dc5d67ff8b16120cc49fef6fc3b0c2fc4",
+    "tests/code-highlight.test.mjs": "958ea85b30e59b1c6dd4727c9c88372222fbb80d0d3400c013127e5ef2683b17",
+    "tests/context-browser.mjs": "b551b10f46b5b9f46a6f27203132fcdefce756e02e10fe567858bc39404ba550",
+    "tests/context.test.mjs": "1ff57756af5676fc8297435ba44f4dafd15e44242093aac31b0ed3f666570416",
+    "tests/contracts.test.mjs": "14d353fa4a9dfddb6a87416e553767c954fa5fa222d6a28523cb50b5e672307f",
+    "tests/conversations-browser.mjs": "5850aa7318ea22f0412aa02d7023767ac5a5e07c9c186003ce1f04bbc708ab07",
+    "tests/conversations.test.mjs": "b19ed60d1ba5c0da6ad3a5da67224b4038524bd4a88dd1f6b3e16b9f14a460e3",
+    "tests/exchange.test.mjs": "13c937d7c7ab015163c756c72269e7fb1a77b5a8e3dac9dff6ff70a6618f7d28",
+    "tests/fabrix-browser.mjs": "947f5a8a50d8a423ec5dbcaad6c542386543dde8da1c632cc39e5a25164d7a0a",
+    "tests/fabrix-recovery.test.mjs": "2014263706dc981362b2752f05663a63c4faeca3221c02c8d11272dfeb15f411",
+    "tests/fabrix.test.mjs": "ad06475aa5c801453d544e1985a43de86f158233769fde0d7fea2c7c20b45453",
+    "tests/feedback-browser.mjs": "6d6cee464c1f50f50c1c7c9fe28a1a05da3d9cddab038182c8f3984e8f09c7a5",
+    "tests/fixtures/chatgpt.mjs": "e9cfcc562a45edbf459c223c7dbfedbde53a1a50a0969dc6ab6393bc2fce1c33",
+    "tests/fixtures/fabrix.mjs": "55dbb37ce088e3e165eba664bc76db1ecb646d4f75bd17caacdaeda2abda3289",
+    "tests/fixtures/goal-review.mjs": "d5bf81335614828417721decff9040b8c14d60fa1dcb649290306d5c2c0a4ee6",
+    "tests/goal-review.test.mjs": "cf48b47eaae616dcffc9d711d000b1b7516d526a916ffd292f3af0a063534421",
+    "tests/harness-browser.mjs": "44ac9dee2727a3c9725d0feedf3833720416702392bff946fe5eae122df56654",
+    "tests/helpers/no-login-debugger.mjs": "bf81dd9a5fcd6b70668c1d9332c813dd3ea5b125a70f1a8590ddfa279a236cdd",
+    "tests/http-callback.mjs": "c2f421eea455127222e91279eae8bd4bb22471bb23489a983fca6b15003ffdbd",
+    "tests/image-choice-browser.mjs": "7fc4a3fb395dc0f02043cb485a800abae914fd6f2db8f0dd80c32e4830aead08",
+    "tests/login-lifecycle.test.mjs": "8f678fcfa531965d04f6be63f7256d9a92f3da3c4b14676e8cd39e57e98b104e",
+    "tests/login-redirect-browser.mjs": "0c350cec65498230880392d46b353fb1bcbd66d536e01ea05bcd3028cc825333",
+    "tests/mascot-browser.mjs": "1d9fdd2dc86ea7bff62f257fde32a07a39031e7333acc06c8b51f76d5af9623a",
+    "tests/models-browser.mjs": "347c9da418f21ba33279c3ab915aeefedf025321394b8a724a6793ba909f01f4",
+    "tests/no-debugger-probe.mjs": "8ba5492be155004921894066549720f1646051e8d6a3aebccd89c0c4dafd9281",
+    "tests/output-recovery-browser.mjs": "6c9e2a098f66ef4db3988421a3caa558f4ae9734cbad46565f59fba8edde6071",
+    "tests/output-recovery.test.mjs": "ad010086d167eebc04ad48b44f4b0b29308b128042ca05f08293b8ee7cefe7a8",
+    "tests/page-images-browser.mjs": "a3737b26ce216ee7f9af9736bccdd7e80b9d3994e051ad6328a6a4ff19b5dd68",
+    "tests/page-images.test.mjs": "779b7988bb9f3675e873a25942f89fc209e8482c41c087be3c097a97047ccb16",
+    "tests/page-skills-browser.mjs": "f5f4446138bcf0a5d7a0275f2a3b602322c5ff00f9b571983500421dcc71077a",
+    "tests/popup-approval-browser.mjs": "48c7427e98bd8d8de63bba4ed124a93bf2c1782e33274689af0a374dc8c70952",
+    "tests/provider-sessions.test.mjs": "87101463ce055fa8788a508e0a98bbe94639c9883fb30503c67ab6cc0ecdf08e",
+    "tests/provider-switch-browser.mjs": "5589b2b6ef5829ae6ca87cbfc7d1b511e7a08dad207020c8bb85cbdcb3b6cc8b",
+    "tests/redirect-probe.mjs": "9c3e98f156c378dde5a3937b43c044a3b3bd12077d871459d98dcc19014802bf",
+    "tests/script-feedback.test.mjs": "bdaf514cd3ce87577813f756d6f2f717c365b1b6c0ecbc5d7d367ab1f16e8b73",
+    "tests/script-recovery-browser.mjs": "24267529378f34c19c197b0c4bae05737880be6cf2e77f7da2699097bbea78b2",
+    "tests/script-sandbox.test.mjs": "fe426950c90c3e7a86e2c9080fd5014d1f17414547ff7fc228211c94261262f7",
+    "tests/side-panel-browser.mjs": "6f088a98542ccac7ca48f5435616e4e653693402993c5e79b109456b658b0671",
+    "tests/skills.test.mjs": "1ae06078a06dd4c3c7d158f44574f35fc4629f2813b138a30368f4d9fde56ff4",
+    "tests/ui-simplicity-browser.mjs": "3f7a99ff373bef15af75e35b0545cb05c51b6096d4802947dd726749f31487f1",
+    "tests/usage-browser.mjs": "8cfb8f131e088421351f7157f3fff9a59841549db27987af317d17bdcc023e21",
+    "tests/usage-ledger.test.mjs": "67aa42b38145170eecfa19b97f31fecac677b26a40ec3a9fdc604054eab5aea8",
+    "tests/usage.test.mjs": "bba5330a3b98b7e3af647d1dac12fc4043d6ee87529fab80f72e7dbbd33092a9",
+    "tests/user-question.test.mjs": "e2ae667f6205502573f1e1c6c2fe8e25d138cb4124ee3ea5e5155af38c77fa87",
+    "tests/user-scripts-probe.mjs": "e1b9c3c23ed37df85893fc04fd503bd7d5f171e8317e50797b5cb840f8a2a792",
+    "tests/welcome-browser.mjs": "9cc1fc67bcce50f77d0eada148a29cf6a65dae802a43401c1801aa4f25b3f15b"
+  },
+  "resolvedFailures": [
+    {
+      "suite": "output-recovery-browser",
+      "cause": "The polling UI correctly cleaned up lease-free helper probes as orphaned work.",
+      "fix": "Close the UI and drain its message queue before isolated helper probes. Also verify a second real chat request after reload.",
+      "productBuildChanged": false
+    },
+    {
+      "suite": "models-browser",
+      "cause": "The old fixture expected catalog contract version 3 and obsolete always-expanded/refresh UI.",
+      "fix": "Use current version, accessible model labels, explicit details expansion and failed-catalog refresh; keep all model-selection and authorization assertions.",
+      "productBuildChanged": false
+    },
+    {
+      "suite": "page-skills-browser",
+      "cause": "The new missing-grant probe attempted dynamic import in a service worker, where Chrome disallows it.",
+      "fix": "Load the production page-tools module from the unchanged extension page and verify real Chrome denial against a fully loaded fixture page.",
+      "productBuildChanged": false
+    }
+  ]
+}

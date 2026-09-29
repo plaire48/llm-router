@@ -1,0 +1,5 @@
+PASS AI Pro auto compaction preserves the original history and latest correction, and counts every summary request once
+PASS saved memory survives reload and is readable inside the existing context dialog at 360px
+PASS manual compression advances memory while preserving the unsent draft and desktop layout
+PASS real Playwright input is checkpointed with its plan before the next model response, without persisting scripts or DOM
+PASS reload performs no automatic action; explicit resume re-observes the live page and keeps the completed input from repeating

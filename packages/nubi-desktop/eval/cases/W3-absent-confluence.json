@@ -1,0 +1,41 @@
+{
+  "id": "W3-absent-confluence",
+  "title": "Wiki에 없는 내용",
+  "suite": "wiki",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "OpenWiki의 Confluence 커넥터를 쓰려면 어떤 환경 변수에 토큰을 넣어야 해?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "찾을 수 없",
+        "찾지 못",
+        "없습니다",
+        "없어요",
+        "없음",
+        "없다",
+        "지원하지 않",
+        "제공하지 않",
+        "다루지 않",
+        "안내하지 않",
+        "나와 있지 않",
+        "언급하지 않",
+        "언급이 없",
+        "not found",
+        "not covered",
+        "no mention",
+        "not mention",
+        "re:(안내|언급|설명|명시|기재|정의|포함|등록|확인|제공|지원|기술|나오|나와)\\S{0,3}\\s?(있지\\s?)?않",
+        "확인할 수 없"
+      ]
+    ],
+    "answer_excludes": [
+      "re:(OPENWIKI_CONFLUENCE_TOKEN|CONFLUENCE_API_TOKEN|OPENWIKI_CONFLUENCE_API_KEY|CONFLUENCE_TOKEN)`?\\s*=",
+      "re:(OPENWIKI_CONFLUENCE_TOKEN|CONFLUENCE_API_TOKEN|OPENWIKI_CONFLUENCE_API_KEY|CONFLUENCE_TOKEN)`?\\s*(에|에다|으로|로)\\s*(토큰|값|키)?\\S{0,4}\\s*(넣|설정|지정|입력|저장)",
+      "re:(OPENWIKI_CONFLUENCE_TOKEN|CONFLUENCE_API_TOKEN|OPENWIKI_CONFLUENCE_API_KEY|CONFLUENCE_TOKEN)`?\\S{0,2}\\s*(을|를)\\s*(사용하|쓰|설정하|지정하)(면 됩|세요|십시오|시면|여|ㅂ니다)"
+    ],
+    "unchanged_except": []
+  }
+}

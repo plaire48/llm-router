@@ -1,0 +1,98 @@
+{
+  "startedAt": "2026-09-22T13:18:01.232Z",
+  "status": "failed",
+  "repeats": 3,
+  "concurrency": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:18:01.233Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 15723
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:18:16.958Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 170
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T13:18:17.128Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2954
+    },
+    {
+      "name": "output-recovery-browser-1",
+      "status": "failed",
+      "startedAt": "2026-09-22T13:18:20.127Z",
+      "log": "output-recovery-browser-1.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 420
+    },
+    {
+      "name": "vision-routing-browser-1",
+      "status": "failed",
+      "startedAt": "2026-09-22T13:18:20.127Z",
+      "log": "vision-routing-browser-1.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 420
+    },
+    {
+      "name": "task-plan-browser-1",
+      "status": "failed",
+      "startedAt": "2026-09-22T13:18:20.127Z",
+      "log": "task-plan-browser-1.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 418
+    }
+  ],
+  "selection": [
+    "output-recovery-browser",
+    "vision-routing-browser",
+    "task-plan-browser",
+    "analysis-recovery-browser",
+    "clarification-browser",
+    "harness-browser",
+    "context-browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "side-panel-browser",
+    "page-skills-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.11",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.14",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "4a5969c0ad7ce458f533f770f2fd99ce17249c1f42e1f911db5e63769b66bfb4",
+  "archiveSha256": "e4e5aae60bb08cc413fe03ec4b1cd10ab97c629539540534b177212fb566611a",
+  "failure": "task-plan-browser-1 failed; see /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/pre-release-2026-09-22T13-18-01-232Z/task-plan-browser-1.log",
+  "finishedAt": "2026-09-22T13:18:20.549Z"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "1.1.0",
+  "checks": [
+    "project connection requests only the chosen origin and permission denial performs no pairing or model request",
+    "production connection UI pairs with the real OpenWiki HTTP handler without connecting a page or using debugger",
+    "natural-language chat selects Wiki and source tools, receives fresh path/line/hash evidence and finishes without an open website",
+    "project session and chat restore after reload while a changed source file is read again with a new matching hash",
+    "icon-only disconnect removes project tools from the next request catalog, rejects stale tool calls and sends no further project reads",
+    "old servers, pages without pairing proof and non-loopback addresses fail closed without creating a project session",
+    "Wiki-only servers support document chat without advertising or requesting source access",
+    "server shutdown ends the read with a recoverable result, retains chat and never falls back to debugger or a browser page"
+  ],
+  "realChromeExtension": true,
+  "realOpenWikiHttpHandler": true,
+  "temporaryProjectFiles": true,
+  "syntheticModelResponses": true,
+  "fixtureLoopbackHostPregranted": true,
+  "nativePermissionDialogVerified": false,
+  "actualCompanyModelVerified": false
+}

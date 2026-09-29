@@ -23,8 +23,11 @@ export function ComputerPointerUiFixture(){
 }
 
 export function ComputerControlUiFixture(){
-  const base={taskId:'controls-fixture',target:{element:{name:'알림 설정',type:'CheckBox'}},identity:{windowTitle:'합성 업무 앱',processName:'Fixture'},reason:'요청한 설정을 확인합니다.',wikiEvidence:[{evidenceId:'wiki-fixture',path:'openwiki/notification.md',start:3,freshness:'source_matched'}]};
+  const base={taskId:'controls-fixture',target:{element:{name:'알림 설정',type:'CheckBox'}},identity:{windowTitle:'합성 업무 앱',processName:'Fixture'},reason:'요청한 설정을 확인합니다.',documentEvidence:{id:'analysis-fixture',status:'partial',sources:[{path:'docs/앱-규칙.md',hash:'fixture',characters:18000}],resultHash:'result',advisory:true},wikiEvidence:[{evidenceId:'wiki-fixture',path:'openwiki/notification.md',start:3,freshness:'source_matched'}]};
   const actions=[{...base,id:'matched',action:'toggle_on',state:'observed',verification:'state_matched',execution:'already_at_target'},{...base,id:'stale',action:'select',state:'stale',error:'wiki_evidence_stale'}];
+  const field=(index,action,name,more={})=>({index,action,selector:'field-'+index,target:{element:{name,type:'Edit'}},...more});
+  actions.push({taskId:'controls-fixture',id:'batch-waiting',fingerprint:'fixture',action:'batch',state:'proposed',reason:'요청한 입력 세 가지를 한 번에 실행합니다.',identity:base.identity,steps:[field(1,'set_value','메모',{value:'출장 택시비'}),field(2,'toggle_on','긴급 처리'),field(3,'invoke','임시 저장')]},
+    {taskId:'controls-fixture',id:'batch-partial',fingerprint:'fixture',action:'batch',state:'observed',verification:'steps_partial',stopped:{step:2,reason:'computer_target_changed'},reason:'두 칸을 입력합니다.',identity:base.identity,steps:[field(1,'set_value','금액',{value:'45000',execution:'command_returned',verification:'value_matched'}),field(2,'set_value','메모',{value:'택시비',execution:'not_started',verification:'not_verified'})]});
   return <main className="nubi-workbench"><p>설정 상태와 Wiki 근거 표시의 합성 검증입니다.</p><ComputerUse taskId="controls-fixture" state={{availability:{available:false},apps:[],actions,checks:[]}} api={async()=>{throw Error('Read-only fixture');}} refresh={async()=>{}}/></main>;
 }
 

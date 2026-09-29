@@ -17,3 +17,10 @@
 .cx-panel-backdrop.is-modal .approval-editor, .cx-panel-backdrop.is-modal .fill-review-dialog { width: min(620px, 100%); }
 .approval-editor-fields { display: grid; gap: var(--cx-space-3); }
 @media (prefers-reduced-motion: reduce) { .approval-preview > summary > svg { transition: none; } }
+.approval-edit-value { display: block; width: 100%; padding: 0; border: 0; border-radius: var(--cx-radius-control); background: transparent; color: inherit; font: inherit; text-align: start; white-space: pre-wrap; overflow-wrap: anywhere; cursor: text; }
+.approval-edit-value:hover:not(:disabled) { color: var(--brand-ink); }
+.approval-edit-value:focus-visible { outline: 2px solid var(--brand-action); outline-offset: 3px; }
+.approval-edit-value:disabled { cursor: default; }
+.approval-preview .approval-editor-fields { margin-top: var(--cx-space-3); }
+
+.approval-preview .interaction-editor-field textarea { resize: none; }

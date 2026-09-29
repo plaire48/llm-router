@@ -1,0 +1,38 @@
+{
+  "id": "C4-preserve-forbidden-folder",
+  "title": "금지 조건 보존",
+  "suite": "edit",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "제주와 도서 지역 추가 요금을 5,000원으로 올려 줘. 코드 전체에서 4,500원으로 적힌 곳을 맞춰 주되 src/legacy 폴더는 건드리지 마.",
+  "approvals": [
+    "patch"
+  ],
+  "expect": {
+    "state": "review",
+    "files": [
+      {
+        "path": "src/legacy/export.mjs",
+        "includes": [
+          "LEGACY_REMOTE_EXTRA = 4500"
+        ]
+      }
+    ],
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {shippingFee} from '../src/shipping.mjs';\nimport {exportRow} from '../src/legacy/export.mjs';\ntest('hidden check', () => {\n  assert.equal(shippingFee(10000, 'jeju'), 8000);\n  assert.equal(shippingFee(60000, 'island'), 5000);\n  assert.equal(exportRow({total: 1, shipping: 1, status: 'received'}, 'jeju'), '1,1,4500,received');\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/shipping.mjs",
+      "test/shipping.test.mjs",
+      "test/order.test.mjs",
+      "openwiki/concepts/shipping-policy.md"
+    ]
+  }
+}

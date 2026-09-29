@@ -1,0 +1,11 @@
+{
+  "checks": [
+    "production boot responds after its five-second policy wait while unresolved automation remains blocked",
+    "UI state remains readable and actual browser tools fail closed without accumulating managed API calls",
+    "a late valid response restores current policy and the next tool succeeds only after a fresh confirmed read"
+  ],
+  "actualBrowser": true,
+  "syntheticPolicy": true,
+  "actualModel": false,
+  "bootWaitMs": 5010
+}

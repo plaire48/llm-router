@@ -1,0 +1,9 @@
+PASS DOM reads, snapshots and tab discovery include iframe/shadow controls without attaching a debugger
+PASS ending a read-only request clears document references without ever starting a debugger
+PASS the first real click attaches once, binds the original observed node and dispatches a trusted click
+PASS content-script references promote across shadow roots and a cross-origin frame with trusted input retained
+PASS a replacement with the same label and id is rejected instead of receiving the old action
+PASS same-URL reload invalidates document-bound references
+PASS a user-cancel detach event cancels the matching lease, closes the connection and rejects reattachment
+PASS finish detaches before storage access even when persistence fails
+PASS recover detaches before storage access even when persistence fails

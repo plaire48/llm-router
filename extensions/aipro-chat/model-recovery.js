@@ -2,6 +2,8 @@ import pRetry from 'p-retry';
 import isNetworkError from 'is-network-error';
 
 export {retryAfterMs} from './http-retry.js';
+// Attempt limits belong to inference, never the number of browser actions.
+export const MODEL_WAIT_POLICY = Object.freeze({idleMs: 120000, attemptMs: 300000, slowMs: 15000});
 const serverDelay = error => ([429, 503].includes(error?.status) || error?.retryable === true && ['rate_limited', 'upstream'].includes(error.message)) && Number.isFinite(error.retryAfterMs) && error.retryAfterMs >= 0 ? error.retryAfterMs : 0;
 async function waitForRetry(ms, signal) {
   if (signal.aborted) throw new Error('cancelled');
@@ -46,28 +48,44 @@ export function retryableModelError(error) {
 
 // Retry inference only. Browser actions have already produced receipts and are
 // never replayed by this transport helper. A successful attempt resets its budget.
-export async function recoverModel(run, {signal, onRetry = () => {}, idleMs = 120000, minTimeout = 1000, retries = 3, cooldown = createModelCooldown()} = {}) {
+export async function recoverModel(run, {signal, onRetry = () => {}, onSlow = () => {}, onResumed = () => {}, idleMs = MODEL_WAIT_POLICY.idleMs, attemptMs = MODEL_WAIT_POLICY.attemptMs, slowMs = MODEL_WAIT_POLICY.slowMs, minTimeout = 1000, retries = 3, cooldown = createModelCooldown()} = {}) {
   try {
     return await pRetry(async attempt => {
       if (signal.aborted) throw new Error('cancelled');
       await cooldown.wait(signal);
       if (signal.aborted) throw new Error('cancelled');
       const controller = new AbortController();
-      let timer, rejectAbort;
+      let timer, slowTimer, rejectAbort, settled = false, slow = false;
+      const hardTimer = setTimeout(() => controller.abort('model_timeout'), attemptMs);
       const abort = () => controller.abort('cancelled');
-      const activity = () => {if (controller.signal.aborted) return; clearTimeout(timer); timer = setTimeout(() => controller.abort('model_timeout'), idleMs);};
+      const armIdle = () => {
+        clearTimeout(timer); clearTimeout(slowTimer);
+        timer = setTimeout(() => controller.abort('model_timeout'), idleMs);
+        slowTimer = setTimeout(() => {
+          if (settled || controller.signal.aborted) return;
+          slow = true;
+          try {onSlow(attempt);} catch { /* Presentation cannot interrupt inference. */ }
+        }, slowMs);
+      };
+      // A long but actively streaming answer is not waiting. Only parsed model
+      // events call activity; transport keepalives must not renew these clocks.
+      const activity = () => {
+        if (settled || controller.signal.aborted) return;
+        if (slow) {slow = false; try {onResumed(attempt);} catch { /* Optional presentation. */ }}
+        armIdle();
+      };
       const interrupted = new Promise((_, reject) => {rejectAbort = () => reject(new Error(controller.signal.reason === 'model_timeout' ? 'model_timeout' : 'cancelled')); controller.signal.addEventListener('abort', rejectAbort, {once: true});});
-      signal.addEventListener('abort', abort, {once: true}); activity();
+      signal.addEventListener('abort', abort, {once: true}); armIdle();
       try {return await Promise.race([run({signal: controller.signal, activity, attempt}), interrupted]);}
       catch (error) {if (controller.signal.aborted) throw new Error(controller.signal.reason === 'model_timeout' ? 'model_timeout' : 'cancelled'); throw error;}
-      finally {clearTimeout(timer); signal.removeEventListener('abort', abort); controller.signal.removeEventListener('abort', rejectAbort);}
+      finally {settled = true; clearTimeout(timer); clearTimeout(hardTimer); clearTimeout(slowTimer); signal.removeEventListener('abort', abort); controller.signal.removeEventListener('abort', rejectAbort);}
     }, {signal, retries, minTimeout, maxTimeout: 8000, factor: 2, randomize: true,
       shouldRetry: ({error}) => !signal.aborted && retryableModelError(error) && cooldown.allows(error),
       onFailedAttempt: ({error, attemptNumber, retriesLeft}) => {
         if (!signal.aborted && retryableModelError(error)) {
           cooldown.hold(error);
           if (retriesLeft && cooldown.allows(error)) {
-            try {onRetry(attemptNumber, {status: error.status, retryAfterMs: serverDelay(error)});} catch { /* Optional UI feedback cannot break recovery. */ }
+            try {onRetry(attemptNumber, {status: error.status, code: error.message === 'model_timeout' ? 'model_timeout' : undefined, retryAfterMs: serverDelay(error)});} catch { /* Optional UI feedback cannot break recovery. */ }
           }
         }
       },

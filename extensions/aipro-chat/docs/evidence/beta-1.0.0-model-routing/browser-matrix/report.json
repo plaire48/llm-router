@@ -1,0 +1,259 @@
+{
+  "startedAt": "2026-09-22T12:25:45.286Z",
+  "status": "failed",
+  "repeats": 3,
+  "concurrency": 2,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:25:45.286Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 15636
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:00.924Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 152
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:01.077Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3033
+    },
+    {
+      "name": "vision-routing-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:04.154Z",
+      "log": "vision-routing-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10604
+    },
+    {
+      "name": "model-catalog-refresh-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:04.154Z",
+      "log": "model-catalog-refresh-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2575
+    },
+    {
+      "name": "toggle-recovery-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:06.731Z",
+      "log": "toggle-recovery-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 28163
+    },
+    {
+      "name": "attachments-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:14.759Z",
+      "log": "attachments-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5604
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:20.363Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25008
+    },
+    {
+      "name": "vision-routing-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:45.372Z",
+      "log": "vision-routing-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10496
+    },
+    {
+      "name": "model-catalog-refresh-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:45.372Z",
+      "log": "model-catalog-refresh-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2549
+    },
+    {
+      "name": "toggle-recovery-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:47.923Z",
+      "log": "toggle-recovery-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 28294
+    },
+    {
+      "name": "attachments-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:26:55.869Z",
+      "log": "attachments-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5783
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:01.652Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25120
+    },
+    {
+      "name": "vision-routing-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:26.772Z",
+      "log": "vision-routing-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10595
+    },
+    {
+      "name": "model-catalog-refresh-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:26.772Z",
+      "log": "model-catalog-refresh-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2588
+    },
+    {
+      "name": "toggle-recovery-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:29.362Z",
+      "log": "toggle-recovery-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 28314
+    },
+    {
+      "name": "attachments-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:37.367Z",
+      "log": "attachments-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5668
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:27:43.036Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25084
+    },
+    {
+      "name": "typography-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:28:08.121Z",
+      "log": "typography-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7869
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:28:08.121Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7552
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "failed",
+      "startedAt": "2026-09-22T12:28:15.674Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6386
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T12:28:15.990Z",
+      "log": "browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 23808
+    }
+  ],
+  "selection": [
+    "vision-routing-browser",
+    "model-catalog-refresh-browser",
+    "models-browser",
+    "provider-switch-browser",
+    "browser",
+    "ui-simplicity-browser",
+    "typography-browser",
+    "fabrix-browser",
+    "chatgpt-browser",
+    "feedback-browser",
+    "attachments-browser",
+    "toggle-recovery-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.9",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.12",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "de7a5807ad4d17b4b4278abf3f3c7be5d096de5c4f5a0e9e0cd64be6d2302df0",
+  "archiveSha256": "0a5104b769e4631002f7e33b13e649046aa3da7b1bb82de8fadce833dd0e2b1b",
+  "failure": "fabrix-browser failed; see /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/pre-release-2026-09-22T12-25-45-285Z/fabrix-browser.log",
+  "finishedAt": "2026-09-22T12:28:39.798Z"
+}

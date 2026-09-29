@@ -1,0 +1,97 @@
+{
+  "startedAt": "2026-09-22T07:39:29.621Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:29.621Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2449
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:32.072Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 150
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:32.222Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2958
+    },
+    {
+      "name": "clarification-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:35.223Z",
+      "log": "clarification-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4945
+    },
+    {
+      "name": "clarification-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:40.170Z",
+      "log": "clarification-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5023
+    },
+    {
+      "name": "clarification-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:45.194Z",
+      "log": "clarification-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4939
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T07:39:50.133Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7454
+    }
+  ],
+  "selection": [
+    "clarification-browser",
+    "openwiki-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.4",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.7",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "ebeff3b58295c45e0c2213a91f96492386373f28659737dba5f9398ef5c51c36",
+  "archiveSha256": "697f0cbbce1c6c105a8c25e2f417409906094657e17072eee4d3fb4d442cbe34",
+  "finishedAt": "2026-09-22T07:39:57.617Z"
+}

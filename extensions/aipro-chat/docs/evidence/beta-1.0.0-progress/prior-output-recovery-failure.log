@@ -1,0 +1,44 @@
+PASS one user request recovers from empty output and a truncated script, then writes all six sections beyond 16K characters
+PASS the discarded call never executes, each section is inserted once and all six inputs are trusted browser events
+{
+  stage: 13,
+  part: 6,
+  errors: [],
+  state: {
+    last: {
+      content: '안내문을 작성하고 저장 상태를 확인했습니다.',
+      error: null,
+      finishReason: 'stop',
+      id: '880a6d49-8403-4a3c-b209-794ae610b6cf',
+      modelId: 'GLM-5.2-NVFP4',
+      modelName: 'GLM-5.2-NVFP4',
+      pageId: '',
+      progress: [Object],
+      requestId: '880a6d49-8403-4a3c-b209-794ae610b6cf',
+      role: 'assistant',
+      skillId: 'browser-agent',
+      state: 'done',
+      trace: [Array],
+      usage: [Object]
+    },
+    busy: false
+  }
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+16 !== 15
+
+    at file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/output-recovery-browser.mjs:101:101 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 16,
+  expected: 15,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

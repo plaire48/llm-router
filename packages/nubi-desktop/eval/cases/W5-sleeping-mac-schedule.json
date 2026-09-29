@@ -1,0 +1,33 @@
+{
+  "id": "W5-sleeping-mac-schedule",
+  "title": "한국어 업무 표현",
+  "suite": "wiki",
+  "split": "holdout",
+  "corpus": "openwiki-sds",
+  "request": "맥북이 잠들어 있으면 예약해 둔 자료 수집이 안 돌 텐데, OpenWiki는 이걸 어떻게 해결해?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "pmset"
+      ],
+      [
+        "reconcileOpenWikiPowerSchedule",
+        "wake",
+        "깨우",
+        "깨워"
+      ]
+    ],
+    "answer_excludes": [
+      "caffeinate"
+    ],
+    "retrieved": {
+      "paths": [
+        "openwiki/operations/ci-scheduling.md"
+      ],
+      "min": 1
+    },
+    "unchanged_except": []
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@nubi/theia-extension",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "main": "lib/browser/nubi-frontend-module.js",
   "dependencies": {

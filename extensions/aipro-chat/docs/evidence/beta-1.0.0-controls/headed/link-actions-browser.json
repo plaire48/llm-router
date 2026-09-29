@@ -1,0 +1,20 @@
+{
+  "checks": [
+    "text, display-contents links, inline handlers and pointer cards expose exact refs, names and navigation hints",
+    "text opens the intended page through semantic click and returns fresh destination evidence",
+    "contents opens the intended page through semantic click and returns fresh destination evidence",
+    "inline opens the intended page through Playwright ref and returns fresh destination evidence",
+    "card opens the intended page through Playwright ref and returns fresh destination evidence",
+    "icon opens the intended page through semantic click and returns fresh destination evidence",
+    "그림자 링크 opens the intended page through Playwright ref and returns fresh destination evidence",
+    "프레임 링크 opens the intended page through semantic click and returns fresh destination evidence",
+    "history opens the intended page through semantic click and returns fresh destination evidence",
+    "compose opens the intended page through Playwright ref and returns fresh destination evidence",
+    "blank opens the intended page through Playwright ref and returns fresh destination evidence",
+    "covered and disabled links explain the actual obstacle without force-click or navigation bypass"
+  ],
+  "errors": [],
+  "actualBrowser": true,
+  "syntheticSites": true,
+  "actualModel": false
+}

@@ -1,0 +1,32 @@
+{
+  "id": "S3-visualizer-doc-drift",
+  "title": "Wiki와 소스가 다른 곳",
+  "suite": "source",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "위키에 있는 visualize 명령 설명(옵션과 서버 라우트)이 지금 코드랑 아직 맞아?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "--project-root",
+        "projectRoot"
+      ],
+      [
+        "/api/nubi/v1",
+        "nubi",
+        "누비"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "openwiki/integrations/visualizer.md",
+        "src/cli/commands.ts",
+        "src/visualize/server.ts"
+      ],
+      "min": 2
+    },
+    "unchanged_except": []
+  }
+}

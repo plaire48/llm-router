@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,writeFile,access} from 'node:fs/promises';
 import path from 'node:path';
-import {fixture} from './fixtures.mjs';
+import {fixture,fixtureReview} from './fixtures.mjs';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 import {Processes} from '../runtime/processes.mjs';
@@ -24,7 +24,7 @@ test('silent inference pauses with saved state; explicit resume rechecks current
   service.providers={status,dispose(){},complete:()=>{calls++;return new Promise(()=>{});}};
   const task=await service.createTask({request:'Resume same goal'});await service.startAgent({taskId:task.id});await service.agent.promise;
   assert.equal(calls,2);assert.equal(service.task(task.id).state,'paused');assert.equal(service.task(task.id).error,'model_timeout');
-  await writeFile(path.join(root,'app.txt'),'Human changed after pause');service.providers.complete=async messages=>{assert.match(JSON.stringify(messages),/Resume same goal/);return reply();};
+  await writeFile(path.join(root,'app.txt'),'Human changed after pause');service.providers.complete=async messages=>{assert.match(JSON.stringify(messages),/Resume same goal/);return fixtureReview(messages)||reply();};
   await service.resumeAgent({taskId:task.id});await service.agent.promise;assert.equal(service.task(task.id).state,'review');assert.ok(service.store.get('reconciliation:'+task.id));assert.equal(await readFile(path.join(root,'app.txt'),'utf8'),'Human changed after pause');
 });
 

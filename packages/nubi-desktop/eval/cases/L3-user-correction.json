@@ -1,0 +1,41 @@
+{
+  "id": "L3-user-correction",
+  "title": "사용자 정정",
+  "suite": "conversation",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "제주와 도서 지역 추가 요금을 5,000원으로 올려 줘.",
+  "followUps": [
+    "아니, 5,000원이 아니라 6,000원으로 해 줘."
+  ],
+  "approvals": [
+    "patch"
+  ],
+  "expect": {
+    "state": "review",
+    "files": [
+      {
+        "path": "src/legacy/export.mjs",
+        "includes": [
+          "LEGACY_REMOTE_EXTRA = 4500"
+        ]
+      }
+    ],
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {shippingFee} from '../src/shipping.mjs';\ntest('hidden check', () => {\n  assert.equal(shippingFee(10000, 'jeju'), 9000);\n  assert.equal(shippingFee(60000, 'island'), 6000);\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/shipping.mjs",
+      "test/shipping.test.mjs",
+      "test/order.test.mjs",
+      "openwiki/concepts/shipping-policy.md"
+    ]
+  }
+}

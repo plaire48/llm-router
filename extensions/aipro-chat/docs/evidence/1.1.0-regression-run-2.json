@@ -1,0 +1,249 @@
+{
+  "startedAt": "2026-09-21T16:02:04.687Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:04.687Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2318
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:07.006Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 134
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:07.141Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1871
+    },
+    {
+      "name": "account-usage-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:09.037Z",
+      "log": "account-usage-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4913
+    },
+    {
+      "name": "image-choice-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:13.950Z",
+      "log": "image-choice-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7975
+    },
+    {
+      "name": "page-images-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:21.926Z",
+      "log": "page-images-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8061
+    },
+    {
+      "name": "captures-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:29.987Z",
+      "log": "captures-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10116
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:40.104Z",
+      "log": "conversations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12613
+    },
+    {
+      "name": "code-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:52.717Z",
+      "log": "code-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3308
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:02:56.026Z",
+      "log": "browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 21584
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:03:17.610Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4643
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:03:22.253Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17445
+    },
+    {
+      "name": "mascot-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:03:39.699Z",
+      "log": "mascot-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 34495
+    },
+    {
+      "name": "welcome-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:04:14.194Z",
+      "log": "welcome-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20476
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:04:34.670Z",
+      "log": "accessibility-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4316
+    },
+    {
+      "name": "models-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:04:38.987Z",
+      "log": "models-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5566
+    },
+    {
+      "name": "chat-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:04:44.553Z",
+      "log": "chat-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3968
+    },
+    {
+      "name": "usage-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:04:48.521Z",
+      "log": "usage-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4405
+    },
+    {
+      "name": "page-skills-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:04:52.926Z",
+      "log": "page-skills-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20317
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:05:13.244Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 6180
+    },
+    {
+      "name": "openwiki-ui-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:05:19.424Z",
+      "log": "openwiki-ui-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3592
+    }
+  ],
+  "selection": [
+    "account-usage-browser",
+    "image-choice-browser",
+    "page-images-browser",
+    "captures-browser",
+    "conversations-browser",
+    "code-browser",
+    "browser",
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "mascot-browser",
+    "welcome-browser",
+    "accessibility-browser",
+    "models-browser",
+    "chat-browser",
+    "usage-browser",
+    "page-skills-browser",
+    "openwiki-browser",
+    "openwiki-ui-browser"
+  ],
+  "fullMatrix": false,
+  "version": "1.1.0",
+  "buildSha256": "ee78b9134c40b4352f191464dd7a3ca1f4d9354ab3efbf4470aea3cc6ecc39c0",
+  "archiveSha256": "f15c54b78bcd0afd16bc61862c2434c22563a49f94ba6926f0a62b1c3fc05e97",
+  "finishedAt": "2026-09-21T16:05:23.030Z"
+}

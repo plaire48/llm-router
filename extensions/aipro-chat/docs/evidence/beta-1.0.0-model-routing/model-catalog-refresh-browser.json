@@ -1,0 +1,16 @@
+{
+  "version": "1.4.12",
+  "checks": [
+    "a fresh populated cache reproduces the five reported CLI/rag/general labels",
+    "opening the picker bypasses the five-item cache and shows all ten API names, including names without underscores",
+    "search is the only display filter and a visible icon refreshes even a non-empty catalog",
+    "a failed refresh preserves the prior models and selected model",
+    "an actual five-item API response is reported as received five and displayed five, without invented models",
+    "reopening refreshes again; reloading the app preserves the selected model and valid catalog"
+  ],
+  "requests": 4,
+  "errors": [],
+  "actualBrowser": true,
+  "syntheticAPI": true,
+  "companyAPI": false
+}

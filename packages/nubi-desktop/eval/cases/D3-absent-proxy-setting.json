@@ -1,0 +1,43 @@
+{
+  "id": "D3-absent-proxy-setting",
+  "title": "문서에 없는 내용",
+  "suite": "document",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "README.md와 ENTERPRISE.md 기준으로, 회사 프록시 서버를 거쳐 모델 API를 호출하려면 어떤 환경 변수를 설정하라고 되어 있어?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "찾을 수 없",
+        "찾지 못",
+        "없습니다",
+        "없어요",
+        "없음",
+        "없다",
+        "지원하지 않",
+        "제공하지 않",
+        "다루지 않",
+        "안내하지 않",
+        "나와 있지 않",
+        "언급하지 않",
+        "언급이 없",
+        "not found",
+        "not covered",
+        "no mention",
+        "not mention",
+        "re:(안내|언급|설명|명시|기재|정의|포함|등록|확인|제공|지원|기술|나오|나와)\\S{0,3}\\s?(있지\\s?)?않",
+        "확인할 수 없",
+        "re:README[\\s\\S]{0,6000}[A-Z_]+_BASE_URL|[A-Z_]+_BASE_URL[\\s\\S]{0,6000}README"
+      ]
+    ],
+    "answer_excludes": [
+      "OPENWIKI_PROXY"
+    ],
+    "answer_flags": [
+      "re:(HTTPS?_PROXY|NO_PROXY)`?\\s*="
+    ],
+    "unchanged_except": []
+  }
+}

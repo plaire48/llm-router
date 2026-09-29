@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "properties": {
+    "AutomationEnabled": {
+      "title": "AutomationEnabled",
+      "type": "boolean"
+    },
+    "UploadsEnabled": {
+      "title": "UploadsEnabled",
+      "type": "boolean"
+    },
+    "DownloadsEnabled": {
+      "title": "DownloadsEnabled",
+      "type": "boolean"
+    },
+    "RecordingEnabled": {
+      "title": "RecordingEnabled",
+      "type": "boolean"
+    },
+    "SchedulingEnabled": {
+      "title": "SchedulingEnabled",
+      "type": "boolean"
+    },
+    "AllowedOrigins": {
+      "title": "AllowedOrigins",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "BlockedOrigins": {
+      "title": "BlockedOrigins",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

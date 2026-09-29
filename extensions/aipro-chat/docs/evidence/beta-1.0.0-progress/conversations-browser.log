@@ -1,0 +1,7 @@
+PASS new chat archives the old transcript and pending draft; selecting and reloading restore both
+PASS history search, rename, current state and focus return work at panel and desktop widths
+PASS continuing a selected conversation sends its original context to the same provider
+PASS browser restart keeps history readable, removes the token, and makes no automatic model or browser action
+PASS other-provider sessions are isolated and require the matching connection before continuing
+PASS confirmed deletion removes only that conversation, persists after reload, and retains usage totals
+PASS long titles and 25 saved conversations scroll inside the dialog at 360x480 without viewport overflow

@@ -5,11 +5,16 @@
 .interaction-symbol { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: var(--cx-radius-control); color: var(--brand-action); background: linear-gradient(135deg, var(--deck-blue-soft), var(--deck-violet-soft)); }
 .interaction-input { margin-top: var(--cx-space-4); padding: var(--cx-space-2); background: var(--deck-tint); border: 1px solid var(--deck-surface-border); border-radius: var(--cx-popup-radius); transition: border-color var(--cx-motion) var(--deck-ease), box-shadow var(--cx-motion) var(--deck-ease); }
 .interaction-input:focus-within { border-color: var(--brand-action); box-shadow: 0 0 0 2px var(--brand-soft); }
+:is(.interaction-input, .interaction-editor-field) .cx-kit-field > label, :is(.interaction-input, .interaction-editor-field) .cx-kit-field > p { font: var(--deck-font-body); overflow-wrap: anywhere; word-break: keep-all; }
 .interaction-input .cx-kit-input { width: 100%; min-width: 0; border: 0; outline: 0; box-shadow: none; background: transparent; color: var(--layout-text); }
-.interaction-input textarea { resize: vertical; min-height: 88px; max-height: 45vh; line-height: var(--deck-line-body); overflow-wrap: anywhere; }
+.interaction-input .cx-kit-field textarea { resize: none; min-height: 44px; max-height: 65vh; line-height: var(--deck-line-body); overflow-wrap: anywhere; }
 .interaction-input-actions { display: flex; align-items: center; gap: var(--cx-space-2); margin-top: var(--cx-space-1); }
+.question-more.cx-kit-button { padding-inline: var(--cx-space-2); color: var(--brand-action); background: transparent; border-color: transparent; }
 .interaction-count { font: var(--deck-font-caption); color: var(--layout-muted); font-variant-numeric: tabular-nums; }
 .question-send { margin-left: auto; }
+.question-instruction { margin: var(--cx-space-2) 0 0; color: var(--layout-muted); font: var(--deck-font-body); }
+.question-input-hint { margin: 0 0 var(--cx-space-2); color: var(--layout-muted); font: var(--deck-font-body); }
+.question-instruction + .question-options { margin-top: var(--cx-space-2); }
 .question-options { display: grid; gap: var(--cx-space-2); margin-top: var(--cx-space-4); }
 .question-option.cx-kit-button { display: flex; justify-content: flex-start; align-items: center; width: 100%; height: auto; padding: var(--cx-space-3); gap: var(--cx-space-3); border-color: transparent; background: var(--deck-tint); text-align: left; white-space: normal; }
 .question-option.cx-kit-button:not(:disabled):hover { border-color: var(--brand-border); background: var(--brand-soft); transform: translateY(-1px); }
@@ -20,7 +25,7 @@
 .question-option > svg { flex-shrink: 0; color: var(--brand-action); }
 .question-card > .capture-gallery { margin-bottom: 0; }
 .interaction-card[data-answered=true] { background: transparent; box-shadow: none; border-color: transparent; padding-block: var(--cx-space-2); }
-.interaction-card[data-answered=true] .interaction-symbol { background: var(--deck-teal-soft); color: var(--bird-ink); }
+.interaction-card[data-answered=true] .interaction-symbol { background: var(--deck-blue-soft); color: var(--brand-ink); }
 .interaction-editor-field { padding: var(--cx-space-4); background: var(--deck-tint); border-radius: var(--cx-popup-radius); }
 .interaction-editor-field .cx-kit-input { width: 100%; background: var(--layout-surface); }
 .interaction-editor-field textarea { min-height: 154px; resize: vertical; }

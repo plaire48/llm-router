@@ -1,0 +1,23 @@
+{
+  "id": "A8-ambiguous-target",
+  "title": "대상이 모호한 요청",
+  "app": "expense-form",
+  "corpus": "order-service",
+  "approve": "all",
+  "stopAtQuestion": true,
+  "request": "연결한 경비 신청 앱에서 부서를 다른 곳으로 바꿔 줘.",
+  "expect": {
+    "state": "waiting_input",
+    "asked": true,
+    "app": {
+      "inputs": {
+        "max": 0
+      },
+      "values": {
+        "cmb-department": [
+          "영업팀"
+        ]
+      }
+    }
+  }
+}

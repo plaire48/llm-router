@@ -1,0 +1,35 @@
+{
+  "id": "C1-add-platinum-grade",
+  "title": "Wiki 규칙을 따라야 하는 수정",
+  "suite": "edit",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "플래티넘 등급을 추가해 줘. 코드 키와 할인율은 위키의 할인 정책에 정해 둔 값을 따라 줘.",
+  "approvals": [
+    "patch"
+  ],
+  "expect": {
+    "state": "review",
+    "retrieved": {
+      "paths": [
+        "openwiki/concepts/discount-policy.md"
+      ],
+      "min": 1
+    },
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {discountRate, applyDiscount} from '../src/discount.mjs';\ntest('hidden check', () => {\n  assert.equal(discountRate('platinum'), 15);\n  assert.equal(applyDiscount(10000, 'platinum'), 8500);\n  assert.equal(discountRate('gold'), 7);\n  assert.equal(discountRate('vip'), 12);\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/discount.mjs",
+      "test/discount.test.mjs",
+      "openwiki/concepts/discount-policy.md"
+    ]
+  }
+}

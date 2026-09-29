@@ -12,6 +12,17 @@ export function DeckStatus({tone='neutral',icon,children}) {
   return <span className="deck-status" data-tone={tone}>{icon && <Icon name={icon} size={14}/>}<span>{children}</span></span>;
 }
 
+// Keep a decision's key condition distinct from its supporting detail.
+// Callers mark only meaningful words with strong; icons supplement that meaning.
+export function DeckGuidance({icon,lead,children}) {
+  return <div className="deck-guidance">
+    {icon && <span className="deck-guidance-icon" aria-hidden="true"><Icon name={icon} size={18}/></span>}
+    <div className="deck-guidance-copy"><p className="deck-guidance-lead">{lead}</p>
+      {children && <div className="deck-guidance-detail">{children}</div>}
+    </div>
+  </div>;
+}
+
 // Compose public CX controls so confirmations use the same button typography
 // as other dialogs, including busy/error states and initial cancel focus.
 export function DeckConfirmation({title, message, confirmLabel, cancelLabel='취소', busy=false, onConfirm, onCancel, children}) {

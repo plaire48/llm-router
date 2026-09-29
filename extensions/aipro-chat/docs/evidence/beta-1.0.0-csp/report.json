@@ -1,0 +1,269 @@
+{
+  "startedAt": "2026-09-22T06:35:23.247Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:23.247Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2528
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:25.776Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 137
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:25.914Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2912
+    },
+    {
+      "name": "login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:28.868Z",
+      "log": "login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3616
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:32.486Z",
+      "log": "chatgpt-login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2212
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:34.698Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25127
+    },
+    {
+      "name": "login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:35:59.825Z",
+      "log": "login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3338
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:36:03.163Z",
+      "log": "chatgpt-login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2148
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:36:05.312Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24999
+    },
+    {
+      "name": "login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:36:30.312Z",
+      "log": "login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3321
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:36:33.635Z",
+      "log": "chatgpt-login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2163
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:36:35.798Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 25054
+    },
+    {
+      "name": "csp-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:00.853Z",
+      "log": "csp-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1052
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:01.906Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7429
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:09.335Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1615
+    },
+    {
+      "name": "chatgpt-side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:10.950Z",
+      "log": "chatgpt-side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1393
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:12.344Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17891
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:30.235Z",
+      "log": "browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 24775
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:37:55.011Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7969
+    },
+    {
+      "name": "openwiki-ui-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:38:02.982Z",
+      "log": "openwiki-ui-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10468
+    },
+    {
+      "name": "openwiki-screen-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:38:13.450Z",
+      "log": "openwiki-screen-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2546
+    },
+    {
+      "name": "wiki-folder-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:38:15.997Z",
+      "log": "wiki-folder-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5137
+    },
+    {
+      "name": "wiki-folder-persistence-browser",
+      "status": "passed",
+      "startedAt": "2026-09-22T06:38:21.135Z",
+      "log": "wiki-folder-persistence-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4082
+    }
+  ],
+  "selection": [
+    "csp-browser",
+    "login-redirect-browser",
+    "chatgpt-login-redirect-browser",
+    "provider-switch-browser",
+    "openwiki-browser",
+    "openwiki-ui-browser",
+    "openwiki-screen-browser",
+    "wiki-folder-browser",
+    "wiki-folder-persistence-browser",
+    "browser",
+    "chatgpt-browser",
+    "fabrix-browser",
+    "side-panel-browser",
+    "chatgpt-side-panel-browser"
+  ],
+  "fullMatrix": false,
+  "name": "nubi",
+  "version": "1.0.0-beta.1",
+  "displayVersion": "Beta 1.0.0",
+  "extensionVersion": "1.4.4",
+  "archiveStem": "nubi-beta-1.0.0",
+  "buildSha256": "48933b96dd20356ca9d3aab286af76d40af1d7ea9ccf668dafc191bffb307484",
+  "archiveSha256": "89ff370beb88950f5bbeeda1ae3c74ab9fd70aeed406934b81c15c911c9d568f",
+  "finishedAt": "2026-09-22T06:38:25.245Z"
+}

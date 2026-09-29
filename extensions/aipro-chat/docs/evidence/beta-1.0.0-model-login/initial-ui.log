@@ -1,0 +1,16 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: models: inconsistent control corners
+    at snapshot (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/ui-simplicity-browser.mjs:39:3)
+    at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/ui-simplicity-browser.mjs:89:5 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

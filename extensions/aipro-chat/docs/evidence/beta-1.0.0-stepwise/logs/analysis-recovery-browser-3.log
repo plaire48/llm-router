@@ -1,0 +1,4 @@
+PASS failed batches do not execute later writes
+PASS independent checkpoint redirects failed scripts to passive reading
+PASS final review catches an omitted requirement and repairs only the answer
+PASS reading completes without debugger attachment, page writes or redundant verify_page

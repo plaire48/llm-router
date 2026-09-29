@@ -1,0 +1,276 @@
+{
+  "version": "1.1.1",
+  "status": "passed",
+  "unitTests": 267,
+  "browserSuites": 15,
+  "browserExecutions": 25,
+  "fullMatrix": false,
+  "freshProfileRepetitions": 3,
+  "buildSha256": "986b86e53ae26ae6ed514f9c9328e7ef5fb6cb2ee66b5461d925ed4475abe921",
+  "archiveSha256": "fa52e554adb8e00e2fe2e86617a70c6a56457594102821efe393e6e1fddbbed8",
+  "archiveBytes": 5785687,
+  "archiveFilesMatchDist": 196,
+  "runs": [
+    "verification/pre-release-2026-09-21T16-34-03-452Z/report.json",
+    "verification/pre-release-2026-09-21T16-42-54-793Z/report.json"
+  ],
+  "runBoundary": "Final candidate checks passed across two runs with identical build content. A test selector comparing a peer heading to a nested disclosure was corrected; product code stayed unchanged between these two runs. Earlier superseded candidate checks are excluded.",
+  "realChrome": true,
+  "syntheticModel": true,
+  "realFileHandles": "OPFS",
+  "nativeOsPickerCompletionVerified": false,
+  "liveCompanyModelVerified": false,
+  "published": false,
+  "checks": [
+    {
+      "name": "browser-workflows-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:34:07.786Z",
+      "log": "browser-workflows-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86840
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:35:34.628Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26743
+    },
+    {
+      "name": "login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:01.371Z",
+      "log": "login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3322
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:04.693Z",
+      "log": "chatgpt-login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2095
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:06.788Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20142
+    },
+    {
+      "name": "browser-workflows-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:26.930Z",
+      "log": "browser-workflows-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86200
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:37:53.132Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26766
+    },
+    {
+      "name": "login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:19.898Z",
+      "log": "login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3317
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:23.216Z",
+      "log": "chatgpt-login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2082
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:25.300Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20030
+    },
+    {
+      "name": "browser-workflows-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:45.330Z",
+      "log": "browser-workflows-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 88773
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:14.104Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26795
+    },
+    {
+      "name": "login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:40.899Z",
+      "log": "login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3415
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:44.314Z",
+      "log": "chatgpt-login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2104
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:46.418Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20047
+    },
+    {
+      "name": "context-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:41:06.465Z",
+      "log": "context-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5861
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:41:12.326Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1509
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:41:13.835Z",
+      "log": "conversations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12675
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:42:59.289Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4828
+    },
+    {
+      "name": "feedback-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:04.118Z",
+      "log": "feedback-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17389
+    },
+    {
+      "name": "openwiki-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:21.507Z",
+      "log": "openwiki-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 7671
+    },
+    {
+      "name": "openwiki-ui-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:29.178Z",
+      "log": "openwiki-ui-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 10408
+    },
+    {
+      "name": "openwiki-screen-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:39.587Z",
+      "log": "openwiki-screen-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2225
+    },
+    {
+      "name": "wiki-folder-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:41.812Z",
+      "log": "wiki-folder-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4998
+    },
+    {
+      "name": "wiki-folder-persistence-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:43:46.811Z",
+      "log": "wiki-folder-persistence-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3970
+    }
+  ]
+}

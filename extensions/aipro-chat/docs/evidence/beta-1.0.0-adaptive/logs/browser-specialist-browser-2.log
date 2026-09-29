@@ -1,0 +1,7 @@
+PASS passive observation matches real role locators, distinguishes dialog context and form constraints, and omits input values and hidden shadow controls without debugger
+PASS observed refs fill the correct duplicate-name form and aria-labelledby input with trusted browser events
+PASS dependent choices expose new controls and exact refs work across open shadow roots and cross-origin frames
+PASS partial script failure reports the completed write and unissued ambiguous click; recovery selects the correct dialog without rewriting content
+PASS rerendered nodes and refs from earlier snapshots are rejected before writing, then fresh refs resume correctly
+PASS actual requested fields pass fresh verification and ref-based final sending still stops for approval
+PASS long pages report omitted controls, prioritize visible dialogs and support focused observation by region

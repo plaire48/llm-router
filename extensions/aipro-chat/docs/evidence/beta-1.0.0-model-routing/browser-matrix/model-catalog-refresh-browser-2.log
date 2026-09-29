@@ -1,0 +1,6 @@
+PASS a fresh populated cache reproduces the five reported CLI/rag/general labels
+PASS opening the picker bypasses the five-item cache and shows all ten API names, including names without underscores
+PASS search is the only display filter and a visible icon refreshes even a non-empty catalog
+PASS a failed refresh preserves the prior models and selected model
+PASS an actual five-item API response is reported as received five and displayed five, without invented models
+PASS reopening refreshes again; reloading the app preserves the selected model and valid catalog

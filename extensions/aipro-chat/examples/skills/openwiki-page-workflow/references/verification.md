@@ -1,0 +1,3 @@
+# Verify the outcome
+
+For analysis, cite the passages actually read and distinguish source facts from screen observations. For a draft, verify required fields/content with verify_page using fresh refs, and verify formatting only when requested. A script return, tool success, plan status or this guide is not proof of completion. For an uncertain write, observe before retrying. For a final transaction, request_approval after draft verification; after approval inspect the application confirmation without repeating the action. Visible confirmation alone does not prove backend persistence. Report pending approval or unavailable evidence plainly.

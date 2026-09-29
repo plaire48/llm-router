@@ -1,0 +1,58 @@
+PASS provider icons/text align in shared columns even while loading; login and modal fit three viewport sizes with a visible footer
+PASS failed credentials keep the user in the modal and cannot enable Connect
+PASS three-field registration discovers models without inference; Korean-only picker changes and restores the selected ID
+PASS FabriX envelope drives real Pi/Playwright DOM inspection, popup navigation, iframe editing, save click and application-state verification
+PASS action responses recover once with safe diagnostics, separate token counts and no malformed response execution
+PASS chat, usage and provider survive reload; credentials and private reasoning stay out of diagnostics and local storage
+{
+  mode: 'upstream502',
+  stage: 6,
+  requests: 14,
+  errors: [],
+  summary: {
+    last: {
+      content: '',
+      error: 'upstream',
+      finishReason: null,
+      id: '48a90b74-b752-48be-a4f1-afc9ffe9509d',
+      modelId: 'qwen-test',
+      modelName: '테스트 모델',
+      pageId: '',
+      requestId: '48a90b74-b752-48be-a4f1-afc9ffe9509d',
+      role: 'assistant',
+      skillId: 'browser-agent',
+      state: 'error',
+      trace: [Array],
+      usage: null
+    },
+    auth: {
+      present: true,
+      provider: 'fabrix',
+      expired: false,
+      rejected: false,
+      mode: 'apiKey',
+      expiresAt: null,
+      source: 'connection',
+      verifiedAt: 1790076418142,
+      receivedAt: 1790076407671
+    }
+  }
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+4 !== 1
+
+    at file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/fabrix-browser.mjs:160:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 4,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

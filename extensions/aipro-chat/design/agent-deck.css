@@ -20,8 +20,8 @@
   --bird-ink: #126678;
   --bird-shadow: color-mix(in srgb, var(--deck-teal) 20%, transparent);
   --bird-aura: radial-gradient(ellipse at 68% 26%, color-mix(in srgb, var(--bird-mint) 65%, transparent), transparent 65%), radial-gradient(ellipse at 30% 70%, color-mix(in srgb, var(--deck-blue-lite) 28%, transparent), transparent 65%);
-  --deck-green: #148A5C;
-  --deck-green-soft: #E6F6EE;
+  --deck-green: var(--deck-blue-deep);
+  --deck-green-soft: var(--deck-blue-soft);
   --deck-orange: #F08A3C;
   --deck-orange-soft: #FEF1E6;
   --deck-red: #D22030;
@@ -31,7 +31,7 @@
   --provider-chatgpt: color-mix(in srgb, var(--deck-ink) 5%, var(--deck-card));
   --provider-fabrix-start: var(--deck-teal-soft);
   --provider-fabrix-end: color-mix(in srgb, var(--deck-teal-soft) 60%, var(--deck-card));
-  --provider-fabrix-ink: color-mix(in srgb, var(--deck-teal) 56%, var(--deck-ink));
+  --provider-fabrix-ink: var(--deck-blue-deep);
   --provider-tab-shadow: 0 3px 12px color-mix(in srgb, var(--deck-blue-deep) 10%, transparent);
   --deck-background: linear-gradient(155deg, #EAF3FE 0%, #E9F2FD 42%, #ECEFFD 72%, #E9F6F2 100%);
   --conversation-user-surface: color-mix(in srgb, var(--deck-blue) 16%, var(--deck-card));
@@ -71,7 +71,7 @@
   --deck-step: 140ms;
   --deck-stagger: 110ms;
   --deck-feedback: 240ms;
-  --deck-pointer-travel: 50ms;
+  --deck-pointer-travel: 160ms;
   --deck-pointer-pulse: 180ms;
   --deck-disclosure: 240ms;
   --deck-float: 6s;
@@ -111,7 +111,7 @@
   --color-border-primary: var(--brand-border);
   --color-effect-focus-primary: var(--deck-blue-soft);
   --cx-input-border: color-mix(in srgb, var(--deck-sub) 36%, var(--deck-card));
-  --cx-success: color-mix(in srgb, var(--deck-green) 86%, var(--deck-ink));
+  --cx-success: var(--deck-blue-deep);
   --cx-warning: color-mix(in srgb, var(--deck-orange) 55%, var(--deck-ink));
   --cx-danger: var(--deck-red);
   --cx-error-surface: var(--deck-red-soft);

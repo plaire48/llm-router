@@ -1,0 +1,76 @@
+{
+  "checks": [
+    {
+      "width": 320,
+      "height": 640,
+      "loggedIn": false,
+      "text": "beta",
+      "fontSize": "12px",
+      "color": "rgb(78, 89, 104)",
+      "rightOfLogo": true,
+      "withinHeader": true,
+      "overflow": false,
+      "clipped": false
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "loggedIn": false,
+      "text": "beta",
+      "fontSize": "12px",
+      "color": "rgb(78, 89, 104)",
+      "rightOfLogo": true,
+      "withinHeader": true,
+      "overflow": false,
+      "clipped": false
+    },
+    {
+      "width": 1100,
+      "height": 850,
+      "loggedIn": false,
+      "text": "beta",
+      "fontSize": "12px",
+      "color": "rgb(78, 89, 104)",
+      "rightOfLogo": true,
+      "withinHeader": true,
+      "overflow": false,
+      "clipped": false
+    },
+    {
+      "width": 320,
+      "height": 640,
+      "loggedIn": true,
+      "text": "beta",
+      "fontSize": "12px",
+      "color": "rgb(78, 89, 104)",
+      "rightOfLogo": true,
+      "withinHeader": true,
+      "overflow": false,
+      "clipped": false
+    },
+    {
+      "width": 360,
+      "height": 800,
+      "loggedIn": true,
+      "text": "beta",
+      "fontSize": "12px",
+      "color": "rgb(78, 89, 104)",
+      "rightOfLogo": true,
+      "withinHeader": true,
+      "overflow": false,
+      "clipped": false
+    },
+    {
+      "width": 1100,
+      "height": 850,
+      "loggedIn": true,
+      "text": "beta",
+      "fontSize": "12px",
+      "color": "rgb(78, 89, 104)",
+      "rightOfLogo": true,
+      "withinHeader": true,
+      "overflow": false,
+      "clipped": false
+    }
+  ]
+}

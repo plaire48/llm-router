@@ -1,0 +1,312 @@
+{
+  "startedAt": "2026-09-21T18:25:42.841Z",
+  "status": "passed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:25:42.842Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2364
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:25:45.208Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 142
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:25:45.350Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2830
+    },
+    {
+      "name": "question-forms-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:25:48.221Z",
+      "log": "question-forms-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4995
+    },
+    {
+      "name": "attachments-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:25:53.218Z",
+      "log": "attachments-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5853
+    },
+    {
+      "name": "popup-approval-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:25:59.072Z",
+      "log": "popup-approval-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17199
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:26:16.271Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20065
+    },
+    {
+      "name": "question-forms-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:26:36.337Z",
+      "log": "question-forms-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4761
+    },
+    {
+      "name": "attachments-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:26:41.098Z",
+      "log": "attachments-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5589
+    },
+    {
+      "name": "popup-approval-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:26:46.687Z",
+      "log": "popup-approval-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17066
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:27:03.753Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20069
+    },
+    {
+      "name": "question-forms-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:27:23.822Z",
+      "log": "question-forms-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4779
+    },
+    {
+      "name": "attachments-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:27:28.601Z",
+      "log": "attachments-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5642
+    },
+    {
+      "name": "popup-approval-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:27:34.243Z",
+      "log": "popup-approval-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17106
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:27:51.350Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20045
+    },
+    {
+      "name": "chatgpt-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:28:11.395Z",
+      "log": "chatgpt-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5748
+    },
+    {
+      "name": "approval-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:28:17.145Z",
+      "log": "approval-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 35168
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:28:52.313Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1597
+    },
+    {
+      "name": "chatgpt-side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:28:53.910Z",
+      "log": "chatgpt-side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1355
+    },
+    {
+      "name": "fabrix-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:28:55.265Z",
+      "log": "fabrix-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 17556
+    },
+    {
+      "name": "image-choice-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:29:12.821Z",
+      "log": "image-choice-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 8020
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:29:20.841Z",
+      "log": "conversations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12646
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:29:33.488Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4715
+    },
+    {
+      "name": "accessibility-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:29:38.203Z",
+      "log": "accessibility-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 4299
+    },
+    {
+      "name": "page-skills-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T18:29:42.503Z",
+      "log": "page-skills-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20217
+    }
+  ],
+  "selection": [
+    "question-forms-browser",
+    "approval-browser",
+    "popup-approval-browser",
+    "page-skills-browser",
+    "image-choice-browser",
+    "attachments-browser",
+    "provider-switch-browser",
+    "side-panel-browser",
+    "chatgpt-side-panel-browser",
+    "conversations-browser",
+    "fabrix-browser",
+    "chatgpt-browser",
+    "ui-simplicity-browser",
+    "accessibility-browser"
+  ],
+  "fullMatrix": false,
+  "version": "1.3.0",
+  "buildSha256": "d3371516a76ca9e8da66af636c2dbce1b039d1b0601605675e6da26f052c2880",
+  "archiveSha256": "b8d3c0883047ebbc5a62587cab5ccb248889923d89cd3f864f5828e507a88bf0",
+  "finishedAt": "2026-09-21T18:30:02.775Z",
+  "localPackage": {
+    "path": "releases/aipro-chat-extension-1.3.0.zip",
+    "bytes": 8041301,
+    "sha256": "b8d3c0883047ebbc5a62587cab5ccb248889923d89cd3f864f5828e507a88bf0",
+    "matchesTestedArchive": true,
+    "distFileCount": 414,
+    "allDistBytesVerified": true
+  },
+  "sourceReport": "verification/pre-release-2026-09-21T18-25-42-840Z/report.json",
+  "publication": {
+    "github": false,
+    "webStore": false
+  },
+  "excludedRuns": [
+    {
+      "report": "verification/pre-release-2026-09-21T18-15-13-416Z/report.json",
+      "reason": "Direct-answer keyboard focus race found on repetition 3. Replaced animation-frame timing with an explicit React layout-effect focus intent."
+    },
+    {
+      "report": "verification/pre-release-2026-09-21T18-18-15-232Z/report.json",
+      "reason": "Settings accessibility assertion predated OpenWiki settings. Updated the fixture to assert the current UI. Later visual tweaks require a new candidate."
+    },
+    {
+      "report": "verification/pre-release-2026-09-21T18-23-35-126Z/report.json",
+      "reason": "Intentionally terminated to correct the legacy skill-import selector, which was ambiguous after file attachments were introduced. Not a product/provider-switch failure."
+    }
+  ]
+}

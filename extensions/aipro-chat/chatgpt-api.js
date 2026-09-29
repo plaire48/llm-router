@@ -12,7 +12,7 @@ export function chatGPTModels() {
     sort_seq: index, context_length: model.contextWindow, supports_images: model.input?.includes('image') === true}))}};
 }
 
-export async function completeChatGPT({messages, tools, modelId, credential, signal, onText, onPhase, onActivity = () => {}, onMeasurement = () => {}, maxCharacters = 400000}) {
+export async function completeChatGPT({messages, tools, modelId, credential, signal, onText, onPhase, onActivity = () => {}, onMeasurement = () => {}, maxCharacters = 400000, toolChoice = 'auto'}) {
   const model = models.find(model => model.id === modelId);
   if (!model) throw new Error('invalid_model');
   const context = {messages: [{role: 'system', timestamp: 0,
@@ -23,7 +23,7 @@ export async function completeChatGPT({messages, tools, modelId, credential, sig
   if (signal.aborted) abort();
   signal.addEventListener('abort', abort, {once: true});
   try {
-    const response = stream(model, context, {apiKey: credential.token, signal: controller.signal, transport: 'sse', maxRetries: 0,
+    const response = stream(model, context, {apiKey: credential.token, signal: controller.signal, transport: 'sse', maxRetries: 0, toolChoice,
       fetch: async (url, options) => {
         const response = await fetch(url, {...options, credentials: 'omit', redirect: 'error', cache: 'no-store'});
         status = response.status; retryDelay = retryAfterMs(response.headers);
@@ -36,7 +36,7 @@ export async function completeChatGPT({messages, tools, modelId, credential, sig
       },
       reasoningSummary: 'off', onResponse: response => {status = response.status;}});
     for await (const event of response) {
-      onActivity();
+      if (['text_delta', 'thinking_delta', 'toolcall_delta'].includes(event.type) && typeof event.delta === 'string' && event.delta) onActivity();
       if (signal.aborted) throw new Error('cancelled');
       if (event.type === 'text_delta') {
         content += event.delta;

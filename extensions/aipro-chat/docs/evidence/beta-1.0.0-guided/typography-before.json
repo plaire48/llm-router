@@ -1,0 +1,258 @@
+[
+  {
+    "width": 360,
+    "styles": [
+      [],
+      [
+        {
+          "tag": "H1",
+          "text": "첫 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "20.8px",
+          "weight": "900"
+        },
+        {
+          "tag": "P",
+          "text": "본문 문장입니다. 핵심 설명과 링크가 있습니다.",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "H2",
+          "text": "두 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "28px",
+          "weight": "700"
+        },
+        {
+          "tag": "H3",
+          "text": "세 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "28px",
+          "weight": "700"
+        },
+        {
+          "tag": "H4",
+          "text": "네 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "700"
+        },
+        {
+          "tag": "H5",
+          "text": "다섯 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "11.62px",
+          "line": "20.335px",
+          "weight": "700"
+        },
+        {
+          "tag": "H6",
+          "text": "여섯 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "9.38px",
+          "line": "16.415px",
+          "weight": "700"
+        },
+        {
+          "tag": "LI",
+          "text": "항목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "P",
+          "text": "인용문",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "TH",
+          "text": "항목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "500"
+        },
+        {
+          "tag": "TH",
+          "text": "결과",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "500"
+        },
+        {
+          "tag": "TD",
+          "text": "글꼴",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "TD",
+          "text": "확인",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "P",
+          "text": "inline code",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "CODE",
+          "text": "inline code",
+          "font": "monospace",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        }
+      ]
+    ]
+  },
+  {
+    "width": 1100,
+    "styles": [
+      [],
+      [
+        {
+          "tag": "H1",
+          "text": "첫 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "20.8px",
+          "weight": "900"
+        },
+        {
+          "tag": "P",
+          "text": "본문 문장입니다. 핵심 설명과 링크가 있습니다.",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "H2",
+          "text": "두 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "28px",
+          "weight": "700"
+        },
+        {
+          "tag": "H3",
+          "text": "세 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "16px",
+          "line": "28px",
+          "weight": "700"
+        },
+        {
+          "tag": "H4",
+          "text": "네 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "700"
+        },
+        {
+          "tag": "H5",
+          "text": "다섯 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "11.62px",
+          "line": "20.335px",
+          "weight": "700"
+        },
+        {
+          "tag": "H6",
+          "text": "여섯 번째 제목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "9.38px",
+          "line": "16.415px",
+          "weight": "700"
+        },
+        {
+          "tag": "LI",
+          "text": "항목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "P",
+          "text": "인용문",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "TH",
+          "text": "항목",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "500"
+        },
+        {
+          "tag": "TH",
+          "text": "결과",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "500"
+        },
+        {
+          "tag": "TD",
+          "text": "글꼴",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "TD",
+          "text": "확인",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "P",
+          "text": "inline code",
+          "font": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        },
+        {
+          "tag": "CODE",
+          "text": "inline code",
+          "font": "monospace",
+          "size": "14px",
+          "line": "24.5px",
+          "weight": "400"
+        }
+      ]
+    ]
+  }
+]

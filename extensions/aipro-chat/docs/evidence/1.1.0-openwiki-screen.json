@@ -1,0 +1,16 @@
+{
+  "version": "1.1.0",
+  "checks": [
+    "the current application tab is observed automatically and project source tools run in the same chat",
+    "screen text and current file contents reach the model and reviewer with distinct evidence and a rendered path:line citation",
+    "screen and source reading uses no debugger and exposes no pairing or access credentials"
+  ],
+  "realChromeExtension": true,
+  "realOpenWikiHttpHandler": true,
+  "realScreenDom": true,
+  "temporarySourceFiles": true,
+  "syntheticModelResponses": true,
+  "actualModelReasoningEvaluated": false,
+  "exactComponentMappingProven": false,
+  "fixtureLoopbackHostPregranted": true
+}

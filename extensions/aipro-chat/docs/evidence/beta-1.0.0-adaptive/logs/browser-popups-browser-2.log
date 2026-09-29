@@ -1,0 +1,8 @@
+PASS a delayed blank popup yields fresh evidence before any queued input; the next script fills its observed field
+PASS tab discovery includes Chrome popup windows, not only normal windows
+PASS an existing named popup is reused and its newly committed document becomes the script target
+PASS after detaching and resuming, closing a child window returns to its known opener and verifies the saved state
+PASS reference-based clicks follow a tab created 1.4 seconds later instead of an unrelated tab
+PASS one real browser script completes 65 sequential form writes and reads the retained final value
+PASS a nested popup retains its parent chain across resume and skips a closed intermediate window
+PASS stopping while a blank popup loads prevents the queued form write and leaves the user window open

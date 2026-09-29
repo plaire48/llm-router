@@ -1,0 +1,52 @@
+{
+  "startedAt": "2026-09-22T11:34:10.128Z",
+  "status": "failed",
+  "repeats": 3,
+  "concurrency": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "failed",
+      "startedAt": "2026-09-22T11:34:10.129Z",
+      "log": "unit.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 15617
+    }
+  ],
+  "selection": [
+    "toggle-recovery-browser",
+    "link-actions-browser",
+    "typography-browser",
+    "clarification-browser",
+    "question-forms-browser",
+    "task-plan-browser",
+    "script-recovery-browser",
+    "browser-specialist-browser",
+    "browser-popups-browser",
+    "popup-approval-browser",
+    "approval-browser",
+    "code-browser",
+    "accessibility-browser",
+    "ui-simplicity-browser",
+    "models-browser",
+    "fabrix-browser",
+    "chatgpt-browser",
+    "csp-browser",
+    "context-browser",
+    "captures-browser",
+    "side-panel-browser",
+    "output-recovery-browser"
+  ],
+  "fullMatrix": false,
+  "failure": "unit failed; see /private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/verification/pre-release-2026-09-22T11-34-10-127Z/unit.log",
+  "finishedAt": "2026-09-22T11:34:25.748Z"
+}

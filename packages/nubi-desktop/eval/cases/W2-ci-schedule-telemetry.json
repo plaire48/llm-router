@@ -1,0 +1,34 @@
+{
+  "id": "W2-ci-schedule-telemetry",
+  "title": "여러 쪽 종합",
+  "suite": "wiki",
+  "split": "holdout",
+  "corpus": "openwiki-sds",
+  "request": "GitHub Actions 예제로 위키 자동 갱신을 걸어두면 기본으로 언제 실행되고, 그런 CI 실행은 사용 통계에서 어떤 ID로 집계돼?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "0 8 * * *",
+        "08:00",
+        "8시",
+        "8 AM"
+      ],
+      [
+        "ci-github-actions"
+      ]
+    ],
+    "answer_excludes": [
+      "0 2 * * *"
+    ],
+    "retrieved": {
+      "paths": [
+        "openwiki/operations/ci-scheduling.md",
+        "openwiki/operations/telemetry.md"
+      ],
+      "min": 2
+    },
+    "unchanged_except": []
+  }
+}

@@ -62,7 +62,7 @@ export function AttachmentList({files = [], disabled, onRemove}) {
     onFocusCapture={event => event.target.closest('.attachment-chip')?.scrollIntoView({block: 'nearest', inline: 'nearest', behavior: 'instant'})}>{files.map(file => <FileItem key={file.id} file={file} disabled={disabled} onRemove={onRemove} onOpen={() => setSelected(file.id)}/>)}</div>
     {file && <FileViewer file={file} onClose={() => setSelected(null)}/>}</>;
 }
-export function AttachmentPicker({disabled, loading, count, onAdd, onBusy, onError}) {
+export function AttachmentPicker({disabled, loading, count, onAdd, onBusy, onError, menuItem = false}) {
   const input = useRef(null), [busy, setBusy] = useState(false);
   async function choose(event) {
     const selected = [...event.target.files]; event.target.value = '';
@@ -75,5 +75,5 @@ export function AttachmentPicker({disabled, loading, count, onAdd, onBusy, onErr
     finally {setBusy(false); onBusy(false);}
   }
   return <><input className="attachment-input" type="file" ref={input} accept={ATTACHMENT_ACCEPT} multiple tabIndex={-1} aria-label="첨부 파일 선택" onChange={choose}/>
-    <ActionButton action="attachment" label="파일 첨부" title="이미지 또는 문서 첨부" busy={busy || loading} disabled={disabled || busy || loading} onClick={() => input.current?.click()}/></>;
+    <ActionButton action="attachment" iconOnly={!menuItem} className={menuItem ? 'composer-add-item' : ''} label="파일 첨부" title="이미지 또는 문서 첨부" busy={busy || loading} disabled={disabled || busy || loading} onClick={() => input.current?.click()}/></>;
 }

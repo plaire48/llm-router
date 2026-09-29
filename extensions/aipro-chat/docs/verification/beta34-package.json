@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "verifiedAt": "2026-09-25T06:25:06.215385+00:00",
+  "archive": "nubi-beta-1.0.0.zip",
+  "sha256": "626c9e88c1688a51b5be5f8890bdb271676344f495fd2e5a387f55a8a940e1ee",
+  "files": 700,
+  "zipIntegrity": true,
+  "matchesTestedBuild": true,
+  "noDuplicateOrUnsafePaths": true,
+  "noCredentialOrDependencyDirectories": true,
+  "manifestVersion": "1.4.37",
+  "requiredPermissionsAdded": [],
+  "optionalPermissionsAdded": [
+    "downloads",
+    "notifications"
+  ],
+  "nativeMessaging": false
+}

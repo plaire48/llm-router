@@ -1,0 +1,17 @@
+{
+  "version": "1.1.1",
+  "checks": [
+    "settings commits a real OPFS directory handle before the browser process is closed",
+    "a full browser relaunch restores GET_STATE project metadata and the same IDB handle; the new worker reads the saved Wiki without login",
+    "disconnect remains cleared after a second browser relaunch and does not delete the user-selected directory contents"
+  ],
+  "completeBrowserRestarts": 2,
+  "samePersistentChromeProfile": true,
+  "actualIndexedDbAndWorkerReads": true,
+  "realDirectoryHandles": true,
+  "directoryHandleFixture": "Origin private file system",
+  "nativeOsDirectoryPickerVerified": false,
+  "nativeOsPermissionPersistenceVerified": false,
+  "actualModelRequests": false,
+  "serverRequired": false
+}

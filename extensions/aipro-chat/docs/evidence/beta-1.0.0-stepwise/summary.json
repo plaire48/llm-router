@@ -1,0 +1,14 @@
+{
+  "unitTests": 319,
+  "browserSuites": 11,
+  "browserRuns": 25,
+  "headedRuns": 1,
+  "actualModelAccuracy": false,
+  "archiveSha256": "9beea3a6e13523be696f1740302ee890fd74192c18b946d0696d56f838f891c4",
+  "buildSha256": "95fe42c388711b7c3853c7bbba3e1cd9e33928e7790a8aad922081cd49c1569b",
+  "notes": [
+    "Earlier task-plan fixture assumed the previous result was always a DOM observation; it now also accepts the intervening plan receipt.",
+    "An output recovery assertion now inspects tool arguments, not unrelated prompt prose.",
+    "Iteration policy is independent of the automation permission and verification tool catalog."
+  ]
+}

@@ -34,7 +34,7 @@ export class NubiWidget extends ReactWidget {
     if(!file)return {cancelled:true};
     return this.service.invoke('computer',{method:'register_app',taskId:args.taskId,file:file.path.fsPath()});
   }
-  @postConstruct() init(){this.id=NubiWidget.ID;this.title.label='누비 workspace';this.title.caption='누비 workspace beta 1.0.0';this.title.closable=false;this.title.iconClass='nubi-workspace-tab-icon';this.addClass('nubi-widget');this.node.tabIndex=0;this.update();}
+  @postConstruct() init(){this.id=NubiWidget.ID;this.title.label='누비 workspace';this.title.caption='누비 workspace beta 1.1.0';this.title.closable=false;this.title.iconClass='nubi-workspace-tab-icon';this.addClass('nubi-widget');this.node.tabIndex=0;this.update();}
   protected onActivateRequest():void {this.node.focus({preventScroll:true});}
   protected async openCurrent(){if(!await this.trust.getWorkspaceTrust())throw new Error('workspace_untrusted');const roots=await this.workspace.roots;if(!roots.length)return null;return this.service.invoke('open',{root:roots[0].resource.path.fsPath()});}
   protected async openPath(path:string,taskId?:string){const file=await this.service.invoke('read',{path,taskId,full:true});return this.editors.open(new URI(file.uri),{mode:'activate'});}

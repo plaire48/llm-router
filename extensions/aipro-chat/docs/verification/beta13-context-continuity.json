@@ -1,0 +1,25 @@
+{
+  "actualModel": false,
+  "actualPiLoop": true,
+  "before": {
+    "reproduced": true,
+    "failures": [
+      "attachment locator omitted by continuityMessage",
+      "document source ranges omitted"
+    ]
+  },
+  "after": {
+    "tests": 33,
+    "passed": 33,
+    "failed": 0,
+    "coverage": [
+      "zero-based attachment offsets survive inaccurate summary",
+      "separate ranges retained and malformed/failed reads rejected",
+      "research child assigned document source reread by leader after compaction"
+    ]
+  },
+  "logs": [
+    "nubi-document-continuity-before.log",
+    "nubi-document-continuity-after.log"
+  ]
+}

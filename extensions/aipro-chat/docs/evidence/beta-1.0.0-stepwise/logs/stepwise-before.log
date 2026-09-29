@@ -1,0 +1,91 @@
+✖ read-only skills replan from the first result before executing another proposed read (5.020542ms)
+✖ failed batches do not show a running or failed row for an unexecuted later call (1.626958ms)
+✖ an unverified step cannot be marked completed, but its planned check can still run (2.635583ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 318.916292
+
+✖ failing tests:
+
+test at tests/agent-runtime.test.mjs:127:1
+✖ read-only skills replan from the first result before executing another proposed read (5.020542ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at complete (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/agent-runtime.test.mjs:132:12)
+      at streamFn (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:247:26)
+      at streamAssistantResponse (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:235:28)
+      at async runLoop (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:123:29)
+      at async runAgentLoopContinue (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:70:5)
+      at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:287:13
+      at async Agent.runWithLifecycle (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:349:13)
+      at async Agent.runContinuation (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:286:9)
+      at async Agent.continue (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:265:9)
+      at async runAgent (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:326:5) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/agent-runtime.test.mjs:142:1
+✖ failed batches do not show a running or failed row for an unexecuted later call (1.626958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - true
+  
+      at complete (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/agent-runtime.test.mjs:146:12)
+      at streamFn (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:247:26)
+      at streamAssistantResponse (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:235:28)
+      at async runLoop (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:123:29)
+      at async runAgentLoopContinue (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:70:5)
+      at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:287:13
+      at async Agent.runWithLifecycle (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:349:13)
+      at async Agent.runContinuation (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:286:9)
+      at async Agent.continue (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:265:9)
+      at async runAgent (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:326:5) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: true,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/agent-runtime.test.mjs:154:1
+✖ an unverified step cannot be marked completed, but its planned check can still run (2.635583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'verification_required'
+  
+      at complete (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/agent-runtime.test.mjs:165:14)
+      at streamFn (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:247:26)
+      at streamAssistantResponse (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:235:28)
+      at async runLoop (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:123:29)
+      at async runAgentLoopContinue (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent-loop.js:70:5)
+      at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:287:13
+      at async Agent.runWithLifecycle (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:349:13)
+      at async Agent.runContinuation (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:286:9)
+      at async Agent.continue (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/node_modules/@earendil-works/pi-agent-core/dist/agent.js:265:9)
+      at async runAgent (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/agent-runtime.js:326:5) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'verification_required',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

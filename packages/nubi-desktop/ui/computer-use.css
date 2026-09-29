@@ -3,13 +3,19 @@
 .nubi-action-preview-head { display:flex; align-items:center; justify-content:space-between; gap:var(--cx-space-2,8px); padding:var(--cx-space-2,8px) var(--cx-space-3,12px); flex-wrap:wrap; background:var(--layout-surface); }
 .nubi-action-stage { position:relative; overflow:hidden; background:var(--deck-tint); }
 .nubi-action-stage>img { display:block; width:100%; height:auto; }
-.nubi-action-pointer { position:absolute; width:28px; height:32px; pointer-events:none; color:#171717; transition:left var(--nubi-pointer-move) var(--nubi-pointer-ease),top var(--nubi-pointer-move) var(--nubi-pointer-ease); }
-.nubi-action-pointer svg { position:relative; width:28px; height:32px; overflow:visible; fill:#171717; stroke:#fff; stroke-width:2.5; filter:drop-shadow(0 1px 1px #0008); stroke-linejoin:round; }
-.nubi-action-halo { position:absolute; width:16px; height:16px; left:-8px; top:-8px; border:1.5px solid #171717; border-radius:50%; opacity:0; }
+.nubi-action-pointer { position:absolute; width:28px; height:32px; pointer-events:none; color:var(--nubi-pointer-ink); transition:left var(--nubi-pointer-move) var(--nubi-pointer-ease),top var(--nubi-pointer-move) var(--nubi-pointer-ease); }
+.nubi-action-pointer svg { position:relative; width:28px; height:32px; overflow:visible; fill:var(--nubi-pointer-ink); stroke:var(--deck-card); stroke-width:2.5; filter:var(--nubi-pointer-shadow); stroke-linejoin:round; }
+.nubi-action-halo { position:absolute; width:16px; height:16px; left:-8px; top:-8px; border:1.5px solid var(--nubi-pointer-ink); border-radius:50%; opacity:0; }
 .is-click .nubi-action-halo[data-demo=true],.is-invoke .nubi-action-halo[data-demo=true] { animation:nubi-click-ring var(--nubi-pointer-feedback,140ms) ease-out both; }
-.nubi-action-preview figcaption { padding:var(--cx-space-2,8px) var(--cx-space-3,12px); font-size:12px; line-height:16px; color:var(--layout-muted); }
+.nubi-action-preview figcaption { padding:var(--cx-space-2,8px) var(--cx-space-3,12px); font:var(--deck-font-body); color:var(--layout-muted); }
 .nubi-cursor-example-surface { display:grid; place-items:center; min-height:180px; padding:var(--cx-space-5,24px); }
 .nubi-cursor-example-surface>span { border:1px solid var(--cx-border); border-radius:var(--cx-radius-control); padding:12px 24px; background:var(--layout-surface); color:var(--layout-text); }
 .nubi-action-stage[data-motion=off] .nubi-action-pointer,.nubi-action-stage[data-motion=off] .nubi-action-halo { animation:none; transition:none; }
 @keyframes nubi-click-ring { 0% { opacity:1; } 100% { opacity:0; } }
 @media(prefers-reduced-motion:reduce) { :root { --nubi-pointer-move:0ms; --nubi-pointer-feedback:0ms; } .nubi-action-pointer,.nubi-action-halo { animation:none !important; transition:none !important; } }
+.nubi-batch-steps { margin:var(--cx-space-2,8px) 0; padding-left:var(--cx-space-5,24px); display:grid; gap:var(--cx-space-2,8px); }
+.nubi-batch-steps>li>span { font-weight:600; color:var(--layout-text); }
+.nubi-batch-steps>li>pre { margin:var(--cx-space-1,4px) 0 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.nubi-batch-steps>li>small { display:block; font:var(--deck-font-body); color:var(--layout-muted); }
+.nubi-wiki-update-pages { margin:var(--cx-space-2,8px) 0; padding-left:var(--cx-space-5,24px); display:grid; gap:var(--cx-space-1,4px); }
+.nubi-wiki-update-pages small { font:var(--deck-font-body); color:var(--layout-muted); }

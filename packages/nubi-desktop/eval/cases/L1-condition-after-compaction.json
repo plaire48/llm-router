@@ -1,0 +1,56 @@
+{
+  "id": "L1-condition-after-compaction",
+  "title": "압축 뒤 초기 조건 보존",
+  "suite": "conversation",
+  "split": "dev",
+  "corpus": "order-service",
+  "request": "이 작업에서는 src/legacy 폴더를 절대 수정하지 마. 금액은 항상 정수 원으로 다뤄 줘. 먼저 지금 배송 정책을 짧게 설명해 줘.",
+  "followUps": [
+    {
+      "before": "아래는 어제 배송 정책 회의록이야. 배송과 관련해 결정한 내용만 정리해 줘.\n\n",
+      "file": "texts/L1-meeting-notes.md"
+    },
+    "주문 상태가 바뀌는 순서와 취소할 수 있는 시점, 그리고 새 등급을 추가할 때의 기준도 위키에서 찾아서 설명해 줘.",
+    "그럼 회의에서 결정한 대로 추가 요금을 코드에 반영해 줘."
+  ],
+  "approvals": [
+    "patch"
+  ],
+  "modelLimits": {
+    "contextLength": 22000
+  },
+  "dialogue": [
+    {
+      "match": "시행일|시행 시점|적용 시점|10월 첫째",
+      "answer": "시행일은 코드에 넣지 마. 지금 바로 주문 배송비 계산의 제주와 도서 추가 요금만 5,500원으로 바꿔 줘."
+    }
+  ],
+  "expect": {
+    "state": "review",
+    "compacted": true,
+    "files": [
+      {
+        "path": "src/legacy/export.mjs",
+        "includes": [
+          "LEGACY_REMOTE_EXTRA = 4500"
+        ]
+      }
+    ],
+    "test": {
+      "files": {
+        "test/eval-hidden.test.mjs": "import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport {shippingFee} from '../src/shipping.mjs';\nimport {exportRow} from '../src/legacy/export.mjs';\ntest('hidden check', () => {\n  assert.equal(shippingFee(10000, 'jeju'), 8500);\n  assert.equal(shippingFee(60000, 'island'), 5500);\n  assert.equal(shippingFee(49999, 'seoul'), 3000);\n  assert.equal(shippingFee(50000, 'seoul'), 0);\n  assert.equal(exportRow({total: 1, shipping: 1, status: 'received'}, 'jeju'), '1,1,4500,received');\n});\n"
+      },
+      "command": [
+        "node",
+        "--test",
+        "test/eval-hidden.test.mjs"
+      ]
+    },
+    "unchanged_except": [
+      "src/shipping.mjs",
+      "test/shipping.test.mjs",
+      "test/order.test.mjs",
+      "openwiki/concepts/shipping-policy.md"
+    ]
+  }
+}

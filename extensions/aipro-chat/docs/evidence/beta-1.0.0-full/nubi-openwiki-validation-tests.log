@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /Users/ganadi/Documents/llm_router/packages/openwiki
+
+
+ Test Files  3 passed (3)
+      Tests  24 passed (24)
+   Start at  09:52:35
+   Duration  271ms (transform 101ms, setup 0ms, import 186ms, tests 100ms, environment 0ms)
+

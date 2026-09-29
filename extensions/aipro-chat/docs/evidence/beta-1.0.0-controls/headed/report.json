@@ -1,0 +1,25 @@
+{
+  "headed": true,
+  "actualBrowser": true,
+  "syntheticModel": true,
+  "liveProvider": false,
+  "stages": [
+    {
+      "name": "toggle-recovery-browser",
+      "exitCode": 0,
+      "durationMs": 28418
+    },
+    {
+      "name": "link-actions-browser",
+      "exitCode": 0,
+      "durationMs": 28108
+    },
+    {
+      "name": "clarification-browser",
+      "exitCode": 0,
+      "durationMs": 12362
+    }
+  ],
+  "archiveSha256": "ae6d8f87df9aaf064ebaa76a9f28d195d77ca5cbea01be98c761b021e995107c",
+  "status": "passed"
+}

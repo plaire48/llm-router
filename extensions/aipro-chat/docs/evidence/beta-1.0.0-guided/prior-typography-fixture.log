@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: [{"tag":"P","text":"작성한 내용을 등록할까요?","font":"\"Noto Sans KR\", \"Malgun Gothic\", sans-serif","size":"14px","line":"22px","weight":"600"},{"tag":"SUMMARY","text":"초안 보기","font":"\"Noto Sans KR\", \"Malgun Gothic\", sans-serif","size":"14px","line":"22px","weight":"400"},{"tag":"DT","text":"제목","font":"\"Noto Sans KR\", \"Malgun Gothic\", sans-serif","size":"14px","line":"22px","weight":"500"},{"tag":"DD","text":"확인한 내용","font":"\"Noto Sans KR\", \"Malgun Gothic\", sans-serif","size":"14px","line":"22px","weight":"400"},{"tag":"BUTTON","text":"취소","font":"\"Noto Sans KR\", \"Malgun Gothic\", sans-serif","size":"14px","line":"20px","weight":"400"},{"tag":"BUTTON","text":"등록","font":"\"Noto Sans KR\", \"Malgun Gothic\", sans-serif","size":"14px","line":"22px","weight":"500"}]
+    at styles (file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/typography-browser.mjs:32:26)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:472:9)
+    at async file:///private/tmp/nubi-final-release.jbH6Um/extensions/aipro-chat/tests/typography-browser.mjs:63:3 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.4.0

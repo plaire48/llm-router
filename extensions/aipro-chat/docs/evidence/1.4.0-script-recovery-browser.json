@@ -1,0 +1,14 @@
+{
+  "checks": [
+    "a real sandbox syntax failure shows its short reason while keeping the unfinished task in an error state",
+    "syntax, unavailable page.evaluate, ambiguous locator and non-editable target failures return distinct repair guidance with fresh observations",
+    "already-authorized semantic tools complete the requested draft after script failures with exactly two trusted writes and independent result review",
+    "verified recovery clears the warning appearance while preserving the original failure receipts",
+    "recovered state persists after reload in both side-panel and desktop layouts",
+    "identical failing code stops after three no-progress attempts despite fresh refs, retains concrete reasons and never replays earlier writes"
+  ],
+  "errors": [],
+  "syntheticModelResponses": true,
+  "realBrowserActions": true,
+  "actualCompanyPageVerified": false
+}

@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "scope": "targeted regression; not a full browser matrix",
+  "unitTests": 497,
+  "browserRuns": 30,
+  "repeatedSuites": 9,
+  "repetitions": 3,
+  "openWikiSuites": 3,
+  "before": {
+    "rangeRetention": "expected 3 locators, received 1",
+    "delegateProvenance": "wiki kind missing"
+  },
+  "after": {
+    "focusedContractTests": 39,
+    "twoSuccessiveCompactions": "passed"
+  },
+  "browserReport": "verification/pre-release-2026-09-23T10-45-05-736Z/report.json",
+  "candidateSha256": "22d2b336fc0f69a80a51e3e04cbde1f7525d5002892578781d481924d9b17bd8",
+  "actualModel": false,
+  "liveServices": false,
+  "published": false,
+  "sourceSha256": {
+    "analysis-agents.js": "17b82f788fc28e62f3f688834341bb2babbee2fcd9295445384f5d194fa7ac72",
+    "context-evidence.js": "b942b68d0e08b3573b5b783b049e8628b87400d922bbc16ee41932ffbefe7c99",
+    "tests/context-evidence.test.mjs": "b6d7737ca6b13b28465a22fead39b4a53450b58f8e23bdc74c55e40d31aaf5f9"
+  }
+}

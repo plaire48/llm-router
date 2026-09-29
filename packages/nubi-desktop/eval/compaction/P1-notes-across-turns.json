@@ -1,0 +1,211 @@
+{
+  "id": "P1-notes-across-turns",
+  "title": "회의록과 여러 차례 대화",
+  "corpus": "order-service",
+  "contextLength": 22000,
+  "turns": [
+    {
+      "user": "이 작업에서는 src/legacy 폴더를 절대 수정하지 마. 금액은 항상 정수 원으로 다뤄 줘. 먼저 지금 배송 정책을 짧게 설명해 줘.",
+      "steps": [
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/concepts/shipping-policy.md"
+          }
+        }
+      ],
+      "answer": "현재 배송 정책을 위키에서 확인해 설명했습니다."
+    },
+    {
+      "user": {
+        "before": "아래는 어제 배송 정책 회의록이야. 배송과 관련해 결정한 내용만 정리해 줘.\n\n",
+        "file": "meeting-notes.md"
+      },
+      "steps": [],
+      "answer": "회의록에서 배송과 관련한 결정을 정리했습니다."
+    },
+    {
+      "user": "주문 상태가 바뀌는 순서와 취소할 수 있는 시점, 그리고 새 등급을 추가할 때의 기준도 위키에서 찾아서 설명해 줘.",
+      "steps": [
+        {
+          "tool": "wiki_query",
+          "args": {
+            "query": "주문 상태 취소"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/concepts/order-status.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/concepts/discount-policy.md"
+          }
+        }
+      ],
+      "answer": "주문 상태와 등급 기준을 위키에서 확인해 설명했습니다."
+    },
+    {
+      "user": "이제 회의에서 결정한 추가 요금을 코드에 반영할 준비를 해 줘. 아직 고치지는 말고, 고칠 곳과 고치면 안 되는 곳을 구분해서 알려 줘.",
+      "steps": [
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "src/shipping.mjs"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "test/shipping.test.mjs"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "src/legacy/export.mjs"
+          }
+        },
+        {
+          "tool": "source_search",
+          "args": {
+            "query": "4500"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "src/order.mjs"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "test/order.test.mjs"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/operations/release-rules.md"
+          }
+        }
+      ],
+      "answer": "고칠 곳과 고치면 안 되는 곳을 구분했습니다."
+    }
+  ],
+  "probes": [
+    {
+      "kind": "instruction",
+      "question": "이 작업에서 사용자가 절대 수정하지 말라고 한 폴더는 어디입니까?",
+      "expect": [
+        [
+          "src/legacy"
+        ]
+      ]
+    },
+    {
+      "kind": "instruction",
+      "question": "사용자는 금액을 어떤 단위와 형식으로 다루라고 했습니까?",
+      "expect": [
+        [
+          "정수"
+        ]
+      ]
+    },
+    {
+      "kind": "request",
+      "question": "사용자가 가장 최근에 요청한 일은 무엇이고, 지금 파일을 고쳐도 됩니까?",
+      "expect": [
+        [
+          "추가 요금",
+          "요금을 코드",
+          "코드에 반영",
+          "반영할 준비",
+          "반영 준비"
+        ],
+        [
+          "고치지",
+          "수정하지",
+          "변경하지",
+          "고치면 안",
+          "수정하면 안",
+          "아직"
+        ]
+      ]
+    },
+    {
+      "kind": "decision",
+      "question": "회의에서 결정한 제주와 도서 지역 추가 요금은 얼마입니까?",
+      "expect": [
+        [
+          "5,500",
+          "5500"
+        ]
+      ]
+    },
+    {
+      "kind": "decision",
+      "question": "외부 정산 시스템에 보내는 추가 요금 값은 이번에 바꾸기로 했습니까?",
+      "expect": [
+        [
+          "유지",
+          "바꾸지 않",
+          "변경하지 않",
+          "바꾸지 말",
+          "11월"
+        ]
+      ]
+    },
+    {
+      "kind": "decision",
+      "question": "제주와 도서 지역 새 요금의 시행일은 언제입니까?",
+      "expect": [
+        [
+          "10월 첫째 주"
+        ]
+      ]
+    },
+    {
+      "kind": "artifact",
+      "question": "이번 작업에서 읽은 소스 파일 경로를 아는 대로 모두 말해 주세요.",
+      "expect": [
+        [
+          "src/shipping.mjs"
+        ],
+        [
+          "src/legacy/export.mjs"
+        ]
+      ]
+    },
+    {
+      "kind": "recall",
+      "question": "출고한 주문은 취소할 수 있습니까? 모르면 어느 파일을 다시 읽어야 하는지 말해 주세요.",
+      "expect": [
+        [
+          "반품",
+          "취소하지 않",
+          "취소할 수 없",
+          "order-status"
+        ]
+      ]
+    },
+    {
+      "kind": "continuation",
+      "question": "다음에 해야 할 일을 한 문장으로 말해 주세요.",
+      "expect": [
+        [
+          "요금",
+          "5,500",
+          "5500",
+          "shipping",
+          "반영",
+          "고칠 곳"
+        ]
+      ]
+    }
+  ]
+}

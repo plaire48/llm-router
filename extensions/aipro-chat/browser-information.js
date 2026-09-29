@@ -2,6 +2,7 @@
 // Page-authored descriptions are evidence, never instructions or permissions.
 import {computeAccessibleDescription, computeAccessibleName, getRole} from 'dom-accessibility-api';
 import {rankEvidence, evidenceExcerpt} from './evidence-search.js';
+import {publicSourceURL} from './browser-public-url.js';
 
 const clean = (value, limit = 240) => String(value || '').replace(/\s+/g, ' ').trim().slice(0, limit);
 const editable = 'input,textarea,select,[contenteditable]:not([contenteditable="false"])';
@@ -44,6 +45,10 @@ export function describeControl(el, secret) {
   const help = ids.map(id => root.getElementById?.(id)).filter(Boolean);
   const description = ids.length <= 8 && help.every(node => safeNode(node, secret)) ? clean(computeAccessibleDescription(el), 300) : '';
   const result = description && !secretValue(description) ? {description} : {};
+  if (el.validity && el.willValidate) {
+    const flags = ['valueMissing', 'typeMismatch', 'patternMismatch', 'tooLong', 'tooShort', 'rangeUnderflow', 'rangeOverflow', 'stepMismatch', 'badInput', 'customError'];
+    result.validation = {valid: el.validity.valid, issues: flags.filter(key => el.validity[key])};
+  }
   if (el.getAttribute('aria-invalid') === 'true' || el.validity?.valid === false) {
     const errors = references('aria-errormessage').slice(0, 4).map(id => root.getElementById?.(id)).filter(Boolean);
     if (errors.length && errors.every(node => safeNode(node, secret))) {
@@ -108,6 +113,16 @@ export function pageInformation(nodes, {query, hidden, secret, domTruncated}) {
   };
   const prepared = candidates.map((table, id) => {
     const name = authoredName(table, secret);
+    // A search-result table may describe another page, even when its dates
+    // conflict with this page's main card. Keep the actual enclosing link;
+    // never infer a source from a nearby heading or claim the target was read.
+    let enclosingLink;
+    for (let owner=parent(table); owner; owner=parent(owner)) {
+      if (!owner.matches('a[href]')) continue;
+      const url=publicSourceURL(owner.href);
+      if (url && url.length <= 512) enclosingLink={relationship:'table_inside_link',url};
+      break;
+    }
     const tableRows = (ownedRows.get(table) || []).map((row, index) => ({
       index: positive(row.getAttribute('aria-rowindex')) || (Number.isInteger(row.rowIndex) ? row.rowIndex + 1 : index + 1),
       cells: (ownedCells.get(row) || []).slice(0, 12).map((cell, column) => ({
@@ -119,7 +134,7 @@ export function pageInformation(nodes, {query, hidden, secret, domTruncated}) {
       ...((ownedCells.get(row) || []).length > 12 ? {omittedCells: (ownedCells.get(row) || []).length - 12} : {}),
     }));
     const declaredRows = positive(table.getAttribute('aria-rowcount')), declaredColumns = positive(table.getAttribute('aria-colcount'));
-    return {id, name, role: roles.get(table), tableRows,
+    return {id, name, role: roles.get(table), inViewport:inViewport(table), ...(enclosingLink ? {enclosingLink} : {}), tableRows,
       ...(declaredRows ? {declaredRows} : {}), ...(declaredColumns ? {declaredColumns} : {}),
       unknownRows: table.getAttribute('aria-rowcount') === '-1'};
   });

@@ -1,0 +1,257 @@
+{
+  "startedAt": "2026-09-21T16:34:03.453Z",
+  "status": "failed",
+  "repeats": 3,
+  "evidence": {
+    "actualBrowser": true,
+    "syntheticSite": true,
+    "actualModel": false,
+    "liveAccount": false
+  },
+  "releaseApproved": false,
+  "stages": [
+    {
+      "name": "unit",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:34:03.454Z",
+      "log": "unit.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2299
+    },
+    {
+      "name": "design",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:34:05.753Z",
+      "log": "design.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 137
+    },
+    {
+      "name": "candidate-build",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:34:05.890Z",
+      "log": "candidate-build.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1869
+    },
+    {
+      "name": "browser-workflows-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:34:07.786Z",
+      "log": "browser-workflows-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86840
+    },
+    {
+      "name": "harness-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:35:34.628Z",
+      "log": "harness-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26743
+    },
+    {
+      "name": "login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:01.371Z",
+      "log": "login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3322
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:04.693Z",
+      "log": "chatgpt-login-redirect-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2095
+    },
+    {
+      "name": "provider-switch-browser-1",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:06.788Z",
+      "log": "provider-switch-browser-1.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20142
+    },
+    {
+      "name": "browser-workflows-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:36:26.930Z",
+      "log": "browser-workflows-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 86200
+    },
+    {
+      "name": "harness-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:37:53.132Z",
+      "log": "harness-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26766
+    },
+    {
+      "name": "login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:19.898Z",
+      "log": "login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3317
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:23.216Z",
+      "log": "chatgpt-login-redirect-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2082
+    },
+    {
+      "name": "provider-switch-browser-2",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:25.300Z",
+      "log": "provider-switch-browser-2.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20030
+    },
+    {
+      "name": "browser-workflows-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:38:45.330Z",
+      "log": "browser-workflows-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 88773
+    },
+    {
+      "name": "harness-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:14.104Z",
+      "log": "harness-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 26795
+    },
+    {
+      "name": "login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:40.899Z",
+      "log": "login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 3415
+    },
+    {
+      "name": "chatgpt-login-redirect-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:44.314Z",
+      "log": "chatgpt-login-redirect-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 2104
+    },
+    {
+      "name": "provider-switch-browser-3",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:40:46.418Z",
+      "log": "provider-switch-browser-3.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 20047
+    },
+    {
+      "name": "context-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:41:06.465Z",
+      "log": "context-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 5861
+    },
+    {
+      "name": "side-panel-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:41:12.326Z",
+      "log": "side-panel-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1509
+    },
+    {
+      "name": "conversations-browser",
+      "status": "passed",
+      "startedAt": "2026-09-21T16:41:13.835Z",
+      "log": "conversations-browser.log",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 12675
+    },
+    {
+      "name": "ui-simplicity-browser",
+      "status": "failed",
+      "startedAt": "2026-09-21T16:41:26.511Z",
+      "log": "ui-simplicity-browser.log",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "durationMs": 1208
+    }
+  ],
+  "selection": [
+    "browser-workflows-browser",
+    "harness-browser",
+    "login-redirect-browser",
+    "chatgpt-login-redirect-browser",
+    "provider-switch-browser",
+    "side-panel-browser",
+    "context-browser",
+    "conversations-browser",
+    "ui-simplicity-browser",
+    "feedback-browser",
+    "openwiki-browser",
+    "openwiki-ui-browser",
+    "openwiki-screen-browser",
+    "wiki-folder-browser",
+    "wiki-folder-persistence-browser"
+  ],
+  "fullMatrix": false,
+  "version": "1.1.1",
+  "buildSha256": "986b86e53ae26ae6ed514f9c9328e7ef5fb6cb2ee66b5461d925ed4475abe921",
+  "archiveSha256": "8cec16a14ce0f1236ec27517802aec40c101f1ea0af1f9a95547737889dd7022",
+  "failure": "ui-simplicity-browser failed; see /Users/ganadi/Documents/llm_router/extensions/aipro-chat/verification/pre-release-2026-09-21T16-34-03-452Z/ui-simplicity-browser.log",
+  "finishedAt": "2026-09-21T16:41:27.719Z"
+}

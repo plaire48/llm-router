@@ -1,0 +1,25 @@
+{
+  "id": "W1-ngrok-default-port",
+  "title": "단일 쪽 사실",
+  "suite": "wiki",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "Slack OAuth용으로 `openwiki ngrok start`를 실행할 때 포트를 따로 안 주면 기본 포트가 몇 번이야?",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "53682"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "openwiki/operations/cli-reference.md",
+        "src/cli/commands.ts"
+      ],
+      "min": 1
+    },
+    "unchanged_except": []
+  }
+}

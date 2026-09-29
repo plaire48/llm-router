@@ -1,0 +1,18 @@
+{
+  "version": "1.4.11",
+  "checks": [
+    "provider icons/text align in shared columns even while loading; login and modal fit three viewport sizes with a visible footer",
+    "failed credentials keep the user in the modal and cannot enable Connect",
+    "three-field registration discovers models without inference; Korean-only picker changes and restores the selected ID",
+    "FabriX envelope drives real Pi/Playwright DOM inspection, popup navigation, iframe editing, save click and application-state verification",
+    "action responses recover once with safe diagnostics, separate token counts and no malformed response execution",
+    "chat, usage and provider survive reload; credentials and private reasoning stay out of diagnostics and local storage",
+    "HTTP 502 receives three transport retries and retains its status; two malformed HTTP 200 replies stop without transport retry or browser action"
+  ],
+  "requests": 16,
+  "modelRequests": 3,
+  "syntheticProvider": true,
+  "realBrowserActions": true,
+  "nativePermissionPromptVerified": false,
+  "companyConnectionVerified": false
+}

@@ -1,0 +1,41 @@
+{
+  "id": "A13-rules-transport",
+  "title": "규정의 부서와 메모 형식",
+  "app": "expense-draft",
+  "corpus": "expense-office",
+  "approve": {
+    "deny": [
+      "btn-submit",
+      "btn-delete"
+    ]
+  },
+  "request": "연결한 경비 신청 앱의 신청서를 교통비로 신청하려고 해. 목적지는 판교, 사유는 고객사 미팅이야. 경비 규정에 맞게 부서와 메모를 채워 줘. 제출은 하지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "evidence": true,
+    "app": {
+      "values": {
+        "cmb-department": [
+          "운영팀"
+        ],
+        "txt-memo": [
+          "[교통] 판교 - 고객사 미팅"
+        ]
+      },
+      "events": {
+        "excludes": [
+          "submitted",
+          "deleted"
+        ]
+      },
+      "inputs": {
+        "never": [
+          "btn-submit",
+          "btn-delete",
+          "txt-approval-password"
+        ]
+      }
+    }
+  }
+}

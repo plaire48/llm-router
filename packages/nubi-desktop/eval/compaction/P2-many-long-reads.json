@@ -1,0 +1,186 @@
+{
+  "id": "P2-many-long-reads",
+  "title": "긴 영어 문서를 여러 번 읽기",
+  "corpus": "openwiki-sds",
+  "contextLength": 32000,
+  "turns": [
+    {
+      "user": "OpenWiki의 예약 실행, 사용 통계, 온보딩 설정을 조사해서 운영 점검표를 만들어 줘. 위키 원문에 있는 값만 쓰고, 추측한 값은 넣지 마. 표는 한국어로 작성해 줘.",
+      "steps": [
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/operations/cli-reference.md",
+            "start": 220
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/operations/telemetry.md",
+            "start": 85
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/operations/ci-scheduling.md",
+            "start": 262
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/operations/ci-scheduling.md",
+            "start": 150
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/workflows/onboarding.md",
+            "start": 175
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/operations/configuration.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/integrations/connectors.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/integrations/visualizer.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/architecture/overview.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/concepts/model-providers.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/testing/evals.md"
+          }
+        },
+        {
+          "tool": "read_source",
+          "args": {
+            "path": "openwiki/concepts/two-modes.md"
+          }
+        }
+      ],
+      "answer": "운영 점검표를 만들었습니다."
+    }
+  ],
+  "probes": [
+    {
+      "kind": "instruction",
+      "question": "사용자가 점검표에 넣지 말라고 한 것은 무엇입니까?",
+      "expect": [
+        [
+          "추측"
+        ]
+      ]
+    },
+    {
+      "kind": "instruction",
+      "question": "점검표는 어느 언어로 작성해야 합니까?",
+      "expect": [
+        [
+          "한국어"
+        ]
+      ]
+    },
+    {
+      "kind": "request",
+      "question": "사용자가 요청한 조사 대상 세 가지는 무엇입니까?",
+      "expect": [
+        [
+          "예약"
+        ],
+        [
+          "통계"
+        ],
+        [
+          "온보딩"
+        ]
+      ]
+    },
+    {
+      "kind": "artifact",
+      "question": "지금까지 읽은 위키 파일 경로를 아는 대로 모두 말해 주세요.",
+      "expect": [
+        [
+          "telemetry.md"
+        ],
+        [
+          "ci-scheduling.md"
+        ],
+        [
+          "onboarding.md"
+        ]
+      ]
+    },
+    {
+      "kind": "recall",
+      "question": "`openwiki ngrok start`의 기본 포트는 몇 번입니까? 모르면 어느 파일을 다시 읽어야 하는지 말해 주세요.",
+      "expect": [
+        [
+          "53682",
+          "cli-reference.md"
+        ]
+      ]
+    },
+    {
+      "kind": "recall",
+      "question": "CI 실행은 사용 통계에서 어떤 ID로 집계됩니까? 모르면 어느 파일을 다시 읽어야 하는지 말해 주세요.",
+      "expect": [
+        [
+          "ci-github-actions",
+          "ci-<provider>",
+          "telemetry.md"
+        ]
+      ]
+    },
+    {
+      "kind": "recall",
+      "question": "GitHub Actions 예제의 예약 실행 시각은 언제입니까? 모르면 어느 파일을 다시 읽어야 하는지 말해 주세요.",
+      "expect": [
+        [
+          "0 8 * * *",
+          "08:00",
+          "8시",
+          "ci-scheduling.md"
+        ]
+      ]
+    },
+    {
+      "kind": "continuation",
+      "question": "다음에 해야 할 일을 한 문장으로 말해 주세요.",
+      "expect": [
+        [
+          "점검표",
+          "정리",
+          "작성",
+          "표"
+        ]
+      ]
+    }
+  ]
+}
