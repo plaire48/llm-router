@@ -25,7 +25,7 @@ export function ProjectStart({busy, onOpenFolder, onClone}) {
         <span className="nubi-start-tile" data-tone="blue"><FolderMark/></span>
         <strong>폴더 열기</strong>
         <span id={folderText} className="nubi-start-text">내 PC에 있는 프로젝트</span>
-        <span className="nubi-start-go" aria-hidden="true">폴더 선택<Icon name="arrowRight" size={16}/></span>
+        <span className="nubi-start-go" aria-hidden="true"><Icon name="arrowRight" size={18}/></span>
       </button>
       {onClone && <form className="nubi-start-card" aria-label="저장소 복제" noValidate onSubmit={clone}>
         <span className="nubi-start-tile" data-tone="violet"><BranchMark/></span>
@@ -33,7 +33,7 @@ export function ProjectStart({busy, onOpenFolder, onClone}) {
         <span className="nubi-start-text">Git 주소로 받아서 열어요</span>
         <span className="nubi-start-field">
           <CxInput aria-label="원격 저장소 주소" aria-invalid={invalid || undefined} aria-describedby={invalid ? hint : undefined} placeholder="https://code.sdsdev.co.kr/repo.git" value={remote} spellCheck={false} autoComplete="off" onChange={event => { setRemote(event.target.value); setInvalid(false); }}/>
-          <CxButton type="submit" variant="primary" disabled={!remote.trim() || busy}>복제</CxButton>
+          <CxButton type="submit" variant="primary" className="nubi-start-submit" aria-label="복제" title="복제해서 열기" disabled={!remote.trim() || busy}><Icon name="arrowRight" size={18}/></CxButton>
         </span>
         {invalid && <span id={hint} className="nubi-start-hint" role="alert">https://, ssh:// 또는 git@ 주소를 넣어 주세요.</span>}
       </form>}

@@ -275,40 +275,49 @@ try{
  const sessionHistory=p.getByRole('dialog',{name:'작업 이력',exact:true});
  await sessionHistory.getByText('세션 검증 프로젝트',{exact:true}).waitFor();
  await sessionHistory.getByRole('region',{name:'오늘 대화'}).getByRole('button',{name:/실행 중인 분석/}).click();
- const tabs=p.getByRole('navigation',{name:'열린 대화'});await tabs.getByRole('button',{name:/실행 중인 분석/}).waitFor();
+ const list=p.getByRole('navigation',{name:'대화 목록'}),row=text=>list.locator('.nubi-session-row').filter({hasText:text}),open=text=>row(text).locator('.nubi-session-select');
+ await open('실행 중인 분석').waitFor();assert.equal(await row('실행 중인 분석').getAttribute('data-current'),'true');
+ // One list by date (user decision 2026-09-30): the current conversation is its soft blue row, with no side bar.
+ assert.equal(await list.locator('[data-current="true"]').count(),1);assert.equal(await row('실행 중인 분석').evaluate(e=>getComputedStyle(e).boxShadow),'none');
  await openHistory();
  await sessionHistory.getByRole('region',{name:'어제 대화'}).getByRole('button',{name:/수정할 문서 확인/}).click();
- assert.equal(await tabs.getByRole('button',{name:/실행 중인 분석/}).count(),1);
- assert.equal(await tabs.locator('.nubi-session-select').filter({hasText:'수정할 문서 확인'}).count(),1);
+ assert.equal(await row('수정할 문서 확인').getAttribute('data-current'),'true');assert.equal(await row('실행 중인 분석').getAttribute('data-current'),'false');
  const reviewDraft=p.getByRole('textbox',{name:'추가 요청'});assert.equal(await reviewDraft.isEnabled(),true);
  await reviewDraft.fill('다른 대화의 미전송 초안');
  assert.equal(await p.getByRole('button',{name:'전송',exact:true}).isDisabled(),true);
  await p.getByText('다른 대화가 진행 중입니다. 초안은 저장돼요.',{exact:true}).waitFor();
- await tabs.getByRole('button',{name:/실행 중인 분석/}).click();await tabs.locator('.nubi-session-select').filter({hasText:'수정할 문서 확인'}).click();
+ await open('실행 중인 분석').click();await open('수정할 문서 확인').click();
  assert.equal(await reviewDraft.inputValue(),'다른 대화의 미전송 초안');
  await openHistory();await sessionHistory.getByRole('button',{name:'새 대화',exact:true}).click();
  await p.getByRole('textbox',{name:'작업 요청'}).fill('새 대화의 초안');
  assert.equal(await p.getByRole('button',{name:'전송',exact:true}).isDisabled(),true);
- await tabs.locator('.nubi-session-select').filter({hasText:'수정할 문서 확인'}).click();
+ await open('수정할 문서 확인').click();
  assert.equal(await reviewDraft.inputValue(),'다른 대화의 미전송 초안');
  await p.getByRole('complementary',{name:'프로젝트 대화'}).getByRole('button',{name:'새 대화',exact:true}).click();
  assert.equal(await p.getByRole('textbox',{name:'작업 요청'}).inputValue(),'새 대화의 초안');
  await p.setViewportSize({width:1280,height:820});
  await p.screenshot({path:'verification/ui-session-sidebar.png',animations:'disabled'});
- await p.reload();await tabs.getByRole('button',{name:/실행 중인 분석/}).waitFor();
+ await p.reload();await row('실행 중인 분석').waitFor();
  assert.equal(await p.getByRole('textbox',{name:'작업 요청'}).inputValue(),'새 대화의 초안');
  assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).getByRole('button',{name:'새 대화',exact:true}).getAttribute('aria-current'),'page');
- await tabs.getByRole('button',{name:/수정할 문서 확인 탭 닫기/}).click();
- assert.equal(await tabs.locator('.nubi-session-select').filter({hasText:'수정할 문서 확인'}).count(),0);
+ // Deleting is the trash icon with a confirmation (user decision 2026-09-30); a running conversation has none.
+ assert.equal(await row('실행 중인 분석').getByRole('button',{name:/삭제$/}).count(),0);
+ await row('수정할 문서 확인').getByRole('button',{name:'수정할 문서 확인 삭제',exact:true}).click();
+ const confirmDelete=p.getByRole('alertdialog',{name:'대화를 삭제할까요?'});await confirmDelete.getByText(/프로젝트에 반영한 파일은 그대로 남아요/).waitFor();
+ assert.equal(await confirmDelete.getByRole('button').count(),2,'the header X and the trash, no second X');await confirmDelete.getByRole('button',{name:'닫기',exact:true}).click();await confirmDelete.waitFor({state:'detached'});
+ assert.equal(await p.evaluate(()=>window.deletedTasks?.length||0),0,'cancelling deletes nothing');
+ await row('수정할 문서 확인').getByRole('button',{name:'수정할 문서 확인 삭제',exact:true}).click();await confirmDelete.getByRole('button',{name:'삭제',exact:true}).click();
+ await row('수정할 문서 확인').waitFor({state:'detached'});assert.deepEqual(await p.evaluate(()=>window.deletedTasks),['session-review']);
+ await p.getByText('대화를 삭제했어요.',{exact:true}).waitFor();
  await openHistory();
- await sessionHistory.getByRole('region',{name:'어제 대화'}).getByRole('button',{name:/수정할 문서 확인/}).waitFor();
+ assert.equal(await sessionHistory.getByRole('button',{name:/수정할 문서 확인/}).count(),0);
  await sessionHistory.getByRole('region',{name:/2025년 1월 2일 대화/}).getByRole('button',{name:/지난달 코드 검토/}).waitFor();
  await p.keyboard.press('Escape');await p.setViewportSize({width:440,height:900});await p.getByRole('button',{name:'사이드바 열기',exact:true}).click();
  assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
  await p.screenshot({path:'verification/ui-session-sidebar-narrow.png',animations:'disabled'});
  assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).isVisible(),true);
  assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).getByRole('button',{name:'사이드바 닫기',exact:true}).count(),0,'the header button is the one close control');await p.emulateMedia({reducedMotion:'reduce'});await p.keyboard.press('Escape');await p.getByRole('complementary',{name:'프로젝트 대화'}).waitFor({state:'hidden'});await p.getByRole('button',{name:'사이드바 열기',exact:true}).click();assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).evaluate(e=>getComputedStyle(e).animationDuration),'0s');
- checks.push('project sidebar preserves drafts across switching and reload; date groups find closed sessions while one task runs');assert.deepEqual(errors,[]);
+ checks.push('one dated conversation list marks the current row without a side bar, keeps drafts across switching and reload, and deletes a finished conversation with the trash icon after confirmation');assert.deepEqual(errors,[]);
 
  // Project start (user decision 2026-09-30): folder and remote repository cards in the composer's place. Without a
  // project the host has no state; that is the start screen, not an error.

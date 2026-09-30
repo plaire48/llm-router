@@ -25,11 +25,12 @@ export function DeckGuidance({icon,lead,children}) {
 
 // Compose public CX controls so confirmations use the same button typography
 // as other dialogs, including busy/error states and initial cancel focus.
-export function DeckConfirmation({title, message, confirmLabel, cancelLabel='취소', busy=false, onConfirm, onCancel, children}) {
+// headerCancelOnly: the header X is the only cancel (Workspace, user decision 2026-09-30); confirmIcon: an icon-only confirm.
+export function DeckConfirmation({title, message, confirmLabel, cancelLabel='취소', busy=false, onConfirm, onCancel, children, headerCancelOnly=false, confirmIcon}) {
   const descriptionId = useId();
-  return <DetailPanel title={title} className="deck-dialog deck-confirmation" variant="confirmation" role="alertdialog" describedBy={descriptionId} initialFocus="[data-cancel-confirmation]" busy={busy} onClose={onCancel} footer={<>
-    <ActionButton action="cancel" iconOnly label={cancelLabel} title={cancelLabel} data-cancel-confirmation disabled={busy} onClick={onCancel}/>
-    <CxButton variant="primary" busy={busy} disabled={busy} onClick={onConfirm}>{confirmLabel}</CxButton>
+  return <DetailPanel title={title} className="deck-dialog deck-confirmation" variant="confirmation" role="alertdialog" describedBy={descriptionId} initialFocus={headerCancelOnly ? '.cx-panel-header-actions [data-action="close"]' : '[data-cancel-confirmation]'} busy={busy} onClose={onCancel} footer={<>
+    {!headerCancelOnly && <ActionButton action="cancel" iconOnly label={cancelLabel} title={cancelLabel} data-cancel-confirmation disabled={busy} onClick={onCancel}/>}
+    <CxButton variant="primary" busy={busy} disabled={busy} onClick={onConfirm} {...(confirmIcon ? {'aria-label': confirmLabel, title: confirmLabel} : {})}>{confirmIcon ? <Icon name={confirmIcon} size={18}/> : confirmLabel}</CxButton>
   </>}>
     <div className="deck-confirmation-content"><span className="deck-symbol" aria-hidden="true"><Icon name="alertCircle" size={24}/></span><p id={descriptionId}>{message}</p></div>
     {children}

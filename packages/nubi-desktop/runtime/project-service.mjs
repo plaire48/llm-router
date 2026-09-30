@@ -196,6 +196,22 @@ export class ProjectService {
     }
     task.specPath = base + '/specs/requirement/spec.md'; this.store.set('task:' + task.id, task); return {path: task.specPath, task};
   }
+  // A conversation the user deletes with the trash icon (user decision 2026-09-30): the task, every record made for it
+  // and its own worktree go. Files already applied to the project stay. A running task or process is refused.
+  async deleteTask({taskId}) {
+    this.ready(); const task = this.task(taskId);
+    if (['running', 'stopping'].includes(task.state) || (this.agent?.running && this.agent.taskId === taskId)) fail('agent_busy');
+    if (this.store.list('process:').some(item => item.taskId === taskId && ['running', 'stopping'].includes(item.state))) fail('process_running');
+    if (task.workspace) await git(this.root, ['worktree', 'remove', '--force', task.workspace]).catch(() => fail('worktree_remove_failed'));
+    if (this.computerBinding?.taskId === taskId) { this.computerBinding = null; this.computerObservation = null; this.computerFallback = null; await this.computerPointer?.hide(); }
+    // Records carry the task in their value, or in their key: context, reconciliation and analysis history.
+    const owned = key => [`context:${taskId}`, `reconciliation:${taskId}`].includes(key) || key === `analysis-history:${taskId}` || key.startsWith(`analysis-history:${taskId}:`);
+    const entries = this.store.entries(''), actions = new Set(entries.filter(({key, value}) => key.startsWith('computer-action:') && value?.taskId === taskId).map(({value}) => value.id));
+    const keys = entries.filter(({key, value}) => key === 'task:' + taskId || value?.taskId === taskId || owned(key) || (key.startsWith('computer-image:') && actions.has(key.slice(15)))).map(({key}) => key);
+    for (const key of keys) this.store.delete(key);
+    this.store.event('task_deleted', {id: taskId, records: keys.length});
+    return {deleted: taskId};
+  }
   async createWorktree({taskId}) {
     const task = this.task(taskId); if (task.workspace) return task;
     if (this.skillImportBusy || this.vocBusy || this.computerBusy || this.newFileBusy || this.setupBusy || this.agent?.running || this.processes?.active.size || this.processes?.pending.size || this.unsettledOperations?.size) fail('project_busy');
@@ -264,7 +280,7 @@ export class ProjectService {
     const file = path.join(reports, task.id + '.md'); await writeFile(file, content); return {uri: pathToFileURL(file).href, hash: hash(content), content};
   }
   async invoke(method, args = {}) {
-    const allowed = new Set(['setupStatus','setupRun','setupRetry','setupSuggest','wikiUpdate','analysisHistory','listSkills','importSkill','importVoc','queryVoc','readVoc','computer','applyNewFile','decideSetupAction','collaboration','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','open','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','setShellPreference','read','search','wikiQuery','createTask','exportRequirement','createWorktree','propose','prepareProposal','proposalArtifacts','confirmProposal','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent']);
+    const allowed = new Set(['setupStatus','setupRun','setupRetry','setupSuggest','wikiUpdate','analysisHistory','listSkills','importSkill','importVoc','queryVoc','readVoc','computer','applyNewFile','decideSetupAction','collaboration','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','open','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','setShellPreference','read','search','wikiQuery','createTask','exportRequirement','createWorktree','propose','prepareProposal','proposalArtifacts','confirmProposal','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent','deleteTask']);
     if (method === 'poll') { this.ready(); return this.processes.poll(args.id); }
     if (method === 'stop') { this.ready(); return this.processes.stop(args.id); }
     if (method === 'events') { this.ready(); return this.store.events(args.after); }

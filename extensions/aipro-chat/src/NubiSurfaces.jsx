@@ -19,7 +19,7 @@ export function NubiLogin({mood, intro, error, pending, onLogin, onCancel, child
     {error && <CxNotice tone="danger">{error}</CxNotice>}
     <div className="provider-options">
       {['aipro','chatgpt','fabrix'].map(provider=><CxButton key={provider} data-provider={provider} className="provider-button" variant={provider==='aipro' ? 'primary' : 'secondary'} disabled={!!pending && (provider==='fabrix' || pending.provider!==provider)} busy={pending?.provider===provider} onClick={()=>onLogin(provider)}><span className="provider-label"><img className="provider-logo" src={`./icons/${{aipro:'aipro',chatgpt:'openai',fabrix:'fabrix'}[provider]}.svg`} alt="" width="24" height="24"/><span>{pending?.provider===provider ? pending.phase==='exchanging' ? '인증 확인 중' : '로그인 대기 중' : {aipro:'AI Pro',chatgpt:'ChatGPT',fabrix:'FabriX'}[provider]}</span></span></CxButton>)}
-      {pending && <ActionButton action="cancel" iconOnly={false} label="로그인 취소" onClick={onCancel}/>}
+      {pending && <ActionButton action="cancel" label="로그인 취소" onClick={onCancel}/>}
     </div>
     {children}
   </div></section>;

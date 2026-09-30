@@ -22,6 +22,8 @@ export class Store {
   get(key) { const row = this.db.prepare('SELECT value FROM records WHERE key=?').get(key); return row ? JSON.parse(row.value) : null; }
   set(key, value) { this.db.prepare('INSERT INTO records VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value').run(key, JSON.stringify(value)); return value; }
   list(prefix) { return this.db.prepare('SELECT value FROM records WHERE key LIKE ? ORDER BY rowid DESC').all(prefix + '%').map(row => JSON.parse(row.value)); }
+  delete(key) { this.db.prepare('DELETE FROM records WHERE key=?').run(key); }
+  entries(prefix) { return this.db.prepare('SELECT key, value FROM records WHERE key LIKE ? ORDER BY rowid DESC').all(prefix + '%').map(row => ({key: row.key, value: JSON.parse(row.value)})); }
   event(kind, value) { this.db.prepare('INSERT INTO events (at,kind,value) VALUES (?,?,?)').run(new Date().toISOString(), kind, JSON.stringify(value)); }
   events(after = 0) { return this.db.prepare('SELECT * FROM events WHERE sequence>? ORDER BY sequence LIMIT 100').all(after).map(row => ({...row, value: JSON.parse(row.value)})); }
   close() { if (this.db.isOpen) this.db.close(); if (this.owner.isOpen) this.owner.close(); }

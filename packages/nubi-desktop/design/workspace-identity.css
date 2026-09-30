@@ -121,7 +121,6 @@
 .nubi-sidebar-head, .nubi-sidebar-actions { display:flex; align-items:center; gap:var(--cx-space-2); }
 .nubi-sidebar-head { justify-content:space-between; margin-bottom:var(--cx-space-4); }
 .nubi-sidebar-head strong { font-size:var(--cx-type-section); line-height:var(--deck-line-heading); font-weight:700; color:var(--deck-ink); }
-.nubi-session-tabs h2, .nubi-sidebar-history h2 { font:var(--deck-font-caption); font-weight:700; color:var(--deck-sub); }
 .nubi-sidebar-head .cx-action-button { margin-left:auto; }
 .nubi-sidebar-project.cx-kit-button { display:flex; align-items:center; gap:var(--cx-space-2); width:100%; min-width:0; justify-content:flex-start; padding:var(--cx-space-3); background:var(--deck-card); border:1px solid var(--deck-line); color:var(--deck-ink); }
 .nubi-sidebar-project span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -129,20 +128,21 @@
 .nubi-sidebar-actions { margin:var(--cx-space-3) 0 var(--cx-space-6); }
 .nubi-sidebar-new.cx-kit-button { display:flex; align-items:center; justify-content:flex-start; gap:var(--cx-space-2); flex:1; background:var(--deck-card); border:1px solid var(--deck-line); color:var(--deck-ink); }
 .nubi-sidebar-new[aria-current="page"].cx-kit-button { border-color:var(--deck-blue-deep); color:var(--deck-blue-deep); }
-.nubi-session-tabs { display:grid; gap:var(--cx-space-2); margin-bottom:var(--cx-space-6); }
-.nubi-session-tabs h2, .nubi-sidebar-history h2 { margin:0 0 var(--cx-space-2); }
-.nubi-session-tab { display:flex; align-items:center; width:100%; min-width:0; min-height:44px; border-radius:var(--deck-control-radius); }
-.nubi-session-tab[data-active="true"] { background:var(--nubi-sidebar-active); box-shadow:inset 3px 0 var(--deck-blue-deep); }
-.nubi-session-tab .nubi-session-select.cx-kit-button { display:flex; align-items:center; gap:var(--cx-space-2); flex:1; min-width:0; min-height:44px; padding:var(--cx-space-2) var(--cx-space-3); border:0; background:transparent; color:var(--deck-ink); justify-content:flex-start; }
-.nubi-session-tab .cx-action-button { flex:none; }
-.nubi-session-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.nubi-session-state { flex:none; font:var(--deck-font-caption); color:var(--deck-blue-deep); }
+/* Conversation list (user decision 2026-09-30): one list by date as in the browser agent's history. No side bar: the
+   current conversation is the soft blue row. The trash icon shows on hover, focus and the current row. */
 .nubi-sidebar-history section + section { margin-top:var(--cx-space-4); }
-.nubi-sidebar-history h3 { margin:0 0 var(--cx-space-1); font:var(--deck-font-caption); color:var(--deck-sub); }
-.nubi-sidebar-history-item.cx-kit-button { display:flex; align-items:center; width:100%; min-width:0; min-height:44px; padding:var(--cx-space-2) var(--cx-space-3); gap:var(--cx-space-2); justify-content:flex-start; border:0; background:transparent; color:var(--deck-ink); }
-.nubi-sidebar-history-item span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.nubi-sidebar-history-item small { flex:none; font:var(--deck-font-caption); color:var(--deck-sub); }
-.nubi-sidebar-history-item:hover:not(:disabled), .nubi-session-tab:hover { background:var(--nubi-sidebar-active); }
+.nubi-sidebar-history h3 { margin:0 0 var(--cx-space-1); padding-inline:var(--cx-space-3); font:var(--deck-font-caption); color:var(--deck-sub); }
+.nubi-session-row { display:flex; align-items:center; min-width:0; border-radius:var(--deck-control-radius); transition:background-color var(--nubi-sidebar-motion); }
+.nubi-session-row:hover { background:var(--deck-tint); }
+.nubi-session-row[data-current="true"] { background:var(--nubi-sidebar-active); }
+.nubi-session-row .nubi-session-select.cx-kit-button { display:flex; align-items:center; gap:var(--cx-space-2); flex:1; min-width:0; min-height:40px; padding:var(--cx-space-2) var(--cx-space-3); border:0; background:transparent; box-shadow:none; color:var(--deck-ink); font:var(--deck-font-body); justify-content:flex-start; text-align:left; }
+.nubi-session-row[data-current="true"] .nubi-session-title { font-weight:700; color:var(--deck-blue-deep); }
+.nubi-session-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nubi-session-row small { flex:none; font:var(--deck-font-caption); color:var(--deck-blue-deep); }
+.nubi-session-row .cx-action-button { flex:none; margin-inline-end:var(--cx-space-1); color:var(--deck-sub); opacity:0; transition:opacity var(--nubi-sidebar-motion), color var(--nubi-sidebar-motion); }
+.nubi-session-row:is(:hover, :focus-within, [data-current="true"]) .cx-action-button { opacity:1; }
+.nubi-session-row .cx-action-button:hover:not(:disabled) { color:var(--deck-red); }
+@media (pointer:coarse) { .nubi-session-row .cx-action-button { opacity:1; } }
 .nubi-workbench .nubi-bar .nubi-project-label { flex:1; min-width:0; }
 /* The actions keep the right edge; an empty label takes no room. Under 600px the label takes its own line below,
    as the narrow bar intends (its flex:1 above used to keep it on the first line and pull the actions left). */
@@ -175,12 +175,14 @@ button.nubi-start-card:disabled { cursor:default; opacity:.6; }
 .nubi-start-card strong { font-size:17px; line-height:24px; font-weight:800; letter-spacing:-.01em; }
 .nubi-start-text { margin-bottom:var(--cx-space-4); font:500 13px/20px var(--cx-font-family); color:var(--deck-sub); }
 .nubi-start-go, .nubi-start-field { display:flex; align-items:center; gap:var(--cx-space-2); width:100%; margin-top:auto; }
-.nubi-start-go { justify-content:center; gap:6px; height:var(--deck-field-height); border-radius:var(--deck-control-radius); background:var(--deck-blue-soft); color:var(--deck-blue-deep); font-weight:700; transition:background var(--deck-feedback) var(--deck-ease), color var(--deck-feedback) var(--deck-ease); }
+.nubi-start-go { justify-content:center; width:var(--deck-field-height); height:var(--deck-field-height); margin-left:auto; border-radius:var(--deck-control-radius); background:var(--deck-blue-soft); color:var(--deck-blue-deep); transition:background var(--deck-feedback) var(--deck-ease), color var(--deck-feedback) var(--deck-ease); }
 .nubi-start-go svg { transition:transform var(--deck-feedback) var(--deck-ease); }
 button.nubi-start-card:hover:not(:disabled) .nubi-start-go { background:var(--deck-blue-deep); color:var(--deck-card); }
 button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:translateX(3px); }
 .nubi-start-field > :first-child { flex:1; min-width:0; }
 .nubi-start-field .cx-button { flex:none; }
+.nubi-start-field .nubi-start-submit.cx-kit-button { width:var(--deck-field-height); height:var(--deck-field-height); padding:0; justify-content:center; }
+.nubi-file-actions .cx-button { width:var(--deck-field-height); height:var(--deck-field-height); padding:0; justify-content:center; }
 .nubi-start-hint { margin-top:var(--cx-space-1); font:500 12px/16px var(--cx-font-family); color:var(--deck-red); }
 /* The bird stays on top (user request 2026-09-30): the start screen sparkles and its greeting and completion
    sparkles show behind it. In 1.1.0 the start screen sparkles were drawn over the bird. */

@@ -25,7 +25,7 @@ export function WikiUpdate({api,openPath}){
     {view.pages.length>0&&<ul className="nubi-wiki-update-pages">{view.pages.map(page=><li key={page.path}><CxButton className="nubi-link" onClick={()=>openPath?.(page.path)}>{page.path}</CxButton> <small>{page.label}</small></li>)}</ul>}
     <div className="nubi-inline">
       {view.actions.includes('run')&&<CxButton variant="primary" disabled={busy} onClick={run}>갱신 실행</CxButton>}
-      {view.actions.includes('cancel')&&<CxButton disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'cancel',id:update.id}))}>중지</CxButton>}
+      {view.actions.includes('cancel')&&<CxButton aria-label="Wiki 갱신 중지" title="Wiki 갱신 중지" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'cancel',id:update.id}))}><span className="stop-symbol" aria-hidden="true"/></CxButton>}
       {view.actions.includes('apply')&&<CxButton variant="primary" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'apply',id:update.id,fingerprint:update.fingerprint}))}>변경 반영</CxButton>}
       {view.actions.includes('discard')&&<CxButton disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'discard',id:update.id}))}>버리기</CxButton>}
     </div>

@@ -10,7 +10,7 @@ const remoteAddress=text=>{
   if(/^[\w.-]+@[\w.-]+:[^:\s][^\s]*$/.test(value))return true;
   try{const url=new URL(value);return ['https:','http:','ssh:','git:'].includes(url.protocol)&&Boolean(url.hostname)&&!url.password;}catch{return false;}
 };
-const API=new Set(['listSkills','importVoc','queryVoc','readVoc','computer','decideSetupAction','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','read','search','wikiQuery','createTask','exportRequirement','createWorktree','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent','poll','stop','events']);
+const API=new Set(['listSkills','importVoc','queryVoc','readVoc','computer','decideSetupAction','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','read','search','wikiQuery','createTask','exportRequirement','createWorktree','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent','poll','stop','events','deleteTask']);
 
 class Host {
   constructor(vscode,runtime){this.vscode=vscode;this.runtime=runtime;this.root=null;this.opening=null;this.links=new Set();this.urls=new Set();this.applying=false;}
