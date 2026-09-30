@@ -54,7 +54,7 @@ test('skill loader refuses symlink directories and resources even when a link re
 
 test('capability routing uses only registered host tools, offers pagination and admits missing coverage',()=>{
   const catalog={skills:[],issues:[],truncated:false};
-  for(const [query,id] of [['VOC','voc'],['OpenWiki','knowledge'],['PowerShell','environment'],['cursor','windows-app'],['recovery','recovery'],['코드','source-change']]){
+  for(const [query,id] of [['OpenWiki','knowledge'],['PowerShell','environment'],['cursor','windows-app'],['recovery','recovery'],['코드','source-change']]){
     const result=discoverCapabilities(catalog,{query},tools);assert.ok(result.results.some(r=>r.id===id),query);
   }
   const restricted=discoverCapabilities(catalog,{query:'Windows'},['observe_computer']);assert.deepEqual(restricted.results[0].tools,['observe_computer']);

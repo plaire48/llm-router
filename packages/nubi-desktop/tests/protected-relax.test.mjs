@@ -62,7 +62,7 @@ test('in a later turn a compaction that does not fit keeps the message being ans
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:22000}]}),dispose(){},async complete(messages){
     if(messages[0].content.startsWith('Summarize conversation')){sources.push(JSON.stringify(messages.slice(1)));return {content:JSON.stringify(summary),calls:[]};}
     // The plan offers many workflows, as in the measured run: in a small window its tools make the fixed part larger.
-    if(messages[0].content.startsWith(WORK_PLAN_PROMPT))return {content:JSON.stringify({intent:{goal:'값 찾기',constraints:[],outcomes:['값을 찾는다'],workflowIds:['source-change','environment','recovery','knowledge','document-research','voc'],skillPaths:[]},steps:[{text:'찾기',expected_outcome:'값을 찾는다',status:'in_progress'}]}),calls:[]};
+    if(messages[0].content.startsWith(WORK_PLAN_PROMPT))return {content:JSON.stringify({intent:{goal:'값 찾기',constraints:[],outcomes:['값을 찾는다'],workflowIds:['source-change','environment','recovery','knowledge','document-research'],skillPaths:[]},steps:[{text:'찾기',expected_outcome:'값을 찾는다',status:'in_progress'}]}),calls:[]};
     if(messages[0].content.startsWith(REVIEW_PROMPT)){
       reviews++;const requirements=JSON.parse(messages[1].content).requirements,revise=turn===2&&reviews===2;
       return {content:JSON.stringify({status:revise?'revise':'ready',nextStep:revise?'남은 범위를 읽으세요.':'',checks:requirements.map(item=>({requirementId:item.id,state:'unknown',evidenceIds:[],detail:'확인 중'}))}),calls:[]};

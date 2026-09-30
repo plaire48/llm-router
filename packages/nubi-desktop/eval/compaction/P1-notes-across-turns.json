@@ -2,7 +2,7 @@
   "id": "P1-notes-across-turns",
   "title": "회의록과 여러 차례 대화",
   "corpus": "order-service",
-  "contextLength": 22000,
+  "contextLength": 21500,
   "turns": [
     {
       "user": "이 작업에서는 src/legacy 폴더를 절대 수정하지 마. 금액은 항상 정수 원으로 다뤄 줘. 먼저 지금 배송 정책을 짧게 설명해 줘.",

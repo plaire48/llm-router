@@ -71,6 +71,6 @@ const COMPUTER_FALLBACK=NO_INPUT+'Inspect computer_checkpoint and stored receipt
 export const computerInstruction=code=>COMPUTER[code]||COMPUTER_FALLBACK;
 const FALLBACK=UNCHANGED+'Inspect the error, correct the input and do not repeat the same call unchanged.';
 
-export function recoveryInstruction(code,tool,readTools=new Set(['read_source','source_search','inspect_path','code_outline','wiki_query','knowledge_query','read_conversation','inspect_workspace_changes','search_voc','read_voc'])){
+export function recoveryInstruction(code,tool,readTools=new Set(['read_source','source_search','inspect_path','code_outline','wiki_query','knowledge_query','read_conversation','inspect_workspace_changes'])){
   return (readTools.has(tool)?READ_FAILED:'')+(GUIDANCE[code]||FALLBACK);
 }

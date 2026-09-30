@@ -50,16 +50,6 @@ test('symlink storage is rejected; tenant identity and model read ranges stay bo
   assert.notEqual(a.ticketId,b.ticketId);const read=await service.readVoc({id:a.id});assert(read.nextStart);assert(read.end-read.start<80);
   await assert.rejects(()=>service.readVoc({id:'../../outside'}),/voc_invalid/);
 });
-test('Pi finds then reads VOC references without granting source edit authority',async t=>{
-  const {service}=await fixture(t),saved=await put(service),task=await service.createTask({request:'로그인 VOC의 조치 내용과 근거를 알려 주세요.'});let calls=0;
-  const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
-  service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async messages=>{
-    calls++;if(calls===1)return call('search_voc',{query:'로그인'});if(calls===2){assert.match(JSON.stringify(messages),new RegExp(saved.id));return call('read_voc',{id:saved.id});}
-    assert.match(JSON.stringify(messages),/캐시를 지우고/);return {content:'캐시를 지운 뒤 재확인을 요청한 기록입니다. 해결 여부는 미확인입니다.',calls:[]};
-  }};
-  await service.startAgent({taskId:task.id});await service.agent.promise;assert.equal(calls,3);assert.equal(service.store.list('proposal:').length,0);assert.equal(service.task(task.id).sources?.length||0,0);
-});
-
 test('bounded VOC reads reconstruct long Unicode paragraphs without gaps or broken characters',async t=>{
   const {service,root}=await fixture(t);
   const saved=await put(service,data({body:'a'.repeat(15999)+'🐦'+'한글🐦'.repeat(12000)+'\n'+Array.from({length:180},(_,i)=>'line '+i).join('\n')}));

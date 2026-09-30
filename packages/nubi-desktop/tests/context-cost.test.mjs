@@ -29,7 +29,8 @@ test('Desktop sends the progress rule once and no per-tool copy',async t=>{
   const task=await service.createTask({request:'app.txt를 확인해 줘'});await service.startAgent({taskId:task.id});await service.agent.promise;
   assert.equal(service.task(task.id).state,'review',service.task(task.id).error);
   const withProgress=request.tools.filter(item=>item.function.parameters.properties.progress);
-  assert.ok(withProgress.length>30,String(withProgress.length));
+  // 32 tools carried it until the two VOC tools left the agent (user decision 2026-09-30).
+  assert.ok(withProgress.length>=30,String(withProgress.length));
   for(const item of withProgress)assert.deepEqual(item.function.parameters.properties.progress,{type:'string',maxLength:100},item.function.name);
   const system=request.messages.filter(message=>message.role==='system').map(message=>message.content).join('\n');
   assert.equal(system.split(PROGRESS_RULE).length-1,1,'the rule appears exactly once');
