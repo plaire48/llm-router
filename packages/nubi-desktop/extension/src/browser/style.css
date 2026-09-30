@@ -113,6 +113,9 @@
 .nubi-start { align-items:center; gap:24px; padding:36px 0 12px; min-height:calc(100vh - 280px); justify-content:center; }
 .nubi-start .welcome { padding:0; }
 .nubi-start .nubi-compose-card { width:min(760px,100%); max-width:760px; margin-inline:0; }
+.nubi-open-project { display:grid; gap:12px; justify-items:center; width:min(520px,100%); }
+.nubi-remote-form { display:flex; gap:8px; width:100%; }
+.nubi-remote-form > :first-child { flex:1; min-width:0; }
 .nubi-workbench .model-trigger { max-width:300px; }
 .nubi-workbench .model-trigger>span { overflow:hidden; text-overflow:ellipsis; }
 .nubi-request.message-user { margin:20px 0 24px auto; width:fit-content; max-width:88%; padding:12px 18px; border-radius:18px; background:var(--deck-blue-soft); font:var(--deck-font-label); }

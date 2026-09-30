@@ -4,6 +4,7 @@
 - Support trusted local file workspaces. Refuse remote/virtual roots and do not interpret WSL/SSH paths as local Windows paths. Ask the user to choose one folder in multi-root workspaces.
 - Run the shared runtime in the bundled checksum-verified Node sidecar. Never use the workspace's Node executable, settings or startup hooks. Keep provider credentials in sidecar memory and state in VS Code global storage.
 - All webview RPCs pass the host allowlist and trust check. Native file pickers alone supply external file paths. Preserve dirty editor buffers, version/hash checks, VS Code undo and post-save readback. Never replay an uncertain edit or process request.
+- UI/UX/CX MUST follow the root `사용자 UI/UX/CX 기준` in AGENTS.md: readability first, fewer steps, key text with its details, icon only when the icon alone is clear, no middle dots, the reference HTML tokens and the browser agent CX.
 - Keep the supplied HTML identity and concise Korean copy. Reuse Desktop's design checks and public CX components. A2A remains deferred.
 - Distinguish contract tests, actual VS Code extension-host/editor checks, webview UI, target-platform packaging, Windows GUI and real provider tests. Do not describe a development extension or a macOS VSIX as a verified Windows release.
 

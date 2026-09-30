@@ -19,7 +19,7 @@ try{
   browser=await chromium.launch({channel:process.platform==='win32'?'msedge':'chrome',headless:true});
   const p=await browser.newPage({viewport:{width:1280,height:900}});p.on('pageerror',e=>errors.push(e.message));
   await p.goto('http://127.0.0.1:4333');await p.getByRole('button',{name:'Yes, I trust the authors'}).click();
-  const card=p.getByRole('region',{name:'프로젝트 준비'});await card.waitFor({timeout:45000});
+  const card=p.getByRole('region',{name:'프로젝트 준비'});await card.waitFor({timeout:45000});await p.locator('.theia-preload').waitFor({state:'hidden'});
   await card.getByText('Git 저장소가 아닌 폴더예요',{exact:true}).waitFor();await card.getByText(root,{exact:true}).waitFor();
   assert.match(await card.locator('pre').innerText(),/^git init\n.*commit --allow-empty/s);
   assert.equal(await p.locator('.nubi-error').count(),0,'a setup is offered, not an error');

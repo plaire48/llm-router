@@ -1,6 +1,15 @@
 const {createHash}=require('node:crypto');
 const {realpath}=require('node:fs/promises');
 const digest=text=>'sha256:'+createHash('sha256').update(text).digest('hex');
+// Before a folder opens as a project: Git missing or a folder outside a repository (user decision 2026-09-30).
+const SETUP=new Set(['setupStatus','setupRun','setupRetry','setupSuggest']);
+// https://host/path, ssh://host/path or user@host:path. An address that carries a password is refused.
+const remoteAddress=text=>{
+  const value=String(text||'').trim();
+  if(!value||value.length>2000||/\s/.test(value))return false;
+  if(/^[\w.-]+@[\w.-]+:[^:\s][^\s]*$/.test(value))return true;
+  try{const url=new URL(value);return ['https:','http:','ssh:','git:'].includes(url.protocol)&&Boolean(url.hostname)&&!url.password;}catch{return false;}
+};
 const API=new Set(['listSkills','importVoc','queryVoc','readVoc','computer','decideSetupAction','codeOutline','recoverySnapshot','resumeAgent','diagnoseProcess','applyCommandRepair','knowledgeMap','knowledgeQuery','initializeKnowledgeCatalog','exportKnowledgeMap','databaseConnection','knowledgeStatus','recordKnowledge','comparison','connectKnowledge','overview','state','read','search','wikiQuery','createTask','exportRequirement','createWorktree','mergeProposal','diff','run','exportReport','compare','provider','fabrix','startAgent','answerAgent','saveQuestionDraft','stopAgent','poll','stop','events']);
 
 class Host {
@@ -16,7 +25,7 @@ class Host {
     if(this.root&&roots.some(r=>r.uri.fsPath===this.root))return this.runtime.invoke('overview');
     const selected=roots.length===1?roots[0]:await v.window.showWorkspaceFolderPick({placeHolder:'누비에서 사용할 프로젝트를 선택하세요.'});
     if(!selected)return null;if(selected.uri.scheme!=='file')throw Error('local_workspace_required');
-    this.trusted();const value=await this.runtime.invoke('open',{root:selected.uri.fsPath});this.root=selected.uri.fsPath;return value;
+    this.trusted();this.attempted=selected.uri.fsPath;const value=await this.runtime.invoke('open',{root:selected.uri.fsPath});this.root=selected.uri.fsPath;return value;
   }
   async ensureRoot(){
     this.trusted();
@@ -32,12 +41,24 @@ class Host {
       await this.ensureRoot();
       return this.runtime.invoke(isSkill?'importSkill':'computer',isSkill?{taskId:args.taskId,source:choice[0].fsPath}:{method:'register_app',taskId:args.taskId,file:choice[0].fsPath});
     }
-    if(!API.has(method)||method==='computer'&&args.method==='register_app')throw Error('method_invalid');
-    if(!['provider','fabrix'].includes(method))await this.ensureRoot();
+    if(!API.has(method)&&!SETUP.has(method)||method==='computer'&&args.method==='register_app')throw Error('method_invalid');
+    if(!['provider','fabrix'].includes(method)&&!SETUP.has(method))await this.ensureRoot();
     const result=await this.runtime.invoke(method,args);
+    // The folder that did not open is the project once its setup opened it.
+    if(SETUP.has(method)&&result?.opened&&this.attempted)this.root=this.attempted;
     if(method==='exportReport'&&result.uri)this.links.add(result.uri);
     if(method==='connectKnowledge'&&result.url)this.urls.add(result.url);
     return result;
+  }
+  // A remote repository by its address (user decision 2026-09-30). VS Code's Git clone asks where to save it,
+  // signs in through the Git credential manager and opens the folder (git.openAfterClone is always).
+  async cloneRepository(url){
+    if(this.vscode.env.remoteName)throw Error('local_workspace_required');
+    const value=typeof url==='string'&&url.trim()?url.trim():await this.vscode.window.showInputBox({title:'원격 저장소 연결',prompt:'Git 저장소 주소를 입력하세요.',placeHolder:'https://github.com/owner/repo.git',ignoreFocusOut:true,validateInput:text=>remoteAddress(text)?null:'https://, ssh:// 또는 git@ 형식의 주소를 입력하세요. 비밀번호가 든 주소는 쓰지 않습니다.'});
+    if(!value)return {cancelled:true};
+    if(!remoteAddress(value))throw Error('remote_invalid');
+    const folder=await this.vscode.commands.executeCommand('git.clone',value);
+    return folder?{cloned:true}:{cancelled:true};
   }
   async openPath(file,taskId){await this.ensureRoot();const result=await this.runtime.invoke('read',{path:file,taskId,full:true});await this.vscode.window.showTextDocument(this.vscode.Uri.parse(result.uri),{preview:false,viewColumn:this.vscode.ViewColumn.Two});}
   async review(proposalId){await this.ensureRoot();const p=await this.runtime.invoke('proposalArtifacts',{proposalId});await this.vscode.commands.executeCommand('vscode.diff',this.vscode.Uri.parse(p.beforeUri),this.vscode.Uri.parse(p.afterUri),'누비 변경 제안',{preview:true,viewColumn:this.vscode.ViewColumn.Two});}
@@ -73,6 +94,7 @@ class Host {
       case 'api':return this.api(a,b);
       case 'openCurrent':return this.openCurrent();
       case 'chooseFolder':return this.vscode.commands.executeCommand('vscode.openFolder');
+      case 'cloneRepository':return this.cloneRepository(a);
       case 'openPath':return this.openPath(a,b);
       case 'review':return this.review(a);
       case 'apply':return this.apply(a);
@@ -82,4 +104,4 @@ class Host {
     }
   }
 }
-module.exports={Host};
+module.exports={Host,remoteAddress};

@@ -1,8 +1,8 @@
 {
   "name": "nubi-workspace",
-  "displayName": "누비 Workspace beta",
-  "description": "소스와 OpenWiki-SDS를 이해하고 변경 결과를 확인하는 누비",
-  "version": "0.1.0",
+  "displayName": "누비 workspace",
+  "description": "VS Code에 내장된 누비 workspace: 소스와 OpenWiki-SDS를 이해하고, Git과 함께 변경을 확인하고, Windows 앱을 다룹니다.",
+  "version": "2.0.0",
   "publisher": "nubi-internal",
   "license": "UNLICENSED",
   "engines": {
@@ -28,6 +28,7 @@
     }
   },
   "activationEvents": [
+    "onStartupFinished",
     "onWebviewPanel:nubi.workspace"
   ],
   "contributes": {
@@ -37,6 +38,12 @@
         "title": "누비 열기",
         "category": "Nubi",
         "icon": "$(sparkle)"
+      },
+      {
+        "command": "nubi.cloneRepository",
+        "title": "원격 저장소 연결",
+        "category": "Nubi",
+        "icon": "$(repo-clone)"
       }
     ],
     "menus": {
@@ -46,6 +53,36 @@
           "group": "navigation"
         }
       ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nubi",
+          "title": "누비",
+          "icon": "media/nubi-activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "nubi": [
+        {
+          "id": "nubi.home",
+          "name": "누비"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "nubi.home",
+        "contents": "누비 workspace는 편집기 영역에서 열립니다.\n[누비 열기](command:nubi.open)\n원격 Git 저장소 주소로 프로젝트를 받아 바로 열 수 있습니다.\n[원격 저장소 연결](command:nubi.cloneRepository)"
+      }
+    ],
+    "configurationDefaults": {
+      "git.openRepositoryInParentFolders": "always",
+      "git.openAfterClone": "always",
+      "workbench.startupEditor": "none",
+      "chat.disableAIFeatures": true,
+      "telemetry.telemetryLevel": "off"
     }
   },
   "scripts": {
