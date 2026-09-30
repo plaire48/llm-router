@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {gitOpenFailure} from '../runtime/files.mjs';
+import {remoteAddress} from '../ui/remote-address.mjs';
 
 // "프로젝트 열기" said only "처리하지 못했어요. 입력과 연결 상태를 확인해 주세요." (user report 2026-09-30).
 // Each reason a folder cannot be opened now has its own code and message.
@@ -37,4 +38,10 @@ test('프로젝트 열기 uses the folder command every platform enables, and ev
   for(const code of ['project_picker_unavailable','project_path_missing','project_path_denied','not_git_repository','git_unavailable','git_unsafe_directory','git_timeout','workspace_untrusted'])
     assert.match(workbench,new RegExp('\\b'+code+":'"),code);
   assert.doesNotMatch(workbench,/입력과 연결 상태를 확인해 주세요/);
+});
+
+// The start card (user decision 2026-09-30) explains a malformed Git address before anything is cloned.
+test('the start card takes the Git addresses VS Code clones and no address with a password',()=>{
+  for(const ok of ['https://github.com/owner/repo.git','http://git.example.internal/team/app.git','ssh://git@example.com/owner/repo.git','git@github.com:owner/repo.git','git://example.com/repo.git'])assert.equal(remoteAddress(ok),true,ok);
+  for(const bad of ['','github.com/owner/repo','https://user:secret@example.com/repo.git','ftp://example.com/repo','file:///C:/repo','https://example.com/a repo.git'])assert.equal(remoteAddress(bad),false,bad);
 });

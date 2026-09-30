@@ -133,9 +133,44 @@
 .nubi-sidebar-history-item small { flex:none; font:var(--deck-font-caption); color:var(--deck-sub); }
 .nubi-sidebar-history-item:hover:not(:disabled), .nubi-session-tab:hover { background:var(--nubi-sidebar-active); }
 .nubi-workbench .nubi-bar .nubi-project-label { flex:1; min-width:0; }
+/* The actions keep the right edge; an empty label takes no room. Under 600px the label takes its own line below,
+   as the narrow bar intends (its flex:1 above used to keep it on the first line and pull the actions left). */
+.nubi-workbench .nubi-bar .nubi-header-actions { margin-left:auto; }
+.nubi-workbench .nubi-bar .nubi-project-label:empty { display:none; }
+@media(max-width:600px) { .nubi-workbench .nubi-bar .nubi-project-label { flex-basis:100%; } }
 .nubi-start .welcome { margin:clamp(32px,8vh,84px) auto 0; padding:var(--cx-space-4) 0; }
-.nubi-start .welcome-art { width:136px; height:104px; }
-.nubi-start .welcome-emblem { width:88px; height:88px; }
+/* The bird grows with the window (user request 2026-09-30: the screen is large, the bird was small at 88px).
+   The art box keeps the browser agent's 160:224:174 proportion so the sparkles stay beside the bird. */
+.nubi-start { --nubi-bird:clamp(112px, min(21vh, 34vw), 200px); }
+.nubi-start .welcome-title { font-size:clamp(24px, 2.6vw, 34px); }
+.nubi-start .welcome-art { width:calc(var(--nubi-bird) * 1.4); height:calc(var(--nubi-bird) * 1.09); }
+.nubi-start .welcome-emblem { width:var(--nubi-bird); height:var(--nubi-bird); }
+/* Project start (user decision 2026-09-30): the reference deck's feature cards in the composer's place and
+   width. The greeting rises first, then the support line, then the cards one after another. */
+.nubi-project-start { display:grid; justify-items:center; gap:var(--cx-space-6); width:min(760px,100%); }
+.nubi-start-support { margin:calc(-1 * var(--cx-space-6)) 0 0; font:500 15px/24px var(--cx-font-family); color:var(--deck-sub); text-align:center; text-wrap:balance; animation:deck-rise var(--deck-rise) var(--deck-ease) both; animation-delay:calc(var(--deck-step) * 2); }
+.nubi-start-choices { display:grid; grid-template-columns:repeat(auto-fit,minmax(248px,1fr)); gap:var(--cx-space-4); width:100%; }
+.nubi-start-choices[data-count="1"] { width:min(372px,100%); }
+.nubi-start-card { display:flex; flex-direction:column; align-items:flex-start; gap:var(--cx-space-1); min-width:0; margin:0; padding:20px; border:0; border-radius:var(--deck-panel-radius); background:var(--deck-card); box-shadow:var(--deck-shadow); color:var(--deck-ink); font:inherit; text-align:left; animation:deck-rise var(--deck-rise) var(--deck-ease) both; animation-delay:calc(var(--deck-step) * 2 + var(--deck-stagger)); transition:transform var(--deck-feedback) var(--deck-ease), box-shadow var(--deck-feedback) var(--deck-ease); }
+.nubi-start-card + .nubi-start-card { animation-delay:calc(var(--deck-step) * 2 + var(--deck-stagger) * 2); }
+button.nubi-start-card { cursor:pointer; }
+button.nubi-start-card:hover:not(:disabled), .nubi-start-card:focus-within { transform:translateY(-2px); box-shadow:0 18px 48px color-mix(in srgb, var(--deck-blue) 16%, transparent); }
+button.nubi-start-card:active:not(:disabled) { transform:scale(var(--deck-press)); }
+button.nubi-start-card:focus-visible { outline:2px solid var(--deck-blue); outline-offset:3px; }
+button.nubi-start-card:disabled { cursor:default; opacity:.6; }
+.nubi-start-tile { display:grid; place-items:center; width:44px; height:44px; margin-bottom:var(--cx-space-3); border-radius:var(--deck-tile-radius); }
+.nubi-start-tile[data-tone="blue"] { background:var(--deck-blue-soft); color:var(--deck-blue); }
+.nubi-start-tile[data-tone="violet"] { background:var(--deck-violet-soft); color:var(--deck-violet); }
+.nubi-start-card strong { font-size:17px; line-height:24px; font-weight:800; letter-spacing:-.01em; }
+.nubi-start-text { margin-bottom:var(--cx-space-4); font:500 13px/20px var(--cx-font-family); color:var(--deck-sub); }
+.nubi-start-go, .nubi-start-field { display:flex; align-items:center; gap:var(--cx-space-2); width:100%; margin-top:auto; }
+.nubi-start-go { justify-content:center; gap:6px; height:var(--deck-field-height); border-radius:var(--deck-control-radius); background:var(--deck-blue-soft); color:var(--deck-blue-deep); font-weight:700; transition:background var(--deck-feedback) var(--deck-ease), color var(--deck-feedback) var(--deck-ease); }
+.nubi-start-go svg { transition:transform var(--deck-feedback) var(--deck-ease); }
+button.nubi-start-card:hover:not(:disabled) .nubi-start-go { background:var(--deck-blue-deep); color:var(--deck-card); }
+button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:translateX(3px); }
+.nubi-start-field > :first-child { flex:1; min-width:0; }
+.nubi-start-field .cx-button { flex:none; }
+.nubi-start-hint { margin-top:var(--cx-space-1); font:500 12px/16px var(--cx-font-family); color:var(--deck-red); }
 /* The bird stays on top (user request 2026-09-30): the start screen sparkles and its greeting and completion
    sparkles show behind it. In 1.1.0 the start screen sparkles were drawn over the bird. */
 .nubi-workbench .welcome-emblem { z-index:1; }

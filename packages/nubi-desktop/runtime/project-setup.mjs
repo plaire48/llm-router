@@ -10,7 +10,7 @@ import {git} from './files.mjs';
 
 const exec=promisify(execFile);
 const OUTPUT=20000,COMMAND=2000,ATTEMPTS=4;
-export const SETUP_IDENTITY={name:'누비 workspace',email:'nubi-workspace@localhost'};
+export const SETUP_IDENTITY={name:'누비 Workspace',email:'nubi-workspace@localhost'};
 
 // A per-user install needs no administrator rights, which company PCs often withhold.
 export function gitInstallPlan(platform=process.platform){
@@ -23,9 +23,9 @@ export function gitInstallPlan(platform=process.platform){
 }
 
 export function repositoryPlan({identity}){
-  const commit=identity?'git commit --allow-empty -m "누비 workspace 시작"':`git -c user.name="${SETUP_IDENTITY.name}" -c user.email=${SETUP_IDENTITY.email} commit --allow-empty -m "누비 workspace 시작"`;
+  const commit=identity?'git commit --allow-empty -m "누비 Workspace 시작"':`git -c user.name="${SETUP_IDENTITY.name}" -c user.email=${SETUP_IDENTITY.email} commit --allow-empty -m "누비 Workspace 시작"`;
   return {kind:'init_repository',profile:'git',source:'prepared',command:'git init\n'+commit,
-    effects:'이 폴더에 Git 저장소를 만들고 빈 첫 커밋을 남깁니다. 파일은 커밋하지 않습니다.'+(identity?'':' Git 사용자 이름이 없어 첫 커밋 작성자를 "누비 workspace"로 둡니다.')};
+    effects:'이 폴더에 Git 저장소를 만들고 빈 첫 커밋을 남깁니다. 파일은 커밋하지 않습니다.'+(identity?'':' Git 사용자 이름이 없어 첫 커밋 작성자를 "누비 Workspace"로 둡니다.')};
 }
 
 // Where an installer puts git.exe. A running app keeps the PATH it started with, so a new install is found here.
@@ -68,7 +68,7 @@ export async function gitIdentity(root){
 export async function initializeRepository(root){
   await git(root,['init','-q']);
   const identity=await gitIdentity(root);
-  await git(root,[...(identity?[]:['-c','user.name='+SETUP_IDENTITY.name,'-c','user.email='+SETUP_IDENTITY.email]),'commit','--allow-empty','-q','-m','누비 workspace 시작']);
+  await git(root,[...(identity?[]:['-c','user.name='+SETUP_IDENTITY.name,'-c','user.email='+SETUP_IDENTITY.email]),'commit','--allow-empty','-q','-m','누비 Workspace 시작']);
   return {identity};
 }
 

@@ -1,7 +1,7 @@
 {
   "name": "nubi-workspace",
-  "displayName": "누비 workspace",
-  "description": "VS Code에 내장된 누비 workspace: 소스와 OpenWiki-SDS를 이해하고, Git과 함께 변경을 확인하고, Windows 앱을 다룹니다.",
+  "displayName": "누비 Workspace",
+  "description": "VS Code에 내장된 누비 Workspace: 소스와 OpenWiki-SDS를 이해하고, Git과 함께 변경을 확인하고, Windows 앱을 다룹니다.",
   "version": "2.0.0",
   "publisher": "nubi-internal",
   "license": "UNLICENSED",
@@ -41,7 +41,7 @@
       },
       {
         "command": "nubi.cloneRepository",
-        "title": "원격 저장소 연결",
+        "title": "저장소 복제",
         "category": "Nubi",
         "icon": "$(repo-clone)"
       }
@@ -74,7 +74,7 @@
     "viewsWelcome": [
       {
         "view": "nubi.home",
-        "contents": "누비 workspace는 편집기 영역에서 열립니다.\n[누비 열기](command:nubi.open)\n원격 Git 저장소 주소로 프로젝트를 받아 바로 열 수 있습니다.\n[원격 저장소 연결](command:nubi.cloneRepository)"
+        "contents": "[누비 열기](command:nubi.open)\nGit 주소로 받아서 엽니다.\n[저장소 복제](command:nubi.cloneRepository)"
       }
     ],
     "configurationDefaults": {

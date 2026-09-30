@@ -14,7 +14,7 @@ await build({entryPoints:['src/webview.jsx'],outfile:'media/app.js',bundle:true,
   await writeFile('dist/ui-provenance.json',JSON.stringify({host:'vscode',sharedWorkbench:'nubi-desktop/ui/Workbench.jsx',sources:Object.keys(result.metafile.inputs).filter(p=>!p.includes('node_modules'))},null,2));
 });
 await cp('../../extensions/aipro-chat/public/icons','media/icons',{recursive:true});
-// The activity bar mark of 누비 workspace; media/ holds build output only.
+// The activity bar mark of 누비 Workspace; media/ holds build output only.
 await copyFile('design/nubi-activity.svg','media/nubi-activity.svg');
 await mkdir('licenses',{recursive:true});
 await copyFile('../openwiki/LICENSE','licenses/OpenWiki-SDS-LICENSE');

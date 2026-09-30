@@ -38,6 +38,13 @@ test('a remote address is https, ssh or user@host and never carries a password',
   for(const ok of ['https://github.com/owner/repo.git','http://git.example.internal/team/app.git','ssh://git@example.com/owner/repo.git','git@github.com:owner/repo.git','https://user@example.com/owner/repo.git'])assert.equal(remoteAddress(ok),true,ok);
   for(const bad of ['','owner/repo','https://user:secret@example.com/repo.git','file:///etc/passwd','--upload-pack=touch /tmp/x','git@host:','https://example.com/a repo.git','javascript:alert(1)'])assert.equal(remoteAddress(bad),false,bad);
 });
+// The start card checks an address with the same rule before the host does (packages/nubi-desktop/ui/remote-address.mjs).
+test('the start card and the host agree on every remote address',async()=>{
+  const {remoteAddress:card}=await import('../../nubi-desktop/ui/remote-address.mjs');
+  for(const sample of ['https://github.com/owner/repo.git','http://git.example.internal/team/app.git','ssh://git@example.com/owner/repo.git','git@github.com:owner/repo.git','git://example.com/repo.git','https://user@example.com/owner/repo.git',
+    '','owner/repo','github.com/owner/repo','https://user:secret@example.com/repo.git','file:///etc/passwd','--upload-pack=touch /tmp/x','git@host:','https://example.com/a repo.git','javascript:alert(1)'])
+    assert.equal(card(sample),remoteAddress(sample),sample);
+});
 test('connecting a remote runs VS Code Git clone with the address, and cancelling is inert',async()=>{
   const f=fixture();f.v.window.showInputBox=async()=>undefined;
   assert.deepEqual(await f.host.handle({method:'cloneRepository',args:[]}),{cancelled:true});assert.deepEqual(f.calls,[]);

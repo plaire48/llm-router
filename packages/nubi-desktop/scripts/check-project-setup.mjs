@@ -27,7 +27,7 @@ try{
   assert.equal(await card.evaluate(e=>e.scrollWidth<=e.clientWidth),true);await p.screenshot({path:'verification/ui-project-setup.png'});
   await card.getByRole('button',{name:'승인하고 저장소 만들기',exact:true}).click();
   await card.waitFor({state:'detached',timeout:30000});await p.locator('.nubi-project-label').filter({hasText:'plain-folder'}).waitFor();
-  assert.match(execFileSync('git',['-C',root,'log','-1','--format=%an|%s'],{env}).toString(),/^누비 workspace\|누비 workspace 시작/);
+  assert.match(execFileSync('git',['-C',root,'log','-1','--format=%an|%s'],{env}).toString(),/^누비 Workspace\|누비 Workspace 시작/);
   assert.equal(execFileSync('git',['-C',root,'status','--porcelain'],{env}).toString().trim(),'?? README.md','no file was committed');
   checks.push('one approval creates the repository with an empty first commit and opens the folder');
   assert.deepEqual(errors,[]);checks.push('no uncaught browser errors');

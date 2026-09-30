@@ -53,7 +53,7 @@ test('a setup command reports its exit and output, never throwing on failure',as
 test('a new repository gets an empty first commit, written by the user when Git knows them',async t=>{
   const {folder}=await place(t);
   assert.deepEqual(await initializeRepository(folder),{identity:false});
-  assert.equal((await git(folder,['log','-1','--format=%an <%ae>|%s'])).trim(),`${SETUP_IDENTITY.name} <${SETUP_IDENTITY.email}>|누비 workspace 시작`);
+  assert.equal((await git(folder,['log','-1','--format=%an <%ae>|%s'])).trim(),`${SETUP_IDENTITY.name} <${SETUP_IDENTITY.email}>|누비 Workspace 시작`);
   assert.equal((await git(folder,['status','--porcelain'])).trim(),'?? README.md','no file is committed');
   const other=path.join(path.dirname(folder),'known');await mkdir(other);await git(other,['init','-q']);
   await git(other,['config','user.name','Kim']);await git(other,['config','user.email','kim@example.invalid']);
@@ -66,7 +66,7 @@ test('a folder outside a repository opens after the approved repository setup',a
   await assert.rejects(service.open(folder),{message:'not_git_repository'});
   const setup=await service.invoke('setupStatus');
   assert.equal(setup.root,folder);assert.equal(setup.reason,'not_git_repository');assert.equal(setup.plan.kind,'init_repository');
-  assert.match(setup.plan.command,/^git init\n/);assert.match(setup.plan.effects,/"누비 workspace"/,'the stand-in author is disclosed');
+  assert.match(setup.plan.command,/^git init\n/);assert.match(setup.plan.effects,/"누비 Workspace"/,'the stand-in author is disclosed');
   await assert.rejects(service.invoke('setupRun',{id:'someone-else'}),{message:'setup_plan_changed'});
   const done=await service.invoke('setupRun',{id:setup.plan.id});
   assert.equal(done.environment,true);assert.equal(done.opened.name,'plain');

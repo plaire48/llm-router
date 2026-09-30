@@ -54,7 +54,7 @@ class Host {
   // signs in through the Git credential manager and opens the folder (git.openAfterClone is always).
   async cloneRepository(url){
     if(this.vscode.env.remoteName)throw Error('local_workspace_required');
-    const value=typeof url==='string'&&url.trim()?url.trim():await this.vscode.window.showInputBox({title:'원격 저장소 연결',prompt:'Git 저장소 주소를 입력하세요.',placeHolder:'https://github.com/owner/repo.git',ignoreFocusOut:true,validateInput:text=>remoteAddress(text)?null:'https://, ssh:// 또는 git@ 형식의 주소를 입력하세요. 비밀번호가 든 주소는 쓰지 않습니다.'});
+    const value=typeof url==='string'&&url.trim()?url.trim():await this.vscode.window.showInputBox({title:'저장소 복제',prompt:'복제할 Git 저장소 주소를 입력하세요.',placeHolder:'https://code.sdsdev.co.kr/repo.git',ignoreFocusOut:true,validateInput:text=>remoteAddress(text)?null:'https://, ssh:// 또는 git@ 주소를 넣어 주세요. 비밀번호가 든 주소는 쓸 수 없어요.'});
     if(!value)return {cancelled:true};
     if(!remoteAddress(value))throw Error('remote_invalid');
     const folder=await this.vscode.commands.executeCommand('git.clone',value);

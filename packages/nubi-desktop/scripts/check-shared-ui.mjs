@@ -307,8 +307,23 @@ try{
  assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);
  await p.screenshot({path:'verification/ui-session-sidebar-narrow.png',animations:'disabled'});
  assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).isVisible(),true);
- await p.emulateMedia({reducedMotion:'reduce'});await p.getByRole('complementary',{name:'프로젝트 대화'}).getByRole('button',{name:'사이드바 닫기',exact:true}).click();await p.getByRole('button',{name:'사이드바 열기',exact:true}).click();assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).evaluate(e=>getComputedStyle(e).animationDuration),'0s');
+ assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).getByRole('button',{name:'사이드바 닫기',exact:true}).count(),0,'the header button is the one close control');await p.emulateMedia({reducedMotion:'reduce'});await p.keyboard.press('Escape');await p.getByRole('complementary',{name:'프로젝트 대화'}).waitFor({state:'hidden'});await p.getByRole('button',{name:'사이드바 열기',exact:true}).click();assert.equal(await p.getByRole('complementary',{name:'프로젝트 대화'}).evaluate(e=>getComputedStyle(e).animationDuration),'0s');
  checks.push('project sidebar preserves drafts across switching and reload; date groups find closed sessions while one task runs');assert.deepEqual(errors,[]);
+
+ // Project start (user decision 2026-09-30): folder and remote repository cards in the composer's place. Without a
+ // project the host has no state; that is the start screen, not an error.
+ await p.setViewportSize({width:1100,height:760});await p.goto('http://127.0.0.1:'+server.address().port+'/?noproject');
+ await p.locator('.aipro-login').getByRole('button',{name:'AI Pro',exact:true}).click();await p.locator('.aipro-login').waitFor({state:'detached'});
+ await p.getByRole('heading',{name:'어떤 프로젝트에서 시작할까요?'}).waitFor();
+ assert.equal(await p.getByRole('button',{name:'폴더 열기',exact:true}).count(),1);assert.equal(await p.locator('.nubi-start-card').count(),2);
+ assert.equal(await p.getByRole('button',{name:'프로젝트 열기',exact:true}).count(),0,'the cards replace the header button');
+ assert.equal(await p.locator('.nubi-project-label').isVisible(),false,'no project name, no empty label');assert.equal(await p.locator('.nubi-logo-product').innerText(),'Workspace');
+ const address=p.getByRole('textbox',{name:'원격 저장소 주소'});await address.fill('github.com/owner/repo');await p.getByRole('button',{name:'복제',exact:true}).click();
+ await p.getByRole('alert').filter({hasText:'git@ 주소를 넣어 주세요'}).waitFor();assert.equal(await p.evaluate(()=>window.cloneCalls?.length||0),0,'a malformed address stays in the card');
+ await address.fill('https://github.com/owner/repo.git');assert.equal(await p.getByRole('alert').count(),0);await p.getByRole('button',{name:'복제',exact:true}).click();
+ await p.waitForFunction(()=>window.cloneCalls?.length===1);assert.deepEqual(await p.evaluate(()=>window.cloneCalls),['https://github.com/owner/repo.git']);
+ assert.equal(await p.locator('.nubi-error').count(),0);await p.screenshot({path:'verification/ui-project-start.png',animations:'disabled'});
+ checks.push('project start offers folder and remote repository cards; a malformed address is explained in the card and never reaches the host');assert.deepEqual(errors,[]);
 
  await writeFile('verification/shared-ui-result.json',JSON.stringify({scope:'synthetic UI provider states; not live authentication or model inference',checks,errors},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:'verification/shared-ui-failure.png'});await writeFile('verification/shared-ui-failure.html',await p.content());throw error;}finally{await browser?.close();server.close();}

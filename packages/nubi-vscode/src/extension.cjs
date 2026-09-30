@@ -30,7 +30,7 @@ function activate(context){
     bind(vscode.window.createWebviewPanel('nubi.workspace','누비 Workspace',vscode.ViewColumn.One,{enableScripts:true,retainContextWhenHidden:true}));
   };
   // A remote repository by its address; VS Code's Git clone saves it and opens it (user decision 2026-09-30).
-  const connect=async()=>{try{await host.cloneRepository();}catch(error){await vscode.window.showErrorMessage(error.message==='remote_invalid'?'https://, ssh:// 또는 git@ 형식의 주소를 넣어 주세요.':'원격 저장소를 연결하지 못했어요. 주소와 로그인을 확인해 주세요.');}};
+  const connect=async()=>{try{await host.cloneRepository();}catch(error){await vscode.window.showErrorMessage(error.message==='remote_invalid'?'https://, ssh:// 또는 git@ 주소를 넣어 주세요.':'저장소를 복제하지 못했어요. 주소와 로그인을 확인해 주세요.');}};
   // The activity bar entry: an empty list whose welcome content holds the two actions.
   context.subscriptions.push(vscode.window.registerTreeDataProvider('nubi.home',{getTreeItem:item=>item,getChildren:()=>[]}),vscode.commands.registerCommand('nubi.cloneRepository',connect));
   context.subscriptions.push(vscode.commands.registerCommand('nubi.open',show),{dispose:()=>runtime.dispose()},
