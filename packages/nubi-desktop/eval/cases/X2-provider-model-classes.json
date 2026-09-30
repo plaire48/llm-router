@@ -1,0 +1,46 @@
+{
+  "id": "X2-provider-model-classes",
+  "title": "긴 파일에서 빠짐없이 모으기",
+  "suite": "source",
+  "split": "holdout",
+  "corpus": "openwiki-sds",
+  "request": "src/agent/index.ts의 createModel이 모델 공급자별로 어떤 채팅 모델을 만드는지 빠짐없이 표로 정리해 줘. 공급자마다 클래스나 만드는 함수의 이름과, 따로 필요한 설정(환경 변수, 기본 주소, Responses API 사용 여부 등)이 있으면 함께 적어 줘. 코드는 고치지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "ChatOpenRouter"
+      ],
+      [
+        "ChatBedrockConverse"
+      ],
+      [
+        "ChatGoogle"
+      ],
+      [
+        "ChatAnthropic"
+      ],
+      [
+        "createGeminiEnterpriseModel",
+        "GOOGLE_CLOUD_PROJECT"
+      ],
+      [
+        "re:\\bbob\\b"
+      ],
+      [
+        "fabrix"
+      ],
+      [
+        "re:Responses"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "src/agent/index.ts"
+      ],
+      "min": 1
+    },
+    "unchanged_except": []
+  }
+}

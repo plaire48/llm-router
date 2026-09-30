@@ -11,12 +11,13 @@ import {readFile} from 'node:fs/promises';
 
 const valid={id:'T1-valid-case',title:'검사',suite:'wiki',split:'dev',corpus:'order-service',request:'질문',expect:{state:'review'}};
 
-test('the first case set has twenty valid cases split fourteen to six',async()=>{
+// Twenty cases, then three long-context cases X1 to X3 on long files and a long conversation (2026-09-30).
+test('the case set has twenty-three valid cases split sixteen to seven',async()=>{
   const cases=await loadCases();
-  assert.equal(cases.length,20);
-  assert.equal(cases.filter(item=>item.split==='dev').length,14);assert.equal(cases.filter(item=>item.split==='holdout').length,6);
+  assert.equal(cases.length,23);
+  assert.equal(cases.filter(item=>item.split==='dev').length,16);assert.equal(cases.filter(item=>item.split==='holdout').length,7);
   const count=suite=>cases.filter(item=>item.suite===suite).length;
-  assert.deepEqual([count('wiki'),count('source'),count('edit'),count('document'),count('conversation')],[6,3,5,3,3]);
+  assert.deepEqual([count('wiki'),count('source'),count('edit'),count('document'),count('conversation')],[6,5,5,3,4]);
   for(const suite of ['wiki','source','edit','document','conversation'])assert.ok(cases.some(item=>item.suite===suite&&item.split==='holdout'),suite+' has a holdout case');
 });
 

@@ -25,8 +25,8 @@ const temporary=async t=>{const parent=await mkdtemp(path.join(os.tmpdir(),'nubi
 
 test('the cases are valid, use known controls and cover reading, input, refusal and a question',async()=>{
   const {cases,apps}=await loadComputerCases();
-  // A12 to A15 act on the rules of a Wiki (2026-09-29).
-  assert.equal(cases.length,15);assert.deepEqual([...apps.keys()],['expense-draft','expense-form']);
+  // A12 to A15 act on the rules of a Wiki (2026-09-29). A16 reads a screen of about 200 elements (2026-09-30).
+  assert.equal(cases.length,16);assert.deepEqual([...apps.keys()].sort(),['admin-console','expense-draft','expense-form']);
   for(const item of cases)assert.deepEqual(validateComputerCase(item,apps),[],item.id);
   assert.ok(cases.some(item=>item.approve==='none')&&cases.some(item=>item.approve==='all')&&cases.some(item=>Array.isArray(item.approve.deny)));
   assert.ok(cases.some(item=>item.expect.asked===true&&item.stopAtQuestion));

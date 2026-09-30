@@ -1,0 +1,1381 @@
+{
+  "id": "admin-console",
+  "title": "관리 콘솔 설정",
+  "window": {
+    "hwnd": 4300,
+    "processId": 8400,
+    "processName": "AdminConsole",
+    "title": "관리 콘솔 - 설정",
+    "dpi": 96,
+    "width": 960,
+    "height": 860
+  },
+  "controls": [
+    {
+      "selector": "grp-general",
+      "name": "일반",
+      "type": "Group",
+      "children": [
+        {
+          "selector": "txt-general-01",
+          "name": "조직 이름",
+          "type": "Edit",
+          "value": "샘플 물류"
+        },
+        {
+          "selector": "txt-general-02",
+          "name": "관리자 이름",
+          "type": "Edit",
+          "value": "박지윤"
+        },
+        {
+          "selector": "txt-general-03",
+          "name": "대표 전화",
+          "type": "Edit",
+          "value": "02-555-0142"
+        },
+        {
+          "selector": "txt-general-04",
+          "name": "시간대",
+          "type": "Edit",
+          "value": "Asia/Seoul"
+        },
+        {
+          "selector": "txt-general-05",
+          "name": "날짜 형식",
+          "type": "Edit",
+          "value": "YYYY-MM-DD"
+        },
+        {
+          "selector": "chk-general-06",
+          "name": "자동 업데이트",
+          "type": "CheckBox",
+          "toggle": "On"
+        },
+        {
+          "selector": "txt-general-07",
+          "name": "조직 이름 2",
+          "type": "Edit",
+          "value": "샘플 물류"
+        },
+        {
+          "selector": "txt-general-08",
+          "name": "관리자 이름 2",
+          "type": "Edit",
+          "value": "박지윤"
+        },
+        {
+          "selector": "txt-general-09",
+          "name": "대표 전화 2",
+          "type": "Edit",
+          "value": "02-555-0142"
+        },
+        {
+          "selector": "txt-general-10",
+          "name": "시간대 2",
+          "type": "Edit",
+          "value": "Asia/Seoul"
+        },
+        {
+          "selector": "txt-general-11",
+          "name": "날짜 형식 2",
+          "type": "Edit",
+          "value": "YYYY-MM-DD"
+        },
+        {
+          "selector": "chk-general-12",
+          "name": "자동 업데이트 2",
+          "type": "CheckBox",
+          "toggle": "On"
+        },
+        {
+          "selector": "txt-general-13",
+          "name": "조직 이름 3",
+          "type": "Edit",
+          "value": "샘플 물류"
+        },
+        {
+          "selector": "txt-general-14",
+          "name": "관리자 이름 3",
+          "type": "Edit",
+          "value": "박지윤"
+        },
+        {
+          "selector": "txt-general-15",
+          "name": "대표 전화 3",
+          "type": "Edit",
+          "value": "02-555-0142"
+        },
+        {
+          "selector": "txt-general-16",
+          "name": "시간대 3",
+          "type": "Edit",
+          "value": "Asia/Seoul"
+        },
+        {
+          "selector": "txt-general-17",
+          "name": "날짜 형식 3",
+          "type": "Edit",
+          "value": "YYYY-MM-DD"
+        },
+        {
+          "selector": "chk-general-18",
+          "name": "자동 업데이트 3",
+          "type": "CheckBox",
+          "toggle": "On"
+        },
+        {
+          "selector": "txt-general-19",
+          "name": "조직 이름 4",
+          "type": "Edit",
+          "value": "샘플 물류"
+        },
+        {
+          "selector": "txt-general-20",
+          "name": "관리자 이름 4",
+          "type": "Edit",
+          "value": "박지윤"
+        },
+        {
+          "selector": "txt-general-21",
+          "name": "대표 전화 4",
+          "type": "Edit",
+          "value": "02-555-0142"
+        },
+        {
+          "selector": "txt-general-22",
+          "name": "시간대 4",
+          "type": "Edit",
+          "value": "Asia/Seoul",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-general-23",
+          "name": "날짜 형식 4",
+          "type": "Edit",
+          "value": "YYYY-MM-DD",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-general-24",
+          "name": "자동 업데이트 4",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-general-25",
+          "name": "조직 이름 5",
+          "type": "Edit",
+          "value": "샘플 물류",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-general-26",
+          "name": "관리자 이름 5",
+          "type": "Edit",
+          "value": "박지윤",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-general-27",
+          "name": "대표 전화 5",
+          "type": "Edit",
+          "value": "02-555-0142",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-general-28",
+          "name": "시간대 5",
+          "type": "Edit",
+          "value": "Asia/Seoul",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-general-29",
+          "name": "날짜 형식 5",
+          "type": "Edit",
+          "value": "YYYY-MM-DD",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-general-30",
+          "name": "자동 업데이트 5",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        }
+      ]
+    },
+    {
+      "selector": "grp-security",
+      "name": "보안",
+      "type": "Group",
+      "children": [
+        {
+          "selector": "txt-security-01",
+          "name": "비밀번호 최소 길이",
+          "type": "Edit",
+          "value": "12",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-02",
+          "name": "비밀번호 만료(일)",
+          "type": "Edit",
+          "value": "90",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-03",
+          "name": "로그인 실패 잠금 횟수",
+          "type": "Edit",
+          "value": "5",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-04",
+          "name": "세션 만료(분)",
+          "type": "Edit",
+          "value": "30",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-05",
+          "name": "2단계 인증",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-06",
+          "name": "허용 IP 대역",
+          "type": "Edit",
+          "value": "10.20.0.0/16",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-07",
+          "name": "감사 로그 보관(일)",
+          "type": "Edit",
+          "value": "365",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-08",
+          "name": "관리자 승인 필요",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-09",
+          "name": "비밀번호 최소 길이 2",
+          "type": "Edit",
+          "value": "12",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-10",
+          "name": "비밀번호 만료(일) 2",
+          "type": "Edit",
+          "value": "90",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-11",
+          "name": "로그인 실패 잠금 횟수 2",
+          "type": "Edit",
+          "value": "5",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-12",
+          "name": "세션 만료(분) 2",
+          "type": "Edit",
+          "value": "30",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-13",
+          "name": "2단계 인증 2",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-14",
+          "name": "허용 IP 대역 2",
+          "type": "Edit",
+          "value": "10.20.0.0/16",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-15",
+          "name": "감사 로그 보관(일) 2",
+          "type": "Edit",
+          "value": "365",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-16",
+          "name": "관리자 승인 필요 2",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-17",
+          "name": "비밀번호 최소 길이 3",
+          "type": "Edit",
+          "value": "12",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-18",
+          "name": "비밀번호 만료(일) 3",
+          "type": "Edit",
+          "value": "90",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-19",
+          "name": "로그인 실패 잠금 횟수 3",
+          "type": "Edit",
+          "value": "5",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-20",
+          "name": "세션 만료(분) 3",
+          "type": "Edit",
+          "value": "30",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-21",
+          "name": "2단계 인증 3",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-22",
+          "name": "허용 IP 대역 3",
+          "type": "Edit",
+          "value": "10.20.0.0/16",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-23",
+          "name": "감사 로그 보관(일) 3",
+          "type": "Edit",
+          "value": "365",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-24",
+          "name": "관리자 승인 필요 3",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-25",
+          "name": "비밀번호 최소 길이 4",
+          "type": "Edit",
+          "value": "12",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-26",
+          "name": "비밀번호 만료(일) 4",
+          "type": "Edit",
+          "value": "90",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-27",
+          "name": "로그인 실패 잠금 횟수 4",
+          "type": "Edit",
+          "value": "5",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-28",
+          "name": "세션 만료(분) 4",
+          "type": "Edit",
+          "value": "30",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-29",
+          "name": "2단계 인증 4",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-30",
+          "name": "허용 IP 대역 4",
+          "type": "Edit",
+          "value": "10.20.0.0/16",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-31",
+          "name": "감사 로그 보관(일) 4",
+          "type": "Edit",
+          "value": "365",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-32",
+          "name": "관리자 승인 필요 4",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-33",
+          "name": "비밀번호 최소 길이 5",
+          "type": "Edit",
+          "value": "12",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-34",
+          "name": "비밀번호 만료(일) 5",
+          "type": "Edit",
+          "value": "90",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-35",
+          "name": "로그인 실패 잠금 횟수 5",
+          "type": "Edit",
+          "value": "5",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-36",
+          "name": "세션 만료(분) 5",
+          "type": "Edit",
+          "value": "30",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-37",
+          "name": "2단계 인증 5",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-38",
+          "name": "허용 IP 대역 5",
+          "type": "Edit",
+          "value": "10.20.0.0/16",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-security-39",
+          "name": "감사 로그 보관(일) 5",
+          "type": "Edit",
+          "value": "365",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-security-40",
+          "name": "관리자 승인 필요 5",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        }
+      ]
+    },
+    {
+      "selector": "grp-network",
+      "name": "네트워크",
+      "type": "Group",
+      "children": [
+        {
+          "selector": "txt-network-01",
+          "name": "프록시 주소",
+          "type": "Edit",
+          "value": "proxy.example.invalid:8080",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-02",
+          "name": "프록시 사용",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-03",
+          "name": "연결 제한 시간(초)",
+          "type": "Edit",
+          "value": "20",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-04",
+          "name": "재시도 횟수",
+          "type": "Edit",
+          "value": "3",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-05",
+          "name": "DNS 서버",
+          "type": "Edit",
+          "value": "10.20.0.53",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-06",
+          "name": "TLS 최소 버전",
+          "type": "Edit",
+          "value": "1.2",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-07",
+          "name": "대역폭 제한(Mbps)",
+          "type": "Edit",
+          "value": "200",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-08",
+          "name": "IPv6 사용",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-09",
+          "name": "프록시 주소 2",
+          "type": "Edit",
+          "value": "proxy.example.invalid:8080",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-10",
+          "name": "프록시 사용 2",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-11",
+          "name": "연결 제한 시간(초) 2",
+          "type": "Edit",
+          "value": "20",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-12",
+          "name": "재시도 횟수 2",
+          "type": "Edit",
+          "value": "3",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-13",
+          "name": "DNS 서버 2",
+          "type": "Edit",
+          "value": "10.20.0.53",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-14",
+          "name": "TLS 최소 버전 2",
+          "type": "Edit",
+          "value": "1.2",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-15",
+          "name": "대역폭 제한(Mbps) 2",
+          "type": "Edit",
+          "value": "200",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-16",
+          "name": "IPv6 사용 2",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-17",
+          "name": "프록시 주소 3",
+          "type": "Edit",
+          "value": "proxy.example.invalid:8080",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-18",
+          "name": "프록시 사용 3",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-19",
+          "name": "연결 제한 시간(초) 3",
+          "type": "Edit",
+          "value": "20",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-20",
+          "name": "재시도 횟수 3",
+          "type": "Edit",
+          "value": "3",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-21",
+          "name": "DNS 서버 3",
+          "type": "Edit",
+          "value": "10.20.0.53",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-22",
+          "name": "TLS 최소 버전 3",
+          "type": "Edit",
+          "value": "1.2",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-23",
+          "name": "대역폭 제한(Mbps) 3",
+          "type": "Edit",
+          "value": "200",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-24",
+          "name": "IPv6 사용 3",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-25",
+          "name": "프록시 주소 4",
+          "type": "Edit",
+          "value": "proxy.example.invalid:8080",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-26",
+          "name": "프록시 사용 4",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-27",
+          "name": "연결 제한 시간(초) 4",
+          "type": "Edit",
+          "value": "20",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-28",
+          "name": "재시도 횟수 4",
+          "type": "Edit",
+          "value": "3",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-29",
+          "name": "DNS 서버 4",
+          "type": "Edit",
+          "value": "10.20.0.53",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-30",
+          "name": "TLS 최소 버전 4",
+          "type": "Edit",
+          "value": "1.2",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-31",
+          "name": "대역폭 제한(Mbps) 4",
+          "type": "Edit",
+          "value": "200",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-32",
+          "name": "IPv6 사용 4",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-33",
+          "name": "프록시 주소 5",
+          "type": "Edit",
+          "value": "proxy.example.invalid:8080",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-34",
+          "name": "프록시 사용 5",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-35",
+          "name": "연결 제한 시간(초) 5",
+          "type": "Edit",
+          "value": "20",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-36",
+          "name": "재시도 횟수 5",
+          "type": "Edit",
+          "value": "3",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-37",
+          "name": "DNS 서버 5",
+          "type": "Edit",
+          "value": "10.20.0.53",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-38",
+          "name": "TLS 최소 버전 5",
+          "type": "Edit",
+          "value": "1.2",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-network-39",
+          "name": "대역폭 제한(Mbps) 5",
+          "type": "Edit",
+          "value": "200",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-network-40",
+          "name": "IPv6 사용 5",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        }
+      ]
+    },
+    {
+      "selector": "grp-storage",
+      "name": "저장소",
+      "type": "Group",
+      "children": [
+        {
+          "selector": "txt-storage-01",
+          "name": "기본 저장 위치",
+          "type": "Edit",
+          "value": "D:\\data\\archive",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-02",
+          "name": "보관 기간(일)",
+          "type": "Edit",
+          "value": "730",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-03",
+          "name": "압축 사용",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-04",
+          "name": "백업 주기(시간)",
+          "type": "Edit",
+          "value": "24",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-05",
+          "name": "백업 보관 개수",
+          "type": "Edit",
+          "value": "14",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-06",
+          "name": "암호화 사용",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-07",
+          "name": "용량 경고(%)",
+          "type": "Edit",
+          "value": "85",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-08",
+          "name": "임시 파일 정리(일)",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-09",
+          "name": "기본 저장 위치 2",
+          "type": "Edit",
+          "value": "D:\\data\\archive",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-10",
+          "name": "보관 기간(일) 2",
+          "type": "Edit",
+          "value": "730",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-11",
+          "name": "압축 사용 2",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-12",
+          "name": "백업 주기(시간) 2",
+          "type": "Edit",
+          "value": "24",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-13",
+          "name": "백업 보관 개수 2",
+          "type": "Edit",
+          "value": "14",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-14",
+          "name": "암호화 사용 2",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-15",
+          "name": "용량 경고(%) 2",
+          "type": "Edit",
+          "value": "85",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-16",
+          "name": "임시 파일 정리(일) 2",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-17",
+          "name": "기본 저장 위치 3",
+          "type": "Edit",
+          "value": "D:\\data\\archive",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-18",
+          "name": "보관 기간(일) 3",
+          "type": "Edit",
+          "value": "730",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-19",
+          "name": "압축 사용 3",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-20",
+          "name": "백업 주기(시간) 3",
+          "type": "Edit",
+          "value": "24",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-21",
+          "name": "백업 보관 개수 3",
+          "type": "Edit",
+          "value": "14",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-22",
+          "name": "암호화 사용 3",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-23",
+          "name": "용량 경고(%) 3",
+          "type": "Edit",
+          "value": "85",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-24",
+          "name": "임시 파일 정리(일) 3",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-25",
+          "name": "기본 저장 위치 4",
+          "type": "Edit",
+          "value": "D:\\data\\archive",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-26",
+          "name": "보관 기간(일) 4",
+          "type": "Edit",
+          "value": "730",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-27",
+          "name": "압축 사용 4",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-28",
+          "name": "백업 주기(시간) 4",
+          "type": "Edit",
+          "value": "24",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-29",
+          "name": "백업 보관 개수 4",
+          "type": "Edit",
+          "value": "14",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-30",
+          "name": "암호화 사용 4",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-31",
+          "name": "용량 경고(%) 4",
+          "type": "Edit",
+          "value": "85",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-32",
+          "name": "임시 파일 정리(일) 4",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-33",
+          "name": "기본 저장 위치 5",
+          "type": "Edit",
+          "value": "D:\\data\\archive",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-34",
+          "name": "보관 기간(일) 5",
+          "type": "Edit",
+          "value": "730",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-35",
+          "name": "압축 사용 5",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-36",
+          "name": "백업 주기(시간) 5",
+          "type": "Edit",
+          "value": "24",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-37",
+          "name": "백업 보관 개수 5",
+          "type": "Edit",
+          "value": "14",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-storage-38",
+          "name": "암호화 사용 5",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-39",
+          "name": "용량 경고(%) 5",
+          "type": "Edit",
+          "value": "85",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-storage-40",
+          "name": "임시 파일 정리(일) 5",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        }
+      ]
+    },
+    {
+      "selector": "grp-users",
+      "name": "사용자 관리",
+      "type": "Group",
+      "children": [
+        {
+          "selector": "txt-users-01",
+          "name": "기본 역할",
+          "type": "Edit",
+          "value": "조회자",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-02",
+          "name": "초대 만료(일)",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-03",
+          "name": "자동 비활성화(일)",
+          "type": "Edit",
+          "value": "180",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-04",
+          "name": "그룹 동기화",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-05",
+          "name": "동기화 주기(분)",
+          "type": "Edit",
+          "value": "60",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-06",
+          "name": "게스트 허용",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-07",
+          "name": "기본 역할 2",
+          "type": "Edit",
+          "value": "조회자",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-08",
+          "name": "초대 만료(일) 2",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-09",
+          "name": "자동 비활성화(일) 2",
+          "type": "Edit",
+          "value": "180",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-10",
+          "name": "그룹 동기화 2",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-11",
+          "name": "동기화 주기(분) 2",
+          "type": "Edit",
+          "value": "60",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-12",
+          "name": "게스트 허용 2",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-13",
+          "name": "기본 역할 3",
+          "type": "Edit",
+          "value": "조회자",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-14",
+          "name": "초대 만료(일) 3",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-15",
+          "name": "자동 비활성화(일) 3",
+          "type": "Edit",
+          "value": "180",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-16",
+          "name": "그룹 동기화 3",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-17",
+          "name": "동기화 주기(분) 3",
+          "type": "Edit",
+          "value": "60",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-18",
+          "name": "게스트 허용 3",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-19",
+          "name": "기본 역할 4",
+          "type": "Edit",
+          "value": "조회자",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-20",
+          "name": "초대 만료(일) 4",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-21",
+          "name": "자동 비활성화(일) 4",
+          "type": "Edit",
+          "value": "180",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-22",
+          "name": "그룹 동기화 4",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-23",
+          "name": "동기화 주기(분) 4",
+          "type": "Edit",
+          "value": "60",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-24",
+          "name": "게스트 허용 4",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-25",
+          "name": "기본 역할 5",
+          "type": "Edit",
+          "value": "조회자",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-26",
+          "name": "초대 만료(일) 5",
+          "type": "Edit",
+          "value": "7",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-27",
+          "name": "자동 비활성화(일) 5",
+          "type": "Edit",
+          "value": "180",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-28",
+          "name": "그룹 동기화 5",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-users-29",
+          "name": "동기화 주기(분) 5",
+          "type": "Edit",
+          "value": "60",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-users-30",
+          "name": "게스트 허용 5",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        }
+      ]
+    },
+    {
+      "selector": "grp-notify",
+      "name": "알림",
+      "type": "Group",
+      "children": [
+        {
+          "selector": "chk-send-mail",
+          "name": "이메일 발송",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-send-sms",
+          "name": "문자 발송",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-send-push",
+          "name": "앱 푸시",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-quiet-start",
+          "name": "방해 금지 시작",
+          "type": "Edit",
+          "value": "22:30",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-quiet-end",
+          "name": "방해 금지 종료",
+          "type": "Edit",
+          "value": "07:15",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-digest",
+          "name": "요약 주기",
+          "type": "Edit",
+          "value": "매주 월요일",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-recipient",
+          "name": "받는 주소",
+          "type": "Edit",
+          "value": "ops-alert@example.invalid",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-weekend",
+          "name": "주말 발송",
+          "type": "CheckBox",
+          "toggle": "Off",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-threshold",
+          "name": "경보 기준(건)",
+          "type": "Edit",
+          "value": "37",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-send-language",
+          "name": "발송 언어",
+          "type": "Edit",
+          "value": "한국어",
+          "offscreen": true
+        },
+        {
+          "selector": "txt-webhook",
+          "name": "웹훅 주소",
+          "type": "Edit",
+          "value": "https://hooks.example.invalid/n/4821",
+          "offscreen": true
+        },
+        {
+          "selector": "chk-escalate",
+          "name": "미확인 시 상급자 전달",
+          "type": "CheckBox",
+          "toggle": "On",
+          "offscreen": true
+        }
+      ]
+    }
+  ],
+  "rules": []
+}

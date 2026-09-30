@@ -1,0 +1,29 @@
+{
+  "id": "X3-long-session-recall",
+  "title": "긴 대화에서 앞 내용 기억",
+  "suite": "conversation",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "이번 대화에서는 코드를 고치지 말고 설명만 해 줘. 답에는 근거 파일 경로를 적어 줘. 먼저 src/generation/repository-run.ts에서 update 실행이 아무것도 바꾸지 않고 끝나는(noop) 조건을 정리해 줘.",
+  "followUps": [
+    "src/agent/index.ts에서 bedrock 공급자는 어떤 모델 클래스로 만들어지고, 지역(region)은 어떻게 정해지는지 알려 줘.",
+    "src/cli/commands.ts에서 --update 옵션이 어떤 순서로 처리되는지 설명해 줘.",
+    "src/config/constants.ts에서 공급자별 기본 모델이 어떻게 정해지는지 정리해 줘.",
+    "src/agent/wiki-question.ts는 Wiki 질문에 답할 때 어떤 단계를 거쳐?",
+    "처음에 정리한 noop 조건에서 Claims 문제가 남아 있으면 어떻게 되는지 다시 말해 줘. 그리고 두 번째로 물어본 bedrock의 지역 결정 방식도 한 줄로 다시 적어 줘."
+  ],
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "re:issueCount|Claims.{0,60}(문제|이슈|issue)|(문제|이슈|issue).{0,60}Claims"
+      ],
+      [
+        "resolveProviderRegion",
+        "BEDROCK_AWS_REGION"
+      ]
+    ],
+    "unchanged_except": []
+  }
+}

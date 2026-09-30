@@ -100,10 +100,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $baseline = Join-Path $env:RUNNER_TEMP 'nubi-desktop-baseline'
-          gh run download 35870591663 --repo plaire48/llm-router --name nubi-workspace-windows-x64 --dir $baseline
+          # 1.1.0 as published: the verified installer of run 36651590466, kept in the draft release of that run.
+          gh release download nubi-desktop-v1.1.0-run-36651590466 --repo plaire48/llm-router --pattern 'Nubi-Workspace-beta-1.1.0-x64-Setup.exe' --dir $baseline
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $previous = Join-Path $baseline 'release/windows/Nubi-Workspace-beta-1.0.0-x64-Setup.exe'
-          if ((Get-FileHash $previous -Algorithm SHA256).Hash.ToLower() -ne '2cf070446d301a20e57b0722a8fa15400f6e18947b1f3c63813dc379a45ea59e') { throw 'Baseline checksum mismatch' }
+          $previous = Join-Path $baseline 'Nubi-Workspace-beta-1.1.0-x64-Setup.exe'
+          if ((Get-FileHash $previous -Algorithm SHA256).Hash.ToLower() -ne '107933dc1fdb19e3949a0817ee89bff2d330d209e1d04551b0248c48dd1c4e86') { throw 'Baseline checksum mismatch' }
           "NUBI_BASELINE_INSTALLER=$previous" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Install and verify packaged application
         timeout-minutes: 25

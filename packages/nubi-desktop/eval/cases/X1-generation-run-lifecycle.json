@@ -1,0 +1,43 @@
+{
+  "id": "X1-generation-run-lifecycle",
+  "title": "긴 파일의 실행 흐름",
+  "suite": "source",
+  "split": "dev",
+  "corpus": "openwiki-sds",
+  "request": "src/generation/repository-run.ts를 처음부터 끝까지 읽고 저장소 Wiki 실행의 흐름을 설명해 줘. 이미 저장된 실행 상태가 있으면 시작할 때 어떻게 되는지, update 모드에서 아무것도 바꾸지 않고 끝나는 경우는 언제인지, finish가 끝내기를 거부하는 조건은 무엇인지, 실행 중에 원본이 바뀌면 결과와 마지막 갱신 기록이 어떻게 달라지는지 정리해 줘. 코드는 고치지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "resumeRepositoryRun",
+        "re:재개|resume"
+      ],
+      [
+        "noop"
+      ],
+      [
+        "re:issueCount|Claims.{0,60}(문제|이슈|issue)|(문제|이슈|issue).{0,60}Claims"
+      ],
+      [
+        "re:pending|대기 ?중"
+      ],
+      [
+        "re:snapshot|스냅[숏샷]"
+      ],
+      [
+        "sourceChanged"
+      ],
+      [
+        "interrupted"
+      ]
+    ],
+    "retrieved": {
+      "paths": [
+        "src/generation/repository-run.ts"
+      ],
+      "min": 1
+    },
+    "unchanged_except": []
+  }
+}

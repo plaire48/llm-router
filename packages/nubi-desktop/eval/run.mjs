@@ -28,12 +28,14 @@ const add=(target,key,value)=>{target[key]=(target[key]||0)+(value||0);};
 
 function summarize(results){
   const tally=()=>Object.fromEntries([['total',0],...OUTCOMES.map(name=>[name,0])]),bySuite={},bySplit={};
-  const quality={total:results.length,executed:0,passed:0,delivered:0,falseCompletion:0,reviewLimit:0,reviewStalled:0,unnecessaryQuestion:0,missedQuestion:0,retrievalCases:0,retrievalReached:0,citationCases:0,citationFound:0};
+  const quality={total:results.length,executed:0,passed:0,reducedWindow:{executed:0,passed:0},delivered:0,falseCompletion:0,reviewLimit:0,reviewStalled:0,unnecessaryQuestion:0,missedQuestion:0,retrievalCases:0,retrievalReached:0,citationCases:0,citationFound:0};
   const cost={modelCalls:0,retries:0,toolCalls:0,compactions:0,elapsedMs:0,promptTokens:0,completionTokens:0,cachedTokens:0,estimatedTokens:0,measuredEstimatedTokens:0,requestCharacters:0,fixedCharacters:0,peakRequestCharacters:0,byPurpose:{},byTool:{}};
   for(const result of results){
     for(const group of [bySuite[result.suite]??=tally(),bySplit[result.split]??=tally()]){group.total++;group[result.outcome]++;}
     if(result.outcome==='not_run')continue;
-    quality.executed++;if(result.outcome==='passed')quality.passed++;
+    // A case under a lowered window is a compaction test; the model windows are 256K to 512K (user decision 2026-09-30).
+    if(result.reducedWindow){quality.reducedWindow.executed++;if(result.outcome==='passed')quality.reducedWindow.passed++;}
+    else{quality.executed++;if(result.outcome==='passed')quality.passed++;}
     if(result.state==='review'&&result.answerCharacters>0)quality.delivered++;
     if(result.falseCompletion)quality.falseCompletion++;
     if(result.reviewHandoff==='review_limit')quality.reviewLimit++;
@@ -65,7 +67,7 @@ export async function evaluate({providers,cases,trials=1,outputDir,limits=EVALUA
   // A missing or lost model session is "not run": it must not look like a model failure.
   let stopped=status.connected===true?null:'model_session_not_connected';
   for(const testCase of cases)for(let trial=1;trial<=trials;trial++){
-    const name=`${testCase.id}-t${trial}`,common={id:testCase.id,title:testCase.title,suite:testCase.suite,split:testCase.split,corpus:testCase.corpus,trial,expectedAsked:testCase.expect.asked??null};
+    const name=`${testCase.id}-t${trial}`,common={id:testCase.id,title:testCase.title,suite:testCase.suite,split:testCase.split,corpus:testCase.corpus,trial,expectedAsked:testCase.expect.asked??null,...(testCase.modelLimits?{reducedWindow:testCase.modelLimits.contextLength}:{})};
     if(stopped){const skipped={...common,outcome:'not_run',passed:false,reason:stopped,checks:[],falseCompletion:false};report.results.push(skipped);onResult(skipped);continue;}
     const run=await runCase({testCase,providers,limits,parent,corpusDirectory});
     let graded;
@@ -98,7 +100,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     const report=await evaluate({providers,cases,trials:Number(option('trials')||1),outputDir,
       onResult:result=>console.log([result.outcome.padEnd(12),result.id.padEnd(30),'모델 호출 '+String(result.modelCalls??0).padStart(3),'위임 '+String(result.delegatedCalls??0).padStart(3),Math.round((result.elapsedMs||0)/1000)+'초',result.error||result.reason||''].join(' '))});
     const {quality,cost}=report.summary;
-    console.log(JSON.stringify({model:report.model,candidate:report.candidate.hash.slice(0,12),passed:`${quality.passed}/${quality.executed}`,falseCompletion:quality.falseCompletion,modelCalls:cost.modelCalls,promptTokens:cost.promptTokens,fixedShare:cost.fixedShare,report:path.join(outputDir,'report.json')},null,2));
+    console.log(JSON.stringify({model:report.model,candidate:report.candidate.hash.slice(0,12),passed:`${quality.passed}/${quality.executed}`,reducedWindow:`${quality.reducedWindow.passed}/${quality.reducedWindow.executed}`,falseCompletion:quality.falseCompletion,modelCalls:cost.modelCalls,promptTokens:cost.promptTokens,fixedShare:cost.fixedShare,report:path.join(outputDir,'report.json')},null,2));
     console.log('공개 자료와 합성 자료로 측정한 결과입니다. 사내 모델이나 회사 저장소의 성능이 아닙니다.');
   }finally{providers.dispose();}
 }

@@ -34,6 +34,17 @@ async function setup(t){
   return {parent:base,corpusDirectory,candidate:{hash:'a'.repeat(64),files:1}};
 }
 
+// The model windows are 256K to 512K (user decision 2026-09-30): a case under a lowered window is a compaction
+// test and is counted apart from the main pass rate.
+test('a case under a lowered window is counted apart from the main pass rate',async t=>{
+  const options=await setup(t),outputDir=path.join(options.parent,'out');
+  const lowered={...cases[0],id:'T3-lowered-window',modelLimits:{contextLength:22000}};
+  const report=await evaluate({...options,outputDir,cases:[cases[1],lowered],providers:scripted(request=>request.includes('제주')?'제주 추가 요금은 4,500원입니다.':'무료 배송 기준은 60,000원입니다.')});
+  assert.deepEqual(report.results.map(result=>[result.id,result.outcome,result.reducedWindow??null]),[['T2-second-case','failed',null],['T3-lowered-window','passed',22000]]);
+  const {quality}=report.summary;
+  assert.deepEqual([quality.executed,quality.passed],[1,0]);assert.deepEqual(quality.reducedWindow,{executed:1,passed:1});
+});
+
 test('a run writes a report, per-case records and totals by purpose',async t=>{
   const options=await setup(t),outputDir=path.join(options.parent,'out'),seen=[];
   const report=await evaluate({...options,outputDir,cases,providers:scripted(request=>request.includes('제주')?'제주 추가 요금은 4,500원입니다.':'무료 배송 기준은 60,000원입니다.'),onResult:result=>seen.push(result.id+':'+result.outcome)});

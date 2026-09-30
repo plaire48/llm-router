@@ -3,6 +3,7 @@ import {injectable, inject, postConstruct} from '@theia/core/shared/inversify';
 import {ReactWidget} from '@theia/core/lib/browser/widgets/react-widget';
 import {WorkspaceTrustService} from '@theia/workspace/lib/browser/workspace-trust-service';
 import {WorkspaceService} from '@theia/workspace/lib/browser/workspace-service';
+import {WorkspaceCommands} from '@theia/workspace/lib/browser/workspace-commands';
 import {EditorManager} from '@theia/editor/lib/browser/editor-manager';
 import {CommandService} from '@theia/core/lib/common/command';
 import URI from '@theia/core/lib/common/uri';
@@ -34,9 +35,12 @@ export class NubiWidget extends ReactWidget {
     if(!file)return {cancelled:true};
     return this.service.invoke('computer',{method:'register_app',taskId:args.taskId,file:file.path.fsPath()});
   }
-  @postConstruct() init(){this.id=NubiWidget.ID;this.title.label='누비 workspace';this.title.caption='누비 workspace beta 1.1.0';this.title.closable=false;this.title.iconClass='nubi-workspace-tab-icon';this.addClass('nubi-widget');this.node.tabIndex=0;this.update();}
+  @postConstruct() init(){this.id=NubiWidget.ID;this.title.label='누비 workspace';this.title.caption='누비 workspace beta 1.1.1';this.title.closable=false;this.title.iconClass='nubi-workspace-tab-icon';this.addClass('nubi-widget');this.node.tabIndex=0;this.update();}
   protected onActivateRequest():void {this.node.focus({preventScroll:true});}
   protected async openCurrent(){if(!await this.trust.getWorkspaceTrust())throw new Error('workspace_untrusted');const roots=await this.workspace.roots;if(!roots.length)return null;return this.service.invoke('open',{root:roots[0].resource.path.fsPath()});}
+  // Theia enables workspace:open only on macOS and in the browser, so "프로젝트 열기" failed in Windows Electron
+  // (1.0.0 to 1.1.0). The folder dialog is enabled on every platform.
+  protected async chooseFolder(){try{await this.commands.executeCommand(WorkspaceCommands.OPEN_FOLDER.id);}catch{throw new Error('project_picker_unavailable');}}
   protected async openPath(path:string,taskId?:string){const file=await this.service.invoke('read',{path,taskId,full:true});return this.editors.open(new URI(file.uri),{mode:'activate'});}
   protected async review(proposalId:string){const proposal=await this.service.invoke('proposalArtifacts',{proposalId});await this.editors.open(DiffUris.encode(new URI(proposal.beforeUri),new URI(proposal.afterUri),'누비 변경 제안'),{mode:'activate'});}
   protected async apply(proposalId:string){
@@ -57,5 +61,5 @@ export class NubiWidget extends ReactWidget {
     if(!applied)throw new Error('editor_apply_failed');
     await doc.save();return this.service.invoke('confirmProposal',{proposalId});
   }
-  protected render():React.ReactNode{return <Workbench api={(method:string,args:any)=>this.call(method,args)} openCurrent={()=>this.openCurrent()} chooseFolder={()=>this.commands.executeCommand('workspace:open')} openPath={(path:string,taskId?:string)=>this.openPath(path,taskId)} review={(id:string)=>this.review(id)} apply={(id:string)=>this.apply(id)} openBrowser={(url:string)=>window.open(url,'_blank','noopener,noreferrer')} openURI={(uri:string)=>this.editors.open(new URI(uri),{mode:'activate'})}/>;}
+  protected render():React.ReactNode{return <Workbench api={(method:string,args:any)=>this.call(method,args)} openCurrent={()=>this.openCurrent()} chooseFolder={()=>this.chooseFolder()} openPath={(path:string,taskId?:string)=>this.openPath(path,taskId)} review={(id:string)=>this.review(id)} apply={(id:string)=>this.apply(id)} openBrowser={(url:string)=>window.open(url,'_blank','noopener,noreferrer')} openURI={(uri:string)=>this.editors.open(new URI(uri),{mode:'activate'})}/>;}
 }

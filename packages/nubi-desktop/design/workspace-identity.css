@@ -136,6 +136,11 @@
 .nubi-start .welcome { margin:clamp(32px,8vh,84px) auto 0; padding:var(--cx-space-4) 0; }
 .nubi-start .welcome-art { width:136px; height:104px; }
 .nubi-start .welcome-emblem { width:88px; height:88px; }
+/* The bird stays on top (user request 2026-09-30): the start screen sparkles and its greeting and completion
+   sparkles show behind it. In 1.1.0 the start screen sparkles were drawn over the bird. */
+.nubi-workbench .welcome-emblem { z-index:1; }
+.nubi-workbench .agent-mark { isolation:isolate; }
+.nubi-workbench .agent-mark > .bird-joy { z-index:-1; }
 .nubi-workbench .composer-leading { display:flex; align-items:center; gap:var(--cx-space-2); min-width:0; }
 .nubi-workbench .model-picker { display:flex; align-items:center; min-width:0; }
 .nubi-workbench .model-trigger.cx-kit-button { display:flex; align-items:center; gap:var(--cx-space-2); max-width:min(340px,55vw); background:var(--deck-blue-soft); border:1px solid var(--deck-line); color:var(--deck-ink); }

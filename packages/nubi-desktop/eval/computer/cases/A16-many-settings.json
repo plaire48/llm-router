@@ -1,0 +1,40 @@
+{
+  "id": "A16-many-settings",
+  "title": "요소가 많은 화면에서 읽기",
+  "app": "admin-console",
+  "corpus": "order-service",
+  "approve": "none",
+  "request": "연결한 관리 콘솔 앱의 알림 설정에 있는 항목과 현재 값을 모두 알려 줘. 아무것도 바꾸지 마.",
+  "expect": {
+    "state": "review",
+    "asked": false,
+    "answer_includes": [
+      [
+        "22:30"
+      ],
+      [
+        "07:15"
+      ],
+      [
+        "매주 월요일"
+      ],
+      [
+        "ops-alert@example.invalid"
+      ],
+      [
+        "37"
+      ],
+      [
+        "4821"
+      ],
+      [
+        "한국어"
+      ]
+    ],
+    "app": {
+      "inputs": {
+        "max": 0
+      }
+    }
+  }
+}

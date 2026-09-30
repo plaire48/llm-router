@@ -50,6 +50,17 @@ try{
  },probe);
  assert.deepEqual(updateRunner.exports,['runNativeRepositoryGeneration','NubiOpenWikiModel','syncBundledSkills']);assert.ok(updateRunner.skills.length>0);
  assert.deepEqual({...receipt.voc,pages:undefined},{imported:true,duplicate:true,found:true,exactRead:true,pages:undefined});assert(receipt.voc.pages>1);
- const result={passed:true,platform:process.platform,...facts,receipt,updateRunner,scope:'Electron launch, UI, compiled worker IPC, SQLite, source read, OpenWiki-SDS retrieval and loading of the OpenWiki update runner. No live model or company app.'};
+ // "프로젝트 열기" reaches the folder dialog of the platform. Theia disables workspace:open in Windows and Linux
+ // Electron, so the button failed there up to 1.1.0. The native dialog is replaced in the main process and cancelled.
+ await app.evaluate(({dialog})=>{globalThis.nubiDialogs=[];dialog.showOpenDialog=async(...args)=>{const options=args.find(value=>Array.isArray(value?.properties))||{};globalThis.nubiDialogs.push(options.properties||[]);return {canceled:true,filePaths:[]};};});
+ // The project library opened above is a modal panel over the sidebar.
+ await page.keyboard.press('Escape');await page.locator('.cx-panel-backdrop').waitFor({state:'detached',timeout:10000});
+ await page.getByRole('button',{name:'프로젝트 열기',exact:true}).click();
+ let dialogs=[];for(let wait=0;wait<50&&!dialogs.length;wait++){await page.waitForTimeout(100);dialogs=await app.evaluate(()=>globalThis.nubiDialogs);}
+ const openError=await page.locator('.nubi-error').innerText().catch(()=>'');
+ assert.equal(dialogs.length,1,'project folder dialog did not open: '+openError);assert.ok(dialogs[0].includes('openDirectory'));assert.ok(!dialogs[0].includes('openFile'));
+ assert.equal(await page.locator('.nubi-error').count(),0,openError);
+ const openProject={dialog:'folder',properties:dialogs[0]};
+ const result={passed:true,platform:process.platform,...facts,receipt,updateRunner,openProject,scope:'Electron launch, UI, compiled worker IPC, SQLite, source read, OpenWiki-SDS retrieval, loading of the OpenWiki update runner and the project folder dialog. No live model or company app.'};
  await writeFile('verification/electron-release.json',JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));
 }finally{await app.close();await writeFile('verification/electron-release-stderr.log',errors.join(''));}

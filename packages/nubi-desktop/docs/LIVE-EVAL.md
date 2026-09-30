@@ -293,7 +293,7 @@ A12~A15는 OpenWiki 에이전트에게 규정을 묻고 그 답과 근거로 앱
 
 ## 빌드 상태
 
-2026-09-30 기준 `npm run compile`, `npm run build`, `npm run test:ui`, `npm run test:shared-ui`와 단위 검사 552개가 통과한다. 앱 번들에 계측이 들어 있다. OpenWiki 갱신 실행기는 `lib/backend/openwiki-update/`에 따로 있고 갱신할 때만 불러온다.
+2026-09-30 기준 `npm run compile`, `npm run build`, `npm run test:ui`, `npm run test:shared-ui`, `npm run test:skills-ui`와 단위 검사 559개가 통과한다. 앱 번들에 계측이 들어 있다. OpenWiki 갱신 실행기는 `lib/backend/openwiki-update/`에 따로 있고 갱신할 때만 불러온다.
 
 기준 HTML은 성공 색으로 초록 `#148A5C`, `#E6F6EE`를 쓴다. 공유 `agent-deck.css`는 브라우저 누비의 결정에 따라 두 값을 파랑으로 둔다. Desktop은 공유 파일을 바꾸지 않고 `design/workspace-identity.css`에서 기준 HTML의 값을 되돌린다. `scripts/check-identity.mjs`는 Desktop 계층이 값을 정하면 그 값을, 아니면 공유 값을 기준 HTML과 대조한다.
 
