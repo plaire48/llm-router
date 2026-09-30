@@ -122,11 +122,11 @@ try{
  await p.getByRole('button',{name:'앱 파일 선택',exact:true}).click();assert.equal(await p.getByRole('button',{name:'실행 준비',exact:true}).count(),0);
  await p.getByLabel('실행 파일 (.exe)',{exact:true}).fill('C:\\Program Files\\한국어 업무 시스템\\app.exe');await p.getByRole('button',{name:'앱 등록',exact:true}).click();assert.equal(await p.getByLabel('실행 횟수').textContent(),'0');
  await p.getByRole('button',{name:'실행 준비',exact:true}).click();await p.getByRole('region',{name:'프로그램 실행 승인'}).waitFor();assert.equal(await p.getByLabel('실행 횟수').textContent(),'0');
- await p.getByRole('button',{name:'승인하고 실행',exact:true}).click();await p.getByRole('button',{name:'실행한 앱 연결',exact:true}).waitFor();assert.equal(await p.getByLabel('실행 횟수').textContent(),'1');
+ await p.getByRole('button',{name:'실행',exact:true}).click();await p.getByRole('button',{name:'실행한 앱 연결',exact:true}).waitFor();assert.equal(await p.getByLabel('실행 횟수').textContent(),'1');
  await p.getByRole('button',{name:'열린 창 다시 확인',exact:true}).click();assert.equal(await p.getByLabel('실행 횟수').textContent(),'1');await p.getByRole('button',{name:'실행한 앱 연결',exact:true}).click();await p.getByText('컴퓨터 연결: 합성 앱',{exact:true}).waitFor();
  checks.push('app registration and picker cancellation are inert; approval, receipt lookup and explicit window connection remain distinct');
- await p.getByRole('button',{name:'결과 분석하고 이어가기',exact:true}).click();await p.getByText('분석 결과는 대화에서 확인하세요. 다음 동작은 별도로 승인합니다.',{exact:true}).waitFor();assert.equal(await p.getByLabel('실행 횟수').textContent(),'1');checks.push('result analysis continuation does not launch or approve another native operation');
- await p.getByLabel('실행 파일 (.exe)',{exact:true}).fill('C:\\Apps\\unknown.exe');await p.getByRole('button',{name:'앱 등록',exact:true}).click();await p.getByRole('button',{name:'실행 준비',exact:true}).last().click();await p.getByRole('button',{name:'승인하고 실행',exact:true}).click();
+ await p.getByRole('button',{name:'이어가기',exact:true}).click();await p.getByText('분석 결과는 대화에서 확인하세요. 다음 동작은 별도로 승인합니다.',{exact:true}).waitFor();assert.equal(await p.getByLabel('실행 횟수').textContent(),'1');checks.push('result analysis continuation does not launch or approve another native operation');
+ await p.getByLabel('실행 파일 (.exe)',{exact:true}).fill('C:\\Apps\\unknown.exe');await p.getByRole('button',{name:'앱 등록',exact:true}).click();await p.getByRole('button',{name:'실행 준비',exact:true}).last().click();await p.getByRole('button',{name:'실행',exact:true}).click();
  const uncertain=p.getByRole('region',{name:'프로그램 실행 승인'}).filter({hasText:'unknown.exe'});await uncertain.getByText('확인 필요',{exact:true}).waitFor();await uncertain.getByText(/실행 결과를 확인해야 합니다/).waitFor();await uncertain.getByRole('button',{name:'열린 창 다시 확인',exact:true}).click();assert.equal(await p.getByLabel('실행 횟수').textContent(),'2');await uncertain.getByRole('button',{name:'실제 결과를 확인했어요',exact:true}).click();await uncertain.getByText('사용자 확인됨',{exact:true}).waitFor();assert.equal(await p.getByLabel('실행 횟수').textContent(),'2');
  checks.push('uncertain app launch stays visible and read-only reconciliation or acknowledgement never repeats launch');
 
@@ -136,7 +136,7 @@ try{
  await p.getByText('이미 요청한 상태여서 다시 조작하지 않았습니다.',{exact:true}).waitFor();
  await p.getByText('OpenWiki-SDS 근거가 바뀌어 실행하지 않았습니다. 최신 근거로 다시 제안해 주세요.',{exact:true}).waitFor();
  await p.getByText('OpenWiki-SDS 근거 1개',{exact:true}).first().click();await p.getByText('openwiki/notification.md:3 참조 버전 일치',{exact:true}).first().waitFor();
- assert.equal(await p.getByRole('button',{name:'승인하고 실행',exact:true}).count(),0);
+ assert.equal(await p.getByRole('button',{name:'실행',exact:true}).count(),0);
  await p.setViewportSize({width:440,height:950});assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await p.screenshot({path:'verification/ui-uia-state-evidence.png'});
  checks.push('UIA no-op and stale Wiki remain distinct with reviewable evidence and no execution button');assert.deepEqual(errors,[]);
  await p.setViewportSize({width:1280,height:950});
@@ -144,11 +144,11 @@ try{
  await waitingBatch.getByText('묶음 입력 3단계',{exact:true}).waitFor();
  assert.deepEqual(await waitingBatch.locator('.nubi-batch-steps > li > span').allTextContents(),['입력: 메모','체크 켜기: 긴급 처리','누르기: 임시 저장']);
  await waitingBatch.getByText('출장 택시비',{exact:true}).waitFor();
- assert.equal(await waitingBatch.getByRole('button',{name:'모두 승인하고 실행',exact:true}).count(),1);
+ assert.equal(await waitingBatch.getByRole('button',{name:'모두 실행',exact:true}).count(),1);
  const partialBatch=p.getByRole('region',{name:'컴퓨터 동작 묶음 승인'}).filter({hasText:'두 칸을 입력합니다.'});
  await partialBatch.getByText('2번째 단계에서 대상이 바뀌어 멈췄습니다. 그 단계부터는 실행하지 않았습니다.',{exact:true}).waitFor();
  assert.deepEqual(await partialBatch.locator('.nubi-batch-steps small').allTextContents(),['입력값 일치','실행하지 않음']);
- assert.equal(await partialBatch.getByRole('button',{name:'모두 승인하고 실행',exact:true}).count(),0);
+ assert.equal(await partialBatch.getByRole('button',{name:'모두 실행',exact:true}).count(),0);
  await p.setViewportSize({width:440,height:950});assert.equal(await p.locator('.nubi-workbench').evaluate(e=>e.scrollWidth<=e.clientWidth),true);await waitingBatch.screenshot({path:'verification/ui-computer-batch.png'});
  checks.push('a batch lists every step with its value, and a stopped batch tells which steps ran');assert.deepEqual(errors,[]);
  await p.goto('http://127.0.0.1:'+server.address().port+'/?pointer=1');
@@ -167,7 +167,7 @@ try{
  await p.goto('http://127.0.0.1:'+server.address().port+'/?elevation=1');
  await openHistory();await p.getByRole('dialog',{name:'작업 이력',exact:true}).getByRole('button',{name:/관리자 승인 화면 검증/}).click();
  const adminCard=title=>p.getByRole('region',{name:'실행 준비 승인',exact:true}).filter({has:p.getByRole('heading',{name:title,exact:true})});
- await adminCard('관리자 실행 거절').getByRole('button',{name:'실행하지 않기',exact:true}).click();await adminCard('관리자 실행 거절').getByText('실행하지 않음',{exact:true}).waitFor();
+ await adminCard('관리자 실행 거절').getByRole('button',{name:'실행 안 함',exact:true}).click();await adminCard('관리자 실행 거절').getByText('실행하지 않음',{exact:true}).waitFor();
  await adminCard('관리자 실행 검증').getByText(/Windows UAC/).waitFor();
  await p.screenshot({path:'verification/ui-administrator-approval.png',animations:'disabled'});
  await adminCard('관리자 실행 검증').getByRole('button',{name:'관리자 권한으로 실행',exact:true}).click();await p.getByText('합성 관리자 승인 전달을 확인했습니다. 실제 UAC 실행은 하지 않았습니다.',{exact:true}).waitFor();
@@ -267,7 +267,7 @@ try{
  await p.goto('http://127.0.0.1:'+server.address().port+'/?controls');
  await p.getByText('문서 분석 근거 1개',{exact:true}).first().click();await p.getByText('docs/앱-규칙.md',{exact:true}).first().waitFor();
  await p.getByText('일부만 확인한 분석입니다. 미열람 구간과 결과를 확인해 주세요.',{exact:true}).first().waitFor();
- assert.equal(await p.getByRole('button',{name:'승인하고 실행',exact:true}).count(),0);
+ assert.equal(await p.getByRole('button',{name:'실행',exact:true}).count(),0);
  checks.push('native proposals show linked document scope and partial analysis without adding or implying approval');assert.deepEqual(errors,[]);
 
  await p.setViewportSize({width:1280,height:950});await p.goto('http://127.0.0.1:'+server.address().port+'/?sessions=1');

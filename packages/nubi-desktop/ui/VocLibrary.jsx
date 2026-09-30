@@ -16,7 +16,7 @@ export function VocLibrary({api,openPath,onError,onNotice}){
     onNotice(saved.noChange?'이미 보관한 자료예요.':'VOC 자료를 보관했어요.');
     setQuery('');await search('');
   });}
-  return <DeckDisclosure title="VOC 자료">
+  return <DeckDisclosure title="VOC 자료" icon="message">
     <p className="nubi-muted">VOC JSON을 작업 공간의 voc 폴더에 보관합니다.</p>
     <form className="nubi-inline" onSubmit={e=>{e.preventDefault();run(()=>search());}}>
       <CxInput aria-label="VOC 검색" placeholder="티켓이나 처리 내용 검색" value={query} onChange={e=>setQuery(e.target.value)}/>

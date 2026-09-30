@@ -1,11 +1,7 @@
 import React, {useId, useState} from 'react';
 import {CxButton, CxInput, Icon} from '@e2e/cx-design-system';
 import {remoteAddress} from './remote-address.mjs';
-
-// Folder and branch marks; the design system has no folder or branch glyph.
-const Mark = ({children}) => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>;
-const FolderMark = () => <Mark><path d="M3.5 7.5a2 2 0 0 1 2-2h3.7l2 2.2h7.3a2 2 0 0 1 2 2v7.8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></Mark>;
-const BranchMark = () => <Mark><circle cx="6.5" cy="5.5" r="2"/><circle cx="6.5" cy="18.5" r="2"/><circle cx="17.5" cy="8" r="2"/><path d="M6.5 7.5v9M17.5 10c0 4-4.5 4.2-9.6 6.9"/></Mark>;
+import {BranchMark, FolderMark} from './marks.jsx';
 
 // Where a first project comes from (user decision 2026-09-30): a folder on this PC, or a remote
 // repository the host clones and opens. The cards take the composer's place and width.
