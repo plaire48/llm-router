@@ -1,5 +1,5 @@
 import React,{useEffect,useRef,useState} from 'react';
-import {ActionButton,CxButton,CxInput,CxSelect,CxNotice} from '@e2e/cx-design-system';
+import {ActionButton,CxButton,CxInput,CxSelect,CxNotice, Icon} from '@e2e/cx-design-system';
 import {DeckDisclosure,DeckStatus} from '../../../extensions/aipro-chat/src/DeckSurfaces.jsx';
 
 const kinds={concept:'업무 개념',source:'소스',wiki:'Wiki',requirement:'요구사항',document:'문서',database:'DB',table:'테이블',column:'컬럼'};
@@ -24,7 +24,7 @@ export function KnowledgeMap({api,taskId,openPath,onError,onNotice}){
   return <section className="nubi-map" aria-label="프로젝트 관계">
     <div className="nubi-map-heading"><h2>프로젝트 관계</h2><ActionButton action="refresh" label="관계 새로고침" disabled={busy} onClick={()=>act(refresh)}/></div>
     <p className="nubi-muted">업무에서 연결된 코드와 DB, Wiki를 찾으세요.</p>
-    <div className="nubi-task-actions"><CxButton onClick={()=>setDbOpen(!dbOpen)} aria-expanded={dbOpen}>DB 연결</CxButton><CxButton disabled={busy} onClick={()=>act(async()=>{const file=map?.configured?{path:map.catalogPath}:await api('initializeKnowledgeCatalog',{taskId});await openPath(file.path,taskId);await refresh();})}>{map?.configured?'지식 목록 편집':'지식 목록 만들기'}</CxButton>{!!map?.nodes.length&&<CxButton disabled={busy} onClick={()=>act(async()=>{await api('exportKnowledgeMap',{taskId,expectedFingerprint:map.fingerprint});await refresh();onNotice('관계 지도를 Wiki에 저장했어요.');})}>관계를 Wiki에 기록</CxButton>}{map?.baselinePath&&<ActionButton action="read" label="관계 기록 열기" onClick={()=>act(()=>openPath(map.baselinePath,taskId))}/>}</div>
+    <div className="nubi-task-actions"><CxButton className="nubi-text-button" onClick={()=>setDbOpen(!dbOpen)} aria-expanded={dbOpen}><Icon name="link" size={16}/>DB 연결</CxButton><CxButton className="nubi-text-button" disabled={busy} onClick={()=>act(async()=>{const file=map?.configured?{path:map.catalogPath}:await api('initializeKnowledgeCatalog',{taskId});await openPath(file.path,taskId);await refresh();})}><Icon name="layers" size={16}/>{map?.configured?'지식 목록 편집':'지식 목록 만들기'}</CxButton>{!!map?.nodes.length&&<CxButton disabled={busy} onClick={()=>act(async()=>{await api('exportKnowledgeMap',{taskId,expectedFingerprint:map.fingerprint});await refresh();onNotice('관계 지도를 Wiki에 저장했어요.');})}>관계를 Wiki에 기록</CxButton>}{map?.baselinePath&&<ActionButton action="read" label="관계 기록 열기" onClick={()=>act(()=>openPath(map.baselinePath,taskId))}/>}</div>
     {dbOpen&&<DatabaseConnections api={api} onChanged={refresh}/>}
     {!map&&<p role="status" className="nubi-muted">연결된 근거를 읽고 있어요.</p>}
     {map&&!map.nodes.length&&<p className="nubi-muted">DB를 연결하거나 지식 목록에 자료를 추가해 주세요.</p>}

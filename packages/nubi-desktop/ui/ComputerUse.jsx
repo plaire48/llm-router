@@ -121,7 +121,7 @@ export function ComputerUse({taskId,state,api,refresh,disabled,showControls=true
     {!showControls&&error&&<CxNotice tone="danger">{error}</CxNotice>}
     {showActions&&(state?.actions||[]).filter(v=>v.taskId===taskId).map(action=><ActionCard key={action.id+action.state} action={action} api={api} run={run} disabled={blocked}/>)}
     {showActions&&(state?.checks||[]).filter(v=>v.taskId===taskId).slice(0,3).map(v=><p key={v.id} className="nubi-muted" role="status">{v.name||v.selector}: {v.verification==='value_matched'?'예상한 값과 일치합니다.':'예상한 값과 다릅니다.'} 저장이나 제출 여부는 별도로 확인합니다.</p>)}
-    {showControls&&<Controls title={expanded?undefined:binding?'컴퓨터 연결: '+binding.processName:'컴퓨터로 확인'}>
+    {showControls&&<Controls icon={expanded?undefined:'link'} title={expanded?undefined:binding?'컴퓨터 연결: '+binding.processName:'컴퓨터로 확인'}>
       {error&&<CxNotice tone="danger">{error}</CxNotice>}
       {state?.availability?.available?<>
         <p className="nubi-muted">창의 내용과 이미지를 모델에 전달합니다. 창이 앞으로 나올 수 있으며, 조작은 별도로 승인합니다.</p>

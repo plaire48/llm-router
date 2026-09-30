@@ -1,11 +1,17 @@
 import React,{useState,useEffect,useRef} from 'react';
-import {CxButton,CxNotice} from '@e2e/cx-design-system';
+import {CxButton,CxNotice,Icon} from '@e2e/cx-design-system';
 import {DeckStatus} from '../../../extensions/aipro-chat/src/DeckSurfaces.jsx';
 import {wikiUpdateView} from './wiki-update-view.mjs';
+import {ApprovalBar} from './ApprovalBar.jsx';
 
 const errors={wiki_update_conflict:'갱신하는 동안 작업 공간의 페이지가 바뀌어 반영하지 않았어요. 다시 갱신해 주세요.',wiki_update_busy:'이미 갱신 중이에요.',wiki_update_changed:'그 사이 저장소가 바뀌었어요. 상태를 다시 확인해 주세요.',wiki_update_not_needed:'Wiki가 이미 최신이에요.'};
+const states={running:'갱신 중',ready:'반영 대기',applied:'반영됨',failed:'실패',cancelled:'멈춤',discarded:'버림'};
+// What an update sends to the model stays whole; it reads as a note (user decision 2026-09-30).
+const MODEL_USE=/^갱신은 로그인한 모델로/;
 
 // OpenWiki update: proposed from the status, run on approval in a copy, applied on a second approval.
+// The card (user decision 2026-09-30): a tile and title with the key line, the pages as chips, the progress as a bar,
+// and one decision row on the right: 갱신 or 반영 filled, stop and discard as icons.
 export function WikiUpdate({api,openPath}){
   const [data,setData]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),live=useRef(true);
   const load=async()=>{try{const value=await api('wikiUpdate',{method:'status'});if(live.current)setData(value);}catch(e){if(live.current)setError(errors[e.message]||'Wiki 상태를 확인하지 못했어요.');}};
@@ -18,16 +24,21 @@ export function WikiUpdate({api,openPath}){
   const view=wikiUpdateView({status:data.status,update});
   const act=async fn=>{if(busy)return;setBusy(true);setError('');try{await fn();await load();}catch(e){setError(errors[e.message]||'갱신 작업을 마치지 못했어요.');await load();}finally{setBusy(false);}};
   const run=()=>act(async()=>{const proposal=await api('wikiUpdate',{method:'propose'});await api('wikiUpdate',{method:'run',id:proposal.id,fingerprint:proposal.fingerprint});});
+  const [lead,...rest]=view.lines,modelUse=rest.find(line=>MODEL_USE.test(line)),notes=rest.filter(line=>line!==modelUse);
+  const progress=update?.state==='running'?[...(update.events||[])].reverse().find(event=>event.type==='progress'&&event.index&&event.total):null;
+  const state=update?states[update.state]:data.status?.state==='current'?'최신':data.status?.state==='stale'?'갱신 필요':'';
   return <section className="nubi-recovery-card nubi-wiki-update" aria-label="OpenWiki 갱신">
-    <div className="nubi-inline"><strong>{view.title}</strong>{update&&<DeckStatus>{({running:'갱신 중',ready:'반영 대기',applied:'반영됨',failed:'실패',cancelled:'멈춤',discarded:'버림'})[update.state]||''}</DeckStatus>}</div>
+    <div className="nubi-action-head"><span className="nubi-action-tile" aria-hidden="true"><Icon name="bookmark" size={20}/></span><div><h3>{view.title}</h3>{lead&&<p>{lead}</p>}</div>{state&&<DeckStatus>{state}</DeckStatus>}</div>
+    {progress&&<div className="nubi-progress" role="progressbar" aria-label="갱신 진행" aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={progress.index}><span style={{width:`${Math.min(100,progress.index/progress.total*100)}%`}}/></div>}
     {error&&<CxNotice tone="danger">{error}</CxNotice>}
-    {view.lines.map((line,index)=><p key={index} className={index?'nubi-muted':undefined}>{line}</p>)}
-    {view.pages.length>0&&<ul className="nubi-wiki-update-pages">{view.pages.map(page=><li key={page.path}><CxButton className="nubi-link" onClick={()=>openPath?.(page.path)}>{page.path}</CxButton> <small>{page.label}</small></li>)}</ul>}
-    <div className="nubi-inline">
-      {view.actions.includes('run')&&<CxButton variant="primary" disabled={busy} onClick={run}>갱신 실행</CxButton>}
-      {view.actions.includes('cancel')&&<CxButton aria-label="Wiki 갱신 중지" title="Wiki 갱신 중지" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'cancel',id:update.id}))}><span className="stop-symbol" aria-hidden="true"/></CxButton>}
-      {view.actions.includes('apply')&&<CxButton variant="primary" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'apply',id:update.id,fingerprint:update.fingerprint}))}>변경 반영</CxButton>}
-      {view.actions.includes('discard')&&<CxButton disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'discard',id:update.id}))}>버리기</CxButton>}
-    </div>
+    {notes.map((line,index)=><p key={index} className="nubi-muted">{line}</p>)}
+    {modelUse&&<p className="nubi-action-note"><Icon name="infoCircle" size={16}/><span>{modelUse}</span></p>}
+    {view.pages.length>0&&<ul className="nubi-page-chips">{view.pages.map(page=><li key={page.path}><CxButton className="nubi-page-chip" title={page.path} onClick={()=>openPath?.(page.path)}><Icon name="file" size={14}/><span>{page.path}</span><span className="nubi-page-change">{page.label}</span></CxButton></li>)}</ul>}
+    {view.actions.includes('run')&&<ApprovalBar approveLabel="갱신" approveIcon="refresh" disabled={busy} onApprove={run}/>}
+    {view.actions.some(action=>['cancel','discard','apply'].includes(action))&&<div className="nubi-approval-bar">
+      {view.actions.includes('cancel')&&<CxButton className="nubi-icon-button" aria-label="Wiki 갱신 중지" title="Wiki 갱신 중지" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'cancel',id:update.id}))}><span className="stop-symbol" aria-hidden="true"/></CxButton>}
+      {view.actions.includes('discard')&&<CxButton className="nubi-icon-button" aria-label="버리기" title="갱신 결과 버리기" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'discard',id:update.id}))}><Icon name="trash" size={18}/></CxButton>}
+      {view.actions.includes('apply')&&<CxButton variant="primary" disabled={busy} onClick={()=>act(()=>api('wikiUpdate',{method:'apply',id:update.id,fingerprint:update.fingerprint}))}><Icon name="check" size={16}/>반영</CxButton>}
+    </div>}
   </section>;
 }

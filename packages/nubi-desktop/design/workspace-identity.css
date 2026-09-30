@@ -109,7 +109,7 @@
    row at the foot on the right: the approval as the one filled button with its icon, the refusal without a frame. */
 .nubi-action-head { display:flex; align-items:flex-start; gap:var(--cx-space-3); }
 .nubi-action-head > div { flex:1; min-width:0; }
-.nubi-workbench .nubi-action-head h3 { margin:0; font-size:var(--deck-type-heading); line-height:var(--deck-line-heading); font-weight:700; color:var(--deck-ink); }
+:is(.nubi-workbench, .nubi-panel) .nubi-action-head h3 { margin:0; font-size:var(--deck-type-heading); line-height:var(--deck-line-heading); font-weight:700; color:var(--deck-ink); }
 .nubi-action-head > div > p { margin:2px 0 0; color:var(--deck-sub); }
 .nubi-action-head > .deck-status { flex:none; }
 .nubi-action-tile { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:var(--deck-tile-radius); background:var(--deck-blue-soft); color:var(--deck-blue); }
@@ -126,7 +126,7 @@
 .nubi-terminal-dots i { width:9px; height:9px; border-radius:50%; background:#3B3B46; }
 .nubi-terminal-shell { display:inline-flex; align-items:center; gap:6px; flex:none; color:#E5E8EB; }
 .nubi-terminal-cwd { margin-left:auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.nubi-workbench .nubi-terminal-body { margin:0; padding:14px 16px; background:transparent; color:#E5E8EB; font:500 13px/1.75 var(--deck-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
+:is(.nubi-workbench, .nubi-panel) .nubi-terminal-body { margin:0; padding:14px 16px; background:transparent; color:#E5E8EB; font:500 13px/1.75 var(--deck-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
 .nubi-terminal-prompt { color:#64A8F8; font-weight:700; user-select:none; }
 .nubi-terminal-output { display:block; margin-top:var(--cx-space-2); color:#AEB6C0; font:inherit; white-space:pre-wrap; }
 .nubi-terminal-status { display:inline-flex; align-items:center; gap:var(--cx-space-2); flex:none; }
@@ -136,12 +136,12 @@
 .nubi-terminal-state[data-state="running"] { background:color-mix(in srgb, var(--deck-blue) 30%, #17171C); color:#CFE3FD; }
 .nubi-terminal-state:is([data-state="failed"],[data-state="timed_out"],[data-state="interrupted"]) { background:color-mix(in srgb, var(--deck-red) 35%, #17171C); color:#FFD9DC; }
 .nubi-terminal-exit { color:#9AA3AE; }
-.nubi-workbench .nubi-terminal-stop.cx-kit-button { width:26px; height:26px; min-height:0; padding:0; justify-content:center; border:0; border-radius:8px; background:#2E2E38; color:#E5E8EB; }
-.nubi-workbench .nubi-terminal-stop .stop-symbol { width:10px; height:10px; }
-.nubi-workbench .nubi-process { padding:0; background:none; }
-.nubi-workbench .nubi-process .nubi-terminal { margin:0; }
-.nubi-workbench .nubi-process .nubi-terminal-body { max-height:320px; overflow:auto; }
-.nubi-workbench .nubi-command { margin:var(--cx-space-2) 0 0; padding:14px 16px; border-radius:var(--deck-inset-radius); background:#17171C; color:#E5E8EB; font:500 13px/1.7 var(--deck-mono); }
+:is(.nubi-workbench, .nubi-panel) .nubi-terminal-stop.cx-kit-button { width:26px; height:26px; min-height:0; padding:0; justify-content:center; border:0; border-radius:8px; background:#2E2E38; color:#E5E8EB; }
+:is(.nubi-workbench, .nubi-panel) .nubi-terminal-stop .stop-symbol { width:10px; height:10px; }
+:is(.nubi-workbench, .nubi-panel) .nubi-process { padding:0; background:none; }
+:is(.nubi-workbench, .nubi-panel) .nubi-process .nubi-terminal { margin:0; }
+:is(.nubi-workbench, .nubi-panel) .nubi-process .nubi-terminal-body { max-height:320px; overflow:auto; }
+:is(.nubi-workbench, .nubi-panel) .nubi-command { margin:var(--cx-space-2) 0 0; padding:14px 16px; border-radius:var(--deck-inset-radius); background:#17171C; color:#E5E8EB; font:500 13px/1.7 var(--deck-mono); }
 .nubi-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:var(--cx-space-2); }
 .nubi-chip { display:inline-flex; align-items:center; gap:6px; max-width:100%; min-height:26px; padding:0 10px; border-radius:var(--deck-pill-radius); background:var(--deck-tint); color:var(--deck-sub); font:500 12px/1 var(--cx-font-family); }
 .nubi-chip[data-mono] { font-family:var(--deck-mono); }
@@ -149,19 +149,47 @@
 .nubi-chip > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .nubi-approval-bar { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:var(--cx-space-2); margin:var(--cx-space-4) -20px -20px; padding:12px 20px; border-top:1px solid var(--deck-line); border-radius:0 0 var(--deck-inset-radius) var(--deck-inset-radius); background:color-mix(in srgb, var(--deck-tint) 55%, var(--deck-card)); }
 .nubi-approval-bar .cx-button { gap:6px; }
-.nubi-workbench .nubi-text-button.cx-kit-button { border:0; background:transparent; box-shadow:none; color:var(--deck-sub); }
-.nubi-workbench .nubi-text-button.cx-kit-button:hover:not(:disabled) { background:var(--deck-card); color:var(--deck-ink); }
+:is(.nubi-workbench, .nubi-panel) .nubi-text-button.cx-kit-button { border:0; background:transparent; box-shadow:none; color:var(--deck-sub); }
+:is(.nubi-workbench, .nubi-panel) .nubi-text-button.cx-kit-button:hover:not(:disabled) { background:var(--deck-tint); color:var(--deck-ink); }
 .nubi-evidence > summary { display:inline-flex; align-items:center; gap:6px; min-height:26px; padding:0 10px; border-radius:var(--deck-pill-radius); background:var(--deck-blue-soft); color:var(--deck-blue-deep); font:600 12px/1 var(--cx-font-family); cursor:pointer; list-style:none; }
 .nubi-evidence > summary::-webkit-details-marker { display:none; }
 .nubi-evidence[open] { flex-basis:100%; }
 .nubi-evidence[open] > summary { margin-bottom:var(--cx-space-2); }
 .nubi-card-next { display:flex; justify-content:flex-end; margin-top:var(--cx-space-4); }
-.nubi-card-next .cx-button, .nubi-workbench .nubi-text-button.cx-kit-button { gap:6px; }
+.nubi-card-next .cx-button, :is(.nubi-workbench, .nubi-panel) .nubi-text-button.cx-kit-button { gap:6px; }
 .nubi-action-head > .nubi-icon-button { flex:none; margin-top:2px; }
 /* Project search (user decision 2026-09-30): first in the panel, its magnifier as the button inside the field. */
 .nubi-search { position:relative; display:flex; align-items:center; margin-bottom:var(--cx-space-3); }
-.nubi-search .cx-kit-input { flex:1; min-width:0; padding-right:44px; }
-.nubi-workbench .nubi-search > .nubi-icon-button { position:absolute; right:2px; top:50%; transform:translateY(-50%); }
+.nubi-search > :first-child { flex:1; min-width:0; }
+.nubi-search input { width:100%; padding-right:44px; }
+:is(.nubi-workbench, .nubi-panel) .nubi-search > .nubi-icon-button { position:absolute; right:2px; top:50%; transform:translateY(-50%); }
+/* OpenWiki (user decision 2026-09-30): the update's progress as a bar, what it sends to the model as a note, pages as
+   chips; results with the title and freshness first, then the passage, then where it is. */
+.nubi-progress { height:6px; margin-top:var(--cx-space-3); border-radius:var(--deck-pill-radius); background:var(--deck-tint); overflow:hidden; }
+.nubi-progress > span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg, var(--deck-blue-deep), var(--deck-blue) 60%, var(--deck-blue-lite)); transition:width var(--deck-rise) var(--deck-ease); }
+.nubi-action-note { display:flex; align-items:flex-start; gap:var(--cx-space-2); margin:var(--cx-space-3) 0 0; padding:10px 12px; border-radius:var(--deck-inset-radius); background:var(--deck-tint); color:var(--deck-sub); font:var(--deck-font-caption); }
+.nubi-action-note > svg { flex:none; margin-top:1px; color:var(--deck-blue); }
+.nubi-page-chips { display:flex; flex-wrap:wrap; gap:6px; margin:var(--cx-space-3) 0 0; padding:0; list-style:none; }
+.nubi-page-chips > li { min-width:0; max-width:100%; }
+:is(.nubi-workbench, .nubi-panel) .nubi-page-chip.cx-kit-button { display:inline-flex; align-items:center; gap:6px; max-width:100%; min-height:28px; padding:0 10px; border:0; border-radius:var(--deck-pill-radius); background:var(--deck-tint); color:var(--deck-ink); font:500 12px/1 var(--deck-mono); }
+:is(.nubi-workbench, .nubi-panel) .nubi-page-chip.cx-kit-button:hover { background:var(--deck-blue-soft); }
+.nubi-page-chip > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nubi-page-change { flex:none; color:var(--deck-blue-deep); font:600 11px/1 var(--cx-font-family); }
+:is(.nubi-wiki-evidence, .nubi-code-results) > h3 { display:flex; align-items:center; gap:var(--cx-space-2); margin:var(--cx-space-3) 0 var(--cx-space-2); font:var(--deck-font-label); font-weight:700; color:var(--deck-ink); }
+:is(.nubi-wiki-evidence, .nubi-code-results) > h3 > svg { color:var(--deck-blue); }
+:is(.nubi-workbench, .nubi-panel) .nubi-search-result.cx-kit-button { display:grid; grid-template-columns:minmax(0,1fr); justify-content:stretch; gap:6px; justify-items:start; width:100%; margin:0 0 var(--cx-space-2); padding:12px 14px; border:1px solid var(--deck-line); border-radius:var(--deck-inset-radius); background:var(--deck-card); box-shadow:none; text-align:left; white-space:normal; }
+:is(.nubi-workbench, .nubi-panel) .nubi-search-result.cx-kit-button:hover { border-color:color-mix(in srgb, var(--deck-blue) 40%, var(--deck-line)); background:color-mix(in srgb, var(--deck-tint) 50%, var(--deck-card)); }
+.nubi-result-head { display:flex; align-items:center; gap:var(--cx-space-2); width:100%; min-width:0; }
+.nubi-result-head > strong { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--deck-ink); }
+.nubi-wiki-evidence .nubi-result-head > strong, .nubi-wiki-excerpt { font-family:var(--cx-font-family); }
+.nubi-code-results .nubi-result-head > strong { font:600 13px/1.4 var(--deck-mono); }
+.nubi-result-path { color:var(--deck-sub); font:500 11px/1.4 var(--deck-mono); overflow-wrap:anywhere; }
+.nubi-code-excerpt { display:block; width:100%; box-sizing:border-box; padding:6px 10px; border-radius:8px; background:#17171C; color:#E5E8EB; font:500 12px/1.6 var(--deck-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
+.nubi-pill[data-tone="warn"] { background:var(--deck-orange-soft); color:color-mix(in srgb, var(--deck-orange) 50%, var(--deck-ink)); }
+:is(.nubi-workbench, .nubi-panel) .nubi-file-link.cx-kit-button { display:flex; align-items:center; gap:8px; width:100%; min-height:32px; padding:4px 8px; justify-content:flex-start; border:0; border-radius:8px; background:transparent; box-shadow:none; color:var(--deck-ink); font:500 13px/1.4 var(--deck-mono); }
+:is(.nubi-workbench, .nubi-panel) .nubi-file-link.cx-kit-button:hover { background:var(--deck-tint); }
+.nubi-file-link > svg { flex:none; color:var(--deck-sub); }
+.nubi-file-link > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .nubi-work-plan h2 { display:flex; align-items:center; gap:var(--cx-space-2); margin:0; font:var(--deck-font-label); font-weight:600; color:var(--deck-ink); }
 .nubi-work-plan h2 > svg { color:var(--deck-blue-deep); }
 .nubi-work-plan .task-plan-label strong { display:block; font-weight:500; color:inherit; }

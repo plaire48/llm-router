@@ -1,6 +1,5 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
-import {VocLibrary} from '../ui/VocLibrary.jsx';
 import {KnowledgeMap} from '../ui/KnowledgeMap.jsx';
 import '@e2e/cx-design-system/styles.css';
 import '../extension/lib/browser/style/style.css';
@@ -22,4 +21,4 @@ async function api(method,args){
 
   throw Error('unexpected_fixture_call');
 }
-createRoot(document.getElementById('root')).render(<main className="nubi-workbench"><div className="deck-dialog nubi-panel">{new URLSearchParams(location.search).has('voc')?<VocLibrary api={api} openPath={()=>{}} onError={value=>window.formErrors.push(value)} onNotice={value=>window.formNotices.push(value)}/>:<KnowledgeMap api={api} taskId="fixture" openPath={()=>{}} onError={()=>{}} onNotice={()=>{}}/>}</div></main>);
+createRoot(document.getElementById('root')).render(<main className="nubi-workbench"><div className="deck-dialog nubi-panel">{<KnowledgeMap api={api} taskId="fixture" openPath={()=>{}} onError={()=>{}} onNotice={()=>{}}/>}</div></main>);

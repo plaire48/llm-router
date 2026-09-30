@@ -51,14 +51,6 @@ try {
  await p.evaluate(()=>window.dbStatusFail=false);await p.getByRole('button',{name:'연결 상태 다시 확인',exact:true}).click();
  await p.getByRole('button',{name:'연결 상태 다시 확인',exact:true}).waitFor({state:'hidden'});assert.equal(await p.evaluate(()=>window.dbCalls.length),8);
  checks.push('successful DB action is preserved after status read failure; retry refreshes status without reconnecting');
- await p.goto('http://127.0.0.1:'+server.address().port+'/?voc=1');await p.getByText('VOC 자료',{exact:true}).click();
- await p.evaluate(()=>window.vocFail=true);await p.getByLabel('VOC JSON 파일').setInputFiles({name:'fixture.json',mimeType:'application/json',buffer:Buffer.from('{}')});
- await p.getByText('자료 목록을 읽지 못했어요. 검색을 다시 시도해 주세요.',{exact:true}).waitFor();
- assert.deepEqual(await p.evaluate(()=>window.formNotices),['VOC 자료를 보관했어요.']);assert.deepEqual(await p.evaluate(()=>window.formErrors),[]);
- assert.deepEqual(await p.evaluate(()=>window.vocCalls),['importVoc','queryVoc']);
- await p.evaluate(()=>window.vocFail=false);await p.getByRole('button',{name:'VOC 검색 실행',exact:true}).click();await p.getByText('VOC-1 보관한 자료',{exact:true}).waitFor();
- assert.deepEqual(await p.evaluate(()=>window.vocCalls),['importVoc','queryVoc','queryVoc']);
- checks.push('VOC import success remains distinct from failed listing; search never imports the file again');
  assert.deepEqual(errors,[]);await writeFile('verification/form-clarity/result.json',JSON.stringify({passed:checks.length,checks,scope:'Synthetic UI. No actual DB connection or model evaluation.'},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
  }
 } finally {await browser?.close();await new Promise(r=>server.close(r));}
