@@ -30,6 +30,6 @@ export function faultFacts(error) {
   };
 }
 
-const reads = new Set(['read_selection','verify_selection','workbook_range','workbook_sheets','workbook_structure','reconcile_changes','document_reconcile','document_read','office_read','office_receipt']);
+const reads = new Set(['read_selection','verify_selection','workbook_range','workbook_sheets','workbook_structure','reconcile_changes','document_reconcile','document_read','office_read','office_read_text','office_receipt']);
 export const isRetryableRead = name => reads.has(name);
 export const transientRead = error => ['office_timeout','excel_busy','office_busy'].includes(safeError(error));

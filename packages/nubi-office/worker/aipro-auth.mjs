@@ -30,7 +30,7 @@ export function validateToken(token) {
   return token;
 }
 export async function fetchModelCatalog(token, fetchImpl = fetch, signal) {
-  const response = await fetchImpl(`${ORIGIN}/api/models`, { headers: { Authorization: `Bearer ${validateToken(token)}`, Accept: 'application/json' }, cache: 'no-store', redirect: 'error', signal: AbortSignal.any([AbortSignal.timeout(15000), ...(signal ? [signal] : [])]) });
+  const response = await fetchImpl(`${ORIGIN}/api/models`, { headers: { Accept: 'application/json', Authorization: `Bearer ${validateToken(token)}`, 'X-REASONING': 'true' }, cache: 'no-store', redirect: 'error', signal: AbortSignal.any([AbortSignal.timeout(15000), ...(signal ? [signal] : [])]) });
   const body = await json(response);
   if (body?.success === false || body?.ok === false || !Array.isArray(body?.modelList)) throw new Error('models_invalid');
   const summary = {received: body.modelList.length, usable: 0, excluded: {name: 0, duplicate: 0, target: 0, agent: 0}};

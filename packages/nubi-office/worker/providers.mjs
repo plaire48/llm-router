@@ -52,6 +52,9 @@ async function chatGPTLogin({openBrowser = openLoginBrowser, fetchImpl = fetch, 
 export function createProviders(deps = {}) {
   const api = {fetchImpl: fetch, startLogin, chatGPTLogin, chatGPTModels, completeChatGPT, refreshChatGPTToken, fabrixModels, fabrixCompletion, ...deps};
   const sessions = new Map(); let active = 'aipro', pending = null, loginError = null, generation = 0;
+  // The model the user chose for each provider. A new login or connection keeps it while the account still lists it,
+  // as the browser Nubi does; otherwise the default rule applies. Kept in memory for the life of the worker.
+  const chosen = new Map(), startModel = (provider, models) => models.some(item => item.id === chosen.get(provider)) ? chosen.get(provider) : defaultOfficeModel(models);
   const status = () => ({providers: Object.entries(PROVIDERS).map(([id, label]) => ({id, label, connected: sessions.has(id)})), provider: active,
     connected: sessions.has(active), vision:active!=='fabrix'&&sessions.get(active)?.models.find(m=>m.id===sessions.get(active)?.model)?.supportsImages===true, models: sessions.get(active)?.models || [], model: sessions.get(active)?.model || '', verified: !!sessions.get(active)?.verified,
     modelCatalog: sessions.get(active)?.modelCatalog || null, pending: pending?.provider || null, loginError});
@@ -63,7 +66,7 @@ export function createProviders(deps = {}) {
       const credential = cleanFabrixCredentials(input); const result = await api.fabrixModels(credential, {fetchImpl: api.fetchImpl, signal: AbortSignal.timeout(20000)});
       session = {credential, models: catalog(result.payload)}; if (!session.models.length) throw new Error('models_invalid');
     } else { const manual = manualConnection(input); session = {credential: manual, models: manual.models}; }
-    sessions.set(provider, {...session, model: defaultOfficeModel(session.models), verified: false}); active = provider; return status();
+    sessions.set(provider, {...session, model: startModel(provider, session.models), verified: false}); active = provider; return status();
   }
   async function login(provider) {
     if (!['aipro', 'chatgpt'].includes(provider) || pending) throw new Error('login_busy');
@@ -74,7 +77,7 @@ export function createProviders(deps = {}) {
       void flow.result.then(result => {
         if (attempt !== generation) return;
         const models = provider === 'aipro' ? result.models : catalog(api.chatGPTModels().payload);
-        sessions.set(provider, {credential: provider === 'aipro' ? {token: result.token, mode: 'browser'} : result, models, model: defaultOfficeModel(models), verified: false,
+        sessions.set(provider, {credential: provider === 'aipro' ? {token: result.token, mode: 'browser'} : result, models, model: startModel(provider, models), verified: false,
           modelCatalog: provider === 'aipro' && result.diagnostics ? {diagnostics: result.diagnostics, fetchedAt: result.fetchedAt} : null}); pending = null;
       }, error => { if (attempt === generation) { pending = null; loginError = safeError(error); } });
     } catch (error) { if (attempt === generation) { pending = null; loginError = safeError(error); } }
@@ -82,7 +85,7 @@ export function createProviders(deps = {}) {
   }
   function cancelLogin() { generation++; pending?.cancel(); pending = null; loginError = null; return status(); }
   function disconnect(provider = active) { if (pending?.provider === provider) cancelLogin(); sessions.delete(provider); return status(); }
-  function model(id) { const s = sessions.get(active); if (!s?.models.some(m => m.id === id)) throw new Error('invalid_model'); s.model = id; return status(); }
+  function model(id) { const s = sessions.get(active); if (!s?.models.some(m => m.id === id)) throw new Error('invalid_model'); s.model = id; chosen.set(active, id); return status(); }
   async function refreshModels() {
     const provider = active, session = sessions.get(provider);
     if (!session) throw new Error('no_credential');
