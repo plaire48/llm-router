@@ -107,7 +107,7 @@ try{
  await connection.getByRole('button',{name:/연결한 앱으로 이어가기/}).click();await p.getByText('연결한 창에서 같은 작업을 이어가는 합성 응답입니다.',{exact:true}).waitFor();assert.equal(await connection.count(),0);
  assert.equal(await p.getByRole('textbox',{name:'추가 요청'}).isDisabled(),false);
  checks.push('agent connection request appears inline; binding is explicit and does not resume or approve native actions');
- await p.reload();await p.getByRole('button',{name:'사이드바 열기',exact:true}).click();await openHistory();await p.getByRole('dialog',{name:'작업 이력',exact:true}).getByRole('button',{name:/메신저 창의 안내문/}).click();await connection.getByRole('button',{name:'연결 요청 취소',exact:true}).click();
+ await p.reload();await p.getByRole('button',{name:'사이드바 열기',exact:true}).click();await openHistory();await p.getByRole('dialog',{name:'작업 이력',exact:true}).getByRole('button',{name:/메신저 창의 안내문/}).click();await connection.getByRole('button',{name:'연결 취소',exact:true}).click();
  assert.deepEqual(await p.evaluate(()=>window.connectionCalls.map(c=>c.method)),['cancel_connection']);assert.equal(await connection.count(),0);assert.equal(await p.getByRole('textbox',{name:'추가 요청'}).isDisabled(),false);
  checks.push('connection cancellation returns to the same conversation without selecting or starting an app');await p.setViewportSize({width:1280,height:950});
  await p.reload();await openHistory();await p.getByRole('dialog',{name:'작업 이력',exact:true}).getByRole('button',{name:/메신저 창의 안내문/}).click();

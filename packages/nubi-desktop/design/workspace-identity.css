@@ -89,15 +89,26 @@
 .nubi-workbench .composer textarea.aipro-message-input:focus { outline:none; box-shadow:none; }
 
 /* One task surface: a readable plan, then actual decisions and results. */
-.nubi-work-plan { padding-block: var(--cx-space-4); }
-.nubi-work-plan h2 { margin: 0 0 var(--cx-space-3); }
-.nubi-work-plan ol { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--cx-space-3); }
-.nubi-work-plan li { display: flex; align-items: flex-start; gap: var(--cx-space-3); }
-.nubi-work-plan li > span { font: var(--deck-font-caption); color: var(--deck-sub); padding-top: var(--cx-space-1); min-width: 1.5em; }
-.nubi-work-plan li strong { font: var(--deck-font-label); color: var(--deck-ink); }
-.nubi-work-plan li p { margin: var(--cx-space-1) 0 0; font: var(--deck-font-body); color: var(--deck-sub); }
-.nubi-work-plan li .deck-status { margin-inline-start: var(--cx-space-2); }
-.nubi-work-plan li[aria-current=step] strong { font-weight: 700; color: var(--deck-blue-deep); }
+/* The plan uses the browser agent's .task-plan card; it spans the conversation column here. */
+.nubi-work-plan.task-plan { max-width:none; }
+/* Change proposals (user decision 2026-09-30): the reference deck's file card with a tile, status pills and one
+   primary action. */
+.nubi-workbench .nubi-file-card { gap:var(--cx-space-4); padding:16px 18px; border:1.5px solid var(--deck-blue-soft); }
+.nubi-file-tile { display:grid; place-items:center; flex:none; width:40px; height:40px; border-radius:var(--deck-tile-radius); background:var(--deck-blue-soft); color:var(--deck-blue); }
+.nubi-file-card > .nubi-file-body { display:grid; gap:var(--cx-space-1); }
+.nubi-file-body strong { font-weight:700; }
+.nubi-workbench .nubi-file-body p { margin:0; }
+.nubi-file-meta { display:flex; flex-wrap:wrap; gap:6px; margin-top:2px; }
+.nubi-pill { display:inline-flex; align-items:center; min-height:22px; padding:0 10px; border-radius:var(--deck-pill-radius); background:var(--deck-tint); color:var(--deck-sub); font:var(--deck-font-caption); font-weight:600; white-space:nowrap; }
+.nubi-pill:is([data-tone="blue"],[data-tone="done"]) { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
+.nubi-pill[data-tone="danger"] { background:var(--deck-red-soft); color:var(--deck-red); }
+.nubi-pill-mono { font-family:var(--deck-mono); font-weight:500; }
+.nubi-file-card > .nubi-file-actions { display:flex; flex:none; gap:var(--cx-space-2); }
+@media(max-width:800px) { .nubi-file-card > .nubi-file-actions { flex-basis:100%; justify-content:flex-end; } }
+.nubi-work-plan h2 { display:flex; align-items:center; gap:var(--cx-space-2); margin:0; font:var(--deck-font-label); font-weight:600; color:var(--deck-ink); }
+.nubi-work-plan h2 > svg { color:var(--deck-blue-deep); }
+.nubi-work-plan .task-plan-label strong { display:block; font-weight:500; color:inherit; }
+.nubi-work-plan li[data-status="in_progress"] .task-plan-label strong { font-weight:700; }
 .nubi-task-heading > .nubi-icon-button { margin-left: var(--cx-space-2); }
 
 /* Project-scoped conversations sit in the sidebar; the chat keeps one primary action. */
