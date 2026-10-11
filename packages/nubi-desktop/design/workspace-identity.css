@@ -174,7 +174,12 @@
 .desktop-file-tabs > .cx-kit-button > svg,.desktop-file-icon { flex:none; }
 .desktop-file-tabs .status-spinner { flex:none; width:12px; height:12px; }
 .desktop-file-icon { display:inline-flex; align-items:center; justify-content:center; color:var(--deck-blue-deep); }
-.desktop-file-icon[data-kind=image] { color:var(--deck-sub); }
+.desktop-file-icon[data-kind=image] { color:var(--deck-blue-deep); }
+.desktop-file-icon[data-kind=table] { color:var(--deck-green); }
+.desktop-file-icon[data-kind=presentation] { color:var(--deck-orange); }
+.desktop-file-icon[data-kind=archive] { color:var(--nubi-file-kind-js); }
+.desktop-file-icon:is([data-kind=video],[data-kind=audio],[data-kind=file]) { color:var(--deck-sub); }
+.nubi-file-kind[data-kind=PDF] { min-width:24px; color:var(--deck-red); background:var(--deck-red-soft); }
 .desktop-git-heading { display:flex; align-items:center; flex:1; color:var(--deck-sub); }
 .desktop-shell .desktop-pane .desktop-dock-action { flex:none; display:flex; padding:var(--cx-space-2); border:0; background:transparent; color:var(--deck-sub); box-shadow:none; }
 .desktop-shell .desktop-pane .desktop-dock-action:hover,.desktop-shell .desktop-pane .desktop-dock-action[aria-pressed=true] { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
@@ -1371,7 +1376,7 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .nubi-mail-match p { font:var(--deck-font-caption); color:var(--deck-sub); margin:6px 0 0; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere; }
 .nubi-mail-attachments h3 { display:flex; align-items:center; gap:var(--cx-space-1); font:var(--deck-font-label); font-weight:650; color:var(--deck-sub); }
 .nubi-mail-attachment-row { display:flex; align-items:center; gap:var(--cx-space-1); border-radius:var(--deck-control-radius); background:var(--deck-tint); margin:6px 0; padding:2px 5px 2px 2px; }
-.desktop-shell .nubi-mail-attachment-row .nubi-mail-attachment { flex:1; min-width:0; padding:8px; margin:0; background:transparent; color:var(--deck-sub); }
+.desktop-shell .nubi-mail-attachment-row .nubi-mail-attachment { display:flex; align-items:center; gap:var(--cx-space-3); flex:1; min-width:0; padding:8px; margin:0; background:transparent; color:var(--deck-sub); }
 .nubi-mail-attachment-row .nubi-mail-attachment strong { font-size:13px; font-weight:650; }
 .nubi-mail-attachment-row .cx-icon-button { flex:none; background:transparent; border:0; }
 .nubi-mail-attachment-row .cx-icon-button>svg,.nubi-mail-reader-heading>.cx-icon-button>svg { width:17px; height:17px; }
@@ -1486,3 +1491,8 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .nubi-mail-saved-dialog .nubi-muted,.nubi-mail-tags-dialog .nubi-muted { font:var(--deck-font-caption); margin:8px 0; }
 .nubi-mail-dialog-actions { display:flex; justify-content:flex-end; margin-top:var(--cx-space-3); }
 .desktop-terminal-recovery { display:flex; align-items:center; gap:var(--cx-space-2); color:var(--deck-sub); font:var(--deck-font-caption); padding:4px 0; }
+
+/* Type icons and filenames keep one alignment in both preview and download-only rows. */
+.desktop-shell .nubi-mail-attachment > .desktop-file-icon { flex:0 0 24px; min-width:24px; }
+.desktop-shell .nubi-mail-attachment > .nubi-mail-attachment-label { flex:1; min-width:0; overflow:hidden; }
+.desktop-shell .nubi-mail-attachment-label strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

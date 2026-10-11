@@ -1413,8 +1413,8 @@
     },
     {
       "path": "packages/nubi-desktop/design/workspace-identity.css",
-      "sha256": "72716a0eaff5fe0a0c5f581926f7a14db2228e4e24ae69face087a2d8867a2d9",
-      "bytes": 169063
+      "sha256": "6accce6ba60d5733bd2acdade67570136f40e9d17726eb5e87645a0bbbaa9975",
+      "bytes": 169971
     },
     {
       "path": "packages/nubi-desktop/design/workspace-typography.css",
@@ -2973,8 +2973,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/FileKindIcon.jsx",
-      "sha256": "c5b9b1f3d149f1c5bfea15deeb69ded96739d4dedd695cdb005587a9c8892d8f",
-      "bytes": 807
+      "sha256": "6d8301fcd95ab44f3efdf22fd82e0b508c9e80f3ede9750761a56a88d782a8d9",
+      "bytes": 1308
     },
     {
       "path": "packages/nubi-desktop/ui/GhesAccount.jsx",
@@ -3028,8 +3028,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/MailReader.jsx",
-      "sha256": "d6341c44867d350be2a652bb6d754530187bbfc19b8741a8204d741ffae3c255",
-      "bytes": 9344
+      "sha256": "95c15e6e34aeb93b905a56de23ca6b355a6546b534fe36f78d6ace4a255acc13",
+      "bytes": 9573
     },
     {
       "path": "packages/nubi-desktop/ui/MailSearchToolbar.jsx",
