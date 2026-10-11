@@ -1588,8 +1588,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/agent.mjs",
-      "sha256": "5354c482c1149c4661685aed6dbdbd3c386ec1db20130e300e4b80089c844321",
-      "bytes": 104537
+      "sha256": "23e6b4a425623a6826f55ae88696c496df7172dcfe470524172a3363dd1ceb11",
+      "bytes": 104598
     },
     {
       "path": "packages/nubi-desktop/runtime/analysis-history.mjs",
