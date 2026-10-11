@@ -7,6 +7,7 @@ import {hash,fail,listFiles,readSource,scopedFile,git} from './files.mjs';
 import {defaultWikiUpdater} from './wiki-update.mjs';
 import {modelTransport} from './recovery.mjs';
 import {inspectCommitHistory} from './commit-history.mjs';
+import {DESKTOP_FEATURES} from './beta-features.mjs';
 import {mailImagePreview} from './mail-image.mjs';
 
 export function installDesktopFeatures(Service){
@@ -62,6 +63,7 @@ export function installDesktopFeatures(Service){
     try{return await admission.promise;}finally{if(this.wikiInitAdmission===admission)this.wikiInitAdmission=null;}
   };
   Service.prototype.mailDocument=async function({id,attachmentId,question,action='read',expectedSourceHash,expectedAttachmentHash}){
+    if(!DESKTOP_FEATURES.mailAttachmentReading)fail('mail_attachment_beta_disabled');
     const mailGeneration=this.personalMail?.generation;
     if(!this.personalMail)fail('mail_missing');const source=await this.personalMail.read(id),attachment=source.mail.attachments.find(a=>a.id===attachmentId);if(!attachment)fail('mail_missing');if(expectedSourceHash&&source.sourceHash!==expectedSourceHash||expectedAttachmentHash&&attachment.sha256!==expectedAttachmentHash)fail('mail_source_changed');
     const file=path.join(source.attachmentDirectory,attachment.id+'.bin');

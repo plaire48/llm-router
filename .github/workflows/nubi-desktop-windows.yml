@@ -48,6 +48,10 @@ jobs:
         run: ./scripts/Test-ShellLink.ps1
       - name: Build standalone Electron installer with bird icon
         run: npm run package:windows
+      - name: Verify body-only mail Beta scope
+        run: |
+          node --test tests/mail-beta-scope.test.mjs tests/mail-search.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Download verified upgrade baseline
         env:
           GH_TOKEN: ${{ github.token }}

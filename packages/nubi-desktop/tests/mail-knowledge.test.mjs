@@ -1,3 +1,4 @@
+import {featureTest} from './beta-feature.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,writeFile,rm,symlink} from 'node:fs/promises';
@@ -48,7 +49,7 @@ test('the agent mail tool delivers OpenWiki context with original citations to t
  assert.equal(delivered.knowledge.state,'current');assert.match(delivered.knowledge.text,/OpenWiki summary/);assert.equal(delivered.mail.text,'Original message');assert.equal(delivered.citations[0].id,id);
 });
 
-test('direct attachment questions consult the same mail notes without replacing the document',async t=>{
+featureTest('mailAttachmentReading')('direct attachment questions consult the same mail notes without replacing the document',async t=>{
  const {installDesktopFeatures}=await import('../runtime/desktop-features.mjs');
  const {mail,id,row,root}=await fixture(t);const text='Exact attachment text';await writeFile(path.join(root,'attachment.bin'),text);
  mail.source=async()=>({subject:'Selected mail',text:'Original message',attachments:[{id:'attachment',filename:'attachment.txt',text,sha256:sha(text),contentState:'document_read'}]});

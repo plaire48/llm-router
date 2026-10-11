@@ -1,3 +1,4 @@
+import {featureTest} from './beta-feature.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,writeFile,rm} from 'node:fs/promises';
@@ -13,7 +14,7 @@ test('local raster previews exclude SVG/HTML and preserve exact bytes',()=>{
  assert.equal(mailImagePreview(Buffer.from('<html>not a jpeg</html>')),null);
  assert.throws(()=>mailImagePreview(Buffer.alloc(10*1024*1024+1)),/document_limit/);
 });
-test('image preview preserves unread evidence and rejects stale source, altered bytes and text-only AI requests',async()=>{
+featureTest('mailAttachmentReading')('image preview preserves unread evidence and rejects stale source, altered bytes and text-only AI requests',async()=>{
  const directory=await mkdtemp(path.join(os.tmpdir(),'mail-image-'));
  try{
  const sha256=createHash('sha256').update(png).digest('hex');

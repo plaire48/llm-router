@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {DESKTOP_FEATURES} from '../runtime/beta-features.mjs';
 import assert from 'node:assert/strict';
 import {MailSearch} from '../runtime/mail-search.mjs';
 import {mailSearchDraft} from '../ui/mail-search-draft.mjs';
@@ -29,12 +30,12 @@ test('short Latin search terms do not match unrelated words such as mail and sto
 });
 test('AND spans sender, subject, distant body passages and attachment but never different emails',async()=>{
   const {search}=fixture();
-  for(const query of ['김누비 예산','분기 승인 마지막','김누비 비용 정산','lead@example.test 승인','재무팀 승인','2026-10-11 승인']){
+  for(const query of ['김누비 예산','분기 승인 마지막',...(DESKTOP_FEATURES.mailAttachmentReading?['김누비 비용 정산']:['김누비 비용']),'lead@example.test 승인','재무팀 승인','2026-10-11 승인']){
     const result=await search.search({query});assert.deepEqual(result.results.map(item=>item.id),['one'],query);assert.equal(result.results[0].sourceHash,'hash-one');
   }
   assert.equal((await search.search({query:'other 승인'})).total,0);
-  const matches=(await search.search({query:'김누비 승인 정산'})).results[0].matches;
-  assert(matches.some(item=>item.kind==='subject'));assert(matches.some(item=>item.kind==='body'));assert(matches.some(item=>item.sheet==='결산'));
+  const matches=(await search.search({query:DESKTOP_FEATURES.mailAttachmentReading?'김누비 승인 정산':'김누비 승인 비용'})).results[0].matches;
+  assert(matches.some(item=>item.kind==='subject'));assert(matches.some(item=>item.kind==='body'));if(DESKTOP_FEATURES.mailAttachmentReading)assert(matches.some(item=>item.sheet==='결산'));else {assert(matches.some(item=>item.filenameOnly));assert.equal((await search.search({query:'정산'})).total,0);}
 });
 test('location and metadata filters apply before cross-field matching; tags refresh without reimport',async()=>{
   const {search}=fixture();

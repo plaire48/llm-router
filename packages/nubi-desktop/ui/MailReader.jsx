@@ -1,3 +1,4 @@
+import {DESKTOP_FEATURES} from '../runtime/beta-features.mjs';
 import React,{useEffect,useRef,useState} from 'react';
 import {CxButton,Icon} from '@e2e/cx-design-system';
 import {WorkspaceAction as ActionButton} from './WorkspaceAction.jsx';
@@ -14,6 +15,7 @@ export function MailReader({source,api,onDocument,onAsk,onLocalChange}){
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
  useEffect(()=>{if(source?.searchQuery)matchedExcerpt.current?.scrollIntoView({block:'nearest'});},[source]);
  async function openAttachment(mail,attachment,match,searchQuery,attempt=source){
+  if(!DESKTOP_FEATURES.mailAttachmentReading)return;
   const key=mail.id+'/'+attachment.id;if(documentReads.current.has(key))return;
   documentReads.current.add(key);setReadingDocuments([...documentReads.current]);
   try{const location=locationOf(match);await onDocument?.(mail.id,attachment.id,{sourceHash:mail.sourceHash,attachmentHash:attachment.sha256,...Object.keys(location).length?{location}:{},query:searchQuery||'',canPresent:()=>alive.current&&attempt===observed.current});}
@@ -32,7 +34,7 @@ export function MailReader({source,api,onDocument,onAsk,onLocalChange}){
  async function ask(){
   if(!source||asking)return;setAsking(true);
   try{
-   const match=source.match,attachment=match?.kind==='attachment'&&source.mail.attachments.find(item=>item.id===match.attachmentId);
+   const match=source.match,attachment=DESKTOP_FEATURES.mailAttachmentReading&&match?.kind==='attachment'&&source.mail.attachments.find(item=>item.id===match.attachmentId);
    const location=attachment&&!match.filenameOnly?locationOf(match):{};
    await onAsk?.({id:source.id,sourceHash:source.sourceHash,...attachment?{attachmentId:attachment.id,attachmentHash:attachment.sha256}:{},...Object.keys(location).length?{location}:{}});
   }catch(error){if(alive.current)notifyWorkspaceToast(error.message==='mail_reference_limit'?'메일 근거는 20개까지 연결할 수 있어요. 입력창에서 일부를 제거해 주세요.':error.message==='mail_source_changed'?'원문이 바뀌었어요. 메일을 다시 선택해 주세요.':'메일을 대화에 연결하지 못했어요. 다시 시도해 주세요.',{error:true});}
@@ -54,7 +56,7 @@ export function MailReader({source,api,onDocument,onAsk,onLocalChange}){
      {source.searchQuery&&source.match&&<section ref={matchedExcerpt} className="nubi-mail-match" aria-label="검색어가 나온 위치"><span><Icon name={source.match.kind==='attachment'?'file':'search'} size={13}/>{mailLocation(source.match)}</span><p><MailMatchText text={source.match.excerpt} query={source.searchQuery}/></p></section>}
      <MailBody text={source.mail.text} query={source.searchQuery}/>
      {source.mail.truncated&&<p className="nubi-muted">긴 본문 일부만 표시해요. 본문 다운로드로 전체 내용을 확인할 수 있어요.</p>}
-     {source.mail.attachments.length>0&&<section className="nubi-mail-attachments" aria-label="첨부 문서"><h3><Icon name="file" size={15}/>첨부 {source.mail.attachments.length}개</h3>{source.mail.attachments.map(attachment=>{const reading=readingDocuments.includes(source.id+'/'+attachment.id);return <div key={attachment.id} className="nubi-mail-attachment-row"><CxButton className="nubi-mail-attachment" disabled={reading} aria-busy={reading} onClick={()=>openAttachment(source,attachment)}>{reading?<span role="status" aria-label="첨부 읽는 중" className="status-spinner"/>:<Icon name="file" size={17}/>}<span><strong><MailMatchText text={attachment.filename||'첨부 문서'} query={source.searchQuery}/></strong><small>{reading?'첨부 읽는 중':attachment.contentState==='document_read'?attachment.coverage:attachment.contentState==='document_attention'?(/^image\/(jpeg|png|gif|webp)$/.test(attachment.contentType)?'이미지 보기. 글자 읽기 미지원':documentErrors[attachment.error]||'미리보기 확인 필요'):'첨부 본문 읽기 대기'}</small></span></CxButton><ActionButton action="download" label={`${attachment.filename||'첨부 문서'} 다운로드`} busy={downloading===attachment.id} disabled={!!downloading} onClick={()=>download('attachment',attachment)}/></div>;})}</section>}
+     {source.mail.attachments.length>0&&<section className="nubi-mail-attachments" aria-label="첨부 문서"><h3 title={!DESKTOP_FEATURES.mailAttachmentReading?'Beta에서는 첨부 다운로드만 지원해요.':undefined}><Icon name="file" size={15}/>첨부 {source.mail.attachments.length}개</h3>{source.mail.attachments.map(attachment=>{const reading=readingDocuments.includes(source.id+'/'+attachment.id);return <div key={attachment.id} className="nubi-mail-attachment-row">{!DESKTOP_FEATURES.mailAttachmentReading?<div className="nubi-mail-attachment" title="Beta에서는 다운로드만 지원해요."><Icon name="file" size={17}/><span><strong><MailMatchText text={attachment.filename||'첨부 파일'} query={source.searchQuery}/></strong></span></div>:<CxButton className="nubi-mail-attachment" disabled={reading} aria-busy={reading} onClick={()=>openAttachment(source,attachment)}>{reading?<span role="status" aria-label="첨부 읽는 중" className="status-spinner"/>:<Icon name="file" size={17}/>}<span><strong><MailMatchText text={attachment.filename||'첨부 문서'} query={source.searchQuery}/></strong><small>{reading?'첨부 읽는 중':attachment.contentState==='document_read'?attachment.coverage:attachment.contentState==='document_attention'?(/^image\/(jpeg|png|gif|webp)$/.test(attachment.contentType)?'이미지 보기. 글자 읽기 미지원':documentErrors[attachment.error]||'미리보기 확인 필요'):'첨부 본문 읽기 대기'}</small></span></CxButton>}<ActionButton action="download" label={`${attachment.filename||'첨부 문서'} 다운로드`} busy={downloading===attachment.id} disabled={!!downloading} onClick={()=>download('attachment',attachment)}/></div>;})}</section>}
      <details className="nubi-mail-original"><summary><Icon name="mail" size={14}/>원본 메일</summary><div><span>메일 앱에서 열 수 있는 .eml 파일</span><ActionButton action="download" label="원본 메일 다운로드" busy={downloading==='raw'} disabled={!!downloading} onClick={()=>download('raw')}/></div><pre className="nubi-mail-reader-text nubi-mail-raw-text">{source.mail.text}</pre></details>
  </div>;
 }

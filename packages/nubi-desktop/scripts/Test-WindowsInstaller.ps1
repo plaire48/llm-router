@@ -37,6 +37,9 @@ $p = Start-Process $installer.FullName -ArgumentList @('/S', "/D=$target") -Wait
 if ($p.ExitCode -ne 0) { throw "Installer failed: $($p.ExitCode)" }
 $exe = Join-Path $target 'Nubi Workspace.exe'
 if (!(Test-Path $exe)) { throw 'Installed executable missing' }
+foreach ($deferred in @('document-extract.mjs','mail-attachment-worker.mjs','pdf.worker.mjs','office-document.ps1')) {
+  if (Test-Path (Join-Path $target "resources/app/lib/backend/$deferred")) { throw "Deferred attachment reader was packaged: $deferred" }
+}
 Stage 'branding'
 $expectedName = '누비 Workspace'
 $expectedVersion = (Get-Content package.json -Raw | ConvertFrom-Json).version
