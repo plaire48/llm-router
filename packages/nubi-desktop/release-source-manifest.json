@@ -2073,8 +2073,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/build-runtime.mjs",
-      "sha256": "59cef23595be0e7ffb1a37ecdce0106c1378bb4753bf981c0b2c57b2f98d9d5f",
-      "bytes": 13915
+      "sha256": "c4004c0341b6ce18844e3c259e4f8fea9140d6056f7a5700fec90ec2ddec37be",
+      "bytes": 14220
     },
     {
       "path": "packages/nubi-desktop/scripts/build-surface-gallery.mjs",
@@ -3930,6 +3930,16 @@
       "path": "packages/nubi-office/worker/write-diagnosis.mjs",
       "sha256": "a785e552bcef5e63800dad1bafaf4974e9598308fe3bf8f85594e9e11ab1d500",
       "bytes": 5728
+    },
+    {
+      "path": "packages/nubi-vscode/src/ghes-git.cjs",
+      "sha256": "50595a17f0eafb173501c01e29305d8af3793dc6145ca1e9f3db269213d8307b",
+      "bytes": 3107
+    },
+    {
+      "path": "packages/nubi-vscode/src/ghes.cjs",
+      "sha256": "2990b36e81f9a1a875e4a78957d8babe3c3241b0ab8324a5543a4f342cca74ea",
+      "bytes": 12913
     },
     {
       "path": "packages/openwiki/.gitignore",

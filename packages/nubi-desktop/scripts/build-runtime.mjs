@@ -103,13 +103,15 @@ if(Object.keys(runtimeBuild.metafile.inputs).some(file=>file.replaceAll('\\','/'
 // records every bundle input for the release snapshot and keeps A2A authentication out of the window. The Theia
 // extension bundle and its style outputs are gone: the renderer imports the workbench styles itself (2026-10-07).
 const uiBuild=await build({...rendererBundleOptions(),outdir:'generated/renderer-analysis',write:false});
+// Main-process shared login helpers are also part of the release source closure.
+const mainBuild=await build({metafile:true,entryPoints:['electron-app/main.cjs'],outfile:'generated/main-analysis.cjs',write:false,platform:'node',bundle:true,format:'cjs',target:'node24',external:['electron']});
 
 
 if(Object.keys(uiBuild.metafile.inputs).some(file=>/@a2a-js\/sdk|nubi-a2a\/(?:client|server)\.mjs/.test(file.replaceAll('\\','/'))))throw Error('a2a_auth_must_remain_in_host');
 // Release snapshots copy the actual shared source dependency closure rather
 // than silently taking unrelated in-progress Office/browser changes. Modules the
 // build replaces (nubi-*: namespaces) are not files.
-await writeFile('generated/source-inputs.json',JSON.stringify([...new Set([wikiBuild,updateBuild,runtimeBuild,uiBuild].flatMap(bundle=>Object.keys(bundle.metafile.inputs)).filter(file=>!file.includes('node_modules')&&!/^nubi-[a-z-]+:/.test(file)))].sort(),null,2)+'\n');
+await writeFile('generated/source-inputs.json',JSON.stringify([...new Set([wikiBuild,updateBuild,runtimeBuild,uiBuild,mainBuild].flatMap(bundle=>Object.keys(bundle.metafile.inputs)).filter(file=>!file.includes('node_modules')&&!/^nubi-[a-z-]+:/.test(file)))].sort(),null,2)+'\n');
 
 if(DESKTOP_FEATURES.mailAttachmentReading){
 await build({entryPoints:['runtime/document-extract.mjs'],outfile:'extension/lib/node/document-extract.mjs',bundle:true,platform:'node',format:'esm',target:'node24',banner:{js:"import {createRequire} from 'node:module'; const require=createRequire(import.meta.url);"}});
