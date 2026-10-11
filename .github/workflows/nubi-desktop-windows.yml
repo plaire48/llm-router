@@ -79,6 +79,16 @@ jobs:
           $files = @((Get-ChildItem release/windows/*-Setup.exe).FullName) + @((Get-ChildItem release/windows/*.sha256).FullName) + $reports
           gh release create $tag --repo $env:GITHUB_REPOSITORY --draft --prerelease --target $env:GITHUB_SHA --title "누비 Workspace Beta Windows x64 ($env:GITHUB_RUN_ID)" --notes "Standalone Electron installer and native Windows installation reports. Build $env:GITHUB_RUN_ID, commit $env:GITHUB_SHA. Unsigned Beta; corporate SSO, Office 2016/NASCA and Windows 11 end-user behavior are separate checks." @files
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Save failed-check diagnostics in a private draft
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $tag = "nubi-desktop-diagnostics-$env:GITHUB_RUN_ID"
+          Compress-Archive -Path verification/* -DestinationPath verification/windows-diagnostics.zip
+          gh release create $tag --repo $env:GITHUB_REPOSITORY --draft --prerelease --target $env:GITHUB_SHA --title "Nubi Windows check diagnostics ($env:GITHUB_RUN_ID)" --notes "Isolated fixture diagnostics only. No installer is released from this failed check." verification/windows-diagnostics.zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Preserve diagnostics
         if: always()
         continue-on-error: true

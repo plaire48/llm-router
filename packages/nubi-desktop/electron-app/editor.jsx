@@ -41,8 +41,9 @@ export function GitDiff({diff}) {
    domReadOnly:true,links:false,contextmenu:false
   });
   editor.setModel({original,modified});
-  return()=>{editor.dispose();original.dispose();modified.dispose();};
- },[diff]);
+  // Stop the pending diff before its text models are disposed. Parent status refreshes must not recreate it.
+  return()=>{editor.setModel(null);editor.dispose();original.dispose();modified.dispose();};
+ },[diff.path,diff.before,diff.after]);
  return <div ref={element} className="desktop-git-diff" aria-label={`${diff.path} 읽기 전용 변경 비교`}/>;
 }
 export default function Editor({buffer,diff,onReady}){

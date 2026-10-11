@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "ff167bfe7a13cc60ae6f96471e2ba38187d3cdd5575ab73795b990e58af681a8",
-      "bytes": 4411
+      "sha256": "1163d2bddff358d41bd6e910976ee3b28c64226ae187147f86346629323c4638",
+      "bytes": 5109
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1463,8 +1463,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/editor.jsx",
-      "sha256": "772e9932cde0d78f171dfe944d9b56dc763b3f4c4c62b634207ee75a778f55b0",
-      "bytes": 5514
+      "sha256": "df7d482522c4085a78b1134e7605a425d4491ddf20ccaf87296d3c5c501ec60d",
+      "bytes": 5674
     },
     {
       "path": "packages/nubi-desktop/electron-app/electron-builder.yml",
@@ -2103,8 +2103,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
-      "sha256": "f360dde20aa55a0d11746e9f0b1064ecfb2092c9c0fb38ca3b7890c4d6fcc1c1",
-      "bytes": 13502
+      "sha256": "563ccb0997a6805853486e2dcd0f53e899502db19671c218584c5e31f76edbb2",
+      "bytes": 14233
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-skills.mjs",
@@ -3148,8 +3148,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",
-      "sha256": "4abf2d8540b2b9778207c064cfe9e1bdee7a751345b184269e3745deb48833c0",
-      "bytes": 90385
+      "sha256": "376e2d5740bff2ba525644556af2c7a099ccad36ba602a9143a17b70c2e4258b",
+      "bytes": 90429
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",
