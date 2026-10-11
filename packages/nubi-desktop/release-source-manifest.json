@@ -1408,8 +1408,8 @@
     },
     {
       "path": "packages/nubi-desktop/design/workspace-density.css",
-      "sha256": "09683f05a40bacaa21911df60dab2560d97b567afff5ccbf3cacc5680291885e",
-      "bytes": 64482
+      "sha256": "90f9d854ace18761574b82ecd8ab97829a74a0b47ca0a4a17b4618c4c5c08900",
+      "bytes": 64453
     },
     {
       "path": "packages/nubi-desktop/design/workspace-identity.css",
