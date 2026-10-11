@@ -447,6 +447,21 @@
       "bytes": 6915
     },
     {
+      "path": "extensions/aipro-chat/design/brand-exploration/README.md",
+      "sha256": "88d81273cc7d78bf28a8ae566e84053599e8a49d09fd561842246845c89d812f",
+      "bytes": 1953
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand-exploration/browser-agent-concepts.png",
+      "sha256": "cf4788586f0998eb3e95b99108d05a2dd177337f4076db16b22892d05b2c4a6f",
+      "bytes": 1219942
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand-exploration/prompts.md",
+      "sha256": "8b71fc6568a3467fb7121c26d18408b76c13175fc193b666fd887ec4e752afe9",
+      "bytes": 5228
+    },
+    {
       "path": "extensions/aipro-chat/design/brand/MOTION-PROMPTS.md",
       "sha256": "f37e90636e201b5712850d6f05588635cfcd9dc4e8b4d2c779d6b1d805bac0df",
       "bytes": 3467
@@ -500,21 +515,6 @@
       "path": "extensions/aipro-chat/design/brand/nubi-wordmark-master.png",
       "sha256": "1255a20079339e6a7ee3ba82b0b2d7b82df77089830c84273919f58750fcc68d",
       "bytes": 335679
-    },
-    {
-      "path": "extensions/aipro-chat/design/brand-exploration/README.md",
-      "sha256": "88d81273cc7d78bf28a8ae566e84053599e8a49d09fd561842246845c89d812f",
-      "bytes": 1953
-    },
-    {
-      "path": "extensions/aipro-chat/design/brand-exploration/browser-agent-concepts.png",
-      "sha256": "cf4788586f0998eb3e95b99108d05a2dd177337f4076db16b22892d05b2c4a6f",
-      "bytes": 1219942
-    },
-    {
-      "path": "extensions/aipro-chat/design/brand-exploration/prompts.md",
-      "sha256": "8b71fc6568a3467fb7121c26d18408b76c13175fc193b666fd887ec4e752afe9",
-      "bytes": 5228
     },
     {
       "path": "extensions/aipro-chat/document-agent.js",
@@ -3967,6 +3967,11 @@
       "bytes": 214779
     },
     {
+      "path": "packages/openwiki/pnpm-workspace.yaml",
+      "sha256": "6e3aefc86ddda0b30d0f0fde6e46c741443bfd3799585f235e50316f99254a9a",
+      "bytes": 1666
+    },
+    {
       "path": "packages/openwiki/skills/mermaid-diagrams/SKILL.md",
       "sha256": "cb49ce575481a5593ce9e8feeaef4dab524b8e8dad54a80044685c3065eee319",
       "bytes": 3810
@@ -4727,6 +4732,11 @@
       "bytes": 23892
     },
     {
+      "path": "packages/openwiki/src/setup/credentials.tsx",
+      "sha256": "421ca47a683fe1247d6d4ce059f331d348de7d5c8b8d00c90bfd037f8bd94455",
+      "bytes": 1037
+    },
+    {
       "path": "packages/openwiki/src/setup/credentials/components.tsx",
       "sha256": "47a4c28f3b3e3d5ac12162c99fff181ae35416e390eab9417548ffe8883c5fac",
       "bytes": 39122
@@ -4765,11 +4775,6 @@
       "path": "packages/openwiki/src/setup/credentials/view.tsx",
       "sha256": "e88856dca0c654ea7590f513f620bded17c67901880163c26524876dce0a0170",
       "bytes": 22696
-    },
-    {
-      "path": "packages/openwiki/src/setup/credentials.tsx",
-      "sha256": "421ca47a683fe1247d6d4ce059f331d348de7d5c8b8d00c90bfd037f8bd94455",
-      "bytes": 1037
     },
     {
       "path": "packages/openwiki/src/setup/onboarding.ts",
