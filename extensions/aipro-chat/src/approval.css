@@ -1,0 +1,29 @@
+.approval-preview { margin-top: var(--cx-space-3); border-radius: var(--cx-popup-radius); background: var(--deck-tint); padding: var(--cx-space-3); }
+.approval-preview > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--cx-space-2); cursor: pointer; list-style: none; font-size: var(--cx-type-body); color: var(--layout-text); line-height: var(--deck-line-body); }
+.approval-preview > summary::-webkit-details-marker { display: none; }
+.approval-preview > summary > svg:last-child { color: var(--layout-muted); transition: transform var(--cx-motion) var(--deck-ease); }
+.approval-preview[open] > summary > svg:last-child { transform: rotate(180deg); }
+.approval-preview dl { margin: var(--cx-space-3) 0 0; display: grid; gap: var(--cx-space-3); }
+.approval-preview dl > div { padding: var(--cx-space-3); border-radius: var(--cx-radius-control); background: var(--layout-surface); }
+.approval-preview dt { font-size: var(--cx-type-body); font-weight: 500; color: var(--layout-muted); }
+.approval-preview dd { margin: var(--cx-space-1) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; word-break: keep-all; }
+.approval-preview-body { margin-top: var(--cx-space-3); max-height: min(32vh, 260px); overflow: auto; overscroll-behavior: contain; padding-right: var(--cx-space-1); }
+.approval-preview-body > p { margin: 0 0 var(--cx-space-2); overflow-wrap: anywhere; }
+.approval-page { font-size: var(--cx-type-body); color: var(--layout-muted); }
+.approval-preview-body:focus-visible, .approval-preview > summary:focus-visible { outline: 2px solid var(--brand-action); outline-offset: 2px; border-radius: var(--cx-radius-control); }
+.approval-actions { display: flex; align-items: center; justify-content: flex-end; gap: var(--cx-space-2); margin-top: var(--cx-space-4); }
+.approval-actions > .cx-kit-button:not([data-icon-only=true]) { min-width: 0; max-width: calc(100% - 44px); height: auto; white-space: normal; overflow-wrap: anywhere; word-break: keep-all; }
+.agent-step-waiting { color: var(--brand-action); }
+.cx-panel-backdrop.is-modal .approval-editor, .cx-panel-backdrop.is-modal .fill-review-dialog { width: min(620px, 100%); }
+.approval-editor-fields { display: grid; gap: var(--cx-space-3); }
+@media (prefers-reduced-motion: reduce) { .approval-preview > summary > svg:last-child { transition: none; } }
+.approval-edit-value { display: block; width: 100%; padding: 0; border: 0; border-radius: var(--cx-radius-control); background: transparent; color: inherit; font: inherit; text-align: start; white-space: pre-wrap; overflow-wrap: anywhere; cursor: text; }
+.approval-edit-value:hover:not(:disabled) { color: var(--brand-ink); }
+.approval-edit-value:focus-visible { outline: 2px solid var(--brand-action); outline-offset: 3px; }
+.approval-edit-value:disabled { cursor: default; }
+.approval-preview .approval-editor-fields { margin-top: var(--cx-space-3); }
+
+.approval-preview .interaction-editor-field textarea { resize: none; }
+
+.approval-preview > summary > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.approval-preview > summary > svg:first-child { flex-shrink: 0; color: var(--brand-ink); }

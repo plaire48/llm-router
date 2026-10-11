@@ -1,0 +1,25 @@
+**회사 프록시가 OpenAI-compatible 게이트웨이라면 README.md는 다음 네 변수를 설정하라고 안내합니다.**
+
+```bash
+OPENWIKI_PROVIDER=openai-compatible
+OPENAI_COMPATIBLE_API_KEY=<게이트웨이 키>
+OPENAI_COMPATIBLE_BASE_URL=<회사 프록시 URL>
+OPENWIKI_MODEL_ID=<프록시가 제공하는 모델 ID>
+```
+
+기존 공급자를 프록시 게이트웨이로 우회할 때는 API 키와 함께 공급자별 Base URL을 설정합니다.
+
+- `ANTHROPIC_BASE_URL`
+- `OPENAI_BASE_URL`
+- `BASETEN_BASE_URL`
+- `FIREWORKS_BASE_URL`
+- `NVIDIA_BASE_URL`
+- `COPILOT_BASE_URL`
+
+ENTERPRISE.md의 사내 공급자 설정은 다음과 같습니다.
+
+- AI Pro CLI: `OPENWIKI_PROVIDER=aipro-cli`, `AIPRO_CLI_BASE_URL`, `AIPRO_CLI_TOKEN`, `OPENWIKI_MODEL_ID`
+- FabriX: `OPENWIKI_PROVIDER=fabrix`, `FABRIX_BASE_URL`, `FABRIX_API_TOKEN`, `FABRIX_CLIENT_KEY`, `OPENWIKI_MODEL_ID`
+- 회사 CA가 필요할 때: `NODE_EXTRA_CA_CERTS=<인증서 경로>`
+
+따라서 일반적인 회사 프록시에는 **`OPENAI_COMPATIBLE_BASE_URL`**이 핵심이고, AI Pro CLI라면 **`AIPRO_CLI_BASE_URL`**, FabriX라면 **`FABRIX_BASE_URL`**을 사용합니다. 두 문서는 `HTTP_PROXY`나 `HTTPS_PROXY` 설정을 안내하지 않으며, ENTERPRISE.md는 TLS 검증을 끄지 말라고 명시합니다.

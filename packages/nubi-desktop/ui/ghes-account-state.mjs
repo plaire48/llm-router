@@ -1,0 +1,15 @@
+export const ghesMessages={
+  ghes_network:'회사 서버에 연결하지 못했어요. 사내망이나 VPN을 확인해 주세요.',
+  ghes_login_required:'회사 계정을 연결해 주세요.',ghes_session_expired:'로그인이 만료됐어요. 다시 연결해 주세요.',
+  ghes_access_denied:'로그인을 승인하지 않았어요. 다시 연결할 수 있습니다.',ghes_device_expired:'로그인 코드가 만료됐어요. 다시 연결해 주세요.',
+  ghes_device_unavailable:'앱의 Device Flow 설정을 확인해야 합니다.',ghes_app_configuration:'회사 GitHub App의 Client ID와 Device Flow 설정을 확인해 주세요.',
+  ghes_sso_required:'회사 SSO 로그인을 마친 뒤 다시 확인해 주세요.',ghes_permission:'이 작업에 필요한 계정과 앱 권한을 확인해 주세요.',
+  ghes_repository_missing:'저장소를 읽을 수 없어요. 접근 권한과 앱 설치 범위를 확인해 주세요.',ghes_repository_limit:'조회 범위를 넘었어요. 저장소 주소로 복제해 주세요.',
+  ghes_git_unavailable:'Git 연결을 준비하지 못했어요. Git 확장과 설치 상태를 확인해 주세요.',ghes_rate_limited:'회사 서버의 요청 한도에 도달했어요. 잠시 후 다시 확인해 주세요.',
+  ghes_storage:'계정을 안전하게 저장하지 못했어요. 다시 연결해 주세요.',ghes_session_changed:'계정이 바뀌었어요. 현재 계정으로 다시 확인해 주세요.',
+  ghes_identity_changed:'로그인한 사용자가 바뀌었어요. 다시 연결해 주세요.',ghes_update_platform:'업데이트 설치는 Windows x64에서 지원합니다.',
+  ghes_release_missing:'이 PC용 업데이트 파일을 찾지 못했어요.',ghes_release_changed:'릴리스가 바뀌었어요. 최신 버전을 다시 확인해 주세요.',
+  ghes_checksum_mismatch:'업데이트 파일의 해시가 다릅니다. 설치하지 않았어요.',ghes_checksum_invalid:'업데이트 해시 파일을 확인하지 못했어요. 설치하지 않았어요.',
+  ghes_package_invalid:'누비 업데이트 파일의 이름과 버전을 확인하지 못했어요. 설치하지 않았어요.',ghes_install_unconfirmed:'설치 결과를 먼저 확인해 주세요. 같은 설치를 반복하지 않습니다.',
+  ghes_redirect_refused:'허용한 회사 서버 밖으로 연결되어 중단했어요.',ghes_browser_unavailable:'로그인 페이지를 열지 못했어요. 다시 열어 주세요.',
+};

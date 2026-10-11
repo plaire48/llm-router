@@ -1,0 +1,44 @@
+/* The supplied deck's white cards, tinted inset and quiet blue actions. */
+.interaction-card { margin: var(--cx-space-4) 0; padding: var(--cx-space-4); max-width: 620px; min-width: 0; border: 1px solid var(--deck-surface-border); border-radius: var(--deck-panel-radius); background: var(--layout-surface); box-shadow: var(--deck-shadow-tile); color: var(--layout-text); font: var(--deck-font-body); animation: deck-pop var(--deck-pop) var(--deck-ease); }
+.interaction-heading { display: flex; align-items: center; gap: var(--cx-space-3); min-width: 0; margin: 0; }
+.interaction-heading > p { flex: 1; min-width: 0; margin: 0; font-size: var(--cx-type-body); line-height: var(--deck-line-body); font-weight: 600; overflow-wrap: anywhere; word-break: keep-all; }
+.interaction-symbol { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; border-radius: var(--cx-radius-control); color: var(--brand-action); background: linear-gradient(135deg, var(--deck-blue-soft), var(--deck-violet-soft)); }
+.interaction-input { margin-top: var(--cx-space-4); padding: var(--cx-space-2); background: var(--deck-tint); border: 1px solid var(--deck-surface-border); border-radius: var(--cx-popup-radius); transition: border-color var(--cx-motion) var(--deck-ease), box-shadow var(--cx-motion) var(--deck-ease); }
+.interaction-input:focus-within { border-color: var(--brand-action); box-shadow: 0 0 0 2px var(--brand-soft); }
+:is(.interaction-input, .interaction-editor-field) .cx-kit-field > label, :is(.interaction-input, .interaction-editor-field) .cx-kit-field > p { font: var(--deck-font-body); overflow-wrap: anywhere; word-break: keep-all; }
+.interaction-input .cx-kit-input { width: 100%; min-width: 0; border: 0; outline: 0; box-shadow: none; background: transparent; color: var(--layout-text); }
+.interaction-input .cx-kit-field textarea { resize: none; min-height: 44px; max-height: 65vh; line-height: var(--deck-line-body); overflow-wrap: anywhere; }
+.interaction-input-actions { display: flex; align-items: center; gap: var(--cx-space-2); margin-top: var(--cx-space-1); }
+.question-more.cx-kit-button { padding-inline: var(--cx-space-2); color: var(--brand-action); background: transparent; border-color: transparent; }
+.interaction-count { font: var(--deck-font-caption); color: var(--layout-muted); font-variant-numeric: tabular-nums; }
+.question-send { margin-left: auto; }
+.question-options { display: grid; gap: var(--cx-space-2); margin-top: var(--cx-space-4); }
+.question-option.cx-kit-button { display: flex; justify-content: flex-start; align-items: center; width: 100%; height: auto; padding: var(--cx-space-3); gap: var(--cx-space-3); border-color: transparent; background: var(--deck-tint); text-align: left; white-space: normal; }
+.question-option.cx-kit-button:not(:disabled):hover { border-color: var(--brand-border); background: var(--brand-soft); transform: translateY(-1px); }
+.question-option-index { display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: var(--cx-space-2); background: var(--layout-surface); color: var(--brand-action); font: var(--deck-font-caption); }
+.question-option-copy { display: grid; flex: 1; min-width: 0; gap: var(--cx-space-1); overflow-wrap: anywhere; word-break: keep-all; }
+.question-option-copy strong { font-weight: 500; font-size: var(--cx-type-body); line-height: var(--deck-line-body); color: var(--layout-text); }
+.question-option-copy > span { color: var(--layout-muted); font-size: var(--cx-type-body); line-height: var(--deck-line-body); font-weight: 400; }
+.question-option > svg { flex-shrink: 0; color: var(--brand-action); }
+.question-card > .capture-gallery { margin-bottom: 0; }
+.question-card .interaction-input { padding: var(--cx-space-4); background: var(--deck-section-surface); border-color: var(--deck-surface-border); }
+.question-card .interaction-input .cx-kit-field { gap: 0; }
+.question-card .interaction-input .cx-kit-field > label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.question-card .interaction-input .cx-kit-field textarea.cx-kit-textarea { min-height: 64px; padding: var(--cx-space-2) 0; font-size: var(--cx-type-body); line-height: var(--deck-line-body); }
+.question-card .interaction-input .cx-kit-field textarea::placeholder { color: var(--layout-muted); opacity: 1; }
+.question-card .interaction-input .cx-kit-field .cx-kit-field-error { padding: var(--cx-space-2) 0; color: var(--cx-danger); }
+.question-card .interaction-input-actions { margin-top: var(--cx-space-3); }
+.interaction-card[data-answered=true] { background: transparent; box-shadow: none; border-color: transparent; padding-block: var(--cx-space-2); }
+.interaction-card[data-answered=true] .interaction-symbol { background: var(--deck-blue-soft); color: var(--brand-ink); }
+.interaction-editor-field { padding: var(--cx-space-4); background: var(--deck-section-surface); border: 1px solid var(--deck-surface-border); border-radius: var(--cx-popup-radius); }
+.interaction-editor-field .cx-kit-input { width: 100%; background: var(--layout-surface); }
+.interaction-editor-field textarea { min-height: 154px; resize: vertical; }
+@media (max-width: 380px) { .interaction-card { padding: var(--cx-space-3); } .interaction-heading { gap: var(--cx-space-2); } .interaction-editor-field { padding: var(--cx-space-3); } }
+@media (prefers-reduced-motion: reduce) { .interaction-card { animation: none; } .interaction-input, .question-option.cx-kit-button { transition: none; } .question-option.cx-kit-button:not(:disabled):hover { transform: none; } }
+.replay-summary { margin: 0; color: var(--layout-muted); font: var(--deck-font-body); }
+.replay-fields { display: grid; gap: var(--cx-space-2); margin-top: var(--cx-space-3); }
+
+.interaction-entry { display: flex; align-items: flex-start; gap: var(--cx-space-2); min-width: 0; }
+.interaction-entry-icon { display: inline-flex; flex-shrink: 0; padding-top: var(--cx-space-2); color: var(--brand-ink); }
+.interaction-entry > .cx-kit-field { flex: 1; min-width: 0; }
+.question-card .interaction-input:focus-within { background: var(--layout-surface); border-color: var(--brand-action); }

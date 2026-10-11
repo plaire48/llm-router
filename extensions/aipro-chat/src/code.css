@@ -1,0 +1,26 @@
+.code-block {
+  --code-violet: color-mix(in srgb, var(--deck-violet) 80%, var(--deck-ink));
+  --code-green: color-mix(in srgb, var(--deck-green) 80%, var(--deck-ink));
+  margin-block: var(--cx-space-4);
+  border: 1px solid var(--layout-border);
+  border-radius: var(--cx-radius-card);
+  overflow: hidden;
+  background: var(--layout-surface);
+}
+.code-toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--cx-space-2); padding: var(--cx-space-1) var(--cx-space-3); border-bottom: 1px solid var(--layout-border); background: var(--layout-soft); color: var(--layout-muted); font-size: var(--deck-type-code); }
+.message-body .code-block pre { margin: 0; padding: var(--cx-space-3) 0; border: 0; border-radius: 0; background: transparent; }
+.code-block pre:focus-visible { outline: 2px solid var(--brand-border); outline-offset: -2px; }
+.code-source { display: block; min-width: max-content; font-family:var(--deck-mono); font-size: var(--deck-type-code); line-height: 1.75; tab-size: 2; color: var(--layout-text); white-space: pre; overflow-wrap: normal; }
+.code-line { display: block; position: relative; min-height: 1.75em; padding-inline: calc(var(--code-digits) * 1ch + var(--cx-space-8)) var(--cx-space-4); }
+.code-line:hover { background: var(--layout-soft); }
+.code-line-number { position: absolute; left: var(--cx-space-3); width: calc(var(--code-digits) * 1ch); color: var(--layout-muted); text-align: right; user-select: none; pointer-events: none; }
+.code-line-number::before { content: attr(data-line); }
+.code-plain { padding-inline: var(--cx-space-4); }
+.code-source :is(.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-meta) { color: var(--deck-blue-deep); }
+.code-source :is(.hljs-string, .hljs-regexp, .hljs-addition) { color: var(--code-green); }
+.code-source :is(.hljs-number, .hljs-symbol, .hljs-attr, .hljs-attribute) { color: var(--code-violet); }
+.code-source :is(.hljs-title, .hljs-built_in, .hljs-type, .hljs-name, .hljs-selector-class) { color: var(--brand-ink); }
+.code-source :is(.hljs-comment, .hljs-quote) { color: var(--layout-muted); font-style: italic; }
+.code-source .hljs-deletion { color: var(--cx-danger); }
+.code-source .hljs-emphasis { font-style: italic; }
+.code-source .hljs-strong { font-weight: 600; }

@@ -1,0 +1,46 @@
+.integration-content,.integration-form,.integration-headers{display:grid;gap:var(--cx-space-3,12px)}
+.integration-content{padding-top:var(--cx-space-3,12px)}
+.integration-actions{display:flex;justify-content:flex-end;align-items:center;gap:var(--cx-space-2,8px)}
+.integration-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.integration-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:var(--cx-space-2,8px);align-items:end}
+.integration-content p{margin:0}
+.integration-settings summary{cursor:pointer}
+.integration-form input{min-width:0}
+@media(max-width:420px){.integration-header{grid-template-columns:minmax(0,1fr) auto}.integration-header> :first-child{grid-column:1/-1}}
+
+.workspace-mode-note{margin:var(--cx-space-2,8px) 0 0;color:var(--layout-muted);}
+
+/* New settings sections inherit the same deck disclosure and readable spacing. */
+.integration-content .deck-subsection > .advanced-content { display: grid; gap: var(--cx-space-3); margin-top: 0; padding-top: var(--cx-space-3); }
+.integration-content .deck-subsection > .reply-note { margin-top: var(--cx-space-3); }
+.routine-conditions { display: grid; gap: var(--cx-space-2); padding-left: var(--cx-space-4); color: var(--layout-muted); font: var(--deck-font-body); }
+.integration-content .deck-subsection :is(ol, li) { overflow-wrap: anywhere; word-break: keep-all; }
+.routine-guide { display: grid; gap: var(--cx-space-3); padding: var(--cx-space-4); border: 1px solid var(--deck-surface-border); border-radius: var(--cx-radius-card); background: var(--layout-surface); font: var(--deck-font-body); }
+.routine-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0 0 var(--cx-space-3); border-bottom: 1px solid var(--layout-border); font: var(--deck-font-body); }
+.routine-flow > li { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--cx-space-1); min-width: 0; color: var(--layout-muted); text-align: center; }
+.routine-flow > li[aria-current='step'] { color: var(--brand-ink); font-weight: 600; }
+.routine-flow > li > svg:last-child { position: absolute; right: calc(-1 * var(--cx-space-2)); top: var(--cx-space-3); color: var(--layout-muted); }
+.routine-recording-meta strong { color: var(--brand-ink); font-weight: 600; }
+.routine-guide > .cx-kit-button { justify-self: start; }
+.routine-draft-actions { justify-content: flex-end; }
+.routine-recording-meta { display: grid; gap: var(--cx-space-1); color: var(--layout-muted); font: var(--deck-font-body); }
+.routine-step-list { list-style: none; margin: 0; padding: var(--cx-space-2) var(--cx-space-3); display: grid; gap: var(--cx-space-1); overflow-wrap: anywhere; word-break: keep-all; }
+.routine-step-list > li { display: flex; align-items: flex-start; gap: var(--cx-space-2); min-width: 0; }
+.routine-step-list > li > svg { flex-shrink: 0; margin-top: var(--cx-space-1); color: var(--layout-muted); }
+.routine-step-list > li > span { min-width: 0; overflow-wrap: anywhere; }
+.routine-more > .routine-step-list { margin-top: var(--cx-space-2); }
+.routine-guide-actions { display: flex; flex-wrap: wrap; gap: var(--cx-space-2); }
+.routine-replace { display: grid; gap: var(--cx-space-2); padding: var(--cx-space-3); border: 1px solid var(--deck-surface-border); border-radius: var(--cx-radius-control); }
+.routine-feedback { color: var(--cx-success); font-weight: 600; }
+.routine-saved > .advanced-content { display: grid; gap: var(--cx-space-2); }
+.routine-saved .integration-name { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; white-space: normal; overflow-wrap: anywhere; }
+@media(max-width:420px){.routine-guide > .cx-kit-button { width: 100%; }.routine-guide-actions > .cx-kit-button { flex: 1 1 100%; }}
+
+.prompt-shortcut-list,.prompt-shortcut-editor { display: grid; gap: var(--cx-space-3); }
+.prompt-shortcut-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cx-space-2); padding: var(--cx-space-2) 0; border-bottom: 1px solid var(--deck-surface-border); }
+.prompt-shortcut-info { display: grid; gap: var(--cx-space-1); min-width: 0; font: var(--deck-font-body); }
+.prompt-shortcut-info strong { font-weight: 600; color: var(--layout-text); overflow-wrap: anywhere; }
+.prompt-shortcut-info small { font: var(--deck-font-caption); color: var(--layout-muted); overflow-wrap: anywhere; }
+.prompt-shortcut-info > span { color: var(--layout-muted); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
+.prompt-shortcut-row .integration-actions { flex-shrink: 0; }
+.prompt-shortcut-actions { display: flex; justify-content: flex-end; gap: var(--cx-space-2); }

@@ -1,0 +1,16 @@
+.a2a-tasks { display: grid; gap: var(--cx-space-3); }
+.a2a-task-list { display: grid; gap: var(--cx-space-3); margin: 0; padding: 0; list-style: none; }
+.a2a-task { display: grid; gap: var(--cx-space-2); padding: var(--cx-space-3) var(--cx-space-4); border-radius: 16px; background: var(--layout-surface); box-shadow: var(--deck-shadow); }
+.a2a-task-head { display: flex; align-items: center; justify-content: space-between; gap: var(--cx-space-2); }
+.a2a-task-skill { font-weight: 600; color: var(--layout-text); }
+.a2a-task-request { margin: 0; color: var(--layout-text); white-space: pre-wrap; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.a2a-task-links { margin: 0; padding-left: var(--cx-space-4); color: var(--layout-muted); font-size: 0.85em; overflow-wrap: anywhere; }
+.a2a-task-note { margin: 0; color: var(--layout-muted); font-size: 0.9em; }
+.a2a-task-decision { display: flex; align-items: center; justify-content: flex-end; gap: var(--cx-space-2); }
+.a2a-task-decision .a2a-task-note { margin-right: auto; }
+.a2a-task-result summary { display: flex; align-items: center; gap: var(--cx-space-2); cursor: pointer; color: var(--layout-text); }
+.a2a-task-result p { margin: var(--cx-space-2) 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.a2a-task-facts { display: grid; gap: var(--cx-space-1); margin: 0; padding: 0; list-style: none; font-size: 0.9em; }
+.a2a-task-facts li { display: flex; flex-wrap: wrap; gap: var(--cx-space-2); align-items: baseline; overflow-wrap: anywhere; }
+.a2a-fact-name { color: var(--layout-muted); }
+.a2a-task-facts code { font-size: 0.85em; overflow-wrap: anywhere; }

@@ -1,0 +1,31 @@
+**현재 소스 기준으로 선택 가능한 모델 제공자는 17개입니다.**
+
+현재 선택 목록:
+
+1. OpenAI
+2. OpenAI (ChatGPT login)
+3. Anthropic
+4. IBM Bob
+5. GitHub Copilot
+6. Gemini (AI Studio)
+7. Gemini Enterprise (Vertex AI)
+8. OpenRouter
+9. OpenAI-compatible
+10. AWS Bedrock
+11. Fireworks
+12. Baseten
+13. Nebius Token Factory
+14. NVIDIA NIM
+15. AI Pro (Browser SSO)
+16. AI Pro CLI
+17. FabriX
+
+위키의 「Model Providers and Credentials」에는 **14개**만 기재되어 있습니다. 두 목록을 정적으로 대조한 집합 차이는 다음 **3개**입니다.
+
+- AI Pro (Browser SSO)
+- AI Pro CLI
+- FabriX
+
+근거는 현재 `src/config/constants.ts`의 `SELECTABLE_OPENWIKI_PROVIDERS`와 `PROVIDER_CONFIGS`, 그리고 `openwiki/concepts/model-providers.md`의 제공자 표입니다. CLI도 해당 선택 상수를 참조합니다.
+
+위키는 **2026-09-15 생성 스냅샷**이고 현재 stale 상태입니다. 따라서 세 항목이 위키에 없다는 사실은 확인되지만, 누락 원인이나 실제 추가 시점까지는 이번 정적 대조로 확인되지 않았습니다. CLI 직접 실행 검증은 하지 않았습니다.

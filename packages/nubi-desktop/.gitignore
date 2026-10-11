@@ -1,0 +1,14 @@
+node_modules
+extension/lib/
+**/src-gen/
+**/lib/
+**/gen-webpack*
+**/esbuild.mjs
+!browser-app/esbuild.mjs
+!electron-app/esbuild.mjs
+**/package-lock.json.bak
+verification/
+
+generated/
+
+**/gen-esbuild.*.mjs

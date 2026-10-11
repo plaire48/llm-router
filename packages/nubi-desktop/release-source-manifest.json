@@ -1,0 +1,4940 @@
+{
+  "scope": "Explicit source and assets only. No user mail, application state or auth records.",
+  "files": [
+    {
+      "path": ".github/workflows/nubi-desktop-windows.yml",
+      "sha256": "7c9d2227e014bb0b740f8b5a2bd44ee842df1dc0571e019cc869f558b9f1425f",
+      "bytes": 4211
+    },
+    {
+      "path": "extensions/aipro-chat/.gitignore",
+      "sha256": "5d02be0a8c22a034eee4c4528a57e2a0eb05d3b85bfe950f995303e2f0a4ca3a",
+      "bytes": 103
+    },
+    {
+      "path": "extensions/aipro-chat/AGENTS.md",
+      "sha256": "97f9ef5f652b359af048006f434ece762b53836af22c5e46cb82f24fad7dffd2",
+      "bytes": 140185
+    },
+    {
+      "path": "extensions/aipro-chat/CX-TEMPLATE.json",
+      "sha256": "e7165c4c4936b6ccbeeec374a84e3957094286dcefde04c19035c7931b1e0b6f",
+      "bytes": 181
+    },
+    {
+      "path": "extensions/aipro-chat/a2a-connection.js",
+      "sha256": "dbdd12c9fe0ec9cf3e8b2e8849d8d9ae06669676d3165be81f5bc2f6a99dacb8",
+      "bytes": 1196
+    },
+    {
+      "path": "extensions/aipro-chat/a2a-tasks.js",
+      "sha256": "3fb6acab9d2d2c6c2b1115e0e4e236aa4007c8b0b2c210e006165381843c6b52",
+      "bytes": 2131
+    },
+    {
+      "path": "extensions/aipro-chat/a2a-tools.js",
+      "sha256": "e5bf732bae4d33ac3905c1e751350f520f04814a16a9d1ed96ad1d910274d102",
+      "bytes": 3325
+    },
+    {
+      "path": "extensions/aipro-chat/account-usage.js",
+      "sha256": "cd02a73a4d89bd45cd478ee32ad74be48fafc15a1e42d0aeaf9a0ac81c55b318",
+      "bytes": 4494
+    },
+    {
+      "path": "extensions/aipro-chat/action-recovery-analysis.js",
+      "sha256": "970fc5747c3ff91a234b8b3b3b051b540f7bf0fc530b7826a50bb3f420355f08",
+      "bytes": 2402
+    },
+    {
+      "path": "extensions/aipro-chat/agent-diagnostic-journal.js",
+      "sha256": "476ce4392c6d68ce062cc8b107c081bdad386f0545d17d513a81c3034945bd52",
+      "bytes": 535
+    },
+    {
+      "path": "extensions/aipro-chat/agent-diagnostic-view.js",
+      "sha256": "1391a3dc9c8b456079889930b423c50aa091597d51826aee6964ee9a5a9da634",
+      "bytes": 1738
+    },
+    {
+      "path": "extensions/aipro-chat/agent-harness.js",
+      "sha256": "c425aad9a3a4f9075613d19dc5f11866a98ff5f3938b2a56f40e700c9f914c10",
+      "bytes": 17489
+    },
+    {
+      "path": "extensions/aipro-chat/agent-inbox.js",
+      "sha256": "17f1185b464502bfdc10a087feb8c0958ad6b643383a5fab8feeeb0b328a07cf",
+      "bytes": 2989
+    },
+    {
+      "path": "extensions/aipro-chat/agent-runtime.js",
+      "sha256": "665ce3cca1768e7477144122cafae3683a55d7023b63ec13e2ad95fdf18d91b7",
+      "bytes": 142373
+    },
+    {
+      "path": "extensions/aipro-chat/agent-trace.js",
+      "sha256": "97d41ee7b3bdda1860f7111cb084f3ed7481147d36ad14e66121832d030c9d76",
+      "bytes": 9570
+    },
+    {
+      "path": "extensions/aipro-chat/agent-turn-boundary.js",
+      "sha256": "7a41ae0958a64d9d012ffaeab7bccf28aee04858a145dbd366d854e3125e44d7",
+      "bytes": 492
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-agents.js",
+      "sha256": "bdde60d43e9de8049aa41214b91dddc7fafbb337449a5fadf270983f992be326",
+      "bytes": 64310
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-checkpoint.js",
+      "sha256": "7ba9ecbeb3cde4ffe682ae380d823a710ec832a13dad06224bc1910f57829727",
+      "bytes": 2190
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-handoff.js",
+      "sha256": "074f147093630c6218723906ab3273425bdb9ddac792f2b679e869870fb03423",
+      "bytes": 8206
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-limits.js",
+      "sha256": "7672e6a75694d05be05ef676f0ad740f689f60ee47836f962a03398893a365c1",
+      "bytes": 184
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-read-receipt.js",
+      "sha256": "df52c9dbe049ecf137f074aa0ea98bb3d18b2c7de070e06e3e03f74ccae263e0",
+      "bytes": 4796
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-source-quotes.js",
+      "sha256": "d6ee4eea6f2099b4633834994113458373c21702ef894c5cd3149eb1d6e1e4db",
+      "bytes": 2205
+    },
+    {
+      "path": "extensions/aipro-chat/answer-links.js",
+      "sha256": "08d6a0405738a04d704e2340005e21a4dd96e52d61a31fed3124137e09c4fbf4",
+      "bytes": 2332
+    },
+    {
+      "path": "extensions/aipro-chat/answer-process-notes.js",
+      "sha256": "b9e33352c2e5e233be8c44bc8683222a2f9104fb06c896a59270ebb578c697d3",
+      "bytes": 1891
+    },
+    {
+      "path": "extensions/aipro-chat/attachment-limits.js",
+      "sha256": "8e419f720b6a8d81fa05251d198fd79289babaec1365fa5929f7cc3995e930f2",
+      "bytes": 443
+    },
+    {
+      "path": "extensions/aipro-chat/attachment-store.js",
+      "sha256": "f7e2a1ab580ca08d1fc15c8aad097d8848efc8c40e0860a937347d40d6faadba",
+      "bytes": 6820
+    },
+    {
+      "path": "extensions/aipro-chat/attachments.js",
+      "sha256": "3520624d83a90e888828b665590ed023eb81d2203fe989a58ce8e77edccef284",
+      "bytes": 7104
+    },
+    {
+      "path": "extensions/aipro-chat/auth-trace.js",
+      "sha256": "9f871fd3834ad60c99edaff89c15c8a8a869f5fece8918407cc18ce48add2138",
+      "bytes": 5747
+    },
+    {
+      "path": "extensions/aipro-chat/background-images.js",
+      "sha256": "d6ec1ea5ff05f9aa4c5203e0012397a10183f440a19cb5f73369df6924e71397",
+      "bytes": 2355
+    },
+    {
+      "path": "extensions/aipro-chat/background-runner.js",
+      "sha256": "f5942fa2be54e391982a71d3e777c44a8d6318817643fed5a9a44bee8e0013a9",
+      "bytes": 13655
+    },
+    {
+      "path": "extensions/aipro-chat/browser-agent.js",
+      "sha256": "48291b19e8f25fba056f9d142e6d0f9e643671823ff895ce672f51494efb8852",
+      "bytes": 144073
+    },
+    {
+      "path": "extensions/aipro-chat/browser-approval.js",
+      "sha256": "4a3966d0cc851f7eb6a9ebf6ce82cc36498c4d4927b284810b8ac192aa03af71",
+      "bytes": 13566
+    },
+    {
+      "path": "extensions/aipro-chat/browser-capture.js",
+      "sha256": "f59af95810b39da3d4a667b7257f0a7805675bf3e630d2a2b9e19c114c6f3ba7",
+      "bytes": 20072
+    },
+    {
+      "path": "extensions/aipro-chat/browser-click-effect.js",
+      "sha256": "af92a7529acfcfb3dacdf6740a5ea5cafbe911c1685cf5188ffc488c9aea7b90",
+      "bytes": 1565
+    },
+    {
+      "path": "extensions/aipro-chat/browser-content-dom.js",
+      "sha256": "8ab9e846a38f0dbe647388ff241e3acec336392ac737a566ab3b7643af645575",
+      "bytes": 9045
+    },
+    {
+      "path": "extensions/aipro-chat/browser-content-outline.js",
+      "sha256": "c414b223d7d5ad115a036bbc81f9a0979c16ce86098680b9ce5ce0b3fae2bf01",
+      "bytes": 1878
+    },
+    {
+      "path": "extensions/aipro-chat/browser-content.js",
+      "sha256": "9d3ed39687338dc663dcd1c2b6fa8078f2509f99d4bdd2c915e16b6972f9d43c",
+      "bytes": 12953
+    },
+    {
+      "path": "extensions/aipro-chat/browser-debugger-ownership.js",
+      "sha256": "9f1f2d33929ae3cdd7551c048bf95d397006234358f18419c0cbc198f8286d25",
+      "bytes": 2585
+    },
+    {
+      "path": "extensions/aipro-chat/browser-diagnostics.js",
+      "sha256": "296f1d5e52a98d82659f1388fbccf1777c4bac3be9f613ab40baba86b31b6c74",
+      "bytes": 5340
+    },
+    {
+      "path": "extensions/aipro-chat/browser-dialogs.js",
+      "sha256": "78c7d20703e5493e0575b11c8e10676c31a9e7eb7917651b6413191af9b04e93",
+      "bytes": 2316
+    },
+    {
+      "path": "extensions/aipro-chat/browser-document-worker.js",
+      "sha256": "c8a8d17dd7066a3849c4a2273aae1a351674eb55c21bc0d91ab815506f39d005",
+      "bytes": 741
+    },
+    {
+      "path": "extensions/aipro-chat/browser-dom.js",
+      "sha256": "776873978cce068ca7c4eb61f6eda810073a2e38cfc9ffaefff8436af8ae4fbd",
+      "bytes": 64181
+    },
+    {
+      "path": "extensions/aipro-chat/browser-drag.js",
+      "sha256": "6bbcdfaa7fa38a27e37b7a10145169b2588908fcac5d13ee16008602843ccf33",
+      "bytes": 1736
+    },
+    {
+      "path": "extensions/aipro-chat/browser-editor.js",
+      "sha256": "5f390a418effe60a5eeb4c04c392e32d13f202f022c105426b1898fc5468d749",
+      "bytes": 9844
+    },
+    {
+      "path": "extensions/aipro-chat/browser-effect.js",
+      "sha256": "0c4d190354b59fe7c479ea0de3f7f99150a0c7ed286cc02a088579d89ce41617",
+      "bytes": 11670
+    },
+    {
+      "path": "extensions/aipro-chat/browser-information.js",
+      "sha256": "0fd2e35f291dcc96683c49e5350a4ab2e31ef9ddb84beb1547167520e24d7d4c",
+      "bytes": 12155
+    },
+    {
+      "path": "extensions/aipro-chat/browser-keyboard.js",
+      "sha256": "172971dbb1de1a3f876589e99151b9d4e1040ee7223e639abd5d76f0e69912bb",
+      "bytes": 2325
+    },
+    {
+      "path": "extensions/aipro-chat/browser-knowledge.js",
+      "sha256": "7eae11a011aeba580c29c79574ec32b7a8b685659d9971a5e575a05785330f04",
+      "bytes": 29292
+    },
+    {
+      "path": "extensions/aipro-chat/browser-observation.js",
+      "sha256": "2c35efd593e0228eded32608077a553df4bdbcfb24834f0ee9ae1cc7154e4321",
+      "bytes": 15120
+    },
+    {
+      "path": "extensions/aipro-chat/browser-pagination.js",
+      "sha256": "7fb3dcb9508a0b061450d6185d46ffb1610780455780cef6a0f13614ee37fd6d",
+      "bytes": 1473
+    },
+    {
+      "path": "extensions/aipro-chat/browser-pdf-parser.js",
+      "sha256": "1b321b4a3d67c01decc5a6d54cb628c3de861a4865149b8cb7b542a381b932dd",
+      "bytes": 1737
+    },
+    {
+      "path": "extensions/aipro-chat/browser-pdf.js",
+      "sha256": "0059152839b267b1e86bf94829c0a8d1552742ff5daddea7b07e9211aa3e6a85",
+      "bytes": 15042
+    },
+    {
+      "path": "extensions/aipro-chat/browser-pointer.js",
+      "sha256": "ebbe95161e9fb745935c90bd1b844573cbf33fe5a2ebc564d36f43bbcced26f2",
+      "bytes": 19500
+    },
+    {
+      "path": "extensions/aipro-chat/browser-policy.js",
+      "sha256": "cfb0e67eb6bdc35355642756936413617c2c11c23c8429b7d2113adc17ab5cc1",
+      "bytes": 3221
+    },
+    {
+      "path": "extensions/aipro-chat/browser-popups.js",
+      "sha256": "928b7c7b9a10f4c363abd3989231e275939579a71fdd931e3ddf1dee8dad4b33",
+      "bytes": 5070
+    },
+    {
+      "path": "extensions/aipro-chat/browser-process.js",
+      "sha256": "a09c80ed0e034dde7786e362128a491530402ca2a0b8161094a7533909b27a2f",
+      "bytes": 122
+    },
+    {
+      "path": "extensions/aipro-chat/browser-public-url.js",
+      "sha256": "85922df4116957d0266f143f05c4985f79931fd85e33ad7001f218a0c49eaead",
+      "bytes": 1248
+    },
+    {
+      "path": "extensions/aipro-chat/browser-recovery.js",
+      "sha256": "82afddbba6a186d7111cd421115c2c1696345734c207f6934aa3173200b061eb",
+      "bytes": 14338
+    },
+    {
+      "path": "extensions/aipro-chat/browser-region.js",
+      "sha256": "5076c05b41c7d5fee4bd25cce925f0e1c385b4411db662408aa36a9c767073d0",
+      "bytes": 3995
+    },
+    {
+      "path": "extensions/aipro-chat/browser-replay.js",
+      "sha256": "7fa69a92531c687d03b5d3a0831d57b613b2feac8ad47cf07e1146d58c286a23",
+      "bytes": 27486
+    },
+    {
+      "path": "extensions/aipro-chat/browser-routines.js",
+      "sha256": "0590257a8e2446fc335fd1bb7ed1717a4477f789def4850ba952cc9994663740",
+      "bytes": 17103
+    },
+    {
+      "path": "extensions/aipro-chat/browser-script-api.js",
+      "sha256": "c27b71f5c6e37f9c968bc26ce3a244fb8addf82499a019f2d6b0bc9c6affe319",
+      "bytes": 11276
+    },
+    {
+      "path": "extensions/aipro-chat/browser-script-receipt.js",
+      "sha256": "042440a512dbc8e0600bd6bc2df5a2407cda9f76b58dda2d0a09b8bde4a47a39",
+      "bytes": 4863
+    },
+    {
+      "path": "extensions/aipro-chat/browser-scroll.js",
+      "sha256": "7c7f9665e0bc1d720f270ffd4e16faeaefb5987d61faeb3a6f3f01bc294c9680",
+      "bytes": 6826
+    },
+    {
+      "path": "extensions/aipro-chat/browser-table-grid.js",
+      "sha256": "1c09af07a80664cdf918b7c59315e58f375ec8fd0b86acca9ff64c14d40591cc",
+      "bytes": 1954
+    },
+    {
+      "path": "extensions/aipro-chat/browser-text.js",
+      "sha256": "82026591d8b12a6fdaa37fabd9529ff46e03e7bbfdc9930b5f3d08f768595556",
+      "bytes": 14442
+    },
+    {
+      "path": "extensions/aipro-chat/browser-transfers.js",
+      "sha256": "23a1bf82c0e8e7d9fbd39c275a90080a48f2adde0b867786df9c1201f16305ae",
+      "bytes": 4840
+    },
+    {
+      "path": "extensions/aipro-chat/browser-unavailable-fs.js",
+      "sha256": "0c81607b3e6235456d7804599ec742f9d87eccf8a79c3088de38bf254c7395d2",
+      "bytes": 420
+    },
+    {
+      "path": "extensions/aipro-chat/browser-url.js",
+      "sha256": "6b1b85b38556ccaae667f1c189f0da000e2b9b17322c08277e3ab24e657f3560",
+      "bytes": 5831
+    },
+    {
+      "path": "extensions/aipro-chat/browser-workspace.js",
+      "sha256": "74e736f43f995535e3a2ee412aa83b7bf0c79b5bc1ab957e5d9c22e6c3e7f3c0",
+      "bytes": 15788
+    },
+    {
+      "path": "extensions/aipro-chat/callback.js",
+      "sha256": "eb9ce0b9460c543d5ab8c27c5e32a396d01b272622cdbf41a9f7a06e7238061d",
+      "bytes": 5776
+    },
+    {
+      "path": "extensions/aipro-chat/canonical-json.js",
+      "sha256": "5d1b12001669aea0ae94d050c166f729bd9266ded9c8b1b997212c85a8a5af9c",
+      "bytes": 256
+    },
+    {
+      "path": "extensions/aipro-chat/capture-store.js",
+      "sha256": "03e01026c67e3f5fbc5fc698e8850f1b775eeffcffa7b2745f5d7dd1494520a0",
+      "bytes": 6499
+    },
+    {
+      "path": "extensions/aipro-chat/chat-contract.js",
+      "sha256": "e905ee3bb149309569bb7f219ee0be4cdafa916637ce2a870b9d2d96f406fe49",
+      "bytes": 24177
+    },
+    {
+      "path": "extensions/aipro-chat/chatgpt-api.js",
+      "sha256": "9844501d8dfc4831ab34efcb3d9d2b81bb304ccce2577a1fba7fc4e5ee834f2f",
+      "bytes": 9361
+    },
+    {
+      "path": "extensions/aipro-chat/chatgpt-auth.js",
+      "sha256": "1979666bc3a7cfced0b17b5498e204dea3cc3c03a4fc3fff694977103524258c",
+      "bytes": 5439
+    },
+    {
+      "path": "extensions/aipro-chat/comparison-analysis.js",
+      "sha256": "f358e139d4cf56960c2cf1ae8afa16e29d112790eddf3f57eb05970c5a47bca9",
+      "bytes": 7234
+    },
+    {
+      "path": "extensions/aipro-chat/completion-errors.js",
+      "sha256": "d1cb21138f8cb44b8ccbcc58ae684a751944b91b8c0a8b385e768a9504d442dc",
+      "bytes": 11546
+    },
+    {
+      "path": "extensions/aipro-chat/completion-reader.js",
+      "sha256": "70d50090427a5f940bcd9a67a46fed1384978b5624cf0faeb19af1721274e476",
+      "bytes": 7259
+    },
+    {
+      "path": "extensions/aipro-chat/completion-review.js",
+      "sha256": "f72a208dfb954ccc5f5ebf66f293ee66e43be364f90ae43257ecea9bea9dfb87",
+      "bytes": 4038
+    },
+    {
+      "path": "extensions/aipro-chat/computer-time.js",
+      "sha256": "9118317292a281b5d1ce2ad8f9923ae4626e538204ee11d02be15b7292d6698a",
+      "bytes": 2918
+    },
+    {
+      "path": "extensions/aipro-chat/context-evidence.js",
+      "sha256": "532aa4baffdc94975a5e6c990f038902aee8b8b7a31e3380f2cde92bbf6d0ad3",
+      "bytes": 51822
+    },
+    {
+      "path": "extensions/aipro-chat/context-manager.js",
+      "sha256": "20ca305873fcd367d8ceca55ad8ad33a6c15a472e01b378a937311598b240b79",
+      "bytes": 23862
+    },
+    {
+      "path": "extensions/aipro-chat/context-state.js",
+      "sha256": "db5f834cc6f8f3dd2354a870d3f5844a75d4df609f197244e0962bd16a0b179c",
+      "bytes": 11319
+    },
+    {
+      "path": "extensions/aipro-chat/conversation-view.js",
+      "sha256": "8559cc8ec24d1cec4f4113e3a571d8e888eac95249c7cdab4ac7e6b8b10b471d",
+      "bytes": 1168
+    },
+    {
+      "path": "extensions/aipro-chat/conversations.js",
+      "sha256": "30e32c7942d0dba2ff954f3a118d73a9c57d08f499dd45fe811c84563d112d80",
+      "bytes": 5403
+    },
+    {
+      "path": "extensions/aipro-chat/core.js",
+      "sha256": "7dbfda729d5aae1bc43f866682ca1b84e298e57450e1c135e39c2a0dc735da49",
+      "bytes": 24561
+    },
+    {
+      "path": "extensions/aipro-chat/delegation-facts.js",
+      "sha256": "aac420e63da54626fa6887c73e54155b8c6a596bc5d77e98db35644869aa4cbd",
+      "bytes": 4950
+    },
+    {
+      "path": "extensions/aipro-chat/design/agent-deck.css",
+      "sha256": "79cea93bce49a2bf675a65c971691309906e741c9b5a586ec094b92df02acc65",
+      "bytes": 6915
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/MOTION-PROMPTS.md",
+      "sha256": "f37e90636e201b5712850d6f05588635cfcd9dc4e8b4d2c779d6b1d805bac0df",
+      "bytes": 3467
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/README.md",
+      "sha256": "5cfc631aac01c41844b180368f2acd8bd1622dc3317b61bb07474fd6b333df5e",
+      "bytes": 3912
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/WORDMARK-PROMPT.md",
+      "sha256": "b2740e5b94291c93e032bf524cb66b1a4b8c06bbd18df95d19bc09c2b9867b22",
+      "bytes": 2569
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/bird-blink.png",
+      "sha256": "97dcfe72b51ba58cc7eb7d3b4157f6e1fc41f6513b100a5f93203f2a0f0939d4",
+      "bytes": 845160
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/bird-master.png",
+      "sha256": "e931d0bfc9b46ad639b48e3af0be719314b658e37ecacce2cc05b53a386b7f37",
+      "bytes": 882729
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/bird-sad.png",
+      "sha256": "b8271ea6641ee5c8de509bf852a6cb48482162ded310dcec0b9f2442ee3ef6bf",
+      "bytes": 834506
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/bird-smile.png",
+      "sha256": "942bdc3d6db472c8c115d9e33ce09cb75058825c272261d08d7361b746a8686f",
+      "bytes": 792167
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/bird-wing.png",
+      "sha256": "d1c5e5e8cc9d8ffb51375bae26edec64f3ad1c323631835a20f0eeea6319406a",
+      "bytes": 784892
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/nubi-logo.png",
+      "sha256": "a20b95c66a0185aa54b2a10ca054a972ec9a2ba0243f97151d281f15e271b0c0",
+      "bytes": 33993
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/nubi-wordmark-condensed.png",
+      "sha256": "2ca824540da3e3cc9df67927086feedc860a90423ac26201c80b636b2cc6e58b",
+      "bytes": 285505
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand/nubi-wordmark-master.png",
+      "sha256": "1255a20079339e6a7ee3ba82b0b2d7b82df77089830c84273919f58750fcc68d",
+      "bytes": 335679
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand-exploration/README.md",
+      "sha256": "88d81273cc7d78bf28a8ae566e84053599e8a49d09fd561842246845c89d812f",
+      "bytes": 1953
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand-exploration/browser-agent-concepts.png",
+      "sha256": "cf4788586f0998eb3e95b99108d05a2dd177337f4076db16b22892d05b2c4a6f",
+      "bytes": 1219942
+    },
+    {
+      "path": "extensions/aipro-chat/design/brand-exploration/prompts.md",
+      "sha256": "8b71fc6568a3467fb7121c26d18408b76c13175fc193b666fd887ec4e752afe9",
+      "bytes": 5228
+    },
+    {
+      "path": "extensions/aipro-chat/document-agent.js",
+      "sha256": "acfb594cb8f6f3aff4a6266f4fdc736cee9a0730d099aec0c7ab006bdef1f9e6",
+      "bytes": 4459
+    },
+    {
+      "path": "extensions/aipro-chat/document-contract.js",
+      "sha256": "7cfea57b3db12c04e3699e2e14108cca3259542178545f780e4bc39e73c1a7da",
+      "bytes": 4597
+    },
+    {
+      "path": "extensions/aipro-chat/document-tools.js",
+      "sha256": "e977143a54e7a36aa724cc644c28fb2ff69f2069a2fa487ce50553d2bb6fc581",
+      "bytes": 7924
+    },
+    {
+      "path": "extensions/aipro-chat/evidence-key.js",
+      "sha256": "42867d3cff39cc8dd2bb6e9b92d4b1c161e1524f7716f970d9eff90afed40a60",
+      "bytes": 1010
+    },
+    {
+      "path": "extensions/aipro-chat/evidence-search.js",
+      "sha256": "3704693ec92b7c9d0e6d52e62b1586b938b6a2230982fcc07d3db88e8eb628de",
+      "bytes": 3272
+    },
+    {
+      "path": "extensions/aipro-chat/exchange.js",
+      "sha256": "63ee5e03283ebad81f808736dd8136c65f7cc955d2e1c499e8b2a9bbc5af092b",
+      "bytes": 3206
+    },
+    {
+      "path": "extensions/aipro-chat/fabrix.js",
+      "sha256": "e7d8c53708355774428870f621a0b668eb1924d149fbd86eb49f2e5c4d3cf4eb",
+      "bytes": 20752
+    },
+    {
+      "path": "extensions/aipro-chat/field-marks.js",
+      "sha256": "300d315c73d57dfe4fdf3b5bea9aea5305f66b6f3db9fae9020526e02991b577",
+      "bytes": 6393
+    },
+    {
+      "path": "extensions/aipro-chat/form-values.js",
+      "sha256": "e85f5999a3230efedb0631b1487e5b242489886552211b92515f0b24206d9cc7",
+      "bytes": 2056
+    },
+    {
+      "path": "extensions/aipro-chat/form-workflow.js",
+      "sha256": "5d597e271667ed1fec759f45da38adcfe856775e7c80d308d79ea8e8368c6b6b",
+      "bytes": 2568
+    },
+    {
+      "path": "extensions/aipro-chat/goal-review.js",
+      "sha256": "6a99c6064e75cc003edbee31dbe7425c41bb3f6ce6e22d0beaad3ac3c5e2674c",
+      "bytes": 49726
+    },
+    {
+      "path": "extensions/aipro-chat/help-content.js",
+      "sha256": "ad7c78ddd4f202a44fe28953be7159baaf33da198f356dba8c4063f59264bbc4",
+      "bytes": 15044
+    },
+    {
+      "path": "extensions/aipro-chat/http-retry.js",
+      "sha256": "12ea328413cf79d1cef5a842afdf7fb153daff4d77b945a826ad2cc7eadc2ea3",
+      "bytes": 578
+    },
+    {
+      "path": "extensions/aipro-chat/image-comparison.js",
+      "sha256": "d0e2635898dc2516326b9005530e46ed43d08ea1400e035b0581edaaace3d76b",
+      "bytes": 2958
+    },
+    {
+      "path": "extensions/aipro-chat/image-files.js",
+      "sha256": "942d747a1da7cbecacc7296522b4c6bdc054a4e11f8a808c312e0e8ac1038e67",
+      "bytes": 2257
+    },
+    {
+      "path": "extensions/aipro-chat/image-renderer.js",
+      "sha256": "f8aadffa0b7bcee6d8204d718fd01eb5a2a3edeb56863abf2e0a1590241aeb1c",
+      "bytes": 1051
+    },
+    {
+      "path": "extensions/aipro-chat/login-redirect.js",
+      "sha256": "203d4f5d4ece8a6a386e34b72fe9439061808a68e25a132850e935308041bdb4",
+      "bytes": 1460
+    },
+    {
+      "path": "extensions/aipro-chat/mcp-client.js",
+      "sha256": "945ee07707add76ed83a9cf3940d636b5d0e96fe6250811ec336805afdb97c18",
+      "bytes": 8798
+    },
+    {
+      "path": "extensions/aipro-chat/mcp-config.js",
+      "sha256": "cd295d85b9c4ef2f10520ec927ed6cb0051509c64f7a8352963acdcad603d235",
+      "bytes": 2592
+    },
+    {
+      "path": "extensions/aipro-chat/model-recovery.js",
+      "sha256": "5e59c3fe9e6d530714d56e77680204b66068ea0eabc9945d9ff172e20a7d1c1a",
+      "bytes": 6587
+    },
+    {
+      "path": "extensions/aipro-chat/model-routing.js",
+      "sha256": "9c8f5e7267d75ed384b4b1cbc01df9a6b247bc8443a6f3db8d7a5d9e9275fc46",
+      "bytes": 1105
+    },
+    {
+      "path": "extensions/aipro-chat/native-dialog-request.js",
+      "sha256": "9b292fc4dcf68ed5a58cb475752330b1c24f61c70fd126ae9346e7ccb4e91f2a",
+      "bytes": 3308
+    },
+    {
+      "path": "extensions/aipro-chat/openwiki-agent.js",
+      "sha256": "09241599547745b689a6e123e418443311f7fed0af2de46c6b75ca4552ee563a",
+      "bytes": 10397
+    },
+    {
+      "path": "extensions/aipro-chat/openwiki-contract.js",
+      "sha256": "05710d2c4fc9529e3886f6ef55644decda4b7ab554316c3cd5e5d87836ef2a91",
+      "bytes": 1795
+    },
+    {
+      "path": "extensions/aipro-chat/openwiki-retrieval.js",
+      "sha256": "928fcd9902a08d09c37e22c2c6f102e6675db4ca787ea155a312a7391ea3453f",
+      "bytes": 2497
+    },
+    {
+      "path": "extensions/aipro-chat/openwiki-workflow.js",
+      "sha256": "62fd0846174de1c3d40c00c9c93c9cc35268fd3ffb3d3f032d368e3bc8e31137",
+      "bytes": 4650
+    },
+    {
+      "path": "extensions/aipro-chat/output-recovery.js",
+      "sha256": "66193ac1ef5783f4450461465aa67bb6a4dd072c388a08d1351f21fdfa02e5af",
+      "bytes": 4098
+    },
+    {
+      "path": "extensions/aipro-chat/package-lock.json",
+      "sha256": "b607257307c53561f69b39485d061fccea65a0f487e757ad587e99caa38fd6e5",
+      "bytes": 271369
+    },
+    {
+      "path": "extensions/aipro-chat/package.json",
+      "sha256": "626ffbcf404785f28d521159c68cb5e05e44881c731a5672c7eb733e5bd42e8f",
+      "bytes": 3112
+    },
+    {
+      "path": "extensions/aipro-chat/page-images.js",
+      "sha256": "5f03ea937c51f6276c8a657252ea5e8c1f030f5bf2e01c93dddb20fc6b2cb307",
+      "bytes": 19231
+    },
+    {
+      "path": "extensions/aipro-chat/page-script.js",
+      "sha256": "2e3982b3dbadcd95dd888a463c115c14a47d2568071a015b35a94c9db3e86fdd",
+      "bytes": 2033
+    },
+    {
+      "path": "extensions/aipro-chat/page-tools.js",
+      "sha256": "784ca8135bb61ea62cf0154dba7fadfdc91b361901986e0e756ed9cbb7201e21",
+      "bytes": 12175
+    },
+    {
+      "path": "extensions/aipro-chat/pdf-reference-image.js",
+      "sha256": "ce1eebe4d9f717cd33899f7471e5b85cdb85b9d77439f0c9e5c5d1be0c71dec2",
+      "bytes": 3096
+    },
+    {
+      "path": "extensions/aipro-chat/plan-mode.js",
+      "sha256": "dba3130dc046102cef38d4a28164d8d55a75cbdbb941e165f8f89100e034d6d7",
+      "bytes": 2497
+    },
+    {
+      "path": "extensions/aipro-chat/planning-response.js",
+      "sha256": "c0b4fae4777dbf53fe9ec0ccebc01cbeb484b1de2dcae7c8e2a341d1bd1fa5b0",
+      "bytes": 1827
+    },
+    {
+      "path": "extensions/aipro-chat/project-connection.js",
+      "sha256": "ae3d225b8e0555848d9db9e3823896d6c9176b93fff41155d8094b1d0e7b6d31",
+      "bytes": 3559
+    },
+    {
+      "path": "extensions/aipro-chat/project-tools.js",
+      "sha256": "1e024bc8b159db650ace7cd997bc071005b7fbcbd98d2fa90bd945510a6d8625",
+      "bytes": 15135
+    },
+    {
+      "path": "extensions/aipro-chat/prompt-shortcuts.js",
+      "sha256": "53fa666ef5280b9eb70540350bc582aeeb0842e7da4a540e55d38319e6925096",
+      "bytes": 3575
+    },
+    {
+      "path": "extensions/aipro-chat/provider-sessions.js",
+      "sha256": "2e2a4d2a708ed1e207888af00c1ac09887118cce583e05ba72072ee7c2a3b8e8",
+      "bytes": 2749
+    },
+    {
+      "path": "extensions/aipro-chat/public/auth-return.css",
+      "sha256": "59cf7ae9cc1f3164f489010e9e24ee313774bbd9dd6291bd9dcd1334af5199b2",
+      "bytes": 597
+    },
+    {
+      "path": "extensions/aipro-chat/public/auth-return.html",
+      "sha256": "5abccb61327a875b059415bd63aeea7297deaa0dd9e5cbef9a683d297df4fe8e",
+      "bytes": 519
+    },
+    {
+      "path": "extensions/aipro-chat/public/auth-return.js",
+      "sha256": "43c383ee2bf17ca797cec3073c06ee40da6bac9be7e2865e9b8bf255e4a244f0",
+      "bytes": 599
+    },
+    {
+      "path": "extensions/aipro-chat/public/background.js",
+      "sha256": "b965847d05d36a3f02528e5949e191b6893e8321cacb30b83c6fdd745a36dd62",
+      "bytes": 187198
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-128.png",
+      "sha256": "489769dbf53146a1b920c6e7299079418b4d6dfcd3237ac4774bcab7daffdd48",
+      "bytes": 17586
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-16.png",
+      "sha256": "279f79e517b741ae3d8901c42d8dc872f29ea0a52c9dd1aeecb7226b33c706ba",
+      "bytes": 792
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-32.png",
+      "sha256": "f612128c3f686c4c00b3ab78217255e78d4a088f891d7940954328383c574249",
+      "bytes": 2009
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-48.png",
+      "sha256": "2c177bc63e405275836aa708a2c076c8d72af4a10ceb5fe6bf0475cdbe991892",
+      "bytes": 3892
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-bird.webp",
+      "sha256": "936aae76c1c1c0dc5ffb514ade83aee607e8870dd084b9e5b9d86df2bda2d499",
+      "bytes": 28670
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-blink.webp",
+      "sha256": "bc2471da06166a0bf71c31122645ba3eeb3f4fb657dc10443caa9fc81d6a68bd",
+      "bytes": 23202
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-sad.webp",
+      "sha256": "d6227e046decbc73a3c12b60cbc6232e840cabf21881b796911f4d058184a1ee",
+      "bytes": 24086
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-smile.webp",
+      "sha256": "5ee20d517a70ce28fb2dd92614fc57d2e9ef2d8207f5605efae63570fb009b9b",
+      "bytes": 22722
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-wing.webp",
+      "sha256": "f6639f3f0eb6ae5d338143416e03d4fa11045fa46091c2860de72a641cc11ef6",
+      "bytes": 22388
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/aipro-128.png",
+      "sha256": "d72a2dfec6e83191716de1de390453f6040ca21da35ddcc60ca57d1aa8ebbcb8",
+      "bytes": 10350
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/aipro-16.png",
+      "sha256": "02eb108d2a96e203338dadd5cb28f5f111e775a94810788c274f9fba211e18f7",
+      "bytes": 606
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/aipro-32.png",
+      "sha256": "b0826fbe154e6fb5aad68d15f3a64f1f1775afee698dcaba8c859ae594d6e285",
+      "bytes": 1480
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/aipro-48.png",
+      "sha256": "0703cee0ccd45c4cdad25b07587c8e310d2815e8be00a621f9e514df472215f4",
+      "bytes": 2571
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/aipro.svg",
+      "sha256": "e9264bb031803fe94b6af43df237794b2eee2ac81fda968504d1bc07b1416ccc",
+      "bytes": 2414
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/fabrix.svg",
+      "sha256": "444abe43aef64b2ad819c8657ea35d720e4d26b215020ca14d4d999cd4ec0234",
+      "bytes": 1532
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/nubi-wordmark.webp",
+      "sha256": "1c0516d2c01837a01b6191e9f37af4ce2c2df0049fb7351a54cc5c1514c7c070",
+      "bytes": 17890
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/openai.svg",
+      "sha256": "52c829a92849177f60c99699b1e27c5ed0f949e5b7415fa56815e2cc1fd78833",
+      "bytes": 1882
+    },
+    {
+      "path": "extensions/aipro-chat/public/image-renderer.html",
+      "sha256": "d2012471b30b9f70bcc8a0adf0f71daa6ee6d5e4839e7fb665a76cf4660e1ff5",
+      "bytes": 162
+    },
+    {
+      "path": "extensions/aipro-chat/public/managed-policy.json",
+      "sha256": "385e76bd3fff1b255d86750d0b2896ef4312bc4e6df9543da16fc2becea583e6",
+      "bytes": 779
+    },
+    {
+      "path": "extensions/aipro-chat/public/manifest.json",
+      "sha256": "884ff0feb72b504450a13048e9c424711b6e682fef5e52685dac1377c85fadc4",
+      "bytes": 2052
+    },
+    {
+      "path": "extensions/aipro-chat/quality-work.json",
+      "sha256": "7bd7b5769d61b46033fc502bb479fb204dadf35b125b3d18f31e99033725240d",
+      "bytes": 41378
+    },
+    {
+      "path": "extensions/aipro-chat/read-deadline.js",
+      "sha256": "8762d2ea45f897b1e8eeb22d415d52728baecc7e22f4e476b749c85dbc7923ca",
+      "bytes": 1904
+    },
+    {
+      "path": "extensions/aipro-chat/request-intent.js",
+      "sha256": "fec620de1e4c3b297093dba1f72cee1b556e05cff8de75297cd1fe65247c5bd9",
+      "bytes": 4882
+    },
+    {
+      "path": "extensions/aipro-chat/research-browser-native.js",
+      "sha256": "6b7e6f5f6004acdc30ebe073cda8b2a82daf8a5eacc0b8b7b4511cda0a50ce3f",
+      "bytes": 2007
+    },
+    {
+      "path": "extensions/aipro-chat/research-browser.js",
+      "sha256": "810025fe62e6a6ba70fa479792109b2ed0deec2895558711870fbc9210ee3dbb",
+      "bytes": 6890
+    },
+    {
+      "path": "extensions/aipro-chat/research-handoff.js",
+      "sha256": "06a6bb231a5a2c4c07012d8de38e333b57e55ec0bd37fa8416f4113432f80f95",
+      "bytes": 3959
+    },
+    {
+      "path": "extensions/aipro-chat/research-source-capture.js",
+      "sha256": "56ade0a4130a4fdf3bc77c2a3eceb8c42ee89d55469a42423ea21ec91c7cf110",
+      "bytes": 6792
+    },
+    {
+      "path": "extensions/aipro-chat/research-workers.js",
+      "sha256": "786465ef7cb225f61172250ed141ac61dbf5fde84864b4ec534153752c41da31",
+      "bytes": 11818
+    },
+    {
+      "path": "extensions/aipro-chat/restart-reconciliation.js",
+      "sha256": "2a7b059cb191297ef07a8e38e666ef787a453c32443e90be5b442fc8496fb05f",
+      "bytes": 2151
+    },
+    {
+      "path": "extensions/aipro-chat/review-execution.js",
+      "sha256": "be68a2fa050b7fc22fd52c229221dbbd0cd40baab4680c37d57aef2b5b674634",
+      "bytes": 20095
+    },
+    {
+      "path": "extensions/aipro-chat/review-host-facts.js",
+      "sha256": "c17bdc54f2815b3c6a96513ef6b158cdcadf8650a6ce34964e35521292a39ed2",
+      "bytes": 3583
+    },
+    {
+      "path": "extensions/aipro-chat/review-recovery.js",
+      "sha256": "cd992aaa7fd7a495a73c52774e53c353fe29101d0d5c66e9c7bdd70d378921c6",
+      "bytes": 3893
+    },
+    {
+      "path": "extensions/aipro-chat/review-scope.js",
+      "sha256": "2924bf6952a5a1a980e376af1eed926592278fa44314ab061b693d7b51874cbb",
+      "bytes": 24931
+    },
+    {
+      "path": "extensions/aipro-chat/script-feedback.js",
+      "sha256": "64cf8956667ad7d28bd7b938c2f756850c1ec3b426bfe685b20a0e623f1ca539",
+      "bytes": 17440
+    },
+    {
+      "path": "extensions/aipro-chat/script-preflight.js",
+      "sha256": "13125d36fb818ed1ea5e037054e0bec6ea1f964b0ce1a1454e02d4155c92632d",
+      "bytes": 7024
+    },
+    {
+      "path": "extensions/aipro-chat/script-sandbox.js",
+      "sha256": "e82eab32f62489cf012a1177822a3943aa6761155eef9c54bd5f3cbf043b3aa9",
+      "bytes": 6005
+    },
+    {
+      "path": "extensions/aipro-chat/site-procedures.js",
+      "sha256": "61b768991af946e903d3e0d47bc5d6853a4d5fecfdb080ab179b9a88ac6501ab",
+      "bytes": 15573
+    },
+    {
+      "path": "extensions/aipro-chat/site-wiki-retrieval.js",
+      "sha256": "2cbd27e010f9ce92232c66a6e1e3e74e81524ee6ac42025fb0a360e56fd8cbe9",
+      "bytes": 8224
+    },
+    {
+      "path": "extensions/aipro-chat/skill-archive.js",
+      "sha256": "108b12d733e5f73c120c2d4612dacef7678404062b8ccde20ba872790525c366",
+      "bytes": 2095
+    },
+    {
+      "path": "extensions/aipro-chat/skill-command.js",
+      "sha256": "96106fe54d356e3910d527ca0d65a345e1560a84dd38ebf3e31235a3f59ff42f",
+      "bytes": 1590
+    },
+    {
+      "path": "extensions/aipro-chat/skill-creator.js",
+      "sha256": "e0f6d68cccb5c0a7b569fc48d8a44b2ce80e68d013a02a4692d582a4de53d6e9",
+      "bytes": 11132
+    },
+    {
+      "path": "extensions/aipro-chat/skill-library.js",
+      "sha256": "fd2c64799bfd5c8a6ecd7ec0fdb72960e4b2f7edcc718a59c63f52ed5eb27475",
+      "bytes": 9830
+    },
+    {
+      "path": "extensions/aipro-chat/skill-package.js",
+      "sha256": "e69140800194197c6daf9af561d244a219bf3eafddead796676a700225f03cbd",
+      "bytes": 3361
+    },
+    {
+      "path": "extensions/aipro-chat/skill-stats.js",
+      "sha256": "c6985c3078364501e27a65ba2bcba6acc485a6523ac28682d5dcfef7face32cc",
+      "bytes": 2106
+    },
+    {
+      "path": "extensions/aipro-chat/skills.js",
+      "sha256": "b79a097a4972b49931a89812da9c3c9c0976b61b07e5d4a0e6246d4c92ae1313",
+      "bytes": 36939
+    },
+    {
+      "path": "extensions/aipro-chat/source-boundaries.js",
+      "sha256": "e1c346255aa04ecb4411c7480a692e1a36925e76d719cf69b1ec3011329fcf80",
+      "bytes": 2815
+    },
+    {
+      "path": "extensions/aipro-chat/src/A2AInbox.jsx",
+      "sha256": "c4fd097a24c162bfa2daea75d9577c7da29dc198170d75c664ce0f2da554e1c2",
+      "bytes": 4421
+    },
+    {
+      "path": "extensions/aipro-chat/src/A2ATasks.jsx",
+      "sha256": "437671f53f8503e8572ffd504adc06f84c31913ff2316bf5d9d3d07cabeadb36",
+      "bytes": 5442
+    },
+    {
+      "path": "extensions/aipro-chat/src/ActionApproval.jsx",
+      "sha256": "d33d20abd5856fd2b5e9dd07b420031983aa9143476a9c75558d315138e2e74b",
+      "bytes": 7464
+    },
+    {
+      "path": "extensions/aipro-chat/src/AgentMark.jsx",
+      "sha256": "fbcb1bc030000e90f333cfbc1b6f6fb56bc159f68469716264b3bbb349ea5716",
+      "bytes": 2762
+    },
+    {
+      "path": "extensions/aipro-chat/src/AgentTabs.jsx",
+      "sha256": "5cdcaeeb2017abb3d2911a5107cf0b74a2fe0397775fec6244edaf03a9158e69",
+      "bytes": 918
+    },
+    {
+      "path": "extensions/aipro-chat/src/AgentTrace.jsx",
+      "sha256": "b8017490f81c7d6ba0fe78f2dd40f96d98c9e047ffec84b1bfd89e2991698444",
+      "bytes": 13478
+    },
+    {
+      "path": "extensions/aipro-chat/src/App.jsx",
+      "sha256": "9fdd4d5ee638d185fad6381948a0af68aa7957041df5e535f2ea0ecc5ceb7004",
+      "bytes": 62858
+    },
+    {
+      "path": "extensions/aipro-chat/src/Atmosphere.jsx",
+      "sha256": "15624260c9f87f939f0f77fbddf55ec3ea8da318fbe78f9aa1c7ff35df48682a",
+      "bytes": 2559
+    },
+    {
+      "path": "extensions/aipro-chat/src/Attachments.jsx",
+      "sha256": "77c0b52e548f3ee384282c0347ae181e4165863ba02c1b8e67cb56b19046a100",
+      "bytes": 5694
+    },
+    {
+      "path": "extensions/aipro-chat/src/BrowserKnowledgeSettings.jsx",
+      "sha256": "bff81ccdaac55a235fe9c6574d7093fe6d187bcc8d988815a57bfcd9ecdbb5ab",
+      "bytes": 6381
+    },
+    {
+      "path": "extensions/aipro-chat/src/BrowserRoutinesSettings.jsx",
+      "sha256": "cbcaa6b02650950e5779d0b115672a86cfc7a8afc1525765859d190a11046463",
+      "bytes": 18557
+    },
+    {
+      "path": "extensions/aipro-chat/src/BrowserWiki.jsx",
+      "sha256": "4e662626e1b2cb260d69ddafafeb7452d20280032fb37a1a9e244aa9ef684abb",
+      "bytes": 5313
+    },
+    {
+      "path": "extensions/aipro-chat/src/CaptureGallery.jsx",
+      "sha256": "445a1ba7220d165c1f0db3cd89659cf324eb2e502acfc0a3ca1448265f27d33c",
+      "bytes": 8042
+    },
+    {
+      "path": "extensions/aipro-chat/src/ChatControls.jsx",
+      "sha256": "3d688d10f6f7491112f208bb065603a023162f3218df1c0faa5a376f325d42ec",
+      "bytes": 18165
+    },
+    {
+      "path": "extensions/aipro-chat/src/CodeBlock.jsx",
+      "sha256": "4ae8253a173cae124c09b7de63b33a8fd6cc8999cf6e050d8b22ebf2e87564e1",
+      "bytes": 1443
+    },
+    {
+      "path": "extensions/aipro-chat/src/ComposerAddMenu.jsx",
+      "sha256": "7ac439602a67eb35f5f7eaeac18abb5e1e2303cd18d76212b9e6445be0ce649a",
+      "bytes": 1165
+    },
+    {
+      "path": "extensions/aipro-chat/src/ConversationHistory.jsx",
+      "sha256": "927e6dd08fe36e9c9fbf5b718f296b73e22a86c6df9875c29515660455035760",
+      "bytes": 4578
+    },
+    {
+      "path": "extensions/aipro-chat/src/CopyButton.jsx",
+      "sha256": "a561549c9575915f30767cadf5e052f05b7443b6c977ca7970a386dcc69fc517",
+      "bytes": 2888
+    },
+    {
+      "path": "extensions/aipro-chat/src/DeckSurfaces.jsx",
+      "sha256": "1d51b68093f473c013a8feeb4fedae6586aa1f2225af687e217b2b442a432f1f",
+      "bytes": 4013
+    },
+    {
+      "path": "extensions/aipro-chat/src/FabrixConnection.jsx",
+      "sha256": "aff8366f4c37d02542e155dbdd7dc193b9bf315824cfd25e239199d21bdfea25",
+      "bytes": 4920
+    },
+    {
+      "path": "extensions/aipro-chat/src/HelpContent.jsx",
+      "sha256": "d4bfccaa5c69e4b5353108f31abae2bd9b978c95319d94415b824a35e1aa95be",
+      "bytes": 1717
+    },
+    {
+      "path": "extensions/aipro-chat/src/InteractionSurface.jsx",
+      "sha256": "1bb2ef09d1e3e03ec5e5ea2fea1854c9854e0e84d41a2ec578ce809eb9187e58",
+      "bytes": 1228
+    },
+    {
+      "path": "extensions/aipro-chat/src/McpSettings.jsx",
+      "sha256": "5bb8a02e0b2b14322d8b52df577d41df5bb388e6866b00423da0cdd8b7839c7f",
+      "bytes": 5921
+    },
+    {
+      "path": "extensions/aipro-chat/src/MessageBody.jsx",
+      "sha256": "01d2ee672cea6b7a542afa949490fd9c81d5777920e819af6164d0268d0f69a1",
+      "bytes": 3409
+    },
+    {
+      "path": "extensions/aipro-chat/src/NativeDialogQuestion.jsx",
+      "sha256": "c03e1490e538fd3b2aa717e18b930dcd0943434c00535e5c210f963d60e7fd5e",
+      "bytes": 788
+    },
+    {
+      "path": "extensions/aipro-chat/src/NubiSurfaces.jsx",
+      "sha256": "4b89aa38499c4483fa239105490c31e76a64ec50854a97e44c5b934ab7ff4b3c",
+      "bytes": 2918
+    },
+    {
+      "path": "extensions/aipro-chat/src/ProjectConnection.jsx",
+      "sha256": "7fc3124dcbe501277ee9de2647b6e346138a34666cc97470f7084b31a3b7f54b",
+      "bytes": 5102
+    },
+    {
+      "path": "extensions/aipro-chat/src/PromptShortcutsSettings.jsx",
+      "sha256": "b18c6f6bbd9a20ae984085fa6ff2123f865ad9e32691781d20ed2907606a4ee6",
+      "bytes": 4829
+    },
+    {
+      "path": "extensions/aipro-chat/src/QuestionForm.jsx",
+      "sha256": "fa1b91f52d34922158456b5f470cfa2b486155ea499c88286904edb50d756380",
+      "bytes": 7981
+    },
+    {
+      "path": "extensions/aipro-chat/src/QueuedInputs.jsx",
+      "sha256": "ef32e80c27644df50c9784b701ada800b97d3a645fb5a43c4cedd3051a535a0b",
+      "bytes": 3999
+    },
+    {
+      "path": "extensions/aipro-chat/src/ReplayCard.jsx",
+      "sha256": "5663e9549d84a869cb0cef1e1d8fccf63a00e5b33d32f4eea18be3cead90ef3e",
+      "bytes": 2907
+    },
+    {
+      "path": "extensions/aipro-chat/src/Skills.jsx",
+      "sha256": "ac0f55ae0ad05771690a6d2b9f9ed4ef5f7e92c62c3484bd1f84fea5476eded2",
+      "bytes": 13380
+    },
+    {
+      "path": "extensions/aipro-chat/src/SubagentProgress.jsx",
+      "sha256": "53cf0a6f69a4ddd4c64fcb6046824fe60c79e603a191919087d82f0e89103998",
+      "bytes": 5477
+    },
+    {
+      "path": "extensions/aipro-chat/src/TaskPlan.jsx",
+      "sha256": "e25d0695d23706940014a14254fe0918810ba471667e8c7ba85c6103ad83debc",
+      "bytes": 9529
+    },
+    {
+      "path": "extensions/aipro-chat/src/TraceSurface.jsx",
+      "sha256": "7a5d03d386201aacb790e6cace326ccc8bec1797ebbbc85b0a11f2f9ce5252b9",
+      "bytes": 1366
+    },
+    {
+      "path": "extensions/aipro-chat/src/UsagePanel.jsx",
+      "sha256": "0c7032b4cf38633fb4053389acf546c37e4fb88619c986596e9dd2b4aa6011a6",
+      "bytes": 9437
+    },
+    {
+      "path": "extensions/aipro-chat/src/Welcome.jsx",
+      "sha256": "98effeb01ec4671159e0a1ec645a75837b0bd2f4bb65b3525d398ceb89fe159f",
+      "bytes": 2469
+    },
+    {
+      "path": "extensions/aipro-chat/src/WikiFolderSettings.jsx",
+      "sha256": "546b81b5ca752fa81b53e38769a432fdb654a15d11fe2c6ae66d68fdbe842532",
+      "bytes": 7115
+    },
+    {
+      "path": "extensions/aipro-chat/src/WorkspaceSettings.jsx",
+      "sha256": "9116832ddd82b948e05b8968f3e793d5c00a42f776b0d4dd926b45f5ada4ed32",
+      "bytes": 3581
+    },
+    {
+      "path": "extensions/aipro-chat/src/a2a-tasks.css",
+      "sha256": "9877d71993500be686f4eb4485ab9364462cb4793565016254acf864e36cdd0d",
+      "bytes": 1691
+    },
+    {
+      "path": "extensions/aipro-chat/src/api.js",
+      "sha256": "ed5ee9ccd58b72120ea1310d53df55759461da26aca2161dbb3250b905fb0dfb",
+      "bytes": 47487
+    },
+    {
+      "path": "extensions/aipro-chat/src/app.css",
+      "sha256": "ada63719f371ea8708658b11388a18b7d1dfc74890be73afd0b405ae12b2681b",
+      "bytes": 62644
+    },
+    {
+      "path": "extensions/aipro-chat/src/approval.css",
+      "sha256": "021859c4492bb3e6eccd4d79ea7f710f3961e69a319b8a533444e47a71e217b9",
+      "bytes": 3160
+    },
+    {
+      "path": "extensions/aipro-chat/src/attachments.css",
+      "sha256": "327d9bd66893bb902257a7bff25bbaae61cc332798f2182c624bb48510c0defd",
+      "bytes": 4421
+    },
+    {
+      "path": "extensions/aipro-chat/src/captures.css",
+      "sha256": "7fb327791c5f5c8e5423f17d646ad171465b1ee06d366ec86c6b93a17a441186",
+      "bytes": 5029
+    },
+    {
+      "path": "extensions/aipro-chat/src/code-highlight.js",
+      "sha256": "89869c51b67a43cc7d6896af9fba50702f4309b918f7b76202b14f5c0448344e",
+      "bytes": 2059
+    },
+    {
+      "path": "extensions/aipro-chat/src/code.css",
+      "sha256": "6f015e7d6caafe93bf706f1cbc580475a88411c1c9c7c537b11a8e1110390851",
+      "bytes": 2282
+    },
+    {
+      "path": "extensions/aipro-chat/src/deck-surfaces.css",
+      "sha256": "c452218b12e16b8dd464304a584f9463f297b4a83ee9e14689400acb097dee73",
+      "bytes": 4975
+    },
+    {
+      "path": "extensions/aipro-chat/src/document-parser.js",
+      "sha256": "0944f79ac157d1d500510d2e51b56b793e6e671245a5ea5479209be3bbafb3bf",
+      "bytes": 1126
+    },
+    {
+      "path": "extensions/aipro-chat/src/document-worker.js",
+      "sha256": "6084d9fb6ed214e174d5e6b1e2a59d491b29bb71904af97459199b9a3af430fd",
+      "bytes": 1197
+    },
+    {
+      "path": "extensions/aipro-chat/src/integrations.css",
+      "sha256": "07f5b06e83465ad3ed0de363aaab47b9c2a6314c0a998d4f0dc7a31cd85e0e29",
+      "bytes": 4779
+    },
+    {
+      "path": "extensions/aipro-chat/src/interaction-forms.css",
+      "sha256": "2d94ccd2ae7b5c65d91e9dc6b1bdeb552b0a10b2328eaffd2c263c85bbd114ad",
+      "bytes": 6252
+    },
+    {
+      "path": "extensions/aipro-chat/src/main.jsx",
+      "sha256": "72034b4dcc3444ffaee81b53bbeaad583cc8ae0b1ee099f09ef7a742447b4474",
+      "bytes": 317
+    },
+    {
+      "path": "extensions/aipro-chat/src/pdf-text.js",
+      "sha256": "5dbfc18ffee354de533e1189c7fc7a00b0fd2436cc0d1768841e0930698ef9a9",
+      "bytes": 5575
+    },
+    {
+      "path": "extensions/aipro-chat/src/surfaces.css",
+      "sha256": "5f6fbdab0d481508e51ba4473ca5da660dbe34f453eb1560ddc33f0a29f71c34",
+      "bytes": 15732
+    },
+    {
+      "path": "extensions/aipro-chat/src/trace-journal.css",
+      "sha256": "591b25d2f10adfd17ebfd070ba0d9762843a4bc5c1362edd8cf54e2fc3b261d8",
+      "bytes": 847
+    },
+    {
+      "path": "extensions/aipro-chat/state-sync.js",
+      "sha256": "d0e96bae0babb8205e1eb997982d2b02645446fae473ab2a49cec82db3a4b6ff",
+      "bytes": 2890
+    },
+    {
+      "path": "extensions/aipro-chat/task-plan.js",
+      "sha256": "1b4c93b112a73599120bb66b3211943f5ee300e63bff5a6701badc60da879926",
+      "bytes": 10851
+    },
+    {
+      "path": "extensions/aipro-chat/tool-errors.js",
+      "sha256": "0fae5c97e6639b18d34886249ef2d40f4245548a4aaf2f57697ffd41ee2cd8b3",
+      "bytes": 3755
+    },
+    {
+      "path": "extensions/aipro-chat/tool-validation.js",
+      "sha256": "c2b1d59f61d1eb1c5b114c7007fb8c7e89de390c6a6dc51e0db37c9e4120457d",
+      "bytes": 4521
+    },
+    {
+      "path": "extensions/aipro-chat/trace-journal.js",
+      "sha256": "0dd492314f8ef14429c1c59fd391582eee1301bcd88590789600152d2da9621d",
+      "bytes": 7472
+    },
+    {
+      "path": "extensions/aipro-chat/uncertain-action.js",
+      "sha256": "a7473a7d88cd9bc636f23b5360736d2ff5a337222319642f3c611b782784d3f8",
+      "bytes": 3651
+    },
+    {
+      "path": "extensions/aipro-chat/usage-ledger.js",
+      "sha256": "117deb4c5a629f99dc965e20a208c91a65aa60d4fc9e621076d4f34c1fcb800c",
+      "bytes": 3478
+    },
+    {
+      "path": "extensions/aipro-chat/usage-stream.js",
+      "sha256": "6be0a48e70348a2741860ea93f85473ff5a84d3af7bc60b1172e4300e198487b",
+      "bytes": 2025
+    },
+    {
+      "path": "extensions/aipro-chat/usage.js",
+      "sha256": "49310f2d1866aae91cbb5e0ec8812416777a395f83560fad1f8428538fee6006",
+      "bytes": 4341
+    },
+    {
+      "path": "extensions/aipro-chat/user-question.js",
+      "sha256": "c1a711fd436daddf58c5fa5022e7ef667e807891a9253d716c6fe78e393f31d8",
+      "bytes": 9447
+    },
+    {
+      "path": "extensions/aipro-chat/vendor/e2e-cx-design-system-0.5.4.tgz",
+      "sha256": "b4201dae1e7633ac25baf405e8f59f940bed62c2636df34d9ea89a745fc7b962",
+      "bytes": 7483069
+    },
+    {
+      "path": "extensions/aipro-chat/verification-text-feedback.js",
+      "sha256": "37a1833f79a4378d7940b67d1a755fb08dbcc871a226957b1d3bc3517c610d67",
+      "bytes": 1762
+    },
+    {
+      "path": "extensions/aipro-chat/vite.config.js",
+      "sha256": "2a0dc62a5b1ddb80d00beeda627f7645680a074856b61d2199e5b8c63f04b670",
+      "bytes": 546
+    },
+    {
+      "path": "extensions/aipro-chat/voc-page.js",
+      "sha256": "177092b840b600e3583f5bde27252da9f5ad90258e58bf64f904da7f5d8d6313",
+      "bytes": 3240
+    },
+    {
+      "path": "extensions/aipro-chat/voc-tools.js",
+      "sha256": "8c1d4a3e43e633b12ec337350de8604973f021e5f8a740e3930b3fff646638a0",
+      "bytes": 2156
+    },
+    {
+      "path": "extensions/aipro-chat/voc-workspace.js",
+      "sha256": "6f29929eb814d665edb0fe2f9e68b8a3d10b351235cfa2953e108f99a2d43500",
+      "bytes": 9906
+    },
+    {
+      "path": "extensions/aipro-chat/wiki-folder.js",
+      "sha256": "429e57858ed9367426d44c67bd3bbe8670227f186fd6e192eed683e3c6463fa6",
+      "bytes": 17177
+    },
+    {
+      "path": "packages/nubi-a2a/.gitignore",
+      "sha256": "318c10bef1b176486e3de0862a96d0e40131f6c9bbb10a0c48c47574911c9b88",
+      "bytes": 28
+    },
+    {
+      "path": "packages/nubi-a2a/client.mjs",
+      "sha256": "16ef389c3a15408f685d1d801b48d0063944d1cc20f15c86d38b8b6ba9c05d98",
+      "bytes": 8100
+    },
+    {
+      "path": "packages/nubi-a2a/contract.mjs",
+      "sha256": "7373aaca7bc3a056b89dc4490366328e21dfe0e5005373cf143d6d1405d58959",
+      "bytes": 4525
+    },
+    {
+      "path": "packages/nubi-a2a/package-lock.json",
+      "sha256": "8754402ff3ec087762e875647a4367431b361bb7f7a035ae4156d6421a14b07d",
+      "bytes": 1440
+    },
+    {
+      "path": "packages/nubi-a2a/package.json",
+      "sha256": "61e5df7c79b023deddad665c2ea772a8483428387fedfe11315ce80f9a8e1d28",
+      "bytes": 321
+    },
+    {
+      "path": "packages/nubi-a2a/peer-client.mjs",
+      "sha256": "c6fc727c1a7fda6e039fddb0d68478690c0820577f51cbba1a1b20b21bdb3e96",
+      "bytes": 4010
+    },
+    {
+      "path": "packages/nubi-a2a/receiver.mjs",
+      "sha256": "33c551dc6b3f6c150c6c35acb58c0c2696bbf95bfc53ceb27735c76b57f8a7b4",
+      "bytes": 3547
+    },
+    {
+      "path": "packages/nubi-a2a/server.mjs",
+      "sha256": "27801587c2af926316a28a61d9e5fed021c63ba143613807d825639890bb5ab6",
+      "bytes": 14841
+    },
+    {
+      "path": "packages/nubi-a2a/task-agent.mjs",
+      "sha256": "54054bbdf5a5a2c14137f7c547b3d95ccdfd6551d3d90d88196944962260bc4e",
+      "bytes": 9293
+    },
+    {
+      "path": "packages/nubi-a2a/tasks.mjs",
+      "sha256": "7fdbe021711a5f73e52b9ef5769832ec5423496db610f9dec6db3e59a5c7d01f",
+      "bytes": 5928
+    },
+    {
+      "path": "packages/nubi-desktop/.gitignore",
+      "sha256": "dbf879b04ecc289c384ea6cb398173e546d0168f58dfe1a4d7a77e452c78258a",
+      "bytes": 203
+    },
+    {
+      "path": "packages/nubi-desktop/AGENTS.md",
+      "sha256": "f1ff5ef488276c409d9d289df9ea6d179bd62003f67b80855ed366582f48ef79",
+      "bytes": 82153
+    },
+    {
+      "path": "packages/nubi-desktop/THIRD-PARTY-NOTICES.md",
+      "sha256": "5782ac017ebbe3de451de90736b09a7b781efc9b8fbf565b11bf89226921b061",
+      "bytes": 8918
+    },
+    {
+      "path": "packages/nubi-desktop/context-policy.mjs",
+      "sha256": "2a35f6280a98c8e9677fc6d431833c44b39d89c65b63824828c7fe0a89f7a2d6",
+      "bytes": 1609
+    },
+    {
+      "path": "packages/nubi-desktop/context-usage.mjs",
+      "sha256": "51c34d288517b68e6581dcfc87c4f0a871686371242ef4e9146b84b545151c2f",
+      "bytes": 1481
+    },
+    {
+      "path": "packages/nubi-desktop/design/reference.json",
+      "sha256": "42e2a4d5ba686aab5769eb200f7001e644889fc59c6cb7754958f81e1fbc0fc0",
+      "bytes": 1407
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-density.css",
+      "sha256": "09683f05a40bacaa21911df60dab2560d97b567afff5ccbf3cacc5680291885e",
+      "bytes": 64482
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-identity.css",
+      "sha256": "72716a0eaff5fe0a0c5f581926f7a14db2228e4e24ae69face087a2d8867a2d9",
+      "bytes": 169063
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-typography.css",
+      "sha256": "65de05301ca1d1ca7021b415512d047a26b7552d8158060f56dcb496fa50d481",
+      "bytes": 9816
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/BrowserPane.jsx",
+      "sha256": "2fa7e4b9be05711a1c9b446c3e99d144c6afb546aa24043a33c7e92a8f4154e4",
+      "bytes": 7869
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/FileExplorer.jsx",
+      "sha256": "431f9ad8a282f62d8b145af7d719a253d2764d48a9822863770f8a3c8febb167",
+      "bytes": 8815
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/FileWorkspace.jsx",
+      "sha256": "81f8c57c6e695ab1148ec648d306ae19749444f83a33b1c2d8fee10c442576be",
+      "bytes": 3768
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/GitHistory.jsx",
+      "sha256": "10975fd9a51429326f17e5776bb2b4d665341f577c8d6705af9a85ef0191380e",
+      "bytes": 8542
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/TerminalPanel.jsx",
+      "sha256": "14b47bcf333e7a2634025f4803a991bbd5d7e09c7049cbec8e521c2461c4934b",
+      "bytes": 6662
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/ToolsMenu.jsx",
+      "sha256": "67bc53fd956265499693fb979d3677ddef2dc56b9d8409f7ae9cb6570c0f7038",
+      "bytes": 4016
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/browser-host.cjs",
+      "sha256": "aea2909485bad5b6a179cd254a5778b0f2ebdad5302b368b477ee99bc378cfb3",
+      "bytes": 12750
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/connection-vault.cjs",
+      "sha256": "cd4955b2850f08569bf48016ca9e5065e0c1f6b4b8d0a55f4bf4113c4e661822",
+      "bytes": 3115
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/editor.jsx",
+      "sha256": "772e9932cde0d78f171dfe944d9b56dc763b3f4c4c62b634207ee75a778f55b0",
+      "bytes": 5514
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/electron-builder.yml",
+      "sha256": "ddf091701286b704d4736c60af8e81514e09f76ee773143e16536b9c69efc643",
+      "bytes": 879
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/esbuild.mjs",
+      "sha256": "92375584394c62bf4be620bf4a094e462e958cf0e9f55a247e99eb55c449a385",
+      "bytes": 1100
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/gen-esbuild.browser.mjs",
+      "sha256": "a0300390bb84526336f4c668ae812e08b4426ee71179431323c127966fc618dc",
+      "bytes": 3350
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/gen-esbuild.electron.mjs",
+      "sha256": "2c0de56f25aef5751c4f13e1f6e93ff25e889a4a64280cde40e6bcddb992311c",
+      "bytes": 731
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/gen-esbuild.node.mjs",
+      "sha256": "43cecd95ba4dcf65bc0d3e758092029d84ba69a242a347c59a96aae5f697dbac",
+      "bytes": 2035
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/index.html",
+      "sha256": "1ead5424975ff78113912d3c4ae146b16aba2e4618b05508a2d7167296c530b3",
+      "bytes": 633
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/ios-tokens.css",
+      "sha256": "c472d2b2a01c7faf02a9ac21c091f8af40fb99ea5fd728bc273eda1a05967c24",
+      "bytes": 32744
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/launcher.cjs",
+      "sha256": "7455ddf98be67ba12a6b97f625c7f6a224d2e75c25289cf7f4ed4f32ca84b074",
+      "bytes": 27
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/lifecycle.cjs",
+      "sha256": "b373711922a2cd643460a60150ef980f38dee33eb157c386c050ae5c1b53b7f3",
+      "bytes": 7692
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/main.cjs",
+      "sha256": "a9b772343fe58c905cf8ae0e47c31278ae0a3572d7fc83a838c3b60856b11407",
+      "bytes": 19343
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/native-host.cjs",
+      "sha256": "fb2fe8737b12b7ca6df0784c855dd1dfad1a0135197f1138b56006b76c17fe79",
+      "bytes": 7682
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/package.json",
+      "sha256": "05b1fcb3dbc8dc7bb14eb17a22e155d3a9457615e33b71e080ff20f53f34ff43",
+      "bytes": 785
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/preload.cjs",
+      "sha256": "10716943d5a0e94b082cea65f526fea562cf2be3e7fc75f04a8fad866dd6b592",
+      "bytes": 1023
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/renderer.jsx",
+      "sha256": "f2c5c0363107f39f1f484bcef1af3c2e319268787346ecb555eec05496dec41e",
+      "bytes": 39511
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
+      "sha256": "e931d0bfc9b46ad639b48e3af0be719314b658e37ecacce2cc05b53a386b7f37",
+      "bytes": 882729
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/shell.css",
+      "sha256": "dad26fc3e437e9a575d5d19d4e403bb4c8c3bc60a86b9df230f406af0813db19",
+      "bytes": 4054
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/backend/electron-main.js",
+      "sha256": "eba0e4712d85cf9e03c9d45797678d79ea368550e3486f7999723d6181aba5b7",
+      "bytes": 3908
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/backend/main.js",
+      "sha256": "0e315decdf5aa30eeae0795cdfedab0a889a552523f011840c9b40509b189215",
+      "bytes": 2372
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/backend/server.js",
+      "sha256": "c009d0890cd17c60324fc3f0e30a9ea10fb07c4d8135905ef85b53129e6cfccb",
+      "bytes": 4884
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/index.html",
+      "sha256": "321df72fac9ccabc6d5d6810ea67d92a360708a7e92b1ae10127a3564a0a1576",
+      "bytes": 430
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/index.js",
+      "sha256": "729fbab74beed4b5871a5a0dda12592a4bd8f73212495b09ba6832124583232b",
+      "bytes": 6155
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/preload.js",
+      "sha256": "d0d7bdd443d8b282ff4af1d7bf81e86c7c36550aa8b667baca016053ef0db9c6",
+      "bytes": 145
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/secondary-index.js",
+      "sha256": "6d29fc2d773a66e5606f9271e21438574d9f1747984f79483dfbd875f00e592f",
+      "bytes": 718
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/secondary-window.html",
+      "sha256": "26a30124a2e74a3210fbd49b6d286bf08b4e41a05f65e4525779290bab2a9970",
+      "bytes": 531
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/team-workspace.cjs",
+      "sha256": "52c522718fd2637a8d0bf4294383924d013e4c21d7f995a121d802866d50c99a",
+      "bytes": 15741
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/web-host.cjs",
+      "sha256": "6d6de00ac29e96b044d5cc4e921d3f846f648ede420ad135897e50a158b7184a",
+      "bytes": 4048
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/workbench.css",
+      "sha256": "4e646b0a55c2f82fd8882bb895d3933322ab0b0e7f66b84cb0338add81a2c601",
+      "bytes": 22827
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/workspace-layout.cjs",
+      "sha256": "3c6165f873a624c30a4d9efac914bd5e4d8e3928afc310dbec1dd62c8f3a9ed5",
+      "bytes": 1071
+    },
+    {
+      "path": "packages/nubi-desktop/extension/src/node/git-askpass.cjs",
+      "sha256": "fe7ca34df2ffe0efccb6d9cbd35d03c5c52d3f65348adc912740e93815981e4b",
+      "bytes": 614
+    },
+    {
+      "path": "packages/nubi-desktop/package-lock.json",
+      "sha256": "2f4837dd4eeab968d219c03ed79e4f6950f58162c9699a2b870c047e6e705fcf",
+      "bytes": 378099
+    },
+    {
+      "path": "packages/nubi-desktop/package.json",
+      "sha256": "ca8ccacdaaf72586baded2ae045c6b3b05a4ecccabb2f13a0a82df3dfdaf03fd",
+      "bytes": 3558
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/activity-history.mjs",
+      "sha256": "504902d3d8d3bd3cb2612ec37df3a6138d59c021bef8921918b8402a566feb53",
+      "bytes": 1404
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/agent-capabilities.mjs",
+      "sha256": "542184573367fe1219afedcf094d964330a67f0ff8655a630ea1789c570d880e",
+      "bytes": 18193
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/agent-commands.mjs",
+      "sha256": "dc7468ec282347293b7d29f1046c19df550e83463647c84d4982525ff78ee50f",
+      "bytes": 4873
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/agent-input.mjs",
+      "sha256": "db052e56ff666dc4c5167255b7cd729436f25fbb56c6775f17938b7d7ed00108",
+      "bytes": 6148
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/agent.mjs",
+      "sha256": "91a25fa66acd47f54dbfed155e45641f786072bb87f7db0674c89e721e509d3b",
+      "bytes": 104399
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/analysis-history.mjs",
+      "sha256": "0aab82318ce3584190bd1ed5b309766d223a9f180c2e0ff5a765d99f19804a4f",
+      "bytes": 6142
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/answer-sources.mjs",
+      "sha256": "223936991fd84a14f42c93c42d6dddaa2becb461dfdec76022794c926d0f4898",
+      "bytes": 4747
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/applied-file-summary.mjs",
+      "sha256": "612c391770ff43221ff507587d1e488dca250b6ebe07af5f0c802b8c4c50292a",
+      "bytes": 2362
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/approval-policy.mjs",
+      "sha256": "eb68d53775fa80a08d4ae8f317ceee8f9a205f8fb1be2fd200dde2fa0bf463f6",
+      "bytes": 6541
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/beta-features.mjs",
+      "sha256": "45914da7e8955297eb083e88e0d102b153552e513387eb1b93b84f0587902d08",
+      "bytes": 333
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/change-plan.mjs",
+      "sha256": "6075646035bba741194a0ae75e7356dd7ac8f9978cd167714088050db70d39ef",
+      "bytes": 5907
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/chatgpt-catalog.mjs",
+      "sha256": "ed57c6b629505349dde6a851983e31f871b5b0d5e080632f01696511c94affd3",
+      "bytes": 4003
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/code-analysis-core.mjs",
+      "sha256": "0132a105b8b4d79d7bb93ddb760fe6e79d82582a7cdb79bdcb70336b8bd9f089",
+      "bytes": 4302
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/code-analysis-worker.mjs",
+      "sha256": "2e879f633fb6b3404bcbb277923afd95e6cfc5715c8b35e099e0f063d1cd674f",
+      "bytes": 229
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/code-quality.mjs",
+      "sha256": "a108906a33efdf397223a0e27aaa0ab7376c81c943776b9db89fa8aca035b0ad",
+      "bytes": 3691
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/collaboration.mjs",
+      "sha256": "d0e7e0bd521efaec8bacc6ecf7b68405c62da3aa200a4513129035bd2d54358a",
+      "bytes": 16268
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/commit-history.mjs",
+      "sha256": "97796dbbb0d75fad4e7e38534ebafa485c5e4fa9afd55acc8f1f7774235920b9",
+      "bytes": 5663
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/comparison.mjs",
+      "sha256": "9df6ab98d02a829310cc05d6ac3be946d5726f81c93254f0414488623b70fe59",
+      "bytes": 3861
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-controls.mjs",
+      "sha256": "21ab1019232d03be0c43a1a80755607442d4abab6d60d5723088d8ade4eb44f3",
+      "bytes": 3690
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-fallback.mjs",
+      "sha256": "7647a00fa6ec9698cfc607bcd89ba59e9ea85952e3930e1f8c3d44b0363b292e",
+      "bytes": 1078
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-harness.mjs",
+      "sha256": "151161f61e7581bf2538e2eeeb07890f88adbdf24a2d9271fff7e59d2330f204",
+      "bytes": 17653
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-keys.mjs",
+      "sha256": "3430e44051b4c4322af10d78a24f6f99960dd18fc1a66193a204c707182627ef",
+      "bytes": 4098
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-perception.mjs",
+      "sha256": "7246e119fee39ee0b3d597f85f263ffccdacbe1b29b443be423c2c19ae5cf120",
+      "bytes": 9577
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-pointer.mjs",
+      "sha256": "95d1f83c30e572b37a547c4d5fe0140357c46af2ee1633e1d3aaf7b6c8bbecc2",
+      "bytes": 2533
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-pointer.ps1",
+      "sha256": "dc54f97e551cb31c40822f6cc58b44d17c0b3f8cefc5e22f2015a34e860ffe21",
+      "bytes": 4694
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/computer-use.mjs",
+      "sha256": "f7508d64b359b1bc61d3a3a2d913d579921ff439419dcc95a79e2ad0283b963b",
+      "bytes": 72669
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/connection-vault.mjs",
+      "sha256": "4bfdec857f860016bf89958d89384714f812c758f9f91cdfb37c8aacce8d82a7",
+      "bytes": 1213
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/conversation-context.mjs",
+      "sha256": "1bed3ae67845faf79dfabf5ec20d809608709170abe6bae3fc676c1808caf9dc",
+      "bytes": 3811
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/database-connections.mjs",
+      "sha256": "6f1cdb8546bb6bb1ae62bb13f549d25bfc4ed5d2a8aeb622a9cdd70f586b7b60",
+      "bytes": 2176
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/database-schema.mjs",
+      "sha256": "c8cc02ef70c07bcd576da4e8c53267ea67f81bedca09ecf97813c35937f4f33d",
+      "bytes": 3903
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/database-worker.mjs",
+      "sha256": "0e978ec58db508888628d694695acd98aff4d51a2cedf88261b58d5c0cffb4b4",
+      "bytes": 387
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/desktop-features.mjs",
+      "sha256": "af8cc473bed0551419724edb916f841229481501e934e4241471871cdf6f6658",
+      "bytes": 12243
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/document-extract.mjs",
+      "sha256": "63cfbd7c3b8a45d478e85f6420230eb1e2b56011ac041d2ef57500ea44cc0f2f",
+      "bytes": 4993
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/elevated-process.mjs",
+      "sha256": "febbb1ceffb4b62d0f43847925bf84f5c33e0e15e8391481c69835e2370a9f08",
+      "bytes": 10263
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/environment-inspection.mjs",
+      "sha256": "b5260e7a4f25b0d09bdc3a8b660d29411b6e95be212937fd1abc307725d25103",
+      "bytes": 6745
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/fabrix.mjs",
+      "sha256": "6dc87b23195377ff41d0483db7cc3c5bcca0bf584ee18a587e09ff830d452591",
+      "bytes": 1739
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/files.mjs",
+      "sha256": "a338e2e898b882b426a3b10b2955a65f3e323ddba597a683fd18c78e8ef135fa",
+      "bytes": 4458
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/knowledge-map.mjs",
+      "sha256": "e3f34f526c352896c2b5fcb91497668c80d7d203ee1b661bb526856769129789",
+      "bytes": 21807
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/knowledge-records.mjs",
+      "sha256": "7669c3ce8b5e29c700ab0a51e13ab611134e9cc9a97731446a759402c889ce12",
+      "bytes": 12032
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/knowledge.mjs",
+      "sha256": "0cc2be8241e293e689f91061217383507e1209a01cab2da3b5b5609d0f4dd09d",
+      "bytes": 1823
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/lean-tools.mjs",
+      "sha256": "98ddd631909033c2f54ea30d93c1f0974d489c6b0b1be176fe8c284d7d22e82d",
+      "bytes": 5167
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-attachment-worker.mjs",
+      "sha256": "5b6dc638052bce8bf67bc5da84ff2f3a48c8c5ca545f05896a205de87547b4c5",
+      "bytes": 505
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-credentials.mjs",
+      "sha256": "2f296c92643f425bc5c63f156d0f106f054c960b5554fa9e4857a77ed7cb8248",
+      "bytes": 457
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-evidence.mjs",
+      "sha256": "3eaff4a71bad9d1eb73638162a81bc7146e96c170466ed31b0e1ae6e6d2f3a77",
+      "bytes": 1520
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-image.mjs",
+      "sha256": "34aec219cb893dde48da5dcdd3de9c1425c7502918546de0f2e59761413bb3cb",
+      "bytes": 675
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-preview.mjs",
+      "sha256": "99534afb1c83e0edcabe36904ee583940f49c56b7f0aa2cb9471ce89fb420790",
+      "bytes": 1531
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-search.mjs",
+      "sha256": "acf01098b5a5d4ee1246ffd2f97f7a10f477b65fa3fa2cc1fa67e28dced3a62a",
+      "bytes": 15907
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-text.mjs",
+      "sha256": "ded3c8185257a89c8d5ce9f3bdd4c0a725d04bbee1b548438f5e143add6706ce",
+      "bytes": 462
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail-worker.mjs",
+      "sha256": "ee48bba588929d0d23545476903b48dc73dffa0ad55e33a468c6c7fa27dd78fe",
+      "bytes": 321
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/mail.mjs",
+      "sha256": "5be22c807ccc2b58e70e6a3a5bfe1c082526675dd8b041637f2e3fbec32e970b",
+      "bytes": 45770
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/metadata-contract.mjs",
+      "sha256": "a48cde610e0822fddeb56d6fa66fdf27692788f39c183ee10d2ac30dcbc0fbae",
+      "bytes": 1145
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/new-files.mjs",
+      "sha256": "7de915343492e9352ebf16e23ab99a102de1247465cfa5b2debc3d563e3db94b",
+      "bytes": 5624
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/office-document.mjs",
+      "sha256": "1aa7d797411fd00c02d9a257d700a09df917d69517db8413a6d9c48618aead89",
+      "bytes": 6557
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/office-document.ps1",
+      "sha256": "f4de8b524b24bf0025ab7582805df8f06ad08a3d27a810495faf6c8f842652a8",
+      "bytes": 8979
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/openwiki-source.ts",
+      "sha256": "456ec3185324a6535427bbf4e9536e166e5551ca6a980c21823a2bd1e7fee81f",
+      "bytes": 1681
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/openwiki-update-source.ts",
+      "sha256": "e87bd6a683cf2f890812b33063bb18687ceea720a3448247ee8073626c29f80f",
+      "bytes": 978
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/peer-facts.mjs",
+      "sha256": "aa27a47d2b0875bc7e3dee8699717e3e4b9d77686c217a7786fe971960993b02",
+      "bytes": 3907
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/powershell-encoding.mjs",
+      "sha256": "f3da61341d821c178e116f38ba59db538a5f1ea131a8224ab923144ca11ca2e2",
+      "bytes": 585
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/process-output.mjs",
+      "sha256": "7f8ae0b0322fee5fca524c9b238d795117c8aa210b9f41946e260a9754ceb8f7",
+      "bytes": 8551
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/processes.mjs",
+      "sha256": "504c7451c86b047c90edc937cfa5dddfb2abb90dcee6168ac20fdaa44e5eab14",
+      "bytes": 8878
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/project-browser.mjs",
+      "sha256": "04ea18bfcb68cd01349b0aa5bd4470efe0f8aefc97606ef97844469053c7978e",
+      "bytes": 6670
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/project-rules.mjs",
+      "sha256": "4ef6fd2a2a1a503de473191ff08c25429d7c53bfc0d00bd40becda280087e7a7",
+      "bytes": 3368
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/project-service.mjs",
+      "sha256": "74c7f730a7c8913dc40ac940b3b2ecac81d118b78f5404dec564457942ba820e",
+      "bytes": 31687
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/project-zip.mjs",
+      "sha256": "4628c71152327418a90dc1a9ff49e0cde9e1ecb839a8a66ff17573e8e8079bdc",
+      "bytes": 1838
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/protected-room.mjs",
+      "sha256": "863850be01d184b4bc3ef6302084baf6146dc38a78122cac5997e3ffb7499d53",
+      "bytes": 991
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/quality-status.mjs",
+      "sha256": "a9c64cebf8cccb0e9f41d3670900e37f232ee9466e04aa6f754c96f1d7633d63",
+      "bytes": 392
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/read-room.mjs",
+      "sha256": "44e413b65b3f7ccef9c71fa14ac1401502813effc3f6a9709cbcfc120d39a5f6",
+      "bytes": 1257
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/recovery.mjs",
+      "sha256": "2f1e6274e0af7d736c1abb6f6ad36a0b7dc9296eb4b77b645a74fc3365349046",
+      "bytes": 9838
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/regenerate-answer.mjs",
+      "sha256": "8e28636a4da215010990f65c4f3439660d3bfee69c34641c2d4dfcb1c8f82b46",
+      "bytes": 7043
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/response-timing.mjs",
+      "sha256": "914883e11e1e513195992f0e21f543f2ecf1ff395e96521d39a8cb2f560088da",
+      "bytes": 924
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/result-review.mjs",
+      "sha256": "039d951c30a12664ff5199fff5307756408bfdc05bd8f90a33b8545ca6c61da6",
+      "bytes": 27182
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/review-recovery.mjs",
+      "sha256": "91353a2bb70e6a37494f281f2f87802ad1b0c17462f94788a409c194d8aebf65",
+      "bytes": 1442
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/run-metrics.mjs",
+      "sha256": "cb08b3d831cf3eaaaac007c48426e6f8e65cc907a151d227a49a3080fa4935dd",
+      "bytes": 7532
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/schema-parser.mjs",
+      "sha256": "2423bc3ae43868202bf0583f3bde2c31dd90a016c173d31b4e1eb43cc61e3133",
+      "bytes": 2325
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/schema-worker.mjs",
+      "sha256": "2f18559187e7f7e46e44068ecf922540dc7d1fabaf20bb7626c9c1b17390f0b4",
+      "bytes": 559
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/service-entry.mjs",
+      "sha256": "0fd635f2dd96828eaa40101f8867fab89a3ef7a9dd773c30011d4c09a3b1d866",
+      "bytes": 1018
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/setup-actions.mjs",
+      "sha256": "d0b37fe44f26fc2dc31af25f27a5aec4ae37a10f309a85c184d6bf2e7b48396b",
+      "bytes": 6800
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/skill-files.mjs",
+      "sha256": "25a09ef9db7b0f69fbdbd6e67bd07643688da7e80b683f4566e5301a3b872701",
+      "bytes": 1004
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/skill-import.mjs",
+      "sha256": "45cd646eca39959ff59c6101b1c4f501705cdf894d6e8b8a61735507fd4bf576",
+      "bytes": 14889
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/skill-marketplace.mjs",
+      "sha256": "9bc68fbd25852beeec3d54a12da5e5bd34258f05cb0139a1d268f93ffc195dbf",
+      "bytes": 16573
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/source-edits.mjs",
+      "sha256": "9367c48dfb5b974e84edaf11a16473915bb30393376f36eb54f16c4eeb60c928",
+      "bytes": 2990
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/source-search.mjs",
+      "sha256": "06cf673926419e768282aa77f7ff3803a1e2f826d712e92df9d53bdbf6f11787",
+      "bytes": 5970
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/sqlite-schema.mjs",
+      "sha256": "4e60d66a3b71fcb9de053265856cf6bcef20858311c2d3ace6b00612b060680f",
+      "bytes": 1957
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/store.mjs",
+      "sha256": "b169ec39dc80eacd567d44d5ad645b4a9e7d8260247077eef1f844517d37b40f",
+      "bytes": 2275
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/task-receipts.mjs",
+      "sha256": "8638fd335a7a33e812a01078dafecf1dc3a10ed9a1d1e4a44c3012514748f6f6",
+      "bytes": 966
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/tool-feedback.mjs",
+      "sha256": "ed29bfbaafddcedbd877346d8ded903a2de2d89b41f66e33325241231ae951ef",
+      "bytes": 13822
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/usage.mjs",
+      "sha256": "9b8e7f4c6bedbc8b61d7cd1aaedca23d02e6ebe3ddbc85693250d4a91814d9bf",
+      "bytes": 2735
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/voc.mjs",
+      "sha256": "616de8133e97828bb05efdb4cad6de537d29722ece0a2356f8ff843ce8a568da",
+      "bytes": 10849
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/wiki-carry.mjs",
+      "sha256": "89d9fa6666f7966c8348a1aa0737e7d6a84bfe5a7fba52276ea6bdf9dedb2bc9",
+      "bytes": 2099
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/wiki-evidence.mjs",
+      "sha256": "b045b9f249bc9bfe3c7ac93a7056b56c86ecda8185810693a15209f4a3b0e06e",
+      "bytes": 19767
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/wiki-update.mjs",
+      "sha256": "275f4bab0e9fe2d81b7fa66f8b5bfb3e6d2dc25ee5de9f1fb2adce2e997bab44",
+      "bytes": 13215
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/windows-apps.mjs",
+      "sha256": "240acf2190dec4e1cd50a59b00326c73d8909234c7fdbd5f4d331a353dc7a45c",
+      "bytes": 3163
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/work-plan.mjs",
+      "sha256": "aebc7ee82ce6893dd422479b0d0a27e22ab1a9ec420f5c2ad8664ada931a069e",
+      "bytes": 10546
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/worker-environment.mjs",
+      "sha256": "947de4c3879bec39ed63c4e1c2b2280315daf2ef1fcbb11375a4abf245100934",
+      "bytes": 915
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/workspace-browser.mjs",
+      "sha256": "b3420ad532f38b5d157bfeb39f096aedc56245cd64b1fcf3a5ea2e9c35717280",
+      "bytes": 1661
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/workspace-changes.mjs",
+      "sha256": "8e8286a0c907cc40863737aced123ac3208887de56e3ed007c6e6ac79184e9e3",
+      "bytes": 5086
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/workspace-documents.mjs",
+      "sha256": "c993f17a33306ef72824c20f0f6d2a5f4697aff699dfba92e77df3c7ea741077",
+      "bytes": 9803
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/Read-ShellLink.cs",
+      "sha256": "7391037152f07b14a3b47c125a04ebb70b0c39730eeae906358389eea801b224",
+      "bytes": 2152
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
+      "sha256": "c0928bb8f5adb87fd95abe623c7312cc389c891e6840e03fe29a4147668a9b16",
+      "bytes": 1058
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/Test-WindowsInstaller.ps1",
+      "sha256": "d3b4eab90c9fc0f8043b06ef08549b811539065f7c36af12ac47d6ddd3202967",
+      "bytes": 5791
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/build-electron.mjs",
+      "sha256": "c4d7fb8fa9007df6f001958ca99bc1ee4a673979a800544e94e1580b6d81b60b",
+      "bytes": 1954
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/build-runtime.mjs",
+      "sha256": "8542d2d051e9c242b524255ca49a16c0fe7637b79d77cfd24fc44a78eec0347e",
+      "bytes": 13548
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/build-surface-gallery.mjs",
+      "sha256": "baed8f881ea0886b09fc03b6ad53f45e94b7b1c5d54f34c1f636ed8bf286df09",
+      "bytes": 6273
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-agent-input.mjs",
+      "sha256": "43e9e7d40a3917126b093851a294f77af7bf722b142dc6db7aaa62acccd794cb",
+      "bytes": 10615
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-all-surfaces.mjs",
+      "sha256": "968d071cb0e35bb9bf13b5e9e9225302809ff0d1bcb33b62c6b546f1c83bcb0d",
+      "bytes": 34344
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-electron-agent.mjs",
+      "sha256": "c536c909e39cba24c3a58414e3f60fd66069d6eb577e6743911b8c14253831fa",
+      "bytes": 9600
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-electron-lifecycle.mjs",
+      "sha256": "7f32e3e0dd23344a01628c1fa19acbb0d1800fd6a97207be62bfa59bad4e6df2",
+      "bytes": 8216
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
+      "sha256": "f360dde20aa55a0d11746e9f0b1064ecfb2092c9c0fb38ca3b7890c4d6fcc1c1",
+      "bytes": 13502
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-electron-skills.mjs",
+      "sha256": "d6e229996b6748bed6d86a279951b6d01dcc4f9b12914a0c3ab4fde9c840011a",
+      "bytes": 13072
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-elevation.mjs",
+      "sha256": "1aca5591d246c4ebe265274e8a0204068222ea7bc91a917ea98a2b3bcecbae1e",
+      "bytes": 2856
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-form-clarity.mjs",
+      "sha256": "f8e55dc265e22728443105f19a2ddf7a8f04a04ff751316f941d75f93dfc44cf",
+      "bytes": 7313
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-identity.mjs",
+      "sha256": "1d70300e3811e683b4592637e89734ceec86404bfabc50792fc0d2a308c27386",
+      "bytes": 3218
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-live-web.mjs",
+      "sha256": "b81015173aa059fb4d3d5913c812cc2383cd55aea3cdaee053001f6e594ea75d",
+      "bytes": 7058
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-mail-ui.mjs",
+      "sha256": "46463c3b22a1515aebcf2033926887e8b5daf6b0d939a61fe06b7726bfe0e2e9",
+      "bytes": 5993
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-modals.mjs",
+      "sha256": "1cb716ece7b757eaf1d5c02b2d38b51b337b50a74c11c8be1114fb32f511e0b3",
+      "bytes": 16524
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-shared-ui.mjs",
+      "sha256": "25777c5cf14da8b1b41a5f634ff4480ead21d16974c2c34a714de04b9e5c5a10",
+      "bytes": 65315
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-visual-pointer.mjs",
+      "sha256": "f64d04600f6e98bea1f16be3f541368da91550f88ce8bd0ab042f5620326f1e6",
+      "bytes": 3621
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-web-preview.mjs",
+      "sha256": "c0878dfa0c1fdb1a17213870dedd62854255985f2ec839c3549f9c6bc30303d7",
+      "bytes": 5805
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-winapp.mjs",
+      "sha256": "c45f8cc7a1995c741a7cb935d6c173a9c7966c63c20ad16643c17edc01752385",
+      "bytes": 9610
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/check-windows-workflow.mjs",
+      "sha256": "d35f95b17702b457733026e1bbe913a64ca7592ff9a3268a8d6799e8ee3f9723",
+      "bytes": 7632
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/fixture-model.mjs",
+      "sha256": "3d410658c748c6186561f75be3e09e792bdc1bea249dc9f49692773ad11e5784",
+      "bytes": 4703
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/fixtures/windows-controls.ps1",
+      "sha256": "2cb5cad1599fd8e529e7fbd5fc0ef8da07c4fb4ac7407d96098e599b50e1641d",
+      "bytes": 3582
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/fixtures/windows-workflow.cs",
+      "sha256": "e6c8882752dfab3d684e5ae9a3a16f4d264697e3c3ee57f2538ed98d6ca1dead",
+      "bytes": 992
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/identity-browser.mjs",
+      "sha256": "31f24b16ab8bbe35fa8f53f12e29fb379527c1c9f9664df774c9bab411a1d593",
+      "bytes": 2674
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/package-windows.mjs",
+      "sha256": "6017bbc3584cd644399659da2cb6aa45984bf19283fa7f3ff9164d997d690e06",
+      "bytes": 943
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/prepare-app-icon.mjs",
+      "sha256": "1b063b36947af56039302ac8728f5f4636245028a1f599bfce27b3fc3f8d7092",
+      "bytes": 743
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/prepare-winapp.ps1",
+      "sha256": "0ff06276620325957e30c22cfff0de41d7271f9f1764774a78d49011cf51394c",
+      "bytes": 1703
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/preview-mail-workflow.mjs",
+      "sha256": "9f75e41759546d6ccb75fcdaad1ba67e59917662cfdb17b72b8f203452959332",
+      "bytes": 1561
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/preview-web.mjs",
+      "sha256": "ca991c5f0cc0927d62813f58b3a724b6d2407c893257097cf64c33130804ed8c",
+      "bytes": 2421
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/renderer-bundle.mjs",
+      "sha256": "f77c24bb3bb4788cfb87e91a96ca96a565390aa74c9ed28e8a293137ed8ac646",
+      "bytes": 1017
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/start-web.mjs",
+      "sha256": "d8d1d298aa87a888dc50d7007a84b20663c6a5d39fec5fb5e1167241e77821d5",
+      "bytes": 139
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/start.mjs",
+      "sha256": "a613de4e011d7295c127440033077ca32ff26536e03ab9bcdde54e7856ec18e6",
+      "bytes": 317
+    },
+    {
+      "path": "packages/nubi-desktop/tests/adaptive-context.test.mjs",
+      "sha256": "62989a2e490cf77c6b20cf4820ceb20e7d2764597b9ed01a951a5d3898c8bd3a",
+      "bytes": 6900
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-capabilities.test.mjs",
+      "sha256": "06e84d2e9cdff05f6c60715a8a3d9e9ffc1382325510204eb372b7422b3dee2e",
+      "bytes": 7550
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-connections.test.mjs",
+      "sha256": "913d0d87af6f1c79ff46a4e916a431841d625285ce22fb4a6443136c97ebae91",
+      "bytes": 5744
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-delegation.test.mjs",
+      "sha256": "3705597d09b43bb704cc6329c765a3ec9d1fc5f842a0226fed8b92fc125323a0",
+      "bytes": 8371
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-input-ui-fixture.jsx",
+      "sha256": "5d51ad8b777ed712737f39da908469a447f250f659ab3d66ea387b308194c920",
+      "bytes": 800
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-input.test.mjs",
+      "sha256": "d4f930aaefe4eeb91b23780e81cb8a2e01d1a505fadca5826646d4972d2a963f",
+      "bytes": 8510
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-office-delegation.test.mjs",
+      "sha256": "90222a682e38cfc6d7bc98fa57113c2e62d1235dae86c5e119fa449c0c5243fa",
+      "bytes": 2945
+    },
+    {
+      "path": "packages/nubi-desktop/tests/agent-reuse.test.mjs",
+      "sha256": "97b9f43ffd425ca08fbdec6eed339e427a6d4faac489a8dacf44deb63f5dffbc",
+      "bytes": 14120
+    },
+    {
+      "path": "packages/nubi-desktop/tests/analysis-history-state.test.mjs",
+      "sha256": "a3d2e6895ef60364c9ae5fa5c09fd2c2cde7996f42e5532758553db5cd18ddba",
+      "bytes": 2449
+    },
+    {
+      "path": "packages/nubi-desktop/tests/analysis-history.test.mjs",
+      "sha256": "84eda2f4002fe2e4c8fa97449af0bc9543bfb26ae2d37817a1c8ab82f391b248",
+      "bytes": 10190
+    },
+    {
+      "path": "packages/nubi-desktop/tests/approval-policy.test.mjs",
+      "sha256": "cc99224d3e82dc1e93bac37cffdd779d3ce3d7268c29ea239539b563ae2ab9d5",
+      "bytes": 6431
+    },
+    {
+      "path": "packages/nubi-desktop/tests/beta-feature.mjs",
+      "sha256": "afff35226a78edf25c386234cb0e2cac82fc0bd85aa659c3adb8cf2a6c002ce2",
+      "bytes": 929
+    },
+    {
+      "path": "packages/nubi-desktop/tests/browser-auth-return.test.mjs",
+      "sha256": "df8d7c0d98440c7e30ce0651522fcb4752941cd680548bbfa0b12a53369ee58e",
+      "bytes": 1793
+    },
+    {
+      "path": "packages/nubi-desktop/tests/change-plan.test.mjs",
+      "sha256": "4994b74f37e4d9c753a26fbb62c61b9cfcce3e8e874fba65f99fdada98ef2033",
+      "bytes": 7362
+    },
+    {
+      "path": "packages/nubi-desktop/tests/chatgpt-catalog.test.mjs",
+      "sha256": "663a2841c761700d9309cb4b2ad8f534013bfd0b210f6ad99f8d8376c922b60e",
+      "bytes": 2285
+    },
+    {
+      "path": "packages/nubi-desktop/tests/chatgpt-desktop.test.mjs",
+      "sha256": "183e8b2be42f277ca4b45abd5698d75b8f2ebfec639f12619e40e39e0cd080c2",
+      "bytes": 2589
+    },
+    {
+      "path": "packages/nubi-desktop/tests/coding-quality.test.mjs",
+      "sha256": "2296e6af070fc90156c6ba9f3263b468388da4e6775330816bdb087f16add564",
+      "bytes": 10674
+    },
+    {
+      "path": "packages/nubi-desktop/tests/collaboration.test.mjs",
+      "sha256": "1b8f8c15a44479161b89a1b4a7c1d92211b036b83e1a1412103bd0688e04aa08",
+      "bytes": 10225
+    },
+    {
+      "path": "packages/nubi-desktop/tests/compaction-observations.test.mjs",
+      "sha256": "b697621eb8f6faf3b619965ee9c2c7c8f32d100a6e3c760cb0912e23917eb63c",
+      "bytes": 5175
+    },
+    {
+      "path": "packages/nubi-desktop/tests/compaction-turn.test.mjs",
+      "sha256": "cfb74249b851e28a3088a9ba5d448428fb235d9c16bdb169f1d7ecf24f52f1cd",
+      "bytes": 19188
+    },
+    {
+      "path": "packages/nubi-desktop/tests/compaction-wiki-evidence.test.mjs",
+      "sha256": "3c70e916579612b15c9ed028b122a8c98ddd0761e97b6c8feaa08d8b685c35d4",
+      "bytes": 6559
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-batch-view.test.mjs",
+      "sha256": "b0b5176e040e495c748d380050e6f460eb32896ceeb1a1ee457c7cdfcaafa757",
+      "bytes": 5581
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-batch.test.mjs",
+      "sha256": "67246d871374ab4fd0d08b2ac66296006ba83a5d5c7f2a0c2980ab292917bca5",
+      "bytes": 20154
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-connection.test.mjs",
+      "sha256": "3902e5bdea196b38b5795d14d81cfbf3cd279e78efbaa1057050a67b156f6c51",
+      "bytes": 13934
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-document-evidence.test.mjs",
+      "sha256": "8923577fde0c5f050b81349db9f651efde5cf2ea3c0de20906b1d04aa47080e2",
+      "bytes": 11559
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-feedback.test.mjs",
+      "sha256": "bdfca97c97bd48a73bd856f1382e3dc34d15213ee6ce5207cb3b1a4aefee08c5",
+      "bytes": 13701
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-input.test.mjs",
+      "sha256": "ab9a100d3101ed31dc608388d7d53c1ed82e1a53567ac6593610ef59107deeaf",
+      "bytes": 17810
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-outcome.test.mjs",
+      "sha256": "c500cb213bce2a45e8a19a4371a018edb4d1f9e5bc879d40260862dfa16cb676",
+      "bytes": 12068
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-perception.test.mjs",
+      "sha256": "21a71f1b504f35c84c4bcd21fcc719cc2410848f37309a724ef9ab320683bea3",
+      "bytes": 6120
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-pointer.test.mjs",
+      "sha256": "41e7bea7ae3f81fe766b6fea40643dd1517ad95e891b4c75f0eb07f324f1c4a0",
+      "bytes": 2427
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-read-hidden.test.mjs",
+      "sha256": "d380109164f2c8a83e81956af43085f2b488c6f3ad99bdf2a1da960ccec3d8e2",
+      "bytes": 6107
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-repeat.test.mjs",
+      "sha256": "83cfde26b03bc87c281e17725a8c318c7a1085c45d29b65b5540caa2fe660026",
+      "bytes": 10496
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-ui-fixture.jsx",
+      "sha256": "64b0c7298cf043dbdf024f60bc65cca24d1dcc7b231cdbd0f0f582887aea96f5",
+      "bytes": 8055
+    },
+    {
+      "path": "packages/nubi-desktop/tests/computer-use.test.mjs",
+      "sha256": "27cf2e11ae825b16bce6e7c17ef6af2c17bcfa243b10e707897531fa443195f3",
+      "bytes": 51105
+    },
+    {
+      "path": "packages/nubi-desktop/tests/connection-vault.test.mjs",
+      "sha256": "e1aa24c0f59e22d7874b60bfd940e1406ed9b57bed637917b2e08b4d742ac3fe",
+      "bytes": 8343
+    },
+    {
+      "path": "packages/nubi-desktop/tests/context-cost.test.mjs",
+      "sha256": "fa8e8c6aeb6e2bf243f3a799b38ba5a872217abe527c1807a2bfb296d62f52fb",
+      "bytes": 5580
+    },
+    {
+      "path": "packages/nubi-desktop/tests/context-policy.test.mjs",
+      "sha256": "eae4d396c50775ea5d825cb18e4529b6662a5890b6552f0ef43e52b717727c04",
+      "bytes": 2658
+    },
+    {
+      "path": "packages/nubi-desktop/tests/context-room.test.mjs",
+      "sha256": "652dbdecfd4ebed34de00d6e06590abd147fbc2e595ec781cbb78061bb1a4449",
+      "bytes": 3643
+    },
+    {
+      "path": "packages/nubi-desktop/tests/context-usage.test.mjs",
+      "sha256": "aa52c6a2c05a4a4341f7222b76b7de0cd9f4dcca6fcdc268a6a25192f841bc96",
+      "bytes": 7539
+    },
+    {
+      "path": "packages/nubi-desktop/tests/conversation-context.test.mjs",
+      "sha256": "c9fde50bf471d04e387adea787802ced08b5b87215eded8d184756e2783c31c9",
+      "bytes": 13810
+    },
+    {
+      "path": "packages/nubi-desktop/tests/conversation-search.test.mjs",
+      "sha256": "54aa302b00052c6938e75003526b5abcdc1ebb341663a99f960b22fbd7e70583",
+      "bytes": 2391
+    },
+    {
+      "path": "packages/nubi-desktop/tests/dependency-quality.test.mjs",
+      "sha256": "a3c5cbd2ca5215a6b8d642499ebd6a1067892b6a72737be7dd82eb7673a37fa0",
+      "bytes": 1666
+    },
+    {
+      "path": "packages/nubi-desktop/tests/document-tracing-fixture.mjs",
+      "sha256": "59d0be1ca92b36aef74051f0717ad06cb489250383f0a4579e03afdce4351f75",
+      "bytes": 1627
+    },
+    {
+      "path": "packages/nubi-desktop/tests/electron-features.test.mjs",
+      "sha256": "0d2e72aa366664f33bc46ac82cf021020b2142e792e3030da11338d7c8dacdca",
+      "bytes": 5492
+    },
+    {
+      "path": "packages/nubi-desktop/tests/electron-lifecycle.test.mjs",
+      "sha256": "e2b4213efb204d025a535f423cced390729d90d69bcd118345dccc33887ab2db",
+      "bytes": 7698
+    },
+    {
+      "path": "packages/nubi-desktop/tests/elevated-process.test.mjs",
+      "sha256": "07e06f8df937e9b9c443a2b2150d6f9ec4c25614f24720d1fd103c795ceb43d2",
+      "bytes": 7888
+    },
+    {
+      "path": "packages/nubi-desktop/tests/environment-inspection.test.mjs",
+      "sha256": "45b391fa0982bd4528dcd3999c9331e184e94a322be2197a6decdb10c4517d52",
+      "bytes": 7319
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-app-host.test.mjs",
+      "sha256": "63e366978640a2f525db153366046a1961961c58b10ccda60e0642f8c4e83cba",
+      "bytes": 8248
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-cases.test.mjs",
+      "sha256": "f8adf64ea82b585752f860a3acd0a8b486034169f9d4b94a427028a4018e29bc",
+      "bytes": 16797
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-compaction.test.mjs",
+      "sha256": "0a52f8b30ee71c3128928ab297000ae3277136cd7ab612bea2ba6bf97fcabb89",
+      "bytes": 5576
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-computer-input.test.mjs",
+      "sha256": "df5f0bef8da8612c045f97380b4b122eb1df8e89956cae03dd5b402a49cb63f7",
+      "bytes": 8475
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-computer.test.mjs",
+      "sha256": "bb36aaeedc21247440a1a089fa076eb069604a532bd1ef16c454ff43685ad5c1",
+      "bytes": 15077
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-corpus.test.mjs",
+      "sha256": "40f5d9b4c38205c1c4062ec67575436155e6bf5829cfbeea520031a5a9473b19",
+      "bytes": 6698
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-driver.test.mjs",
+      "sha256": "b3eb5b583dedb3df52b449e8b606cb6a90112a391627ededc966213301b18d31",
+      "bytes": 22144
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-grade.test.mjs",
+      "sha256": "6afc2e84ee4ea9726bbe2f8872c5db76ab326c0511cdf2fa8203548f3bb6273e",
+      "bytes": 9648
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-model-comparison.test.mjs",
+      "sha256": "7b93de7bd6ab8d28f0be4ae49eddfaddd393b2e96489f96314814a485b3d63cc",
+      "bytes": 2244
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-relay.test.mjs",
+      "sha256": "3ab89cfae3e6ef40f2fa3e175ab5e5cac65bd4b8fe6ada43e77454b0ff662f52",
+      "bytes": 5427
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-run.test.mjs",
+      "sha256": "ea847a8a79fc30bb767aaf4b8a3a0c79c6b0d42178719f35a84f0195df677dea",
+      "bytes": 12087
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-transcript.test.mjs",
+      "sha256": "8275c6fbb61ac03555332e3386664f576dd9324db298176766600e6ddc7bb4cf",
+      "bytes": 6952
+    },
+    {
+      "path": "packages/nubi-desktop/tests/eval-user.test.mjs",
+      "sha256": "39b2aa0a4ffd85e7564245c37781655faa1fd2ba487f2bc9e9aa94e53614ccf2",
+      "bytes": 8929
+    },
+    {
+      "path": "packages/nubi-desktop/tests/fixtures.mjs",
+      "sha256": "920982ca2c93b6a18335d11375e98d75b2789a297ae0698883a49112c3a602ad",
+      "bytes": 3000
+    },
+    {
+      "path": "packages/nubi-desktop/tests/form-clarity-fixture.jsx",
+      "sha256": "c21ec6d7b3b0ecd32c080ecc62963f98f1c9e594eab8b05fc66af2ee3a55421e",
+      "bytes": 1656
+    },
+    {
+      "path": "packages/nubi-desktop/tests/ghes-marketplace.test.mjs",
+      "sha256": "db9ba287d903a78b4446eb4bcbba6327c291f133547990d22dbe32742e30f558",
+      "bytes": 2472
+    },
+    {
+      "path": "packages/nubi-desktop/tests/harness-feedback.test.mjs",
+      "sha256": "f511b7bfd2f0df6152f16727f976903c8739515d6e3ea140b8b4e6606134a989",
+      "bytes": 35703
+    },
+    {
+      "path": "packages/nubi-desktop/tests/improvements.test.mjs",
+      "sha256": "0343d0e43fe70c928eb6f89de8c181f82afbc7ce4ec6f68b652751ed90622c62",
+      "bytes": 7282
+    },
+    {
+      "path": "packages/nubi-desktop/tests/integration.test.mjs",
+      "sha256": "16461117268e3fccd8901a82b651e02dbd100f462f9223cb417c55c76ebcf022",
+      "bytes": 7593
+    },
+    {
+      "path": "packages/nubi-desktop/tests/intent-routing.test.mjs",
+      "sha256": "6b0b9f8a043c5503c346d5e4910a4c486c9a86be5f2fba7168a87ad710b30b14",
+      "bytes": 9440
+    },
+    {
+      "path": "packages/nubi-desktop/tests/knowledge-fixture.mjs",
+      "sha256": "7989382dde4deb2d05dc5f011798ba47d7ea8ce683b2936639de42e15a4374c1",
+      "bytes": 1506
+    },
+    {
+      "path": "packages/nubi-desktop/tests/knowledge-map.test.mjs",
+      "sha256": "e17a936a6a064be1e18f0f45a191d56229dd3ee3bfe4ce68c47a19a4051c2aef",
+      "bytes": 9686
+    },
+    {
+      "path": "packages/nubi-desktop/tests/lean-tools.test.mjs",
+      "sha256": "19db2f0b163d193731bd03cc89203416ff0d471e65d0cc4cfe8e91be2077244a",
+      "bytes": 7760
+    },
+    {
+      "path": "packages/nubi-desktop/tests/mail-fixture.jsx",
+      "sha256": "501c3252aae5f2a77bc4534e7620186775ea0f4f0b0abec573feecedefa848a3",
+      "bytes": 2329
+    },
+    {
+      "path": "packages/nubi-desktop/tests/mail-image.test.mjs",
+      "sha256": "976910291cfbdc6d814bbcef235d8ea326921f3aac58da2951aaedce7b827f97",
+      "bytes": 2547
+    },
+    {
+      "path": "packages/nubi-desktop/tests/mail-knowledge.test.mjs",
+      "sha256": "cf1ef0344290c79ee403ddbd6e0b5197704af0a81ad50a390b023912d2981850",
+      "bytes": 5847
+    },
+    {
+      "path": "packages/nubi-desktop/tests/mail-preview.test.mjs",
+      "sha256": "c9982d6764834e38b886be4052dabc837ad75b13e3eb4446127691d17aef9701",
+      "bytes": 1838
+    },
+    {
+      "path": "packages/nubi-desktop/tests/mail-search.test.mjs",
+      "sha256": "547c0ba84814908a11658c0900a28277c59d5ad56a2fe5293e6af43be722ed3d",
+      "bytes": 5172
+    },
+    {
+      "path": "packages/nubi-desktop/tests/mail.test.mjs",
+      "sha256": "bb90453e37763c62a58b505bbbd91acfb958f9e20df2329e745b6d34a40ea5dc",
+      "bytes": 19793
+    },
+    {
+      "path": "packages/nubi-desktop/tests/peer-facts.test.mjs",
+      "sha256": "a2b6e65065c56adaab530392bb425421e52483cf6ddae2fc68b7418fb050136f",
+      "bytes": 6118
+    },
+    {
+      "path": "packages/nubi-desktop/tests/plan-previous-answers.test.mjs",
+      "sha256": "1dc4b415dc35ad1d2c9bf75fc008c81ff94c4893c7ae1d0a4ead132067e03afa",
+      "bytes": 7121
+    },
+    {
+      "path": "packages/nubi-desktop/tests/previous-intent.test.mjs",
+      "sha256": "857c60eba5d5a80b70328d3535bb5b75176a35afc640dd26809b54b6ea4563ad",
+      "bytes": 4800
+    },
+    {
+      "path": "packages/nubi-desktop/tests/process-output.test.mjs",
+      "sha256": "4eccbffbb0bb793ebe8b8648d5358a2808b0345d9e4e8b5ebcc8515bb93ee155",
+      "bytes": 10721
+    },
+    {
+      "path": "packages/nubi-desktop/tests/project-open.test.mjs",
+      "sha256": "c394359793573bd9d32d3d7a45c11f67957eb6a9e429afbd673d9eaa9dfd6f12",
+      "bytes": 3587
+    },
+    {
+      "path": "packages/nubi-desktop/tests/project-rules-new-files.test.mjs",
+      "sha256": "dbfcac6c812f6cb583df354f551de7e4c4ab1917771b16ba524141e5ebb9382e",
+      "bytes": 13260
+    },
+    {
+      "path": "packages/nubi-desktop/tests/project.test.mjs",
+      "sha256": "c0b0ffe67ac758e823798dab97fe3fbd1d1ad98bca606147a9f03b41ee959d5d",
+      "bytes": 5101
+    },
+    {
+      "path": "packages/nubi-desktop/tests/protected-relax.test.mjs",
+      "sha256": "8066a4f0b934e7b046bbb97d39b6e851b8087391c18ce43b6aa261a5faf78efb",
+      "bytes": 7339
+    },
+    {
+      "path": "packages/nubi-desktop/tests/provider-host.test.mjs",
+      "sha256": "64fa0a89d2570ad79b9e4c57ac54ef3fe8eb2f554c4d552fc9e6e9534ea63028",
+      "bytes": 1544
+    },
+    {
+      "path": "packages/nubi-desktop/tests/provider-input-room.test.mjs",
+      "sha256": "d08b1c7385394b5d30d46496b9bb4821c070a79e77f5fd6f686deeb24eb67a78",
+      "bytes": 877
+    },
+    {
+      "path": "packages/nubi-desktop/tests/provider-login-stages.test.mjs",
+      "sha256": "5be42e578325db69841e491d03f36cddd60ae7429357f2901fe5f9b95ad910ec",
+      "bytes": 3297
+    },
+    {
+      "path": "packages/nubi-desktop/tests/read-evidence.test.mjs",
+      "sha256": "27c0bfd34ae68744e5e45934a17e0e1bd38ea99386d6a003b5b8a2929560bcc2",
+      "bytes": 11836
+    },
+    {
+      "path": "packages/nubi-desktop/tests/read-room.test.mjs",
+      "sha256": "01a2eb993e7f13069e4e1fdae73ba4a17d0eb9d7987a00195da161ef598111bf",
+      "bytes": 5430
+    },
+    {
+      "path": "packages/nubi-desktop/tests/read-together.test.mjs",
+      "sha256": "004abba10fdbff01a8bd89125587b234a08b4f783b73c37959e01958b02f5e3b",
+      "bytes": 6264
+    },
+    {
+      "path": "packages/nubi-desktop/tests/recorded/D3-S12.txt",
+      "sha256": "3e0bae582c3afaac26ae3cc264cb6bdf3f30603e1f97b6da8d860df256124150",
+      "bytes": 1211
+    },
+    {
+      "path": "packages/nubi-desktop/tests/recorded/D3-S7.txt",
+      "sha256": "1c3a0fb3431061ce4a9c389b27753fe39b46f5f778cd3664e0f71308a0eb51e6",
+      "bytes": 1317
+    },
+    {
+      "path": "packages/nubi-desktop/tests/recorded/D3-S8.txt",
+      "sha256": "94eaa5b7ac387f11d2b3398a2348de2a27d5664682e32be5c4154b6f67c7037e",
+      "bytes": 1292
+    },
+    {
+      "path": "packages/nubi-desktop/tests/recorded/D3-S9.txt",
+      "sha256": "ddbde4da57d3523e863871e896ecbe265baeb9ac7cf170d979202354e8053f24",
+      "bytes": 1086
+    },
+    {
+      "path": "packages/nubi-desktop/tests/recorded/W4-S28.txt",
+      "sha256": "1f37d2df955be1eaf379ab3615a137c77fb213971e0e7b4f0a5b4ad33ceb96d0",
+      "bytes": 1162
+    },
+    {
+      "path": "packages/nubi-desktop/tests/recovery.test.mjs",
+      "sha256": "110c9f83deb9066f1c6f7a465a99c5e56dc4d9413a78a7ab50d83d5c744b00f3",
+      "bytes": 12383
+    },
+    {
+      "path": "packages/nubi-desktop/tests/result-review.test.mjs",
+      "sha256": "e29d6d07aaf4f33c60404a2577c509cd8587bb99c1f506970fa2c6b8f5e83799",
+      "bytes": 17540
+    },
+    {
+      "path": "packages/nubi-desktop/tests/review-continuation.test.mjs",
+      "sha256": "721f9384cc86d354ae630426433fdf9a0b1e4411ec289cb7cf36e76982d7d918",
+      "bytes": 2432
+    },
+    {
+      "path": "packages/nubi-desktop/tests/review-turn.test.mjs",
+      "sha256": "21c5db073e20cb7d3cd29aa90fefc735f1a8864cc6c5fe1008ff18c55991af1d",
+      "bytes": 3348
+    },
+    {
+      "path": "packages/nubi-desktop/tests/review-user-text.test.mjs",
+      "sha256": "4094959e286c5f30e8fca7cc3627562dddfb50693695a03a32b2594bbedf3855",
+      "bytes": 6322
+    },
+    {
+      "path": "packages/nubi-desktop/tests/run-metrics-wiring.test.mjs",
+      "sha256": "2f4f61844d1a2458068e2c2a96638f5c41b4a53f22c958f1ccfffc8926da77f4",
+      "bytes": 5261
+    },
+    {
+      "path": "packages/nubi-desktop/tests/run-metrics.test.mjs",
+      "sha256": "fa7c638a76d11c381fbbf732b7643a337bef31ef1681dd249a28e8022de71a8a",
+      "bytes": 6054
+    },
+    {
+      "path": "packages/nubi-desktop/tests/search-breadth.test.mjs",
+      "sha256": "22044743dcbf9ec3311dc594dd32975fae76051b2d9dcfc27981a7a3f4044813",
+      "bytes": 6492
+    },
+    {
+      "path": "packages/nubi-desktop/tests/session-navigation.test.mjs",
+      "sha256": "58ad3feba96f0add30cb8171a78b845ef2de8b64f44e659334653304cb1d34b4",
+      "bytes": 1739
+    },
+    {
+      "path": "packages/nubi-desktop/tests/setup-actions.test.mjs",
+      "sha256": "8c9881eeb9d5f9c2f5eb17c5c10d99994b0b7b30df2898631fba495b45e8427c",
+      "bytes": 13604
+    },
+    {
+      "path": "packages/nubi-desktop/tests/shared-ui-fixture.jsx",
+      "sha256": "41f9d66daa8dc963b6d2554093d7b3d6c59e171e8418dc9ab676e591bf785bc6",
+      "bytes": 27506
+    },
+    {
+      "path": "packages/nubi-desktop/tests/shell-encoding.test.mjs",
+      "sha256": "e6959a317757910463165fcb736b6d69f71a9274fd9328a1c962e112f312681e",
+      "bytes": 3858
+    },
+    {
+      "path": "packages/nubi-desktop/tests/skill-import.test.mjs",
+      "sha256": "79f888e810cb2b0f3b4d7a874f82162471e18ed7f40fe504422d18ae645b1192",
+      "bytes": 10564
+    },
+    {
+      "path": "packages/nubi-desktop/tests/skill-marketplace.test.mjs",
+      "sha256": "c0e8f7d73819b61c342a648b7e6a16cfc328e60938ece696eab65c982ee55100",
+      "bytes": 11720
+    },
+    {
+      "path": "packages/nubi-desktop/tests/skill-quality.test.mjs",
+      "sha256": "b458386eb1c29b5705005f3b1322c4c7a21a6dd4ab6f926f1a4cbd6e6dc12896",
+      "bytes": 10505
+    },
+    {
+      "path": "packages/nubi-desktop/tests/skill-registration-ui.test.mjs",
+      "sha256": "c003977e0470defab5dea5125a2f30d9c41d56c16b14f25a11fa84528adafe0d",
+      "bytes": 1050
+    },
+    {
+      "path": "packages/nubi-desktop/tests/skill-zip-fixture.mjs",
+      "sha256": "b461974be3f80b357482471cc3d90d00c3854bd99722d0f2353d600440345784",
+      "bytes": 1557
+    },
+    {
+      "path": "packages/nubi-desktop/tests/stale-proposal.test.mjs",
+      "sha256": "841e257bcbf6bddbe1e4efb28a8c70d5dffc641619cbae9b5c77e3db77ed0821",
+      "bytes": 4293
+    },
+    {
+      "path": "packages/nubi-desktop/tests/surface-audit-fixture.jsx",
+      "sha256": "1a45a9ad5ed87c23a11982dc3def2a5dc495c995987c0a07c2cf30e5a30612e2",
+      "bytes": 11466
+    },
+    {
+      "path": "packages/nubi-desktop/tests/task-delete.test.mjs",
+      "sha256": "067f1b66407c6fbb61d12b1224879db0678adbd4b3ac9affbd1ce9c04b7f7088",
+      "bytes": 3758
+    },
+    {
+      "path": "packages/nubi-desktop/tests/voc.test.mjs",
+      "sha256": "84bf6d60bd9699280f596112609df439dc9ce05ff174fbe3873cb706f6d99c80",
+      "bytes": 6186
+    },
+    {
+      "path": "packages/nubi-desktop/tests/web-host.test.mjs",
+      "sha256": "92214d9de01cfde106e4b671ac4ac1fc6e11cec1795a75268ac51e48ee8482f0",
+      "bytes": 3075
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-carry.test.mjs",
+      "sha256": "4212593b32c4872862ae3a466ea3eb4e5322babb40f2d9287c0a8d0272b3b71d",
+      "bytes": 6433
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-evidence.test.mjs",
+      "sha256": "d3153e1fefc76e99a691884818165119560f6da038494e4ea0d39c5c4986684d",
+      "bytes": 14646
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-steering.test.mjs",
+      "sha256": "ee2365524b1d03c9449f559e51c236483f536cbddfc56e03ec91ed42b7c720ab",
+      "bytes": 23605
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-to-app.test.mjs",
+      "sha256": "e724391bebffb630667a38f125d975ed3f239f5132205f7c9fa30c09165ec8d0",
+      "bytes": 5485
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-update-bundle.test.mjs",
+      "sha256": "a539e37df1c0d14969f43099abdfaace6a6298871e0260daac04c99159fe1413",
+      "bytes": 2470
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-update-view.test.mjs",
+      "sha256": "8a13dfdf1dfee5d2c9c9762c7d5f4ed5f04d44fb63296a2f90cf2ab7f9f00683",
+      "bytes": 4218
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-update.test.mjs",
+      "sha256": "31eb3c9360b36282c70fbbd078e3cc562a4372e63326113d0a22168e94fe68ff",
+      "bytes": 18255
+    },
+    {
+      "path": "packages/nubi-desktop/tests/windows-apps.test.mjs",
+      "sha256": "7cf0910a6de9c94ab66791e2c77f8fc65b9986ea1d1ed0b81acdda6e5aa87843",
+      "bytes": 9637
+    },
+    {
+      "path": "packages/nubi-desktop/tests/work-plan.test.mjs",
+      "sha256": "3a6933b8cfc6cd2230c29380e1bfb9516dc65bc0abfb45e4e4b9772ed2ac56d4",
+      "bytes": 8499
+    },
+    {
+      "path": "packages/nubi-desktop/tests/workspace-changes.test.mjs",
+      "sha256": "7327992f1e57ab208c088e194a123976fa8fc9bb21fb4d4b31116a0615e930e9",
+      "bytes": 4754
+    },
+    {
+      "path": "packages/nubi-desktop/tests/workspace-context-usage.test.mjs",
+      "sha256": "2ca45315f65d0fdd686ef66cecfa268948a4f51f0bc8925a951b047554c3af4c",
+      "bytes": 7724
+    },
+    {
+      "path": "packages/nubi-desktop/tests/workspace-documents.test.mjs",
+      "sha256": "0cc9299d88bd0baba9d268551398f12899631f4436c022e5ba3c663a8d74660b",
+      "bytes": 12200
+    },
+    {
+      "path": "packages/nubi-desktop/tests/workspace-harness-quality.test.mjs",
+      "sha256": "021d8767b546cb3bd3bdd4b56a47d621d04654dc2df956b6ecaad8cb4d58fc7f",
+      "bytes": 8019
+    },
+    {
+      "path": "packages/nubi-desktop/tests/workspace-harness-receipts.test.mjs",
+      "sha256": "d7be8350a6e2985e14c907a8d0cbde2fd28a5d19eefde80a8930f033742b3387",
+      "bytes": 2633
+    },
+    {
+      "path": "packages/nubi-desktop/ui/AgentConnections.jsx",
+      "sha256": "8f22e0ff4b5c6178b1d14d406a94a402a693d216b5f0dc091ed8ee05088ef6ab",
+      "bytes": 5477
+    },
+    {
+      "path": "packages/nubi-desktop/ui/AnalysisHistory.jsx",
+      "sha256": "c11fad8b63d8b09c10e7244df3ced0bac597d3a2513ec26d8fb8a2dc19d6d849",
+      "bytes": 9864
+    },
+    {
+      "path": "packages/nubi-desktop/ui/AnalysisReviewProgress.jsx",
+      "sha256": "a5365a132c38e73225bdc64f1e6e1b0b3fdb8dc1c27381e74201da3b27a5e853",
+      "bytes": 2684
+    },
+    {
+      "path": "packages/nubi-desktop/ui/AnswerSources.jsx",
+      "sha256": "2751547fccacefc151c0b774c48f2331098ce2e5c19d96ac5f21f8d232b7611e",
+      "bytes": 2573
+    },
+    {
+      "path": "packages/nubi-desktop/ui/AppliedFileChanges.jsx",
+      "sha256": "abc4046b48b884ebc0487b3ea2ccadcf76de67277575d9802b380c37d3d43f0a",
+      "bytes": 4991
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ApprovalBar.jsx",
+      "sha256": "0c0677a183af3122b5a6eb83e389ef6becf29f1219af7421d0495b0f8074afd2",
+      "bytes": 1188
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ApprovalMode.jsx",
+      "sha256": "1ee6e766dc95318e1dfd235c31b79d0c067d8526c24d43205b8ff11b7c0b5b83",
+      "bytes": 5357
+    },
+    {
+      "path": "packages/nubi-desktop/ui/Collaboration.jsx",
+      "sha256": "66e31add7993a0214dad826cde7d3609de7708b2d3fa73209165d6ed1902f123",
+      "bytes": 5477
+    },
+    {
+      "path": "packages/nubi-desktop/ui/CompanySkillSignIn.jsx",
+      "sha256": "467c421b2f6ee9e7c4fba634fd5c34a33e7ec4039571742ad03335f0ec52bf86",
+      "bytes": 851
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ComposerCommands.jsx",
+      "sha256": "4a3e633efc23e95151d5b530c04ac1b9a3924c7d536a5568271c861f47c86cd0",
+      "bytes": 4371
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ComputerConnectionForm.jsx",
+      "sha256": "dbc34e2f84097bd1f8afcb58fed57831249246a4ea4489fbec34ae5f2dd4bc47",
+      "bytes": 5043
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ComputerUse.jsx",
+      "sha256": "1576de003baa874bbccb86aeacff08ade6f82524ab71a9e71b23244f9f9fd55c",
+      "bytes": 27609
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ConversationSearch.jsx",
+      "sha256": "6374e43dac03cbb1b7f53bfc3b354bcb619ca445bce2f4c98b4615543a96e47b",
+      "bytes": 3393
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ConversationTime.jsx",
+      "sha256": "ce0831e6254acf05a3f3cf196ced3569efe6d7b26476bad21ada749b6dd9c344",
+      "bytes": 311
+    },
+    {
+      "path": "packages/nubi-desktop/ui/CustomSkills.jsx",
+      "sha256": "4f8499e3d29b1acae436d8fea9d473a8e32d253dfad3b5d01684c2fe5dbd2a3d",
+      "bytes": 6217
+    },
+    {
+      "path": "packages/nubi-desktop/ui/DocumentAnalysisProgress.jsx",
+      "sha256": "176f1d9c89222646bb2965d0d9a9560b1c11dc6b27fefb024cce55bbad17d166",
+      "bytes": 4565
+    },
+    {
+      "path": "packages/nubi-desktop/ui/DriftLabel.jsx",
+      "sha256": "131bda113dcf3833c5724429f4d85063a2c2116489dd39b96a1897411ac00646",
+      "bytes": 2999
+    },
+    {
+      "path": "packages/nubi-desktop/ui/FileKindIcon.jsx",
+      "sha256": "c5b9b1f3d149f1c5bfea15deeb69ded96739d4dedd695cdb005587a9c8892d8f",
+      "bytes": 807
+    },
+    {
+      "path": "packages/nubi-desktop/ui/GhesAccount.jsx",
+      "sha256": "0778a6cb06e660c573f41c99070af54b913e736bfe3a9dbf658eaa385aca401f",
+      "bytes": 8636
+    },
+    {
+      "path": "packages/nubi-desktop/ui/KnowledgeMap.jsx",
+      "sha256": "254f718198ae79ea3ccbffa5757167250175783aeda7855227a1e17079b54432",
+      "bytes": 16652
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailBody.jsx",
+      "sha256": "c60de0380b4675af29c86946b2a1c73d830ef2bd99169efdb29c1fb92ea42476",
+      "bytes": 654
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailEvidence.jsx",
+      "sha256": "6c7662b625c5985befeb38cc9d95770a2cdd3b70e8337aea9da3bfce4e7a0b63",
+      "bytes": 2835
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailHistory.jsx",
+      "sha256": "d511f8a634f97ae6efe4072deae44a179028e05ee7acac93208570c0547fb9b1",
+      "bytes": 9644
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailKnowledgeSearch.jsx",
+      "sha256": "caa75c39a243d1de02d1d6e9fab4cf60dde0ab4542fde22ce42955c08a8a8ea4",
+      "bytes": 18307
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailLibrary.jsx",
+      "sha256": "023e656a47bca7f7952b5c5a0e2bcebb09b38f0dbd94a1d9b75bc5a70663614c",
+      "bytes": 17175
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailLocalControls.jsx",
+      "sha256": "d41d32a5700e3c6c08c896792b9d6cf8db26eee9850ec28030b93c7173765d87",
+      "bytes": 3537
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailMatchText.jsx",
+      "sha256": "bbd003057a19a55bc6f8b9e403af78a61b455b2a9994a8d5c9623817c5e876ec",
+      "bytes": 1094
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailProgress.jsx",
+      "sha256": "b4b234ce101d05a0916241b705382be0ed7f6239b73727e52336ad1fff8ae370",
+      "bytes": 4241
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailReader.jsx",
+      "sha256": "8a787aedb23b5e7724281b6ad3fac8045db5cf4cf4396c1edbffc68b29030a68",
+      "bytes": 8792
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailSearchToolbar.jsx",
+      "sha256": "48020fba72a7f844e6aea6591b2f31c7d46977ebe23c7d587bd336a8b53b9c49",
+      "bytes": 12286
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailSourcePane.jsx",
+      "sha256": "e0e9c6cc00cef8d6453def2fff3206c343afb6ecfd3df9dec869f2a1c5c6fc84",
+      "bytes": 2184
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MailTimestamp.jsx",
+      "sha256": "0efe02af6006345d25a0ad2ba689118b9e4bb3b1a90ab5ac9e043e902059ef3a",
+      "bytes": 433
+    },
+    {
+      "path": "packages/nubi-desktop/ui/MessageTimestamp.jsx",
+      "sha256": "c6f13be9deb6704997b67923dbdcce1039d68f9b86b0c8cfc753b3e2b4d661ee",
+      "bytes": 428
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ProjectFileTree.jsx",
+      "sha256": "a9f02776614ca94044481537de9ea4d2b0ba1317a351118a2203e0dc227f97a3",
+      "bytes": 3895
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ProjectStart.jsx",
+      "sha256": "c950c41e8032fb716bc8278b4d999a5f17ae8b573b2b697d475e854d28b11301",
+      "bytes": 3559
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ReasoningPicker.jsx",
+      "sha256": "cb3984c676ff938077eaa5e3b194a636df4d0787f2dba5d512da8808e2c2275e",
+      "bytes": 8518
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ResponseTime.jsx",
+      "sha256": "620ce8777cb78f77a1e81ce81e7292bc65ceb96e36e123c31ee09a9db3b76aa1",
+      "bytes": 1025
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SavedMailSearches.jsx",
+      "sha256": "ac8eb52bafbfc9cd055863798fea24aab4ac825e07ad56cfc8239e00e2fcc828",
+      "bytes": 3538
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SessionSidebar.jsx",
+      "sha256": "6bfbcf8a30c39f02c225dd1643e43b0390bb7a35342a5db95f8f1c4f9bd08b4e",
+      "bytes": 8945
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SessionTabs.jsx",
+      "sha256": "42f9a2fb444514427703692994f9a3b5a899b90f655e8b76043a71cb118179d9",
+      "bytes": 1266
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SetupActions.jsx",
+      "sha256": "d1fe096a4c09a1d39838677b09011db89d2df24e5a292d4fe5ddab39c47fd12b",
+      "bytes": 3668
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SkillLibrary.jsx",
+      "sha256": "baadaa452f31fc7e26dfd937008d9391ae1daf773ac7202f194731b91c35e88d",
+      "bytes": 1711
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SkillManager.jsx",
+      "sha256": "b385a6bfa8177fd0ed7772c7706d7b6c8b70055cf13b8e5a6b4a91373a382352",
+      "bytes": 927
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SkillMarketplace.jsx",
+      "sha256": "d684cbc764f83cb93d32b44aead00467536430464c8160f498255ddfc69498b8",
+      "bytes": 9174
+    },
+    {
+      "path": "packages/nubi-desktop/ui/SkillRegistration.jsx",
+      "sha256": "b8bf7abf4fd9c49381f9f1f8fb77c76f62e3f86698f0a5f714be28335a4cab15",
+      "bytes": 3094
+    },
+    {
+      "path": "packages/nubi-desktop/ui/StartupConnections.jsx",
+      "sha256": "402679b6b4fe2df1ca977e4f6f0ec2e8a319e3967ac6cf08b53b05a10238e53f",
+      "bytes": 859
+    },
+    {
+      "path": "packages/nubi-desktop/ui/TeamWorkspaceMark.js",
+      "sha256": "17e47c983f1e0aad589833e97a28908feda0028487863e048faf3cbc4574bf96",
+      "bytes": 1175182
+    },
+    {
+      "path": "packages/nubi-desktop/ui/TerminalBlock.jsx",
+      "sha256": "ab1c047239692751f08270c9977de7591a12d9ed1d97d216c597f34e684c9694",
+      "bytes": 1727
+    },
+    {
+      "path": "packages/nubi-desktop/ui/VocLibrary.jsx",
+      "sha256": "32d9396f86573f44af9d05e518701fd0446a3c9ac0f59e9251ab4d55dbe780df",
+      "bytes": 3435
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WikiEvidence.jsx",
+      "sha256": "2c5845e1fedb50ae874e7428f8f1891a5c4950e5d0f57d0113ca246a2a4562c3",
+      "bytes": 1776
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WikiInitializationProgress.jsx",
+      "sha256": "14c4e6650e9c8d7c5da03a88801e0dd0e678ef0b4695777c34be4102478bc1f3",
+      "bytes": 2721
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WikiUpdate.jsx",
+      "sha256": "deb17cb1754620f922537442293a88a0176a6e726811c047fe7d5c387ad999a9",
+      "bytes": 5538
+    },
+    {
+      "path": "packages/nubi-desktop/ui/Workbench.jsx",
+      "sha256": "2fc3d7ef8e98b38318a104ab82d96c7a2072ca664a692fa1786372213be47b21",
+      "bytes": 90261
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",
+      "sha256": "bf3ed3176f84017a5d4cf377b04be36bdc9d0b18b668079b8d6256d305f68cdd",
+      "bytes": 1084
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceActionMenu.jsx",
+      "sha256": "b3bdc5bd745d24ec9994ab9ceb7784e444068fc482ec48854206f882309ec688",
+      "bytes": 3358
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceActivity.jsx",
+      "sha256": "dc426f6db9206639ef762cc1e729a8441b40eef5d59116ff1f8cfaab19ceb1d2",
+      "bytes": 6649
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceComposer.jsx",
+      "sha256": "84a144161a41958f33ec2f0050bb3541c12074212ebb6731fd0cdeb74b8f16f4",
+      "bytes": 6337
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceIconAction.jsx",
+      "sha256": "1dc03fa82cb3704e40d1aab92b85f0202dc1177a1b473d821588fe43c135409f",
+      "bytes": 2120
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceInputs.jsx",
+      "sha256": "6c25590a1bbc2ed39977eabed3f0a1eb1cc61a465e82f6b87611b46866acb00b",
+      "bytes": 2615
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceNavigation.jsx",
+      "sha256": "7e17832cf76b40299dc6d45e0bd33cf09d1275ba54b6d6bcecb5203ef4d457da",
+      "bytes": 2766
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspacePlan.jsx",
+      "sha256": "9677eec2cf080395fe2418a2f63341a1141f10fd9abf6d00ca2c39d4dcc0327a",
+      "bytes": 1665
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceSkillMenu.jsx",
+      "sha256": "aed783c18e457bbea8f853013f2a20abeefbe4748af6ff72673c111c4fef75fa",
+      "bytes": 6853
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceToast.jsx",
+      "sha256": "566bbe9ff467478e369cdccd59703fa44788be1ee804e4eb3e97e03ed01689ff",
+      "bytes": 5800
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceToolbar.jsx",
+      "sha256": "932d6ceb89736917cfb4753bfe06187fd938e2c46d2c74b015a427ab94278151",
+      "bytes": 2407
+    },
+    {
+      "path": "packages/nubi-desktop/ui/agent-connections.mjs",
+      "sha256": "bc5b320ca7311702a9b202ccd7111af98bf1a5f63fdd5cb3588d8fe2837e279a",
+      "bytes": 940
+    },
+    {
+      "path": "packages/nubi-desktop/ui/analysis-history-state.mjs",
+      "sha256": "3ca8ed8406e86ebc46781dd62c1160de9fa70cf29c6418a9cc8f8d9c20dc8aa7",
+      "bytes": 1997
+    },
+    {
+      "path": "packages/nubi-desktop/ui/auxiliary-menu.js",
+      "sha256": "e7595ca930c328e4a87f52b6ade38e093641e40e773c0e0d41469f77f181371d",
+      "bytes": 242
+    },
+    {
+      "path": "packages/nubi-desktop/ui/computer-batch-view.mjs",
+      "sha256": "5ec5ef464f0a17f1025e5e60641734d6f8d43c7e70fcd568eac49530111a1496",
+      "bytes": 3285
+    },
+    {
+      "path": "packages/nubi-desktop/ui/computer-use.css",
+      "sha256": "0c53112f014265debb0feb9f4e0e165fdb6340dc5b3a2508191dc3e7670eb02d",
+      "bytes": 2952
+    },
+    {
+      "path": "packages/nubi-desktop/ui/context-gauge.mjs",
+      "sha256": "5a2416e40c176efa41ff50c2026de44e4e3be71b82e6910da08e5f4cd622e763",
+      "bytes": 3632
+    },
+    {
+      "path": "packages/nubi-desktop/ui/conversation-activity.mjs",
+      "sha256": "8582dbe6551c85915d7d066a87bb42116860066afc5f5e3299a8091dd52e46b0",
+      "bytes": 2470
+    },
+    {
+      "path": "packages/nubi-desktop/ui/conversation-search.mjs",
+      "sha256": "7e1b99be6c8224d7e48ff630592f2fbc0b1e6a9d7182a834df9599ab6e9f6fcd",
+      "bytes": 2572
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ghes-account-state.mjs",
+      "sha256": "634dd482230e7e7f7b97f4b55bf23f3af0dd4712c6b4e9f04931d73599e633f5",
+      "bytes": 2466
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ghes-account.css",
+      "sha256": "9512d25760826c90fdbb5580d8fad9d550824710d501428690c704c0f6966b7c",
+      "bytes": 7080
+    },
+    {
+      "path": "packages/nubi-desktop/ui/mail-search-draft.mjs",
+      "sha256": "6f0015c9309ec734a951bc4883b71b6bb6283a2923c9c8af11fc88785e24d1a0",
+      "bytes": 1968
+    },
+    {
+      "path": "packages/nubi-desktop/ui/marks.jsx",
+      "sha256": "101c1b6fa331e3efc95886a217b524d47bb1f4f1c498ff3df0ad5a8f5afbcd62",
+      "bytes": 2545
+    },
+    {
+      "path": "packages/nubi-desktop/ui/picker-width.mjs",
+      "sha256": "a259dd15080280b98502a21a41234e049d94a94bc1b0b7e1438d687afc87dab9",
+      "bytes": 404
+    },
+    {
+      "path": "packages/nubi-desktop/ui/provider-login-state.mjs",
+      "sha256": "eb0f936b05be2efde178c526db33f17e44936fcc02d254cfdf4fd7f9dc4c6e51",
+      "bytes": 3074
+    },
+    {
+      "path": "packages/nubi-desktop/ui/remote-address.mjs",
+      "sha256": "a80a3752671711138b1a8414198f10661408557d53e5f9d973c3e1727d498743",
+      "bytes": 640
+    },
+    {
+      "path": "packages/nubi-desktop/ui/session-navigation.mjs",
+      "sha256": "e46dd6eec2ec43a62f75d5338dd297d3263f937e1e6b9b33d6645ade6523ac30",
+      "bytes": 2441
+    },
+    {
+      "path": "packages/nubi-desktop/ui/skill-registration-state.mjs",
+      "sha256": "18c26830660b5ac1e2b259847bb04ce3a77130e4b69260905a0d6fddf87a3178",
+      "bytes": 1662
+    },
+    {
+      "path": "packages/nubi-desktop/ui/teamWorkspaceErrors.js",
+      "sha256": "753db4e33d11430cd494b95cd7a0a94dd17d0a396449f056d53f169e8f5f50ce",
+      "bytes": 1104
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useAnchoredModal.js",
+      "sha256": "f8ec9e520af686a9f89ba1bd08b0a0ae7d138225588c652f4c6a01546be97264",
+      "bytes": 3423
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useComposerDraft.js",
+      "sha256": "59df13be6f235471a65f8e1ae190907492b6d8ea8575c77913a96b5b50039899",
+      "bytes": 851
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useConversationScroll.js",
+      "sha256": "5b2a513f0ffebf2b33f30818f0c1c94805b8892e5793425b5f2bb49076939f8a",
+      "bytes": 1491
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useModalDismissalPolicy.js",
+      "sha256": "62cada0fd828a08b401d44a734bc01733b60db9cff8016fc0084414818f6225c",
+      "bytes": 814
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useSidebarResize.js",
+      "sha256": "32a7d576cf5eab34a1bcf82dac55eab9f6f927cb22466bdee2a7aa7b50090cce",
+      "bytes": 4536
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useWorkspacePageLinks.js",
+      "sha256": "f8c79b0014e5c2fab7d6b04064f2e99f6abb4ec91c1894b08fdf35b6efa245e8",
+      "bytes": 1497
+    },
+    {
+      "path": "packages/nubi-desktop/ui/welcome-greetings.mjs",
+      "sha256": "47aaef792516453120fdd3f7f896bab4efd387c021c0f48f31ee12f1b0a434d4",
+      "bytes": 1802
+    },
+    {
+      "path": "packages/nubi-desktop/ui/wiki-update-view.mjs",
+      "sha256": "878df0b1ddcd0156522b330e5ea5ce5d095912e45deba7e3c947b8a391a16eb3",
+      "bytes": 3660
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/DeepAgents-LICENSE.txt",
+      "sha256": "61e5e8faf0b76db76793ecd8aa0edca36a82bd8dba279d2a31972f026c132423",
+      "bytes": 1070
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/JSONC-parser-LICENSE.md",
+      "sha256": "c3a24c02d678e5f0711623dcf3ab3f243b273c2633f638a1fa8e35fb7c7f8e4d",
+      "bytes": 1092
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangChain-Core-LICENSE.txt",
+      "sha256": "4ec67e4ca6e6721dba849b2ca82261597c86a61ee214bbf21416006b7b2d0478",
+      "bytes": 1067
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangChain-LICENSE.txt",
+      "sha256": "4ec67e4ca6e6721dba849b2ca82261597c86a61ee214bbf21416006b7b2d0478",
+      "bytes": 1067
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangChain-Protocol-LICENSE.txt",
+      "sha256": "893e6e30275896912c21c77f9f7c112aba85fd985d05b26a29424cf7e511d177",
+      "bytes": 1072
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangChain-TextSplitters-LICENSE.txt",
+      "sha256": "5a73d9410eb4f288d95245e5ec15ba55b2a5a080226d98869b52ba72379938bf",
+      "bytes": 1066
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangGraph-Checkpoint-LICENSE.txt",
+      "sha256": "dbeab89f4ab409184f943dd1b882c3ece706b365eabc3569844e095cea247cde",
+      "bytes": 1069
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangGraph-LICENSE.txt",
+      "sha256": "dbeab89f4ab409184f943dd1b882c3ece706b365eabc3569844e095cea247cde",
+      "bytes": 1069
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangGraph-SDK-LICENSE.txt",
+      "sha256": "d9bb52f2e3540d60ff50d8f0f5b6ba649b7fd346948c4c3d086c8afb120763c7",
+      "bytes": 1072
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/LangSmith-LICENSE.txt",
+      "sha256": "34e0b9842c7a31d34e53bc7eb224e81e07a34996106e029bbc72dea2d449f496",
+      "bytes": 1066
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/React-Arborist-LICENSE.txt",
+      "sha256": "f1dcfe846608164333e4662013cd41adcee862327ca0b93228fbc11418b299c8",
+      "bytes": 1066
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/TypeScript-LICENSE.txt",
+      "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47",
+      "bytes": 9197
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/Zod-LICENSE.txt",
+      "sha256": "3f1189b28e3866e0d979968d466b78f813f76827cfdca1fbb124cc0a5c8841f8",
+      "bytes": 1072
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/vscode-ripgrep-LICENSE.txt",
+      "sha256": "ccf06b70760761ae1437395117bcf911501e3dc85385d84c7eba20d5dfab55dd",
+      "bytes": 1113
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/xterm-LICENSE.txt",
+      "sha256": "b569f629d00f2626a8100df2a1798210535621e42164dfd426a6fe5aac7b0ccd",
+      "bytes": 1261
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/xterm-addon-fit-LICENSE.txt",
+      "sha256": "e256f01188af527e4d06d21d06fbf785ae9c50d4b328bf03cbe0ba7f0aa4228f",
+      "bytes": 1103
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/patches/winapp-password.patch",
+      "sha256": "25559da35fcffd835976ad24c63463ba5c4f7f6fa3478a66eff08c730405952a",
+      "bytes": 668
+    },
+    {
+      "path": "packages/nubi-office/worker/activity.mjs",
+      "sha256": "c30612f52fee727e4f9ddb48570db1630c2ebedb2bb45b8c09a8ceb04b04cd10",
+      "bytes": 1765
+    },
+    {
+      "path": "packages/nubi-office/worker/agent.mjs",
+      "sha256": "22ce263a0993619b90e1e085b48c35b378246b05c69b1351b4bad48405d69043",
+      "bytes": 79146
+    },
+    {
+      "path": "packages/nubi-office/worker/aipro-auth.mjs",
+      "sha256": "0694c7385fbb6e98eda670d8be7881eeb7d8ca013a6ee7e1b6b8763f5bcc5508",
+      "bytes": 8714
+    },
+    {
+      "path": "packages/nubi-office/worker/analysis-jobs.mjs",
+      "sha256": "c77b7793f30eb9eb5fa9826f4c56b6f60a9ea244fc5f4709a0b1348e80d57624",
+      "bytes": 10579
+    },
+    {
+      "path": "packages/nubi-office/worker/cell-format.mjs",
+      "sha256": "c01f89a45b746d44e31df7f99f87e3d6396514232988af6c6cc7d22e0dabaa42",
+      "bytes": 16849
+    },
+    {
+      "path": "packages/nubi-office/worker/cited-cells.mjs",
+      "sha256": "a55b8352e916ed38d7c3eec6726387a1b34d731c5c067cfae08c20cb643c31da",
+      "bytes": 3071
+    },
+    {
+      "path": "packages/nubi-office/worker/connection-errors.mjs",
+      "sha256": "d43aecf699655edf1924f12367efa5a0d63f74fcea9b4fbd3c0abc4da5818b15",
+      "bytes": 3571
+    },
+    {
+      "path": "packages/nubi-office/worker/content-agent.mjs",
+      "sha256": "abad5b8480dd0f44652374160d0b9374d0809362a54f8c29f6b7e7f0447e0b7d",
+      "bytes": 102784
+    },
+    {
+      "path": "packages/nubi-office/worker/content-analysis.mjs",
+      "sha256": "b968946987d6875fb12efe6bd86a58797c1ed1d8042253a319476980eba2710f",
+      "bytes": 9142
+    },
+    {
+      "path": "packages/nubi-office/worker/content-context.mjs",
+      "sha256": "e86337bed69cb9f68bd22170b33ac53ca838f68fd6afe244f55cb68252798247",
+      "bytes": 13354
+    },
+    {
+      "path": "packages/nubi-office/worker/content-copy.mjs",
+      "sha256": "8f3354804d4e6f5409c89c918360dc1ff5c66784602f13de25be5b4218fe18b3",
+      "bytes": 1133
+    },
+    {
+      "path": "packages/nubi-office/worker/content-integrity.mjs",
+      "sha256": "43b5fa65aa5aad8868ffb2b56cd6ac896b8737b67272d68436efafd3b4dcb249",
+      "bytes": 1379
+    },
+    {
+      "path": "packages/nubi-office/worker/content-operation-validation.mjs",
+      "sha256": "4aa69758c79972e3f1e6b2eae530170a223a6ddffb90c22799ee7348fdbeab45",
+      "bytes": 5792
+    },
+    {
+      "path": "packages/nubi-office/worker/content-ranges.mjs",
+      "sha256": "b009bfb6405ce9b0e8cffd2fd4695ca7fda875f0c4e27fb6c0209a8e1cf6f825",
+      "bytes": 2971
+    },
+    {
+      "path": "packages/nubi-office/worker/content-review.mjs",
+      "sha256": "4b2c9e915c6decefbf062be2f03d15c7dfcfc5dc013d75b6f5f132aa52e6bb9f",
+      "bytes": 13661
+    },
+    {
+      "path": "packages/nubi-office/worker/content-schema.mjs",
+      "sha256": "1e16352e7351fc94fe86ab651ddb5121711b4dced79f106555fa39b907d64ae4",
+      "bytes": 19435
+    },
+    {
+      "path": "packages/nubi-office/worker/content-structure.mjs",
+      "sha256": "57c4777c8b153f905999c65b7a031bd09e63fca90c8f2bba4ec944091216c4c1",
+      "bytes": 8437
+    },
+    {
+      "path": "packages/nubi-office/worker/content-text.mjs",
+      "sha256": "f2950e20fa896061b2913fe28bfcb572071958214a7d9bd15942177262649b15",
+      "bytes": 8376
+    },
+    {
+      "path": "packages/nubi-office/worker/context-budget.mjs",
+      "sha256": "638d995da3b44ae3a92bb6da5bae8240887ce56062c91dbd33f414693f0013cf",
+      "bytes": 8172
+    },
+    {
+      "path": "packages/nubi-office/worker/context-memory.mjs",
+      "sha256": "4a21f36c9e81d109131729db3f8509f831285817b55ba5a6e2fafa4eb4901fb8",
+      "bytes": 11082
+    },
+    {
+      "path": "packages/nubi-office/worker/context-renewal.mjs",
+      "sha256": "f5dc323faa5f789a7cd7eaccbed04f1320129b0319fb3ee7e76c13d712c72d23",
+      "bytes": 8126
+    },
+    {
+      "path": "packages/nubi-office/worker/context-summary.mjs",
+      "sha256": "4a0950480bb9fd0d5aa57b40e0a88f3415e1e39983afd1f7afd84555e34fab36",
+      "bytes": 6837
+    },
+    {
+      "path": "packages/nubi-office/worker/document-agent.mjs",
+      "sha256": "2e6c3a62204ca01eb51f6d11c45e59858996f19d60f1938c6f1d21c83bf04b53",
+      "bytes": 36504
+    },
+    {
+      "path": "packages/nubi-office/worker/document-chunks.mjs",
+      "sha256": "8104e188a214f5129afe623fd83cdc75e3ce94e66dac4907642fc1cd001a3edb",
+      "bytes": 1546
+    },
+    {
+      "path": "packages/nubi-office/worker/document-context.mjs",
+      "sha256": "c1fd620a9b57571f04497d20afd951d24cb0291f2c2c943b95e815c564b6326c",
+      "bytes": 5516
+    },
+    {
+      "path": "packages/nubi-office/worker/document-delegation.mjs",
+      "sha256": "f3529545bb17a5a68fcdcb5e597f321ce75fc35a663c3b5cbb76612a26ebbee6",
+      "bytes": 16784
+    },
+    {
+      "path": "packages/nubi-office/worker/document-file.mjs",
+      "sha256": "11612d4ca6beeb34cea56897e72a980295e949a2dc05bdaafc7b25f108898992",
+      "bytes": 3896
+    },
+    {
+      "path": "packages/nubi-office/worker/document-schema.mjs",
+      "sha256": "3a753a0db05374e68b48bf0561ed4bc1ac26000a90675c788a9826d03ac0a949",
+      "bytes": 7850
+    },
+    {
+      "path": "packages/nubi-office/worker/document-skill.mjs",
+      "sha256": "d134c0e11bc7bd205b0c773bb5347d571e7e3099b2404ca00eb2864329ad157f",
+      "bytes": 4219
+    },
+    {
+      "path": "packages/nubi-office/worker/draft-specialists.mjs",
+      "sha256": "b86f1c540414f55339a85b4318f24b33ab14e8e973e06d036f9234fa5ff6e6f5",
+      "bytes": 5784
+    },
+    {
+      "path": "packages/nubi-office/worker/excel-capabilities.mjs",
+      "sha256": "accee3d616dd522896c8f040bc08fb97f9bb2e5249fd3db3a077fd45fa28c146",
+      "bytes": 3667
+    },
+    {
+      "path": "packages/nubi-office/worker/fault-policy.mjs",
+      "sha256": "6de7388e9f4853686206cdcf18f286176db1b0386586e7d970c7002bfee6b886",
+      "bytes": 2271
+    },
+    {
+      "path": "packages/nubi-office/worker/fill-sheet.mjs",
+      "sha256": "b5e16dfc36d63ee0234cfee345d4b2b21aef0aa3c74b0b635e238d68bcb4fe27",
+      "bytes": 11037
+    },
+    {
+      "path": "packages/nubi-office/worker/form-apply.mjs",
+      "sha256": "35c46a661f1dec1d1c3936c81e609308f9d84de16bd2443297a08738ee94e897",
+      "bytes": 9741
+    },
+    {
+      "path": "packages/nubi-office/worker/form-checks.mjs",
+      "sha256": "1bdb4c10c4bcf590c6052c629b08c0baf24e2ac4632eba73417a9e05b1d82f38",
+      "bytes": 6484
+    },
+    {
+      "path": "packages/nubi-office/worker/form-fill.mjs",
+      "sha256": "478b534567f4399fc00861176f5709f8542a04e0f136cfc17484c83211bb7227",
+      "bytes": 15776
+    },
+    {
+      "path": "packages/nubi-office/worker/form-ledger.mjs",
+      "sha256": "0b6f101d488610f7300996b865ef04b7dccaa39b49afd7149848a6a90fc96006",
+      "bytes": 3857
+    },
+    {
+      "path": "packages/nubi-office/worker/form-map.mjs",
+      "sha256": "42b7c94d32fd344d981b21a159da02d0c39f57100448f3d5433e5fc0cf74b967",
+      "bytes": 11534
+    },
+    {
+      "path": "packages/nubi-office/worker/form-review.mjs",
+      "sha256": "36d5776fe43d0a602c6baa7665d3d485186d12490a385f9c1c110d08f1209940",
+      "bytes": 7093
+    },
+    {
+      "path": "packages/nubi-office/worker/form-values.mjs",
+      "sha256": "ffd191cd99c21d353a54b0a811d8085c9fbf27d65794b7f5369a64171c8f5bd0",
+      "bytes": 9263
+    },
+    {
+      "path": "packages/nubi-office/worker/formula-preflight.mjs",
+      "sha256": "cf6f95a6c8e67c0a25d371249366a56b0f6b13f66791154883e3170b7db17bfd",
+      "bytes": 11580
+    },
+    {
+      "path": "packages/nubi-office/worker/guide-text.mjs",
+      "sha256": "de9b4e9d3c278807b910c0c7c625df61adcacad3afcc3729ab23b066737e271c",
+      "bytes": 3804
+    },
+    {
+      "path": "packages/nubi-office/worker/input-contract.mjs",
+      "sha256": "2b7e22293a2bf4ba3f9c99d63471e986901552d29b64da43c7b3790bd4c57ce2",
+      "bytes": 1651
+    },
+    {
+      "path": "packages/nubi-office/worker/intent-agent.mjs",
+      "sha256": "bbae8b9a4f78b075560e8514b11f1832d6b1c424ccbf7e5b8a46414509c0cc1a",
+      "bytes": 16852
+    },
+    {
+      "path": "packages/nubi-office/worker/interaction.mjs",
+      "sha256": "93bcd8ce48d946c856a8d422976af30c6895652b7e9ce305e02b622bb420dec1",
+      "bytes": 974
+    },
+    {
+      "path": "packages/nubi-office/worker/main.mjs",
+      "sha256": "79df96b82e6246fba0dbcf5cd026ae760163f9dea63b8e3f2340011108fc4575",
+      "bytes": 6535
+    },
+    {
+      "path": "packages/nubi-office/worker/model-context.mjs",
+      "sha256": "4623c227367048c1702a5d8fdc3680ff0e0f13d674f9fd08dbf6449f1dc97ba4",
+      "bytes": 3294
+    },
+    {
+      "path": "packages/nubi-office/worker/model-json.mjs",
+      "sha256": "7bfb0f875fa074ff133c241ef8328fc266fc463783ce3b70d97c17a43697ac11",
+      "bytes": 2147
+    },
+    {
+      "path": "packages/nubi-office/worker/nubi-auth-page.mjs",
+      "sha256": "7db81455e51cf8e985c7df5fed61bef0eeb45a63acc990aad3214b5317317937",
+      "bytes": 3980
+    },
+    {
+      "path": "packages/nubi-office/worker/office-capabilities.mjs",
+      "sha256": "dc68fb98f4234f4dc0d7d13a0114c6e9386c64cb45515f16046be9220526437c",
+      "bytes": 6364
+    },
+    {
+      "path": "packages/nubi-office/worker/office-harness.mjs",
+      "sha256": "98945e6b90ffe79d91c0871962665685aa5fb63df0da488aa1a9982462e61e6c",
+      "bytes": 59626
+    },
+    {
+      "path": "packages/nubi-office/worker/office-hosts.mjs",
+      "sha256": "6b36e576a810072dfb1e5ed9a5e67f530a5543755597df94425f3c4c26287e37",
+      "bytes": 3722
+    },
+    {
+      "path": "packages/nubi-office/worker/office-plan.mjs",
+      "sha256": "6eac6cce2a8d03dbfd2767fe2bcfb0a1c2a5706d4d6f0df84fa8dc5dbe0806aa",
+      "bytes": 6126
+    },
+    {
+      "path": "packages/nubi-office/worker/office-range.mjs",
+      "sha256": "7474de27a461df7fef84f4f35f76186ffaf93f63a2c3b1a5e7da166d873209e8",
+      "bytes": 1328
+    },
+    {
+      "path": "packages/nubi-office/worker/office-tasks.mjs",
+      "sha256": "79fa632a583beb70ac18d44c2c4226e44910ed26f5400e115fb828c2f290301c",
+      "bytes": 5631
+    },
+    {
+      "path": "packages/nubi-office/worker/office-view.mjs",
+      "sha256": "c98abac1db60f2104a8d8788cb32183948cd9e069bac72525e5324ac8cf757e6",
+      "bytes": 12255
+    },
+    {
+      "path": "packages/nubi-office/worker/providers.mjs",
+      "sha256": "e26694189b8499a8956a98a1d478bf59854253b04f244d7f39927a94ff9d6a85",
+      "bytes": 29626
+    },
+    {
+      "path": "packages/nubi-office/worker/python-runtime.mjs",
+      "sha256": "3c9c7edb378f44bde4ac478f874fdf183dc175674cb3d5903c6242d792c02de4",
+      "bytes": 15348
+    },
+    {
+      "path": "packages/nubi-office/worker/range-calc.mjs",
+      "sha256": "356ae7c4665fd7dc917ae12e78d2b70fd5cf4773a64cc130bb1cf284284b7c24",
+      "bytes": 4375
+    },
+    {
+      "path": "packages/nubi-office/worker/range-changes.mjs",
+      "sha256": "eb8a6f82291e99dc268aca3356536da0821944f328e32d8367da4529641dda0c",
+      "bytes": 4308
+    },
+    {
+      "path": "packages/nubi-office/worker/recovery.mjs",
+      "sha256": "b8252294e4a5f90571f7e3984b475f4cd49c94ee1a88472f9b4a89696d50c8ba",
+      "bytes": 6923
+    },
+    {
+      "path": "packages/nubi-office/worker/registered-skills.mjs",
+      "sha256": "c9efe2cae9349f7e74049d5bb55b31376066f11c3879116eeec5afe530abd4ac",
+      "bytes": 8790
+    },
+    {
+      "path": "packages/nubi-office/worker/request-table.mjs",
+      "sha256": "a4df31270b3c0734e51e5928bddfd739211fa43ab965890a9e1d16b72501cede",
+      "bytes": 2495
+    },
+    {
+      "path": "packages/nubi-office/worker/resilience.mjs",
+      "sha256": "016b23316d9741560c9916cc0d57d8a51f6fc563954269fd6f5a31490fdfe059",
+      "bytes": 17617
+    },
+    {
+      "path": "packages/nubi-office/worker/run-continuity.mjs",
+      "sha256": "fbf58cf02b191dabc946c84358fefccb82569b6789f8e979014c344eb3c7240a",
+      "bytes": 1309
+    },
+    {
+      "path": "packages/nubi-office/worker/script-provenance.mjs",
+      "sha256": "963838fc671d75430705e19616526990bc49b67d7f75d656fad123e064253c88",
+      "bytes": 2239
+    },
+    {
+      "path": "packages/nubi-office/worker/script-runtime.mjs",
+      "sha256": "abd0bd92f256a9fd0aed0c63ea57035be6d50930b43d8bcf1b59f402162cd292",
+      "bytes": 3258
+    },
+    {
+      "path": "packages/nubi-office/worker/script-thread.mjs",
+      "sha256": "f6eb6c8fdf69437b0c8617faf623b5a85e8bf6a2a8960541ba212e8052a175df",
+      "bytes": 321
+    },
+    {
+      "path": "packages/nubi-office/worker/script-vm.mjs",
+      "sha256": "a056041d64089f485a30972014be48c6c6e73090011e6019706125b25dbf4491",
+      "bytes": 4759
+    },
+    {
+      "path": "packages/nubi-office/worker/skill-intake.mjs",
+      "sha256": "364ebc7c8f56b063d9160d7d4ad4b38c972792c2a7dd9ed8699443c3193edbd4",
+      "bytes": 2815
+    },
+    {
+      "path": "packages/nubi-office/worker/skill-package.mjs",
+      "sha256": "c16476e0356aaf8ba03c53fe61d3df43548e4a8e3a14fb678f67fc9fb4073412",
+      "bytes": 2309
+    },
+    {
+      "path": "packages/nubi-office/worker/skill-workspace.mjs",
+      "sha256": "1d5aa50f6d3721c737abac90393355bfaadfaccc4adf03c1bdae93ce7f3a09aa",
+      "bytes": 27079
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/excel-2016/SKILL.md",
+      "sha256": "92292e00636d3e181f878bc710bafaf799a3e8db0d76af5e00a30bfdeb4269e3",
+      "bytes": 1315
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/excel-2016/references/authoring.md",
+      "sha256": "6c5fb249e9db3f933b9258f8dbe35770abfd2b4b310ae8d10796b7863431dd2e",
+      "bytes": 1143
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/excel-2016/references/calculations.md",
+      "sha256": "8124401c2d46ebaad6299fb7dd63c94071a40203ed4c86f51042157807519671",
+      "bytes": 2228
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/excel-2016/references/python-requirements.json",
+      "sha256": "83bf797068ba497be6661eb078b25fa99fae024cc8b50188e92bc1ca6592c8b2",
+      "bytes": 18
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/excel-2016/references/python.md",
+      "sha256": "0d13eff6815a7ba8c25c861a821096c0d2c78ce19d30116e32a9ce63ad7ccaf5",
+      "bytes": 2205
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/excel-2016/scripts/report.py",
+      "sha256": "9ac67e07fafe7636ea10f24de740da5d54b3b5fa76d43f389c3860cb9e033e54",
+      "bytes": 324
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/powerpoint-2016/SKILL.md",
+      "sha256": "1c4218c403625ffcfb680595ca6fc176387a503bca98254546f9e4f20ebeb143",
+      "bytes": 906
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/powerpoint-2016/references/authoring.md",
+      "sha256": "41d76ed8965a4ac4d2515ffd308b4230f00f956ea1ca1aae4385859de476b42e",
+      "bytes": 1468
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/powerpoint-2016/references/calculations.md",
+      "sha256": "8124401c2d46ebaad6299fb7dd63c94071a40203ed4c86f51042157807519671",
+      "bytes": 2228
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/powerpoint-2016/references/python-requirements.json",
+      "sha256": "83bf797068ba497be6661eb078b25fa99fae024cc8b50188e92bc1ca6592c8b2",
+      "bytes": 18
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/powerpoint-2016/references/python.md",
+      "sha256": "0d13eff6815a7ba8c25c861a821096c0d2c78ce19d30116e32a9ce63ad7ccaf5",
+      "bytes": 2205
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/powerpoint-2016/scripts/report.py",
+      "sha256": "9ac67e07fafe7636ea10f24de740da5d54b3b5fa76d43f389c3860cb9e033e54",
+      "bytes": 324
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/word-2016/SKILL.md",
+      "sha256": "994cb05c06e9fad201c2d11509092ed28e1fa6f56d9c34fc35c76bbab30ff147",
+      "bytes": 929
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/word-2016/references/authoring.md",
+      "sha256": "4951f49f9f3d6754f634a19c29b03d54b683b700bec42e6261ccb76fe1febe9f",
+      "bytes": 790
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/word-2016/references/calculations.md",
+      "sha256": "8124401c2d46ebaad6299fb7dd63c94071a40203ed4c86f51042157807519671",
+      "bytes": 2228
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/word-2016/references/python-requirements.json",
+      "sha256": "83bf797068ba497be6661eb078b25fa99fae024cc8b50188e92bc1ca6592c8b2",
+      "bytes": 18
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/word-2016/references/python.md",
+      "sha256": "0d13eff6815a7ba8c25c861a821096c0d2c78ce19d30116e32a9ce63ad7ccaf5",
+      "bytes": 2205
+    },
+    {
+      "path": "packages/nubi-office/worker/skills/word-2016/scripts/report.py",
+      "sha256": "9ac67e07fafe7636ea10f24de740da5d54b3b5fa76d43f389c3860cb9e033e54",
+      "bytes": 324
+    },
+    {
+      "path": "packages/nubi-office/worker/template-library.mjs",
+      "sha256": "7ce6c614f9755037c1f8b71745dca0822d975d9c762a8527f1adf869438ef370",
+      "bytes": 4414
+    },
+    {
+      "path": "packages/nubi-office/worker/template-match.mjs",
+      "sha256": "00413f5820f263cd4b83486171ffb1d25003f7f283dda8d9e9fbe74f2aaad62f",
+      "bytes": 4886
+    },
+    {
+      "path": "packages/nubi-office/worker/template-preservation.mjs",
+      "sha256": "aa7cf5c96ac5a6e42d043c8ce4ff49910e493f3e04896af50d37bc82d352264c",
+      "bytes": 4938
+    },
+    {
+      "path": "packages/nubi-office/worker/template.mjs",
+      "sha256": "3d05e554ca67ef97a63671ee5ef18cac4b5f2566e7b3f654c789f18a9f8f46d0",
+      "bytes": 33293
+    },
+    {
+      "path": "packages/nubi-office/worker/tool-progress.mjs",
+      "sha256": "881c1c8081af1b51faaf543033d4993d1d9f9c934746d19e97e6f4ca7ac657e5",
+      "bytes": 4153
+    },
+    {
+      "path": "packages/nubi-office/worker/tool-response.mjs",
+      "sha256": "e3ef8c0611f854d1f1c29d2437b844f7dd487a933d8c8db99bef788a9396933c",
+      "bytes": 5218
+    },
+    {
+      "path": "packages/nubi-office/worker/view-review.mjs",
+      "sha256": "4d8e802f8afeb710d13fe33b831bde000d242c42175853ef098f1e13b14663f4",
+      "bytes": 4646
+    },
+    {
+      "path": "packages/nubi-office/worker/word-form-map.mjs",
+      "sha256": "1b559eca95e90511b2e5ddc66d1aead8bd0513209e34d370f59dd45793627bbc",
+      "bytes": 13292
+    },
+    {
+      "path": "packages/nubi-office/worker/workbook-context.mjs",
+      "sha256": "3c2c0b633b13c096723c7f743acb4391c0e69080b58c567daf3e9bee9191f79f",
+      "bytes": 22274
+    },
+    {
+      "path": "packages/nubi-office/worker/workspace-diagnostics.mjs",
+      "sha256": "b56d3c46c0cecca30fca3604bd6128848728673c1bafa34b2ff0b0be93923587",
+      "bytes": 1561
+    },
+    {
+      "path": "packages/nubi-office/worker/workspace-read.mjs",
+      "sha256": "70aa7aa34912e2d83f8d482f978c1cbdf89bcaa332a658123c0ade14c4ec550b",
+      "bytes": 2319
+    },
+    {
+      "path": "packages/nubi-office/worker/write-diagnosis.mjs",
+      "sha256": "a785e552bcef5e63800dad1bafaf4974e9598308fe3bf8f85594e9e11ab1d500",
+      "bytes": 5728
+    },
+    {
+      "path": "packages/openwiki/.gitignore",
+      "sha256": "e1a3b93b541624e3536c806e6a2ba5f66ece911ada1d2b34757cba1cf1bf3b3d",
+      "bytes": 365
+    },
+    {
+      "path": "packages/openwiki/AGENTS.md",
+      "sha256": "7f497d129edf45b315a3e9cbaf6b079972fcb3aabe551ea4cc450e50b82d7639",
+      "bytes": 3108
+    },
+    {
+      "path": "packages/openwiki/LICENSE",
+      "sha256": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685",
+      "bytes": 1056
+    },
+    {
+      "path": "packages/openwiki/integrations/openwiki/SKILL.md",
+      "sha256": "116a2d59523b898271c783b61025e15a8d57a72eb0fcbbc3dac99345ead0d768",
+      "bytes": 8294
+    },
+    {
+      "path": "packages/openwiki/integrations/openwiki/agents/bob.yaml",
+      "sha256": "b23e4ad3c8a4a2ccd807b5166baeeda2d99c98fd1392e62715b5c380a7a76aca",
+      "bytes": 210
+    },
+    {
+      "path": "packages/openwiki/integrations/openwiki/agents/openai.yaml",
+      "sha256": "b23e4ad3c8a4a2ccd807b5166baeeda2d99c98fd1392e62715b5c380a7a76aca",
+      "bytes": 210
+    },
+    {
+      "path": "packages/openwiki/package.json",
+      "sha256": "f31f43c0a52e5460840c119aa820a969f1d78b177f1fb62e2eb21d3f301e1573",
+      "bytes": 3933
+    },
+    {
+      "path": "packages/openwiki/pnpm-lock.yaml",
+      "sha256": "821323f29bbe6d16d5b516224f2d0766e8134a64659c217512b1c01faf503e06",
+      "bytes": 214779
+    },
+    {
+      "path": "packages/openwiki/skills/mermaid-diagrams/SKILL.md",
+      "sha256": "cb49ce575481a5593ce9e8feeaef4dab524b8e8dad54a80044685c3065eee319",
+      "bytes": 3810
+    },
+    {
+      "path": "packages/openwiki/skills/write-connector/SKILL.md",
+      "sha256": "27cd555e83024fa3d869b1520354ad9349fb2617c65690a5fdab6176ee8ba898",
+      "bytes": 3258
+    },
+    {
+      "path": "packages/openwiki/src/agent/agent-backend.ts",
+      "sha256": "cb16307c0d0d2e0e0b1b0b5b4c85785a64a4d4cb5d14a72621d3b5c09b38de79",
+      "bytes": 2718
+    },
+    {
+      "path": "packages/openwiki/src/agent/bob.ts",
+      "sha256": "3fcaa881cc6f01cbed50678578b50cd9cad048c24ebd2402add1ccea4c05b2eb",
+      "bytes": 1000
+    },
+    {
+      "path": "packages/openwiki/src/agent/crash-guard.ts",
+      "sha256": "1ee127466aedf21c5c462820b231b114cfff8a955f3548991f01a0c8c9b73503",
+      "bytes": 6425
+    },
+    {
+      "path": "packages/openwiki/src/agent/docs-only-backend.ts",
+      "sha256": "6c13db2c6d9a6ca873f1b0cefe6b87a5cd255fbc685932b95c3985fa88e61771",
+      "bytes": 21559
+    },
+    {
+      "path": "packages/openwiki/src/agent/enterprise/fabrix.js",
+      "sha256": "b0fca32d4c1daa0c21098ce6275ca5e26cdf82c1341577b1dd82ee34df499e23",
+      "bytes": 22523
+    },
+    {
+      "path": "packages/openwiki/src/agent/enterprise/providers.ts",
+      "sha256": "9ab34e4ac2723bf509ad509526468d6dfc746a6a64a8dfa5cc346ee1a342aeee",
+      "bytes": 7315
+    },
+    {
+      "path": "packages/openwiki/src/agent/enterprise/usage.js",
+      "sha256": "e484b178b639c77f11831d71ce26f98e91f9924b01495aea75c085e434ea2f43",
+      "bytes": 1569
+    },
+    {
+      "path": "packages/openwiki/src/agent/index.ts",
+      "sha256": "4acac945ab5c20bf69ac9a03373016905e1c5c1fe1ca7ab646c6d97c913dc245",
+      "bytes": 78911
+    },
+    {
+      "path": "packages/openwiki/src/agent/okf-middleware.ts",
+      "sha256": "5ab04d53c07d39b138a8508d2fbc976e05b25eacabcf7b51d53681578e83981d",
+      "bytes": 7932
+    },
+    {
+      "path": "packages/openwiki/src/agent/openai-chatgpt-oauth.ts",
+      "sha256": "602f93dd8e22b9aa97c93e9ae39ffa13a2837b63b3a9539c404bfa4563bbf37b",
+      "bytes": 16948
+    },
+    {
+      "path": "packages/openwiki/src/agent/openwiki-ignore.ts",
+      "sha256": "8e56164373a3982ebae699112ab52c70722471693016793cb873b1506ccc2940",
+      "bytes": 10549
+    },
+    {
+      "path": "packages/openwiki/src/agent/prompt.ts",
+      "sha256": "302adafe3ab26040c52f5bdfcdb6b1c68ee35db6259f930475623e7aa22bc166",
+      "bytes": 9735
+    },
+    {
+      "path": "packages/openwiki/src/agent/prompts/code.ts",
+      "sha256": "adcc23faba6147065ebbf6219fa926f4ceebbbf2117ac98f6723072045d19f16",
+      "bytes": 10066
+    },
+    {
+      "path": "packages/openwiki/src/agent/prompts/personal.ts",
+      "sha256": "af2b2e9d024e6e1c2aebbb3c9ce653e7f497dab139a8ddb0abcf9227a148944e",
+      "bytes": 74871
+    },
+    {
+      "path": "packages/openwiki/src/agent/repository-prompts.ts",
+      "sha256": "2d296c1d402b2110c76166dcb721e6c967b4b1757ac9d82d6471f31c9f8216b6",
+      "bytes": 9539
+    },
+    {
+      "path": "packages/openwiki/src/agent/repository-runner.ts",
+      "sha256": "070cf144637a0b81b34827a1ed9c0161008772edcc206c87d0723c3bdebc09d8",
+      "bytes": 21502
+    },
+    {
+      "path": "packages/openwiki/src/agent/skills.ts",
+      "sha256": "667ad249bde496ba4e8344f85dd6232667da15a41488d20bde78a63171607299",
+      "bytes": 4557
+    },
+    {
+      "path": "packages/openwiki/src/agent/translation-middleware.ts",
+      "sha256": "170090e40c915e61026c02c9cda23d4bc75cd69e13277ec7fb32f00d00ae4409",
+      "bytes": 17028
+    },
+    {
+      "path": "packages/openwiki/src/agent/types.ts",
+      "sha256": "5da7a4b941767cab457129b893a2b3c8546d2f2fd92b7d5b71da86aa61b003e1",
+      "bytes": 2282
+    },
+    {
+      "path": "packages/openwiki/src/agent/utils.ts",
+      "sha256": "40f6ef02878f7c92f73af16579cb2221b6303f4bf6cbb8609c73398309332c29",
+      "bytes": 30043
+    },
+    {
+      "path": "packages/openwiki/src/agent/vertex-surface.ts",
+      "sha256": "162b83d16b68aba1c245c77be92f6c091f177908844cf62fdc25bfeeb409678d",
+      "bytes": 6576
+    },
+    {
+      "path": "packages/openwiki/src/agent/wiki-finalizer.ts",
+      "sha256": "9cdbee2c46c0df79c4138d799bbaf8cbfe7822509c108f3db2921029fe30b1aa",
+      "bytes": 8185
+    },
+    {
+      "path": "packages/openwiki/src/agent/wiki-link-validator.ts",
+      "sha256": "a7ce8b2be38594c14d13f926f3bfcc807443c14e08715e9dfc8019bcd3abbfd7",
+      "bytes": 14536
+    },
+    {
+      "path": "packages/openwiki/src/agent/wiki-question.ts",
+      "sha256": "26ae9c6d06ebee69022e49020e21d38fb8ed76375e0bcb0c0beae2b64ff9f6fa",
+      "bytes": 44868
+    },
+    {
+      "path": "packages/openwiki/src/agent/wiki-replacement.ts",
+      "sha256": "8111443929a65b42a0ee5255d3d68b16f2a95275fb238583fa983b1bb4a8edcc",
+      "bytes": 6334
+    },
+    {
+      "path": "packages/openwiki/src/auth/aipro-callback-fonts.css",
+      "sha256": "11e749ababde9f885bcb3d52080ef4396dcb1328ab16ef656f749ba225e059fa",
+      "bytes": 220417
+    },
+    {
+      "path": "packages/openwiki/src/auth/aipro-callback-page.ts",
+      "sha256": "07f2d0d98185480690d832a164d5de770f65471041731ad6812cd1aff7ff4e35",
+      "bytes": 12315
+    },
+    {
+      "path": "packages/openwiki/src/auth/aipro.ts",
+      "sha256": "9e4a01b7c6fe89c449b5217cab1dc95a1396e2fea0b9be985e5d6b601ad3d81e",
+      "bytes": 10143
+    },
+    {
+      "path": "packages/openwiki/src/auth/configure.ts",
+      "sha256": "d536bbce76421dbf5610a43cc145d7a5b5ff0dc1fb01360f86ffd59abfd20a27",
+      "bytes": 5856
+    },
+    {
+      "path": "packages/openwiki/src/auth/external-cli-auth.ts",
+      "sha256": "bf2f32bbafe15f05e821ca3fd3b2bf44252c3554ab6b25df57de0f085258ceef",
+      "bytes": 4914
+    },
+    {
+      "path": "packages/openwiki/src/auth/ngrok.ts",
+      "sha256": "97396d260cdafe1281a1d8a37c0a4f2c13897a10b70dd075292243f3015d07e0",
+      "bytes": 8164
+    },
+    {
+      "path": "packages/openwiki/src/auth/oauth-discovery.ts",
+      "sha256": "d83bd5822ce13e9177cb2cfb6583957300998333cc18acdf05461b2c3de73c7c",
+      "bytes": 4580
+    },
+    {
+      "path": "packages/openwiki/src/auth/oauth.ts",
+      "sha256": "ea077f605e8aa716d5507c32da8cf9d0a3bd501556fe42304e50b1af8cb038c5",
+      "bytes": 17631
+    },
+    {
+      "path": "packages/openwiki/src/auth/providers.ts",
+      "sha256": "7ce87e9722906282dab6393d0f79fc4527317606bba4fdffce20151845f724ff",
+      "bytes": 3828
+    },
+    {
+      "path": "packages/openwiki/src/auth/tokens.ts",
+      "sha256": "d9bf555c3d6047e6208349e89c872ce9e3068808735630676275426262d894be",
+      "bytes": 7804
+    },
+    {
+      "path": "packages/openwiki/src/auth/types.ts",
+      "sha256": "8068b614de0b4fe992fb6a7829fe3d6e4e8e31c60453509c9926c1387c0764f2",
+      "bytes": 929
+    },
+    {
+      "path": "packages/openwiki/src/claims/brains/code/paths.ts",
+      "sha256": "ed7e60c791047f30fbbb1e9bed29867219d6937915a97794fd2229ef80e31e55",
+      "bytes": 4668
+    },
+    {
+      "path": "packages/openwiki/src/claims/brains/code/preflight.ts",
+      "sha256": "cabbce1b1d9aa5542b0c126931fb69d09a7ef5bd29deacd377f7f7ccf91f1522",
+      "bytes": 3779
+    },
+    {
+      "path": "packages/openwiki/src/claims/brains/code/runtime.ts",
+      "sha256": "a4ae182d30e5cebcf2dc623ec2ae31b830a9f28f914db39f821009b0597c4746",
+      "bytes": 5850
+    },
+    {
+      "path": "packages/openwiki/src/claims/brains/code/session.ts",
+      "sha256": "a63492cb9c998430de70d18ae0c9648cf7c29b41f075b4d0e49ab03dbd5a719b",
+      "bytes": 20180
+    },
+    {
+      "path": "packages/openwiki/src/claims/brains/code/store.ts",
+      "sha256": "087f6494b3ec6dc117d91806865888a0ebc0a213d247f8bf516b5b36588c5bf2",
+      "bytes": 20641
+    },
+    {
+      "path": "packages/openwiki/src/claims/brains/code/types.ts",
+      "sha256": "a3561744a448f321f11843a05e3fe74339bfa4b8f1774bbdbdbd0ddf5ccbc17a",
+      "bytes": 4317
+    },
+    {
+      "path": "packages/openwiki/src/claims/core/errors.ts",
+      "sha256": "b90aef5958331c54c77c0c78169b7365823ce2d3a9b7da32555c98f7a6183fac",
+      "bytes": 2029
+    },
+    {
+      "path": "packages/openwiki/src/claims/core/mutations.ts",
+      "sha256": "a013074e32c3a0b976c55714f022f23ea21c92789ae536e1883cb5acd233ad65",
+      "bytes": 10112
+    },
+    {
+      "path": "packages/openwiki/src/claims/core/resolver-cache.ts",
+      "sha256": "32a3bf8b9fdf88179af38484025d6a82a61f08f2e43e6997f7f6fd4d900c9824",
+      "bytes": 993
+    },
+    {
+      "path": "packages/openwiki/src/claims/core/types.ts",
+      "sha256": "220789ffb91b36a6d7d6640384b82b79b8b712933ae1b124043ad11d7cb35e20",
+      "bytes": 3260
+    },
+    {
+      "path": "packages/openwiki/src/claims/evidence/repository/resolver.ts",
+      "sha256": "251aab03111447a602089ced50b5bbeb47bdb1ed8165b367248ccf1c0a316796",
+      "bytes": 22996
+    },
+    {
+      "path": "packages/openwiki/src/claims/evidence/repository/resource.ts",
+      "sha256": "0f68865e6bdc4e731a8a6b3d230f9891ae8183343ee28c38bbdbd5c795f5ce57",
+      "bytes": 7056
+    },
+    {
+      "path": "packages/openwiki/src/claims/guidance.ts",
+      "sha256": "020ef9b347e129d8e99508647069ecb4661684130205f6551b8719ef55908236",
+      "bytes": 3340
+    },
+    {
+      "path": "packages/openwiki/src/cli/app/app.tsx",
+      "sha256": "8cec655ed3f8dfb0014d987fb5ab52d3783509b0ac60029917f13da2defb4fe2",
+      "bytes": 30225
+    },
+    {
+      "path": "packages/openwiki/src/cli/app/run-state.ts",
+      "sha256": "40682fc5b59907f986f8456fffeab2395d6cd54a425dbe642aef2e391eea0da8",
+      "bytes": 2524
+    },
+    {
+      "path": "packages/openwiki/src/cli/cli.tsx",
+      "sha256": "4165436f89d534927de39730f69ded9b79c9a799fe77b843b5b0c12b50faacfb",
+      "bytes": 3671
+    },
+    {
+      "path": "packages/openwiki/src/cli/commands.ts",
+      "sha256": "9681239fa98b476f37fc4b275dafb928ed3eec17f312bd7c4433b46a7e07ea94",
+      "bytes": 35961
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/chat.tsx",
+      "sha256": "867e7fc1a9122272aa9050f580ccd245e5a95861794b9d4d6cb958f2d3724039",
+      "bytes": 25672
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/first-run-notice.tsx",
+      "sha256": "12e8886db2f42170908b98047b5d88562496dbf848ac6391fe17404db957e4af",
+      "bytes": 2509
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/header.tsx",
+      "sha256": "8a4487ea72b1ad0841f7b997122cfc006054ab1cf54959959fa3df0a20d92097",
+      "bytes": 6372
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/markdown.tsx",
+      "sha256": "901c95f55427f71a79a4acb18063d7f10b89155a0071e381bfe0f346be81794b",
+      "bytes": 5346
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/panels.tsx",
+      "sha256": "58122a2fa217672b50f406bc74eda5507543bdca9279f7bb5e80e20f1e17f0fa",
+      "bytes": 5805
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/primitives.tsx",
+      "sha256": "1f1ef7d99150ac013f8c8f33bb84cc3cb97e64ea73f6d6cb13affe7628b5c3b5",
+      "bytes": 3003
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/run-view.tsx",
+      "sha256": "f5ae15533e6942b7aa77e2f7563aab716fd2408e3ab1906a3e660770e183a55b",
+      "bytes": 16052
+    },
+    {
+      "path": "packages/openwiki/src/cli/components/types.ts",
+      "sha256": "370c59a6b50bc4b8a095fd4a45b8962783bf8cae4303b51ae743f94e9e974858",
+      "bytes": 1395
+    },
+    {
+      "path": "packages/openwiki/src/cli/debug.ts",
+      "sha256": "5d897de7fb5c6f7ccd151078c0476ff2444cba7f154e1dea8f09cd5396ad24a8",
+      "bytes": 578
+    },
+    {
+      "path": "packages/openwiki/src/cli/diagnostics/auth-fix.ts",
+      "sha256": "7eed42b5274d30a78638793c468b84f2ea1c0c57335e5504a6de4347ea26547d",
+      "bytes": 3317
+    },
+    {
+      "path": "packages/openwiki/src/cli/diagnostics/error-diagnostics.ts",
+      "sha256": "9d5ee34f07dba2624639fc554cdb91de96c420093d4ae557c0fc1829f20a0a1a",
+      "bytes": 7986
+    },
+    {
+      "path": "packages/openwiki/src/cli/diagnostics/sanitize.ts",
+      "sha256": "8d91eed0c8b48bbbfab7542fda25c3aed57a245e44b8e84c5c41d441180e8a04",
+      "bytes": 1504
+    },
+    {
+      "path": "packages/openwiki/src/cli/format.ts",
+      "sha256": "c01c87e093a0df11cc523fd81d0ee158d3dc6a23d13c52a44fdefd2e74f45218",
+      "bytes": 1280
+    },
+    {
+      "path": "packages/openwiki/src/cli/guards.ts",
+      "sha256": "ff77f6bb5d9db180575bf86afcd6cd3bd2255cb2640c7ec943014a3055974b07",
+      "bytes": 860
+    },
+    {
+      "path": "packages/openwiki/src/cli/input/cursor.ts",
+      "sha256": "7aed2f9df45f67dd4c345c820d34253491d1681b0e1da8568cb4b75f2150e323",
+      "bytes": 4034
+    },
+    {
+      "path": "packages/openwiki/src/cli/input/menu.ts",
+      "sha256": "56b85de6bc57e9199b79d442042a2567f4bcc87b66648ed07288429154ec81f9",
+      "bytes": 9602
+    },
+    {
+      "path": "packages/openwiki/src/cli/input/secret.ts",
+      "sha256": "b84bb104fc039a9479acfaa9e0ca30a7e9c5087db0fa7da2ce3b7095d31c5fa7",
+      "bytes": 285
+    },
+    {
+      "path": "packages/openwiki/src/cli/input/types.ts",
+      "sha256": "73350d6047e101f7bd8c60961e95448464134dddc19d60198d31c5f81baa9274",
+      "bytes": 2844
+    },
+    {
+      "path": "packages/openwiki/src/cli/integrations.ts",
+      "sha256": "7e4084db712b8917627b10a00931e7d7f90ea522161bde195e6852525ef73cd7",
+      "bytes": 3083
+    },
+    {
+      "path": "packages/openwiki/src/cli/process-interrupt.ts",
+      "sha256": "d211b1d24662d5c27217acaebea1fd239c6714548d03aab4d39360cfa2a9ad5a",
+      "bytes": 867
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-log/activity.ts",
+      "sha256": "c82d5051aab1e3ec75ccd7eb0a8ae4d9f82a879c3ba6bd2bfdfe5739ed9ea879",
+      "bytes": 7812
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-log/progress.ts",
+      "sha256": "c58a687f82432fcae0991cccc312f95397c8079005afcd5543ba70e7fc07a8bc",
+      "bytes": 2608
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-log/reducer.ts",
+      "sha256": "5eb2d19ed7a542e4e006257ba5bab10b00e8706db5eadbe8041cc66145434ec4",
+      "bytes": 10329
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-log/summary.ts",
+      "sha256": "a4cd7039478490bc9704c3f80c7d8b8abee1346260c8224f264bc4f79704329a",
+      "bytes": 4094
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-log/tool-input.ts",
+      "sha256": "2103e661946790ca887c093d8d5f4adc1ec0fa7ee7fb40a59b840cd186e6200c",
+      "bytes": 888
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-log/types.ts",
+      "sha256": "5522e45ca436fd4dae5e2b8f9e8b565f5dfce7d0504ad3fdeeb2a8bf4bbe536a",
+      "bytes": 5011
+    },
+    {
+      "path": "packages/openwiki/src/cli/run-mode.ts",
+      "sha256": "5288424682b032f97db011a9dceac0ed231a597a140c869dc8f437c4f2508426",
+      "bytes": 2111
+    },
+    {
+      "path": "packages/openwiki/src/cli/runners.ts",
+      "sha256": "792d094ae0d4aec3a5aeff2c7be803b9a0a0f62a4a718744fb0cf8ed735179e9",
+      "bytes": 12210
+    },
+    {
+      "path": "packages/openwiki/src/cli/schedule-format.ts",
+      "sha256": "e4124a31f5dd739277a4bc708b43f0d6b6e2ed84cd21eb27656d850e7b36e08b",
+      "bytes": 4393
+    },
+    {
+      "path": "packages/openwiki/src/cli/startup.ts",
+      "sha256": "88fae9ce2eeb0cac52aa697e51e6c49c184797c2d87df94ecf493074f208c3c2",
+      "bytes": 4048
+    },
+    {
+      "path": "packages/openwiki/src/config/constants.ts",
+      "sha256": "613a6c6cc01efca3c0883a536f3cfbb8268b6e2c295cfea392ba0cb9e73a08f6",
+      "bytes": 45017
+    },
+    {
+      "path": "packages/openwiki/src/config/env.ts",
+      "sha256": "f75cde199b719bed7a2a71c8dfbf919db45172a0d0ff2e188a991358e48b827d",
+      "bytes": 22804
+    },
+    {
+      "path": "packages/openwiki/src/config/openwiki-home.ts",
+      "sha256": "a26a7821ae0e0e74f25cdbaed71b4d0a429324dc9c3794afbc5438b242384364",
+      "bytes": 4592
+    },
+    {
+      "path": "packages/openwiki/src/config/reasoning.ts",
+      "sha256": "10ed5f3319f3af14deea6ee088ee69efb4548eb553e06977778ed194a2b8cf45",
+      "bytes": 4124
+    },
+    {
+      "path": "packages/openwiki/src/connectors/config.ts",
+      "sha256": "cab459f412689a6a0b2aa60b6c4884b5d9db17fcfd7b984492420669a12b525a",
+      "bytes": 864
+    },
+    {
+      "path": "packages/openwiki/src/connectors/http.ts",
+      "sha256": "040253e816578ca9703fc1c6f6c42fe86196804f8771d1bc062185037c07c904",
+      "bytes": 4864
+    },
+    {
+      "path": "packages/openwiki/src/connectors/io.ts",
+      "sha256": "9212d2c3cc1c0ab89f1b4469f5cf2df84ae8708ec7a4067c8f49e8dedf7e4e81",
+      "bytes": 2590
+    },
+    {
+      "path": "packages/openwiki/src/connectors/mcp-client.ts",
+      "sha256": "4807353c2a1808c27d905cad7221c2e222e69c34f43be5fe5020972ec0075907",
+      "bytes": 23508
+    },
+    {
+      "path": "packages/openwiki/src/connectors/mcp-runtime.ts",
+      "sha256": "e98f2be95b1035261b9eede9b19b5548f23a967be4c5331a53d4b83169ab3a66",
+      "bytes": 6958
+    },
+    {
+      "path": "packages/openwiki/src/connectors/registry.ts",
+      "sha256": "0af9d5fb65225b362eeacd777a2172eac5631f1650b6be652bd4ff69416b3b2a",
+      "bytes": 2647
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/git-repo.ts",
+      "sha256": "3b950a95ecfbc91fddf8a511faa72fdc17fff4e3ffb8a80a8662d89e3a7b1f97",
+      "bytes": 6151
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/gmail.ts",
+      "sha256": "0145943d5367d9e1e3d05c0ebd9963d4ef5adda120627b546d39817e516e42e4",
+      "bytes": 10417
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/hackernews.ts",
+      "sha256": "9219bcb74b64b0a4ac8e2bb301e26f00684aa881bfce0d1dc706477f1fd2896e",
+      "bytes": 10046
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/langsmith/api.ts",
+      "sha256": "1967ca6ea62689eeed8ad9faf77e1ff3104f27bb44b5663e83834d9492237357",
+      "bytes": 6450
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/langsmith/index.ts",
+      "sha256": "e131ed1946aefc0baf7d8e1c80937fcdb1a39eef3c275bfbfb1f91c5726fc472",
+      "bytes": 10966
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/langsmith/repo-config.ts",
+      "sha256": "c8c76ce1dc476e30165b15eee96897a50354bb87fc5971cfd01f13c86a380789",
+      "bytes": 6987
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/langsmith/runs.ts",
+      "sha256": "e14f697fcd00a327033ab68c840e06a728646ba09659beec31c6f9e208ab1299",
+      "bytes": 7382
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/langsmith/setup.ts",
+      "sha256": "a4e93ef9c9fa32fe73ea7687ae3a435f27eb181370bdc3692fd02debb5cde10e",
+      "bytes": 3790
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/langsmith/types.ts",
+      "sha256": "a9c25daa7d2254e8d41b974aa5baada37e4abe81c58095f89d154c81f004a094",
+      "bytes": 3738
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/mcp.ts",
+      "sha256": "ee2cc68d9126109cc9d5e51933a239aacb00d0ac84d307242485788815661576",
+      "bytes": 5127
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/pop3.mjs",
+      "sha256": "26a53e2ebae218e24e002ce02a0c34e76e21efefa6ffd02c1c26d4497e5cdb42",
+      "bytes": 7720
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/slack.ts",
+      "sha256": "2c68a094625d1a37cc0c5d6a4d5a6fcad12155ffc21dbd7ee8194dc9a1d78838",
+      "bytes": 20984
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/web-search.ts",
+      "sha256": "b3cd36cfc15853ed596fd7f1d3a00e6e390ee7adc31df81190cd571216ecc76b",
+      "bytes": 6357
+    },
+    {
+      "path": "packages/openwiki/src/connectors/sources/x.ts",
+      "sha256": "5472c6d7b90f49ce413e0a2d0d5d0ec9cbf5d7d25ca48a3166a2055de3233b64",
+      "bytes": 10599
+    },
+    {
+      "path": "packages/openwiki/src/connectors/tools.ts",
+      "sha256": "bfcad07e753b3eb248df4269e82fc261e913b728a0dd6fdfc38134f1a096d7d5",
+      "bytes": 16332
+    },
+    {
+      "path": "packages/openwiki/src/connectors/types.ts",
+      "sha256": "f98ac84e208fc44a1a7fdca716a8f9d5bfb12b462d1a2d0695f386ac9e202f5d",
+      "bytes": 1788
+    },
+    {
+      "path": "packages/openwiki/src/generation/errors.ts",
+      "sha256": "1b4808113eea395c3d0703f2bbf0c9baf80b8873af7bbd5df118bc29922493a8",
+      "bytes": 664
+    },
+    {
+      "path": "packages/openwiki/src/generation/page-jobs.ts",
+      "sha256": "27d8feac75e69e4d3975e67ab495ab815b798692374de6c0412d14a7b31cbbd6",
+      "bytes": 18476
+    },
+    {
+      "path": "packages/openwiki/src/generation/page-manifest.ts",
+      "sha256": "3ab1f5bab6fb1cb93159d8341ce65db1f7b0f86d568e3fa160feda09afabd188",
+      "bytes": 15177
+    },
+    {
+      "path": "packages/openwiki/src/generation/repository-run.ts",
+      "sha256": "35d8bef1db9ea0d8b66853813778a88f73c14114413719dec39773f4f310bd5a",
+      "bytes": 50507
+    },
+    {
+      "path": "packages/openwiki/src/generation/run-state.ts",
+      "sha256": "32adc024c826cf673a8ad12b29c22b7a70822d02766ba55408bc03b68646ad66",
+      "bytes": 9154
+    },
+    {
+      "path": "packages/openwiki/src/ingestion/code-mode.ts",
+      "sha256": "72a6e6b8dedc9ce289e5817622a047cfcc6f5d54cf6cfcbf43f305603da683b1",
+      "bytes": 16914
+    },
+    {
+      "path": "packages/openwiki/src/ingestion/ingestion.ts",
+      "sha256": "93ca45627f445aee1e84f097a0788e0c493be0d8a387c97100ba846396073bfe",
+      "bytes": 11186
+    },
+    {
+      "path": "packages/openwiki/src/ingestion/personal-mail.ts",
+      "sha256": "c433e9781e8c0679532b3244e289a21dc98fadd941958e4abc9e3a1d32af218a",
+      "bytes": 1911
+    },
+    {
+      "path": "packages/openwiki/src/ingestion/personal-policy.ts",
+      "sha256": "39657f0df830bcdb4aa5ac1b79f5f7d8b689d097f34659832fe07955c2479275",
+      "bytes": 12326
+    },
+    {
+      "path": "packages/openwiki/src/integrations/core/errors.ts",
+      "sha256": "9ea5aff0ff2e7930a8f0a10e698cf1b6da730fc1b8ba6fc84ed172933831f303",
+      "bytes": 727
+    },
+    {
+      "path": "packages/openwiki/src/integrations/core/protocol.ts",
+      "sha256": "3ce66a6967289e26b12657b8f1c479b271a13665e0f9f79ae576a17a095e7e94",
+      "bytes": 5095
+    },
+    {
+      "path": "packages/openwiki/src/integrations/core/repository-root.ts",
+      "sha256": "952294bcca298508824661d7684146491b4feeb0526fe3aabafc4202c7f915a1",
+      "bytes": 3971
+    },
+    {
+      "path": "packages/openwiki/src/integrations/core/session-manager.ts",
+      "sha256": "b48df28476e3492ca6bbf7f1891cf530baa0bb8b846508724a610dbc7024bed0",
+      "bytes": 11075
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/atomic-file.ts",
+      "sha256": "79afaa6a02e729e8ded93b3b0c9ce387ed5187b4acc24d8a74ceed7edbbd2c4d",
+      "bytes": 1047
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/config-json.ts",
+      "sha256": "318a21929494ecf92d2a9fec9e341d633ddc2080c930b94145b8dd922c70b682",
+      "bytes": 5583
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/config-opencode.ts",
+      "sha256": "8b776649aabb7a3dd90cad086a8a2368753a392e16bba56af2f5232228e45862",
+      "bytes": 13988
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/config-toml.ts",
+      "sha256": "4c52305d3d6fc3284e646f2caacee58eb4b5460bd72af61f271c7db859961f32",
+      "bytes": 6143
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/install-paths.ts",
+      "sha256": "6dda09744ed892a6380dd2bb1808cf109190151241369b2350d52eb9cfa3a908",
+      "bytes": 8562
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/installer.ts",
+      "sha256": "74be8dc963027dc435c24f639a28e56754cc98cf55da4875fa79b608f45689ab",
+      "bytes": 20296
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/registry.ts",
+      "sha256": "5ea5bc94e37c31f6a533746bf3d2eeb95a58b0eeeff197997bcefe17131ba36b",
+      "bytes": 3911
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/skill-bundle.ts",
+      "sha256": "816c18f7f49578fc8fbf043f0a691203b03f45d616ff568b84621e240b719010",
+      "bytes": 10312
+    },
+    {
+      "path": "packages/openwiki/src/integrations/install/types.ts",
+      "sha256": "6dd45d05727fa239360617556418e8f6f77fab64fe15ec6fd2c0246017e8848b",
+      "bytes": 3749
+    },
+    {
+      "path": "packages/openwiki/src/integrations/mcp/server.ts",
+      "sha256": "c435a9c28ca58b4305458725390f149bf8d4d794d41c7b55cdb61d6a230d3c72",
+      "bytes": 4282
+    },
+    {
+      "path": "packages/openwiki/src/integrations/mcp/stdio.ts",
+      "sha256": "b39cacd772f190346d0305e721d14c2a943db61a5faec268dda9e53b6df81dcb",
+      "bytes": 906
+    },
+    {
+      "path": "packages/openwiki/src/mermaid/dom-shim.ts",
+      "sha256": "fd06de1e5281963ce31a3b72d4ffd9f4c62c43ee5246eb8ede5f2d1a13ba0bd4",
+      "bytes": 1470
+    },
+    {
+      "path": "packages/openwiki/src/mermaid/fences.ts",
+      "sha256": "02f27816c83241f65e33a842eea6a1864e104c54fb2b66d9b266cba137c9f832",
+      "bytes": 2429
+    },
+    {
+      "path": "packages/openwiki/src/mermaid/validate.ts",
+      "sha256": "377dde2df6d92ca9d51cf2ba5bc5d54133b0295e9e16ee18d687e274ef08303c",
+      "bytes": 7883
+    },
+    {
+      "path": "packages/openwiki/src/mermaid/wiki.ts",
+      "sha256": "f82109259c84b17400c7ab98df28951f45258188c54e9206069fbce982d67157",
+      "bytes": 3953
+    },
+    {
+      "path": "packages/openwiki/src/model-availability.ts",
+      "sha256": "319f306833df2a288e95781018f4a4406226a0ab4cf5961f73db9a912566c63c",
+      "bytes": 2215
+    },
+    {
+      "path": "packages/openwiki/src/okf/claim-sources.ts",
+      "sha256": "5ad731ce3ff84be3a9b851299f314f7cc21e361f36ce4167d3f61dc6df4fd441",
+      "bytes": 5468
+    },
+    {
+      "path": "packages/openwiki/src/okf/claims-verification.ts",
+      "sha256": "663b0cd28f558e288a3935d67f690b351fb7657951e121b5a647e6aab5e5a933",
+      "bytes": 3979
+    },
+    {
+      "path": "packages/openwiki/src/okf/frontmatter.ts",
+      "sha256": "a8241b4c597d8df901202eebb409006937856c7be8e95c14287de77930a6933e",
+      "bytes": 26282
+    },
+    {
+      "path": "packages/openwiki/src/okf/generated-provenance.ts",
+      "sha256": "8e4b18ba77b0936a5eef4fbf03f120b3dc9dbb338eec2c218f6478e8c8ef4b8a",
+      "bytes": 10073
+    },
+    {
+      "path": "packages/openwiki/src/okf/index-labels.ts",
+      "sha256": "7cace562bd530079e194fb169924f40f88691d164e3b457569fba882eacff4b4",
+      "bytes": 6369
+    },
+    {
+      "path": "packages/openwiki/src/okf/index-sync.ts",
+      "sha256": "67d43ef8ea85eaf9b115e067ec2f3076462c7063cd57804d87ef483b38f57db1",
+      "bytes": 9502
+    },
+    {
+      "path": "packages/openwiki/src/platform/diagnostics.ts",
+      "sha256": "45733a1f5b2ac9e80b303e8c9c2c9ab48652044ae08a57ea105e7a20bdaf221e",
+      "bytes": 5739
+    },
+    {
+      "path": "packages/openwiki/src/platform/fs-errors.ts",
+      "sha256": "72d073f137119405ed273fe9e88d4d1365a31a8247de617b3e4f7810c48550e6",
+      "bytes": 1055
+    },
+    {
+      "path": "packages/openwiki/src/platform/language.ts",
+      "sha256": "f634af8e743b0249f501350012f633c688197236262e7dc2abc5dba45ef49235",
+      "bytes": 3019
+    },
+    {
+      "path": "packages/openwiki/src/platform/utils.ts",
+      "sha256": "39d7e064db1d3c777a395c13210ac4bfcc937e6cd5364b5e88dd8c0bdaa99686",
+      "bytes": 3094
+    },
+    {
+      "path": "packages/openwiki/src/platform/windows-acl.ts",
+      "sha256": "5eaac65719fdd6d2fb0593d98afb9508b0f2f985faa65af87f55072c385e27a8",
+      "bytes": 1329
+    },
+    {
+      "path": "packages/openwiki/src/scheduling/schedules.ts",
+      "sha256": "6b42718a6547db5e54ff5c49e37dbfdf4d288c0201bb8929c6c0c84782735e57",
+      "bytes": 23892
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/components.tsx",
+      "sha256": "47a4c28f3b3e3d5ac12162c99fff181ae35416e390eab9417548ffe8883c5fac",
+      "bytes": 39122
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/constants.ts",
+      "sha256": "7ea9649afdd162df324214830139eea80ddcdcbd9a7116fcee16b2fd960b2651",
+      "bytes": 8864
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/format.ts",
+      "sha256": "56a39267741137ff8d65aef08d1f7948fe940e04865f9b686e5d16eb7a096543",
+      "bytes": 6638
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/persistence.ts",
+      "sha256": "7246d8ce6cc517890d2ac1e091fd6bd5abcd0ea92194c0187d4bf5463c988e20",
+      "bytes": 3723
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/steps.ts",
+      "sha256": "7ed4312aff06a57fb1412bf519cc508545c693c0e49ef1e233a5eb72ae60fb25",
+      "bytes": 32403
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/types.ts",
+      "sha256": "a7fdd431a51543227af884b4ba954f8e800719accf833424016131a9a46fcc2a",
+      "bytes": 4765
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/use-init-setup.ts",
+      "sha256": "5854501269a517a8b88df2ddcb6b6d889cb1b948ee5856b99f1c8d4d9114d2f7",
+      "bytes": 82745
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials/view.tsx",
+      "sha256": "e88856dca0c654ea7590f513f620bded17c67901880163c26524876dce0a0170",
+      "bytes": 22696
+    },
+    {
+      "path": "packages/openwiki/src/setup/credentials.tsx",
+      "sha256": "421ca47a683fe1247d6d4ce059f331d348de7d5c8b8d00c90bfd037f8bd94455",
+      "bytes": 1037
+    },
+    {
+      "path": "packages/openwiki/src/setup/onboarding.ts",
+      "sha256": "8a94f2f6a5b21f0b1c603663c65550ac239eb401890a40466e7e1194886709f0",
+      "bytes": 12720
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/client.ts",
+      "sha256": "186766f59ab6406e238812b84092a0ed34ab459b79e59766008e8890f5051d2b",
+      "bytes": 3221
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/config.ts",
+      "sha256": "3af19f02eb204387b63983606c0e6746ecc54039139e796098da14740c6c48c4",
+      "bytes": 1831
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/errors.ts",
+      "sha256": "6872a1951908d0d0aebb3b1cd7079ce0ddb11ecc0d44a2ec55e05d703ee1556c",
+      "bytes": 25208
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/gates.ts",
+      "sha256": "fc950679c4756f369535689788b5a70b5f5b82c7f163836cb2ebe9354f8e0929",
+      "bytes": 3157
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/index.ts",
+      "sha256": "64d92ad5a000d2224010e7f95e4de5509ab709a5c353d7a9d9620586b6a2f30a",
+      "bytes": 943
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/install-id.ts",
+      "sha256": "0c21fe2823bb0eb747bfce8a70c1e0a9d246906175a2c71e024cda587d3f2b9a",
+      "bytes": 2013
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/record-run-safe.ts",
+      "sha256": "3e29194a011c90c6ad5e351910f074b671b017972557403717a9fc45b9796f32",
+      "bytes": 2741
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/senders.ts",
+      "sha256": "48e7f94ac0ef7d41bacf6a3209da61bc9374ad2ed8f2c7fe3b74390869d6352e",
+      "bytes": 11544
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/taxonomy.ts",
+      "sha256": "6e596d16cda1c0200896ec09a5f33d127da802285fce7e90a098fdd20399b52d",
+      "bytes": 7581
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/types.ts",
+      "sha256": "4b77d94c167391639d70ba04775b9fbc1f8f98633eb6832a2d9541437e6bc9b2",
+      "bytes": 6393
+    },
+    {
+      "path": "packages/openwiki/src/telemetry/with-run-telemetry.ts",
+      "sha256": "8b89d169c05576148a3cb8c5ab6046e73f42cad453353886519e903e98ca2328",
+      "bytes": 3506
+    },
+    {
+      "path": "packages/openwiki/src/version.ts",
+      "sha256": "f75295a322e95076622a7d9e059d7d52f48f465e8b691f3d5e65c53679d408d0",
+      "bytes": 2910
+    },
+    {
+      "path": "packages/openwiki/src/visualize/client-lib.ts",
+      "sha256": "4d380a7aac05b8bf57a7620b344d93486deb78560947e576664942ebd419ba5f",
+      "bytes": 5589
+    },
+    {
+      "path": "packages/openwiki/src/visualize/client.ts",
+      "sha256": "8195006f4bc120912509c3fae3eb11e12471cff00be6a33b5cfb1209be8c82ca",
+      "bytes": 28473
+    },
+    {
+      "path": "packages/openwiki/src/visualize/graph.ts",
+      "sha256": "4785d0f852ca6187f5b052923a4e303128c24bfadd465745ec6dd890754def4a",
+      "bytes": 9099
+    },
+    {
+      "path": "packages/openwiki/src/visualize/nubi.ts",
+      "sha256": "b2ef7e66ca0c8766710427a8b1412b79a15ef8012f8fdaf29bc11942e63759c6",
+      "bytes": 28795
+    },
+    {
+      "path": "packages/openwiki/src/visualize/page.ts",
+      "sha256": "cb7547d31cfe7f02b0988649d5eb9012d28eb90d07139bce20f96956905511b1",
+      "bytes": 9874
+    },
+    {
+      "path": "packages/openwiki/src/visualize/retrieval.ts",
+      "sha256": "04cf4ef98533cfd1336dc200c58dbb9280e7a16f43dfb207a2e72b5591720dc4",
+      "bytes": 3724
+    },
+    {
+      "path": "packages/openwiki/src/visualize/server.ts",
+      "sha256": "ca45f3d1480c36fe426cdc147b5fc35cc4571ca17258c89732333d705aca7f5d",
+      "bytes": 10277
+    },
+    {
+      "path": "packages/openwiki/src/visualize/static-export.ts",
+      "sha256": "24150fd20915fe6502943e6c37d93a473c9994b3d84a2aa49056f449b67d4016",
+      "bytes": 2610
+    },
+    {
+      "path": "packages/openwiki/src/visualize/styles.css",
+      "sha256": "efcab3b0af884dda92ca892e1091fc684604a679aa0dfa05222c17c018455f9c",
+      "bytes": 13264
+    }
+  ]
+}

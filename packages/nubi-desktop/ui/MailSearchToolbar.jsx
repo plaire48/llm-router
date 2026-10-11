@@ -1,0 +1,56 @@
+import React,{useEffect,useRef,useState} from 'react';
+import {CxButton,CxInput,CxSelect,DetailPanel,Icon} from '@e2e/cx-design-system';
+import {notifyWorkspaceToast} from './WorkspaceToast.jsx';
+export const DEFAULT_MAIL_FILTERS={period:'all',from:'',to:'',dateField:'date',senders:[],attachment:'all',types:[],filename:'',locations:[],states:[],pinned:false,tags:[],confirmed:'all'};
+const periodNames={all:'전체 기간',7:'최근 7일',30:'최근 30일',custom:'기간 지정',unknown:'날짜 미확인'};
+const typeNames={pdf:'PDF',word:'Word',excel:'Excel',powerpoint:'PowerPoint',other:'기타 첨부'};
+const stateNames={queued:'정리 대기',saved:'정리됨',attention:'읽기 실패 또는 확인 필요'};
+const locationNames={subject:'제목과 보낸 사람',metadata:'받는 사람, 참조, 날짜와 태그',body:'본문',attachment:'첨부',knowledge:'핵심 정리'};
+const title=(icon,text)=><span className="nubi-panel-title"><span className="nubi-panel-title-icon"><Icon name={icon} size={18}/></span><span>{text}</span></span>;
+export function MailHighlight({text='',query=''}){
+  const terms=[...new Set(query.trim().split(/\s+/).filter(Boolean))].sort((a,b)=>b.length-a.length);
+  if(!terms.length)return text;
+  const expression=new RegExp(`(${terms.map(term=>term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')})`,'gi');
+  return String(text).split(expression).map((part,index)=>index%2?<mark key={index}>{part}</mark>:part);
+}
+const flip=(values,value)=>values.includes(value)?values.filter(item=>item!==value):[...values,value];
+export function MailFilterDialog({filters,facets,initial,onApply,onClose}){
+  const [draft,setDraft]=useState(()=>({...DEFAULT_MAIL_FILTERS,...filters})),[sender,setSender]=useState('');
+  const sections=useRef(null);
+  useEffect(()=>{sections.current?.querySelector(`[data-facet="${initial}"]`)?.scrollIntoView({block:'nearest'});},[initial]);
+  const change=patch=>setDraft(value=>({...value,...patch}));
+  const choices=(field,names)=><div className="nubi-mail-filter-choices">{Object.entries(names).map(([value,label])=><CxButton key={value} aria-pressed={draft[field].includes(value)} onClick={()=>change({[field]:flip(draft[field],value)})}><Icon name="check" size={16}/>{label}</CxButton>)}</div>;
+  function apply(){if(draft.period==='custom'&&draft.from&&draft.to&&draft.from>draft.to){notifyWorkspaceToast('시작일을 종료일 이전으로 설정해 주세요.',{error:true});return;}onApply(draft);}
+  return <DetailPanel variant="modal" className="deck-dialog nubi-panel nubi-mail-filter-dialog" title={title('search','검색 조건')} onClose={onClose}>
+    <div ref={sections} className="nubi-mail-filter-fields">
+      <section data-facet="period"><h3>기간 <small>{draft.dateField==='date'?'메일 발송일 기준':'수신한 시각 기준'}</small></h3><CxSelect aria-label="검색 기간" value={draft.period} onChange={event=>change({period:event.target.value})} options={Object.entries(periodNames).map(([value,label])=>({value,label}))}/>{draft.period==='custom'&&<div className="nubi-mail-date-fields"><label>시작일<CxInput type="date" aria-label="검색 시작일" value={draft.from} onChange={event=>change({from:event.target.value})}/></label><label>종료일<CxInput type="date" aria-label="검색 종료일" value={draft.to} onChange={event=>change({to:event.target.value})}/></label></div>}</section>
+      <section data-facet="senders"><h3>보낸 사람</h3><form onSubmit={event=>{event.preventDefault();if(sender.trim()){change({senders:[...new Set([...draft.senders,sender.trim()])].slice(0,30)});setSender('');}}}><CxInput aria-label="보낸 사람 또는 도메인" placeholder="주소 또는 @도메인 입력" value={sender} onChange={event=>setSender(event.target.value)} maxLength={200}/><CxButton type="submit" aria-label="보낸 사람 조건 추가" title="조건 추가" disabled={!sender.trim()}><Icon name="check" size={16}/><span>추가</span></CxButton></form><div className="nubi-mail-sender-options">{[...new Set([...draft.senders,...facets.senders.filter(item=>!sender||`${item.address} ${item.label}`.toLocaleLowerCase().includes(sender.toLocaleLowerCase())).map(item=>item.address)])].map(address=><CxButton key={address} aria-pressed={draft.senders.includes(address)} onClick={()=>change({senders:flip(draft.senders,address)})}><span>{facets.senders.find(item=>item.address===address)?.label||address}</span>{draft.senders.includes(address)&&<Icon name="check" size={14}/>}</CxButton>)}</div></section>
+      <section data-facet="attachment"><h3>첨부</h3><CxSelect aria-label="첨부 유무" value={draft.attachment} onChange={event=>change({attachment:event.target.value})} options={[{value:'all',label:'첨부 전체'},{value:'with',label:'첨부 있음'},{value:'without',label:'첨부 없음'}]}/>{choices('types',typeNames)}<CxInput aria-label="첨부 파일명" placeholder="파일명에 포함된 단어" value={draft.filename} onChange={event=>change({filename:event.target.value})} maxLength={200}/></section>
+      <details data-facet="extra" open={initial==='extra'||undefined}><summary>추가 조건</summary><section><h3>검색 위치</h3>{choices('locations',locationNames)}</section><section><h3>정리 상태</h3>{choices('states',stateNames)}</section><section><h3>내 분류</h3><CxButton aria-pressed={draft.pinned} onClick={()=>change({pinned:!draft.pinned})}><Icon name="pin" size={14}/>고정한 메일</CxButton>{facets.tags.length>0&&choices('tags',Object.fromEntries(facets.tags.map(tag=>[tag,tag])))}<CxSelect aria-label="메일 확인 여부" value={draft.confirmed} onChange={event=>change({confirmed:event.target.value})} options={[{value:'all',label:'확인 여부 전체'},{value:'yes',label:'확인한 메일'},{value:'no',label:'미확인 메일'}]}/><p className="nubi-muted">고정과 태그, 확인 상태는 누비에서만 관리해요.</p></section><section><h3>기간 기준</h3><CxSelect aria-label="날짜 기준" value={draft.dateField} onChange={event=>change({dateField:event.target.value})} options={[{value:'date',label:'메일 발송일'},{value:'fetchedAt',label:'누비가 수신한 시각'}]}/></section></details>
+    </div><div className="nubi-mail-dialog-actions"><CxButton onClick={onClose}><Icon name="xClose" size={16}/>취소</CxButton><CxButton variant="primary" onClick={apply}><Icon name="check" size={16}/>적용</CxButton></div>
+  </DetailPanel>;
+}
+export function mailFilterChips(filters){
+  const f={...DEFAULT_MAIL_FILTERS,...filters},chips=[];
+  if(f.period!=='all')chips.push({label:f.period==='custom'?`${f.from||'처음'} ~ ${f.to||'오늘'}`:periodNames[f.period],patch:{period:'all',from:'',to:''}});
+  if(f.dateField!=='date')chips.push({label:'수신 시각 기준',patch:{dateField:'date'}});
+  for(const field of ['senders','types','locations','states','tags'])for(const value of f[field])chips.push({label:({types:typeNames,locations:locationNames,states:stateNames}[field]||{})[value]||value,patch:{[field]:f[field].filter(item=>item!==value)}});
+  if(f.attachment!=='all')chips.push({label:f.attachment==='with'?'첨부 있음':'첨부 없음',patch:{attachment:'all'}});
+  if(f.filename)chips.push({label:'파일명: '+f.filename,patch:{filename:''}});
+  if(f.pinned)chips.push({label:'고정한 메일',patch:{pinned:false}});
+  if(f.confirmed!=='all')chips.push({label:f.confirmed==='yes'?'확인함':'미확인',patch:{confirmed:'all'}});
+  return chips;
+}
+export function MailSearchToolbar({api,state,onChange,facets,onFacets}){
+  const [dialog,setDialog]=useState(null),[name,setName]=useState(''),[saving,setSaving]=useState(false);
+  const filters={...DEFAULT_MAIL_FILTERS,...state.filters},chips=mailFilterChips(filters);
+  const changeFilters=patch=>onChange({...state,filters:{...filters,...patch}});
+  async function save(event){event.preventDefault();if(!name.trim()||saving)return;setSaving(true);try{await api('mail',{action:'saveSearch',name:name.trim(),query:state.query,filters,sort:state.sort});setName('');await onFacets();notifyWorkspaceToast('검색 조건을 저장했어요.');}catch{notifyWorkspaceToast('검색 조건을 저장하지 못했어요.',{error:true});}finally{setSaving(false);}}
+  return <div className="nubi-mail-search-toolbar">
+    <div className="nubi-mail-search-field"><Icon name="search" size={18}/><CxInput aria-label="메일과 첨부 검색" placeholder="메일과 첨부에서 검색" maxLength={500} value={state.query} onChange={event=>onChange({...state,query:event.target.value})}/>{state.query&&<CxButton aria-label="검색어 지우기" title="검색어 지우기" onClick={()=>onChange({...state,query:''})}><Icon name="xClose" size={14}/></CxButton>}</div>
+    <div className="nubi-mail-quick-filters"><CxButton aria-label="기간 조건" aria-pressed={filters.period!=='all'} onClick={()=>setDialog('period')}>{filters.period==='all'?'기간':periodNames[filters.period]}<Icon name="chevronDown" size={12}/></CxButton><CxButton aria-label="보낸 사람 조건" aria-pressed={!!filters.senders.length} onClick={()=>setDialog('senders')}>보낸 사람{filters.senders.length?` ${filters.senders.length}`:''}<Icon name="chevronDown" size={12}/></CxButton><CxButton aria-label="첨부 조건" aria-pressed={filters.attachment!=='all'||!!filters.types.length||!!filters.filename} onClick={()=>setDialog('attachment')}>첨부<Icon name="chevronDown" size={12}/></CxButton><CxButton aria-label="추가 검색 조건" title="추가 검색 조건" onClick={()=>setDialog('extra')}><Icon name="sliders" size={16}/>필터</CxButton><CxButton aria-label="저장한 검색" title="저장한 검색" onClick={()=>setDialog('saved')}><Icon name="bookmark" size={16}/><span>저장한 검색</span></CxButton><CxSelect className="nubi-mail-sort" aria-label="메일 정렬" value={state.sort|| (state.query?'relevance':'newest')} onChange={event=>onChange({...state,sort:event.target.value})} options={[{value:'relevance',label:'관련도순'},{value:'newest',label:'최신순'},{value:'oldest',label:'오래된순'}]}/></div>
+    {chips.length>0&&<div className="nubi-mail-filter-chips" aria-label="선택한 검색 조건">{chips.map((chip,index)=><span className="nubi-mail-filter-chip" key={index}><span>{chip.label}</span><CxButton aria-label={`${chip.label} 조건 해제`} title="조건 해제" onClick={()=>changeFilters(chip.patch)}><Icon name="xClose" size={12}/></CxButton></span>)}<CxButton className="nubi-mail-clear-filters" onClick={()=>onChange({...state,filters:DEFAULT_MAIL_FILTERS})}><Icon name="filterClear" size={16}/>조건 지우기</CxButton></div>}
+    {dialog&&dialog!=='saved'&&<MailFilterDialog filters={filters} facets={facets} initial={dialog} onApply={value=>{onChange({...state,filters:value});setDialog(null);}} onClose={()=>setDialog(null)}/>}
+    {dialog==='saved'&&<DetailPanel variant="modal" className="deck-dialog nubi-panel nubi-mail-saved-dialog" title={title('bookmark','저장한 검색')} onClose={()=>setDialog(null)}><form className="nubi-mail-save-search" onSubmit={save}><CxInput aria-label="검색 이름" placeholder="현재 검색 이름" maxLength={50} value={name} onChange={event=>setName(event.target.value)}/><CxButton type="submit" variant="primary" disabled={!name.trim()||saving}><Icon name="save" size={16}/>저장</CxButton></form><p className="nubi-muted">현재 검색어와 조건을 저장해요. 새 메일도 같은 조건으로 찾아요.</p><div className="nubi-mail-saved-list">{facets.saved.map(item=><div key={item.id}><CxButton onClick={()=>{onChange({query:item.query,filters:item.filters,sort:item.sort});setDialog(null);}}><Icon name="bookmark" size={16}/><span><strong>{item.name}</strong><small>{item.query||'조건으로 검색'}</small></span></CxButton><CxButton aria-label={`${item.name} 저장한 검색 삭제`} title="저장한 검색 삭제" onClick={async()=>{try{await api('mail',{action:'removeSearch',id:item.id});await onFacets();notifyWorkspaceToast('저장한 검색을 삭제했어요.');}catch{notifyWorkspaceToast('검색 조건을 삭제하지 못했어요.',{error:true});}}}><Icon name="xClose" size={14}/></CxButton></div>)}</div>{!facets.saved.length&&<p className="nubi-muted">저장한 검색이 없어요.</p>}</DetailPanel>}
+  </div>;
+}

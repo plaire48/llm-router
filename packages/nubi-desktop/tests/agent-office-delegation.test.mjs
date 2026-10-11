@@ -1,0 +1,31 @@
+import test from 'node:test';
+import {featureTest} from './beta-feature.mjs';
+const a2aTest=featureTest('a2a');
+import assert from 'node:assert/strict';
+import {fixture} from './fixtures.mjs';
+import {connectA2A,taskApi} from '../../nubi-a2a/client.mjs';
+import {ProjectService} from '../runtime/project-service.mjs';
+import {installAgent} from '../runtime/agent.mjs';
+installAgent(ProjectService);
+const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
+const waitFor=async check=>{for(let i=0;i<250&&!check();i++)await new Promise(resolve=>setTimeout(resolve,20));assert(check());};
+for(const host of ['excel','word','powerpoint'])a2aTest(`${host} delegation waits for acceptance and a bound result resumes the original Workspace conversation once`,async t=>{
+ const {service}=await fixture(t),turns=[];let continuing=false;
+ service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:272000}]}),dispose(){},complete:async(messages,tools)=>{
+  turns.push({messages,tools});const outputs=messages.filter(m=>m.role==='tool').map(m=>String(m.content));
+  if(!continuing&&!outputs.some(output=>output.includes('"state":"submitted"')))return call('delegate_to_office',{host,request:'현재 문서의 합계를 알려 주세요.',facts:['원문 합계 확인']});
+  return {content:continuing?'Office가 확인한 합계는 42입니다.':'Office 누비에 합계 확인을 요청했습니다.',calls:[]};
+ }};
+ const task=await service.createTask({request:'Office 문서 합계를 확인해 주세요.'});
+ const invite=await service.collaboration({action:'invite',recipient:'office-'+host});const office=await taskApi(await connectA2A(invite.url,'office-'+host));
+ await service.startAgent({taskId:task.id});await service.agent.promise;
+ const [job]=(await office.list()).tasks;assert.equal(job.recipient,'office-'+host);assert.equal(service.task(task.id).peerWait,job.id);assert.equal(service.task(task.id).state,'waiting_input');
+ assert(turns[0].tools.some(t=>t.function.name==='delegate_to_office'&&t.function.parameters.properties.host.enum.includes(host)));
+ await office.accept(job.id);const before=turns.length;continuing=true;
+ await office.complete(job.id,{summary:'합계는 42입니다.',facts:[],evidence:[],verification:'not_run',localRunId:'office-content-run'});
+ await waitFor(()=>turns.length>before);await service.agent.promise;
+ assert(service.task(task.id).messages.some(m=>m.content==='Office가 확인한 합계는 42입니다.'));
+ const receipts=turns[before].messages.find(m=>String(m.content).startsWith('Current host receipts'));
+ assert(String(receipts.content).includes(job.id));assert(String(receipts.content).includes('not_run'));
+ const count=turns.length;await new Promise(resolve=>setTimeout(resolve,60));assert.equal(turns.length,count);assert.equal(service.task(task.id).peerWait,null);
+});
