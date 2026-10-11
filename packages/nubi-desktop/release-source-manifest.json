@@ -2103,8 +2103,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
-      "sha256": "4690e0f8dd3a5e64b650c975726f2d726ffdfdc2e2115f4dcd47eb8b6ef43c11",
-      "bytes": 14747
+      "sha256": "2dae8680455845ef92046da253f78b33e2f390afb2815f7a9e868f1d6c286a92",
+      "bytes": 15097
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-skills.mjs",
