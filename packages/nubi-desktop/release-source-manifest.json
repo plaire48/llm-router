@@ -1518,8 +1518,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/renderer.jsx",
-      "sha256": "3c531bef21b1275984fd50c2a8ac5b3f57f15c13e305344e5229dd801feedcfb",
-      "bytes": 39594
+      "sha256": "46e4a54a069d8ba911f4527f52b083583c0784d0536ad9dafb5c6c5eae1e1869",
+      "bytes": 39632
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -2103,8 +2103,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
-      "sha256": "563ccb0997a6805853486e2dcd0f53e899502db19671c218584c5e31f76edbb2",
-      "bytes": 14233
+      "sha256": "4690e0f8dd3a5e64b650c975726f2d726ffdfdc2e2115f4dcd47eb8b6ef43c11",
+      "bytes": 14747
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-skills.mjs",
@@ -3148,8 +3148,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",
-      "sha256": "376e2d5740bff2ba525644556af2c7a099ccad36ba602a9143a17b70c2e4258b",
-      "bytes": 90429
+      "sha256": "ebfe4a79d0c48d3b70be056b536ece5bd9031c58dbec96ab843f785a456723fb",
+      "bytes": 90423
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",
