@@ -1477,21 +1477,6 @@
       "bytes": 1100
     },
     {
-      "path": "packages/nubi-desktop/electron-app/gen-esbuild.browser.mjs",
-      "sha256": "a0300390bb84526336f4c668ae812e08b4426ee71179431323c127966fc618dc",
-      "bytes": 3350
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/gen-esbuild.electron.mjs",
-      "sha256": "2c0de56f25aef5751c4f13e1f6e93ff25e889a4a64280cde40e6bcddb992311c",
-      "bytes": 731
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/gen-esbuild.node.mjs",
-      "sha256": "43cecd95ba4dcf65bc0d3e758092029d84ba69a242a347c59a96aae5f697dbac",
-      "bytes": 2035
-    },
-    {
       "path": "packages/nubi-desktop/electron-app/index.html",
       "sha256": "1ead5424975ff78113912d3c4ae146b16aba2e4618b05508a2d7167296c530b3",
       "bytes": 633
@@ -1545,46 +1530,6 @@
       "path": "packages/nubi-desktop/electron-app/shell.css",
       "sha256": "dad26fc3e437e9a575d5d19d4e403bb4c8c3bc60a86b9df230f406af0813db19",
       "bytes": 4054
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/backend/electron-main.js",
-      "sha256": "eba0e4712d85cf9e03c9d45797678d79ea368550e3486f7999723d6181aba5b7",
-      "bytes": 3908
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/backend/main.js",
-      "sha256": "0e315decdf5aa30eeae0795cdfedab0a889a552523f011840c9b40509b189215",
-      "bytes": 2372
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/backend/server.js",
-      "sha256": "c009d0890cd17c60324fc3f0e30a9ea10fb07c4d8135905ef85b53129e6cfccb",
-      "bytes": 4884
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/index.html",
-      "sha256": "321df72fac9ccabc6d5d6810ea67d92a360708a7e92b1ae10127a3564a0a1576",
-      "bytes": 430
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/index.js",
-      "sha256": "729fbab74beed4b5871a5a0dda12592a4bd8f73212495b09ba6832124583232b",
-      "bytes": 6155
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/preload.js",
-      "sha256": "d0d7bdd443d8b282ff4af1d7bf81e86c7c36550aa8b667baca016053ef0db9c6",
-      "bytes": 145
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/secondary-index.js",
-      "sha256": "6d29fc2d773a66e5606f9271e21438574d9f1747984f79483dfbd875f00e592f",
-      "bytes": 718
-    },
-    {
-      "path": "packages/nubi-desktop/electron-app/src-gen/frontend/secondary-window.html",
-      "sha256": "26a30124a2e74a3210fbd49b6d286bf08b4e41a05f65e4525779290bab2a9970",
-      "bytes": 531
     },
     {
       "path": "packages/nubi-desktop/electron-app/team-workspace.cjs",
