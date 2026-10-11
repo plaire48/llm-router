@@ -1,4 +1,5 @@
 $ErrorActionPreference = 'Stop'
+New-Item verification -ItemType Directory -Force | Out-Null
 Add-Type -Path (Join-Path $PSScriptRoot 'Read-ShellLink.cs')
 function Stage([string]$name) {
   Write-Host ("Nubi installer stage: " + $name + " at " + (Get-Date).ToUniversalTime().ToString('o'))

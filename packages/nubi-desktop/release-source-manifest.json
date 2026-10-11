@@ -1388,8 +1388,8 @@
     },
     {
       "path": "packages/nubi-desktop/THIRD-PARTY-NOTICES.md",
-      "sha256": "5782ac017ebbe3de451de90736b09a7b781efc9b8fbf565b11bf89226921b061",
-      "bytes": 8918
+      "sha256": "d16151550f5f792d595f85aee79be4da255e966a9743a44690bbaaa56e837b4f",
+      "bytes": 9074
     },
     {
       "path": "packages/nubi-desktop/context-policy.mjs",
@@ -1558,13 +1558,13 @@
     },
     {
       "path": "packages/nubi-desktop/package-lock.json",
-      "sha256": "2f4837dd4eeab968d219c03ed79e4f6950f58162c9699a2b870c047e6e705fcf",
-      "bytes": 378099
+      "sha256": "963dc2070fa6cf61e83bb8370bbebe4181f28895d1bf9c0f9a857b121b66c5b4",
+      "bytes": 441323
     },
     {
       "path": "packages/nubi-desktop/package.json",
-      "sha256": "ca8ccacdaaf72586baded2ae045c6b3b05a4ecccabb2f13a0a82df3dfdaf03fd",
-      "bytes": 3558
+      "sha256": "bd628b2adf8647059e917dc81bb1cdff3bab17881302ab691292197bedb9c0cf",
+      "bytes": 3629
     },
     {
       "path": "packages/nubi-desktop/runtime/activity-history.mjs",
@@ -1728,8 +1728,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/document-extract.mjs",
-      "sha256": "63cfbd7c3b8a45d478e85f6420230eb1e2b56011ac041d2ef57500ea44cc0f2f",
-      "bytes": 4993
+      "sha256": "356e81e58b82a3a68ab4fade006a9ced9f80d74faf7e981aad48ef9004ca3efb",
+      "bytes": 4953
     },
     {
       "path": "packages/nubi-desktop/runtime/elevated-process.mjs",
@@ -2063,8 +2063,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-WindowsInstaller.ps1",
-      "sha256": "d3b4eab90c9fc0f8043b06ef08549b811539065f7c36af12ac47d6ddd3202967",
-      "bytes": 5791
+      "sha256": "34ae83f32609d1bc246c8a508e07aa590b591855efe8c3607cfb917fb39486dc",
+      "bytes": 5851
     },
     {
       "path": "packages/nubi-desktop/scripts/build-electron.mjs",
@@ -3335,6 +3335,11 @@
       "path": "packages/nubi-desktop/vendor/licenses/DeepAgents-LICENSE.txt",
       "sha256": "61e5e8faf0b76db76793ecd8aa0edca36a82bd8dba279d2a31972f026c132423",
       "bytes": 1070
+    },
+    {
+      "path": "packages/nubi-desktop/vendor/licenses/ExcelJS-LICENSE.txt",
+      "sha256": "2ed526b7e7c7681dc2347995b5036ddf73dc27d0539cdea59b6d4a72b63a57a0",
+      "bytes": 1084
     },
     {
       "path": "packages/nubi-desktop/vendor/licenses/JSONC-parser-LICENSE.md",

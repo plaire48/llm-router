@@ -32,6 +32,7 @@ Versions are pinned in the package lock. Original source notices and installed p
 | oracledb | 7.0.1 | Apache-2.0 OR UPL-1.0 | Oracle Thin driver; Oracle Client is not bundled |
 | Ajv | 8.20.0 | MIT | Knowledge and change-plan contracts |
 | YAML | 2.9.0 | ISC | Shared harness support and draft YAML syntax checks |
+| ExcelJS | 4.4.0 | MIT | Existing non-COM spreadsheet text extraction, pinned directly by Desktop; Windows mail Office reading retains its COM-only path |
 | Noto Sans KR | bundled CX font | SIL OFL 1.1 | Korean typography fallback |
 
 `@e2e/cx-design-system` 0.5.4 is **UNLICENSED internal project material**, not an adopted open-source library. Nubi brand images and the supplied Agent Factory deck are project assets. This development package does not grant third-party redistribution rights to those assets. Public distribution requires retaining all dependency notices and resolving the internal asset distribution terms.
