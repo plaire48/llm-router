@@ -29,14 +29,14 @@ export async function assertDesktopDialog(dialog,{large=false}={}) {
     const css=getComputedStyle(root),title=getComputedStyle(root.querySelector('h2'));
     const buttons=[...root.querySelectorAll('button')].filter(e=>e.checkVisibility());
     return {font:css.fontFamily,size:css.fontSize,line:css.lineHeight,radius:css.borderRadius,
-      title:{size:title.fontSize,line:title.lineHeight},blue:css.getPropertyValue('--brand-action').trim(),
+      danger:root.matches('.nubi-delete-conversation,.nubi-delete-skill'),dangerToken:css.getPropertyValue('--deck-red').trim(),title:{size:title.fontSize,line:title.lineHeight},blue:css.getPropertyValue('--brand-action').trim(),
       buttons:buttons.map(e=>({size:getComputedStyle(e).fontSize,radius:getComputedStyle(e).borderRadius,kit:e.classList.contains('cx-kit-button'),chip:e.classList.contains('nubi-page-chip'),label:e.getAttribute('aria-label')||e.textContent.trim(),iconOnly:e.dataset.iconOnly,title:e.title})),
       fields:[...root.querySelectorAll('.nubi-url-pair label,.nubi-db-fields label,.nubi-map-controls label,.nubi-db-tls,.nubi-recovery-option,.nubi-run-form small')].filter(e=>e.checkVisibility()).map(e=>({size:getComputedStyle(e).fontSize,line:getComputedStyle(e).lineHeight})),
       overflow:root.scrollWidth>root.clientWidth};
   });
   const {size,line,heading,headingLine}=desktopDialogScale(large);
   assert(facts.font.includes('Noto Sans KR'));assert.equal(facts.size,size);assert.equal(facts.line,line);assert.equal(facts.radius,'20px');
-  assert.deepEqual(facts.title,{size:heading,line:headingLine});assert([palette.blue,palette['blue-deep']].map(value=>value.toLowerCase()).includes(facts.blue.toLowerCase()),'Actions use an approved Nubi blue token');
+  assert.deepEqual(facts.title,{size:heading,line:headingLine});assert((facts.danger?[facts.dangerToken]:[palette.blue,palette['blue-deep']]).map(value=>value.toLowerCase()).includes(facts.blue.toLowerCase()),'Actions use the semantic token for the dialog purpose');
   assert.equal(facts.overflow,false);assert(facts.buttons.every(b=>b.label&&b.size===size));
   assert(facts.fields.every(field=>field.size===size&&field.line===line),'Dialog labels and instructions must track the body scale: '+JSON.stringify(facts.fields));
   assert(facts.buttons.filter(b=>b.kit&&!b.chip).every(b=>b.radius==='12px'));

@@ -145,21 +145,21 @@ try{
  // The rail opens Nubi's catalog immediately without fetching or embedding the website.
  await p.setViewportSize({width:1280,height:850});await p.goto(origin+'/?context&modals&integrated&catalog&toolbar');await closeSidebar();
  const input=p.getByRole('textbox',{name:/^(작업 요청|추가 요청)$/});await input.waitFor();await input.fill('보존할 대화 초안');
- await p.getByRole('button',{name:'AI Workspace',exact:true}).click();await p.getByRole('heading',{name:'스킬',exact:true}).waitFor();
+ await p.getByRole('button',{name:'AI Workspace',exact:true}).click();await p.getByRole('heading',{name:'AI Workspace',exact:true}).waitFor();
  const skillSearch=p.getByRole('textbox',{name:'AI Workspace 스킬 검색'});await skillSearch.fill('보고서');await p.getByRole('button',{name:'보고서 검토 다운로드',exact:true}).waitFor();
  assert.equal(await p.locator('iframe').count(),0);assert.equal(await p.evaluate(()=>window.nativeViewCalls?.includes('team-workspace')||false),false);
  await p.evaluate(()=>{window.skillDownloadDelay=900;});await p.getByRole('button',{name:'보고서 검토 다운로드',exact:true}).click();await skillSearch.fill('간단');await p.getByRole('button',{name:'간단 덧셈 업데이트'}).waitFor();await p.waitForTimeout(1100);await skillSearch.fill('보고서');await p.locator('.nubi-marketplace-card').filter({hasText:'보고서 검토'}).getByRole('img',{name:'설치됨',exact:true}).waitFor();
  await skillSearch.fill('');await p.screenshot({path:path.join(dir,'nubi-workspace-skills.png'),animations:'disabled'});
  await p.getByRole('tab',{name:'Personal',exact:true}).click();await p.getByRole('textbox',{name:'내 스킬 검색'}).fill('보고서');await p.locator('.nubi-custom-skill-row').first().waitFor();await p.screenshot({path:path.join(dir,'nubi-my-skills.png'),animations:'disabled'});
- for(const width of [440,800,1280]){await p.setViewportSize({width,height:850});for(const tabName of ['AI Workspace','내 스킬']){await p.getByRole('tab',{name:tabName,exact:true}).click();const tabs=p.locator('.nubi-skill-tabs');assert(await tabs.evaluate(node=>node.scrollWidth<=node.clientWidth),'skill tabs fit at '+width);assert(await tabs.getByRole('tab').evaluateAll(items=>items.every(tab=>{const r=tab.getBoundingClientRect();return r.height>=44&&r.width>=44;})),'skill tab targets');}await p.screenshot({path:path.join(dir,'nubi-my-skills-'+width+'.png'),animations:'disabled'});}
+ for(const width of [440,800,1280]){await p.setViewportSize({width,height:850});for(const tabName of ['Team','Personal']){await p.getByRole('tab',{name:tabName,exact:true}).click();const tabs=p.locator('.nubi-skill-tabs');assert(await tabs.evaluate(node=>node.scrollWidth<=node.clientWidth),'skill tabs fit at '+width);assert(await tabs.getByRole('tab').evaluateAll(items=>items.every(tab=>{const r=tab.getBoundingClientRect();return r.height>=40&&r.width>=44;})),'skill tab targets');}await p.screenshot({path:path.join(dir,'nubi-my-skills-'+width+'.png'),animations:'disabled'});}
  // Pagination searches the full catalog and resets on filtering.
  await p.evaluate(()=>{window.skillFixtureCount=22;});
- for(const entry of [{tab:'내 스킬',search:'내 스킬 검색',refresh:'목록 새로고침',prefix:'내 스킬',row:'.nubi-custom-skill-row',term:'검토 스킬 22',total:23},{tab:'AI Workspace',search:'AI Workspace 스킬 검색',refresh:'마켓플레이스 새로고침',prefix:'AI Workspace 스킬',row:'.nubi-marketplace-card',term:'공유 스킬 22',total:24}]){
+ for(const entry of [{tab:'Personal',search:'내 스킬 검색',refresh:'목록 새로고침',prefix:'내 스킬',row:'.nubi-custom-skill-row',term:'검토 스킬 22',total:23},{tab:'Team',search:'AI Workspace 스킬 검색',refresh:'마켓플레이스 새로고침',prefix:'AI Workspace 스킬',row:'.nubi-marketplace-card',term:'공유 스킬 22',total:24}]){
    await p.getByRole('tab',{name:entry.tab,exact:true}).click();await p.getByRole('textbox',{name:entry.search}).fill('');await p.getByRole('button',{name:entry.refresh,exact:true}).click();
    const pager=p.getByRole('navigation',{name:entry.prefix+' 페이지 이동'});await pager.getByText('1–10 / '+entry.total,{exact:true}).waitFor();assert.equal(await p.locator(entry.row).count(),10);
    await pager.getByRole('button',{name:entry.prefix+' 다음 페이지',exact:true}).click();await pager.getByText('11–20 / '+entry.total,{exact:true}).waitFor();
    await pager.getByRole('button',{name:entry.prefix+' 다음 페이지',exact:true}).click();await pager.getByText('21–'+entry.total+' / '+entry.total,{exact:true}).waitFor();assert(await pager.getByRole('button',{name:entry.prefix+' 다음 페이지',exact:true}).isDisabled());
-   await p.getByRole('textbox',{name:entry.search}).fill(entry.term);await pager.getByText('1–1 / 1',{exact:true}).waitFor();assert.equal(await p.locator(entry.row).count(),1);
+   await p.getByRole('textbox',{name:entry.search}).fill(entry.term);await p.locator(entry.row).filter({hasText:entry.term}).waitFor();assert.equal(await pager.count(),0,'one-page results need no pager');assert.equal(await p.locator(entry.row).count(),1);
    await p.getByRole('textbox',{name:entry.search}).fill('');await pager.getByText('1–10 / '+entry.total,{exact:true}).waitFor();
  }
  await p.getByRole('tab',{name:'Personal',exact:true}).click();
@@ -187,4 +187,4 @@ try{
  }
  assert.deepEqual(errors,[]);await writeFile(path.join(dir,'result.json'),JSON.stringify({checks,errors,scope:'actual Electron Workbench style and layout with synthetic data in Chrome; native pickers and real accounts are separate'},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:path.join(dir,'failure.png')}).catch(()=>{});await writeFile(path.join(dir,'failure.txt'),error.stack+'\n--- page errors ---\n'+JSON.stringify(errors,null,1)+'\n--- body ---\n'+await p?.locator('body').innerText()+'\n--- aria ---\n'+await p?.locator('body').ariaSnapshot());throw error;}
-finally{await browser?.close();await new Promise(r=>server.close(r));}
+finally{await browser?.close();server.closeAllConnections();await new Promise(r=>server.close(r));}

@@ -76,7 +76,12 @@ try{page=await app.firstWindow();page.setDefaultTimeout(10000);page.on('crash',(
  await page.keyboard.type('session-answer');await page.keyboard.press('Enter');
  await page.keyboard.type(process.platform==='win32'?"Write-Output $answer":"printf '%s\\n' \"$answer\"");await page.keyboard.press('Enter');
  await page.waitForFunction(()=>[...document.querySelectorAll('.desktop-terminal .xterm-rows>div')].some(row=>row.textContent.trim()==='session-answer'));
- await page.keyboard.type(process.platform==='win32'?'Start-Sleep 30':'sleep 30');await page.keyboard.press('Enter');await page.keyboard.press('Control+C');
+ await page.keyboard.type(process.platform==='win32'?"Write-Output 'sleep-started'; Start-Sleep 30":"printf '%s\\n' sleep-started; sleep 30");await page.keyboard.press('Enter');
+ await page.waitForFunction(()=>[...document.querySelectorAll('.desktop-terminal .xterm-rows>div')].some(row=>row.textContent.trim()==='sleep-started'));
+ await page.keyboard.press('Control+C');
+ // ConPTY/PowerShell discards input while handling Ctrl+C. Wait for the real
+ // returned prompt before sending the next command, as an interactive user does.
+ await page.waitForFunction(windows=>{const rows=[...document.querySelectorAll('.desktop-terminal .xterm-rows>div')].map(row=>row.textContent).filter(text=>text.trim());return (windows?/>\s*$/:/[$#]\s*$/).test(rows.at(-1)||'');},process.platform==='win32');
  await page.keyboard.type(process.platform==='win32'?"Write-Output ('after-'+'interrupt')":"printf '%s\\n' after-interrupt");await page.keyboard.press('Enter');
  await page.waitForFunction(()=>[...document.querySelectorAll('.desktop-terminal .xterm-rows>div')].some(row=>row.textContent.trim()==='after-interrupt'));
  checks.push('interactive input and Ctrl+C return to the live shell');
