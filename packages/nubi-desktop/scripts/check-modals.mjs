@@ -85,7 +85,7 @@ try{
   await p.setViewportSize({width,height:800});await p.goto(origin+'/?context&modals&integrated&wiki-progress');
   const wiki=p.getByRole('dialog',{name:'위키 준비',exact:true});await wiki.waitFor();
   assert.equal(await wiki.getByRole('progressbar').getAttribute('aria-valuenow'),'30');
-  assert.match(await wiki.innerText(),/현재 단계 약/);assert.match(await wiki.innerText(),/경과/);
+  assert.match(await wiki.innerText(),/현재 단계 약/);assert.match(await wiki.innerText(),/진행 \d+분 \d+초/);
   assert(await wiki.evaluate(e=>e.scrollWidth<=e.clientWidth+1),'wiki progress fits the modal');
   await p.screenshot({path:path.join(dir,`wiki-progress-${width}.png`),animations:'disabled'});
   await wiki.getByRole('button',{name:'백그라운드로',exact:true}).click();await wiki.waitFor({state:'hidden'});

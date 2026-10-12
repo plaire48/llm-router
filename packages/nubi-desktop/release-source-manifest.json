@@ -1543,8 +1543,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "a40637157a788b49eef55760950f10c5e503672c4c9d75a46f0c478ac2f1765d",
-      "bytes": 4182
+      "sha256": "fc61b390b662aa3b7588ebb9bc51cba75961b28e05f33c0e9cdcd5826ca62376",
+      "bytes": 4376
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -2098,8 +2098,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
-      "sha256": "48eb4d61ff1839a2726aa0757c3208715d496c66b4ae6528f7857d0508719f67",
-      "bytes": 3556
+      "sha256": "338da17448a45dc8fb7f0059ecec5115e695345c1ecebd4e7a1bc047caf1ade7",
+      "bytes": 3570
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
@@ -2188,8 +2188,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-modals.mjs",
-      "sha256": "581166aec64cc74fd08172bab1e855a87a8e4bc373eb68995090789e646a3f6d",
-      "bytes": 21543
+      "sha256": "7fd89ad01a39b8d5baadcb74218faa01d9a94aaa90f8ee0ee9544354d7b68c7b",
+      "bytes": 21557
     },
     {
       "path": "packages/nubi-desktop/scripts/check-shared-ui.mjs",
@@ -3213,18 +3213,18 @@
     },
     {
       "path": "packages/nubi-desktop/ui/WikiInitializationProgress.jsx",
-      "sha256": "da1d07efd064230acf8ec1392547e17927addf32cd1037dabf7e65b26925648a",
-      "bytes": 4217
+      "sha256": "4106810d1cf12df025a9b96b14a752d98a8bba2d98bcf740c17a5d34a68791af",
+      "bytes": 4074
     },
     {
       "path": "packages/nubi-desktop/ui/WikiUpdate.jsx",
-      "sha256": "4ae2f81b48fc17e0544c8cc6634674a587450b3955c2474e22e0dd1d536ecddd",
-      "bytes": 5623
+      "sha256": "629382fe51cf266ec0f34db7944cc5b7912da74e07154ddb66e8eb08b77f7f27",
+      "bytes": 6049
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",
-      "sha256": "788698e5185f5428c3ccca72346e695f010a867b0c165e43525bb44c2b305fa8",
-      "bytes": 93265
+      "sha256": "761f5e69eaf8c8c20840f4b531da3af68acef6e2558f876d7001bc3e0b9eb741",
+      "bytes": 93539
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",

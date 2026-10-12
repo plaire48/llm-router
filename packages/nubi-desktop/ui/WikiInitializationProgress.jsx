@@ -1,14 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Icon} from '@e2e/cx-design-system';
+import {durationLabel} from '../runtime/response-timing.mjs';
 
 const stages={reading:'파일 읽기',snapshot:'분석 준비',planning:'구성 분석',replanning:'구성 다시 분석',generating:'문서 작성',finalizing:'문서 검토',publishing:'저장 확인'};
 const states={waiting_model:'위키 모델 연결 대기',waiting_source:'위키 프로젝트 선택 대기',completed:'위키 준비 완료',existing:'위키 연결됨',attention:'위키 확인 필요',cancelled:'위키 준비 중지됨'};
 const errors={wiki_interrupted:'앱이 종료되어 위키 준비가 멈췄어요. 다시 시도해 주세요.',source_stale:'원본 파일이 바뀌었어요. 최신 파일로 다시 시도해 주세요.',provider_changed:'모델이 바뀌었어요. 선택한 모델로 다시 시도해 주세요.',wiki_git_required:'위키 준비에 필요한 Git을 찾지 못했어요. Git 설치를 확인해 주세요.',wiki_source_limit:'파일이 너무 많아요. 더 작은 프로젝트 폴더를 선택해 주세요.',unauthorized:'모델 로그인을 다시 확인해 주세요.',expired_token:'모델 로그인이 만료됐어요. 다시 연결해 주세요.',response_invalid:'모델 응답을 읽지 못했어요. 다시 시도해 주세요.'};
 function elapsed(start,end){
-  const seconds=Math.max(0,Math.floor((end-start)/1000));
-  if(seconds<60)return `${seconds}초`;
-  if(seconds<3600)return `${Math.floor(seconds/60)}분 ${seconds%60}초`;
-  return `${Math.floor(seconds/3600)}시간 ${Math.floor(seconds%3600/60)}분`;
+  return durationLabel(Math.max(0,end-start));
 }
 
 // Counts come from the runner. A clock is a duration, never a synthetic percent.
@@ -27,7 +25,7 @@ export function WikiInitializationProgress({job, inline=false}) {
       {running?<span className="status-spinner" aria-hidden="true"/>:<Icon name={job.state==='attention'?'alertCircle':'bookmark'} size={14}/>}
       <strong role={running?'status':undefined}>{title}</strong>
       {percent!==null&&<span className="nubi-wiki-percent">현재 단계 {percent}%</span>}
-      {running&&duration&&<span className="nubi-wiki-elapsed">경과 {duration}</span>}
+      {running&&duration&&<span className="nubi-wiki-elapsed">진행 {duration}</span>}
       {!running&&job.state==='completed'&&<span className="nubi-wiki-elapsed">{job.pages}개 문서{duration?` / ${duration}`:''}</span>}
     </div>
     {!inline&&running&&percent===null&&<div className="nubi-progress is-indeterminate" role="progressbar" aria-label={title}><span/></div>}

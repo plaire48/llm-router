@@ -19,6 +19,7 @@
 !ifndef BUILD_UNINSTALLER
   Var NubiStarted
   Var NubiElapsed
+  Var NubiElapsedLabel
   Var NubiPhase
   Var NubiLog
   Var NubiTimer
@@ -42,7 +43,10 @@
     IntOp $5 $5 / 1000
     IntOp $0 $0 - $NubiStarted
     IntOp $NubiElapsed $0 / 1000
-    StrCpy $4 "경과 $NubiElapsed초 / 남은 시간 계산 중"
+    IntOp $0 $NubiElapsed / 60
+    IntOp $1 $NubiElapsed % 60
+    StrCpy $NubiElapsedLabel "$0분 $1초"
+    StrCpy $4 "진행 $NubiElapsedLabel / 남은 시간 계산 중"
     ${If} $NubiPhase == "앱 파일 풀기"
     ${AndIf} $5 >= 2
       StrCpy $2 $NubiExtractPercent
@@ -54,10 +58,12 @@
           IntOp $3 $3 / 5
           IntOp $3 $3 + 1
           IntOp $3 $3 * 5
-          StrCpy $4 "경과 $NubiElapsed초 / 파일 풀기 약 $3초 남음"
+          IntOp $0 $3 / 60
+          IntOp $1 $3 % 60
+          StrCpy $4 "진행 $NubiElapsedLabel / 파일 풀기 약 $0분 $1초 남음"
         ${EndIf}
     ${ElseIf} $NubiPhase == "설치 완료"
-      StrCpy $4 "경과 $NubiElapsed초"
+      StrCpy $4 "소요 $NubiElapsedLabel"
     ${EndIf}
     ${If} $NubiLastTitle != $NubiPhase
     ${OrIf} $NubiLastDescription != $4
