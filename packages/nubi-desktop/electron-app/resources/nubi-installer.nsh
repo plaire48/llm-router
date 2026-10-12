@@ -42,6 +42,55 @@
   Var NubiLastTitle
   Var NubiLastDescription
   Var NubiLastPercent
+  Var NubiProcessExit
+  Var NubiProcessStartFailed
+  ; NSIS is a 32-bit process, including the x64 app installer. Keep the exact
+  ; upstream command/exit contract, but poll the child instead of blocking all
+  ; progress updates in ExecWait. No time-based completion or forced termination.
+  Function NubiWaitForUninstaller
+    Exch $0
+    System::Store S
+    StrCpy $NubiProcessExit -1
+    StrCpy $NubiProcessStartFailed 0
+    System::Call 'kernel32::GetProcessHeap() p.r9'
+    System::Call 'kernel32::HeapAlloc(p r9, i 8, p 68) p.r1'
+    System::Call 'kernel32::HeapAlloc(p r9, i 8, p 16) p.r2'
+    ${If} $1 != 0
+    ${AndIf} $2 != 0
+      System::Call '*$1(i 68)'
+      System::Call 'kernel32::CreateProcessW(p 0, w r0, p 0, p 0, i 0, i 0, p 0, p 0, p r1, p r2) i.r3'
+      ${If} $3 != 0
+        System::Call '*$2(p.r4, p.r5)'
+        System::Call 'kernel32::CloseHandle(p r5)'
+        ${Do}
+          System::Call 'kernel32::WaitForSingleObject(p r4, i 200) i.r6'
+          ${IfNot} ${Silent}
+            Call NubiTick
+          ${EndIf}
+        ${LoopWhile} $6 == 258
+        ${If} $6 == 0
+          System::Call 'kernel32::GetExitCodeProcess(p r4, *i.r7) i.r8'
+          ${If} $8 != 0
+            StrCpy $NubiProcessExit $7
+          ${EndIf}
+        ${EndIf}
+        System::Call 'kernel32::CloseHandle(p r4)'
+      ${Else}
+        StrCpy $NubiProcessStartFailed 1
+      ${EndIf}
+    ${Else}
+      StrCpy $NubiProcessStartFailed 1
+    ${EndIf}
+    System::Call 'kernel32::HeapFree(p r9, i 0, p r1)'
+    System::Call 'kernel32::HeapFree(p r9, i 0, p r2)'
+    System::Store L
+    Pop $0
+    ${If} $NubiProcessStartFailed == 1
+      SetErrors
+    ${Else}
+      ClearErrors
+    ${EndIf}
+  FunctionEnd
   Function NubiTick
     Push $0
     Push $1
