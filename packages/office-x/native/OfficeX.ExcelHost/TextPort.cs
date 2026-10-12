@@ -15,7 +15,7 @@ namespace OfficeX.ExcelHost {
    Active(scope);document=app=="word"?application.ActiveDocument:application.ActivePresentation;documentId=Identity(document);
    dynamic win=scope.Keep(application.ActiveWindow);dynamic selection=scope.Keep(win.Selection);
    if(app=="word"){target=selection.Range;dynamic range=target;if((int)range.StoryType!=1)throw new OfficeFault("select_text");start=(int)range.Start;end=(int)range.End;targetId=start+":"+end;}
-   else {dynamic shapes=scope.Keep(selection.ShapeRange);if((int)shapes.Count!=1)throw new OfficeFault("select_text");target=shapes.Item(1);dynamic shape=target;targetId=Convert.ToString(shape.Id);}
+   else {dynamic shapes=scope.Keep(selection.ShapeRange);if((int)shapes.Count!=1)throw new OfficeFault("select_text");target=shapes.Item(1);dynamic shape=target;dynamic slide=scope.Keep(shape.Parent);targetId=Convert.ToString(slide.SlideID)+":"+Convert.ToString(shape.Id);}
    return Snapshot(scope);
   }}
   public TextSnapshot Read(TextSnapshot binding){using(var scope=new ComScope()){Active(scope);if(binding.DocumentId!=documentId||binding.TargetId!=targetId)throw new OfficeFault("source_changed");return Snapshot(scope);}}
@@ -26,10 +26,12 @@ namespace OfficeX.ExcelHost {
     dynamic content=scope.Keep(doc.Content),font=scope.Keep(range.Font),paragraph=scope.Keep(range.ParagraphFormat);
     dynamic before=scope.Keep(doc.Range(0,start)),after=scope.Keep(doc.Range(end,(int)content.End));
     // Mixed formatting is read-only; replacement never crosses a paragraph boundary.
-    format=Wire.Hash(new {name=(string)font.Name,size=(float)font.Size,bold=(int)font.Bold,italic=(int)font.Italic,underline=(int)font.Underline,color=(int)font.Color,alignment=(int)paragraph.Alignment});
-    bool uniform=(string)font.Name!=null&&(float)font.Size<999999&&(int)font.Bold!=9999999&&(int)font.Italic!=9999999&&(int)font.Underline!=9999999&&(int)font.Color!=9999999;
+    format=Wire.Hash(new {name=(string)font.Name,size=(float)font.Size,bold=(int)font.Bold,italic=(int)font.Italic,underline=(int)font.Underline,color=(int)font.Color,smallCaps=(int)font.SmallCaps,allCaps=(int)font.AllCaps,strike=(int)font.StrikeThrough,doubleStrike=(int)font.DoubleStrikeThrough,subscript=(int)font.Subscript,superscript=(int)font.Superscript,hidden=(int)font.Hidden,spacing=(float)font.Spacing,scaling=(int)font.Scaling,position=(float)font.Position,highlight=(int)range.HighlightColorIndex,language=(int)range.LanguageID,alignment=(int)paragraph.Alignment});
+    bool uniform=!string.IsNullOrWhiteSpace((string)font.Name)&&(float)font.Size<999999&&(int)font.Bold!=9999999&&(int)font.Italic!=9999999&&(int)font.Underline!=9999999&&(int)font.Color!=9999999;
+    uniform=uniform&&(int)font.SmallCaps!=9999999&&(int)font.AllCaps!=9999999&&(int)font.StrikeThrough!=9999999&&(int)font.DoubleStrikeThrough!=9999999&&(int)font.Subscript!=9999999&&(int)font.Superscript!=9999999&&(int)font.Hidden!=9999999&&(float)font.Spacing<999999&&(int)font.Scaling!=9999999&&(float)font.Position<999999&&(int)range.HighlightColorIndex!=9999999&&(int)range.LanguageID!=9999999;
+    dynamic revisions=scope.Keep(range.Revisions),parentControl=scope.Keep(range.ParentContentControl);
     dynamic tables=scope.Keep(range.Tables),fields=scope.Keep(range.Fields),inline=scope.Keep(range.InlineShapes),controls=scope.Keep(range.ContentControls),links=scope.Keep(range.Hyperlinks);
-    editable=Plain(text)&&uniform&&(int)range.StoryType==1&&!(bool)doc.ReadOnly&&!(bool)doc.TrackRevisions&&(int)doc.ProtectionType==-1&&(int)tables.Count==0&&(int)fields.Count==0&&(int)inline.Count==0&&(int)controls.Count==0&&(int)links.Count==0;
+    editable=Plain(text)&&uniform&&(int)revisions.Count==0&&parentControl==null&&(int)range.StoryType==1&&!(bool)doc.ReadOnly&&!(bool)doc.TrackRevisions&&(int)doc.ProtectionType==-1&&(int)tables.Count==0&&(int)fields.Count==0&&(int)inline.Count==0&&(int)controls.Count==0&&(int)links.Count==0;
     surrounding=Wire.Hash(new{before=(string)before.Text,after=(string)after.Text});location="선택한 문장";
    }else{
     dynamic shape=target;if((int)shape.HasTextFrame!=-1)throw new OfficeFault("select_text");dynamic frame=scope.Keep(shape.TextFrame);range=scope.Keep(frame.TextRange);text=(string)range.Text??"";

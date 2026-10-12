@@ -1,28 +1,23 @@
-# Windows 개발 실행 안내
+# Windows 빌드와 실행
 
-대상: Windows의 Excel 2016 데스크톱. Office 비트수는 아직 미확정이며 네이티브 소스는 AnyCPU로 구성했다. Office 32비트·64비트별 로드 확인은 필요하다.
+대상은 Windows 10 이상과 Excel, Word, PowerPoint 2016이다. Office 추가 기능은 AnyCPU, Node 런타임은 OS에 맞춰 x86 또는 x64를 설치한다. 실제 Office 비트수별 로드 확인은 별도다.
 
-## 준비와 빌드
+## 빌드
 
-Visual Studio 2022의 Office/SharePoint 개발 도구(VSTO), .NET Framework 4.7.2 targeting pack, VSTO Runtime, WebView2 Evergreen Runtime, Excel 2016, Node.js 22.19 이상이 필요하다. 공통 로직 테스트에는 .NET 8 SDK를 사용한다.
-
-프로젝트를 Windows 로컬 작업 폴더에 복사한다. 기존 macOS의 node_modules·bin·obj는 복사하지 않는다. 프로젝트 루트의 `Build-Windows.cmd`를 실행한다. npm 복원과 GenOffice worker 번들, C# 호스트, VSTO 진입점을 순서대로 빌드한다. 현재 스크립트는 개발 빌드이며 설치 프로그램·신뢰된 게시자 서명·인증서 설치를 만들지 않는다.
-
-PIA 자동 탐지가 실패하면 설치된 Office interop 경로를 지정한다.
+Visual Studio 2022 Office 개발 도구와 .NET Framework 4.7.2 targeting pack, .NET 8 SDK, Node 22.19 이상, NuGet CLI, Inno Setup 6을 준비한다.
 
 ```powershell
-.\scripts\Build-Windows.ps1 -OfficeCorePath 'C:\실제경로\office.dll' -ExcelInteropPath 'C:\실제경로\Microsoft.Office.Interop.Excel.dll'
+.\scripts\Build-Windows.ps1
+.\scripts\Test-WindowsInstall.ps1
 ```
 
-예상 출력은 `native/OfficeX.ExcelAddIn/bin/Release/`의 추가 기능 DLL·VSTO manifest·호스트 DLL과 `OfficeX/worker/main.cjs`, `OfficeX/ui/`와 WebView2 `runtimes/`이다. 실제 Windows 빌드 성공은 아직 확인하지 않았다.
+두 번째 명령은 관리자 권한의 일회용 Windows 검증 환경에서 실행한다. 실제 설치, 재설치, 제거를 수행하므로 개발 PC의 기존 설치 위에서 검사하지 않는다. 결과는 `releases/install-smoke.json`이다.
 
-개발 실행은 Program Files의 `nodejs/node.exe` 또는 빌드 결과의 `OfficeX/runtime/node.exe`를 사용한다. npm이 실행되는 Node와 이 실행 경로가 같은 버전인지 확인한다.
+첫 명령은 npm 복원, 타입과 동작 검사, 공통 호스트, 세 VSTO 진입점, 런타임과 공식 선행 설치 파일 검증, Inno EXE 빌드를 수행한다. 출력은 `releases/Nubi-Office-X-0.3.0-Setup.exe`와 SHA256이다. `-InstallBuildTools`는 CI에서 누락된 Visual Studio Office 개발 도구를 설치한다.
 
-## Visual Studio에서 실행
+VSTO manifest는 임시 미리보기 인증서로 서명하며 빌드 후 인증서를 삭제한다. 신뢰 저장소에는 추가하지 않는다. EXE 자체는 배포용 서명이 없다. 실제 조직 배포에는 별도의 게시자 서명 절차가 필요하다.
 
-`native/OfficeX.ExcelAddIn/OfficeX.ExcelAddIn.vbproj`를 연다. 구성은 Release로 맞춘다. 설치된 Excel 경로를 프로젝트 디버그의 외부 프로그램으로 지정하고 F5로 실행한다. Visual Studio VSTO 개발 등록·신뢰 처리가 필요한 환경이다. 조직 정책으로 로드가 거부되면 해당 환경의 서명·배포 절차로 검증한다. 테스트 인증서를 신뢰 저장소에 설치하거나 정책을 우회하지 않는다.
-
-프로젝트 참조를 찾지 못하면 OfficeCorePath와 ExcelInteropPath에 해당하는 Office 참조 경로를 확인한다. 리본이 보이지 않으면 Excel의 COM 추가 기능 목록과 로드 오류를 먼저 확인한다. 이 절차는 아직 실제 Windows에서 실행 검증하지 않았다.
+설치 후 각 앱의 Office X 탭을 연다. 리본이 없으면 해당 앱의 COM 추가 기능에서 `OfficeX.GenOffice` 등록과 로드 오류를 확인한다.
 
 ## 모델 없이 문서 실행기 확인
 

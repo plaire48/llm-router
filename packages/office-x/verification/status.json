@@ -6,8 +6,8 @@
     "vendorHashes": 85,
     "agentCoreTests": 183,
     "providerTests": 426,
-    "integrationUnitTests": 11,
-    "nativeCoreTests": 25,
+    "integrationUnitTests": 17,
+    "nativeCoreTests": 34,
     "stdioMockIntegration": "passed",
     "net472HostCrossCompile": "passed",
     "nubiVendorHashes": 88,
@@ -19,15 +19,17 @@
     "agentEngineBoundary": "passed",
     "workspaceVisualStyle": "38 computed properties/tokens match current Workspace CSS; 14 mock UI flows passed; source CSS fixture only",
     "cxStaticIssues": 0,
-    "readability": "Removed repeated help, middle-dot UI separators; font weights 400/500/600; 14 UI flows and 11 unit tests passed"
+    "readability": "Removed repeated help, middle-dot UI separators; font weights 400/500/600; 14 UI flows and 11 unit tests passed",
+    "textBrowserFixtureFlows": 2
   },
-  "windowsVstoBuildVerified": false,
+  "windowsVstoBuildVerified": true,
   "officeRuntimeVerified": false,
   "nascaVerified": false,
   "liveModelVerified": false,
   "workspaceA2AVerified": false,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "windowsDpapiVerified": false,
   "windowsWebView2Verified": false,
-  "liveClaudeVerified": false
+  "liveClaudeVerified": false,
+  "windowsVstoBuildEvidence": "GitHub Actions 38316674306: Excel, Word, PowerPoint compiled; installer not yet passed"
 }

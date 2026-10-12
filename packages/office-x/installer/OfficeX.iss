@@ -27,12 +27,14 @@ CloseApplications=yes
 CloseApplicationsFilter=*.dll,*.exe
 RestartApplications=no
 SetupLogging=yes
-WizardFontName=Malgun Gothic
-WizardFontSize=10
 
 [Languages]
 Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[LangOptions]
+DialogFontName=Malgun Gothic
+DialogFontSize=10
 
 [Types]
 Name: "full"; Description: "Excel, Word, PowerPoint"
