@@ -3173,8 +3173,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/SessionSidebar.jsx",
-      "sha256": "68a2a472c1eb37db983de90629ba3466a9ebb32870e2d329047a53f5d037c2f2",
-      "bytes": 12070
+      "sha256": "8a3ae0605eca933859440d3740adb6e9baa44ab568cb6cfc384e78b4239d1c76",
+      "bytes": 12129
     },
     {
       "path": "packages/nubi-desktop/ui/SessionTabs.jsx",
