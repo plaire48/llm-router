@@ -14,7 +14,7 @@ await writeFile(path.join(bundle,'index.html'),'<!doctype html><html lang="ko"><
 const storage=await mkdtemp('/tmp/nubi-all-surfaces-'),require=createRequire(import.meta.url);
 const app=await electron.launch({executablePath:require('electron'),args:['electron-app'],env:{...process.env,NUBI_STORAGE_ROOT:storage,ELECTRON_RUN_AS_NODE:undefined}});
 const records=[],errors=[];let p;
-async function load(query){await p.goto('file://'+path.join(bundle,'index.html')+'?'+query);await p.locator('.nubi-workbench,.deck-dialog,.nubi-bar').first().waitFor();await p.emulateMedia({reducedMotion:'reduce'});await p.evaluate(()=>document.fonts.ready);}
+async function load(query){await p.goto('file://'+path.join(bundle,'index.html')+'?'+query);await p.locator('.nubi-workbench,.deck-dialog,.nubi-bar,.nubi-mail-history').first().waitFor();await p.emulateMedia({reducedMotion:'reduce'});await p.evaluate(()=>document.fonts.ready);}
 async function audit(name,selector='body'){
  for(const dialog of await p.locator('.deck-dialog:visible').all())await assertDialogChrome(dialog);
  const metrics=await p.locator(selector).first().evaluate(root=>{
@@ -43,6 +43,14 @@ async function audit(name,selector='body'){
  }));
  for(const composer of composers){assert(composer.approval&&composer.context,name+': approval and context inside input');assert(composer.inside&&!composer.overlap,name+': composer controls fit without overlap');assert(composer.singleRow,name+': composer controls stay on one row '+JSON.stringify(composer.positions));assert(composer.modelColor!=='rgba(0, 0, 0, 0)'||composer.modelGradient!=='none',name+': model retains provider surface');assert(composer.ringWidth>=40&&composer.ringFont>=14,name+': context number readable at native size');}
  if(name==='chat-preview-1280'){assert(composers[0].inputEmpty);assert(composers[0].inputHeight<=40,'empty input starts at one line');assert(composers[0].height<=110,'comfortable composer avoids excess vertical padding');}
+ const tones=await p.evaluate(()=>{
+  const root=document.querySelector('.desktop-shell'),probe=document.createElement('span');root.append(probe);
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const ctx=canvas.getContext('2d',{willReadFrequently:true});
+  const lum=color=>{ctx.fillStyle=color;ctx.fillRect(0,0,1,1);const channels=[...ctx.getImageData(0,0,1,1).data].slice(0,3).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return channels[0]*.2126+channels[1]*.7152+channels[2]*.0722;};
+  const pairs=[['primary','base'],['secondary','base'],['meta','base'],['action','selected'],['success','success'],['warning','warning'],['danger','danger']];
+  const result=pairs.map(([ink,surface])=>{probe.style.color='var(--nubi-text-'+ink+')';probe.style.backgroundColor='var(--nubi-surface-'+surface+')';const style=getComputedStyle(probe),a=lum(style.color),b=lum(style.backgroundColor);return {ink,contrast:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};});probe.remove();return result;
+ });
+ assert(tones.every(tone=>tone.contrast>=4.5),name+': semantic text contrast '+JSON.stringify(tones));
  const file=name+'.png';await p.screenshot({path:path.join(dir,file),animations:'disabled',scale:'css'});
  assert(!metrics.overflow,name+': outer horizontal overflow');assert.deepEqual(metrics.wrappedControls,[],name+': control labels must stay single line');
  assert.deepEqual(metrics.clippedActions,[],name+': named actions clipped');assert.equal(await p.locator('.composer-bottom button:visible').evaluateAll(buttons=>buttons.every(button=>(button.getAttribute('aria-label')||button.textContent).trim()&&button.title)),true,name+': compact controls keep names and hints');
@@ -55,7 +63,7 @@ async function close(){await p.keyboard.press('Escape');}
 async function chooseTask(){const opener=p.getByRole('button',{name:'사이드바 펼치기',exact:true});if(await opener.count())await opener.click();await p.getByRole('button',{name:'대화 검색',exact:true}).click();await p.getByRole('dialog',{name:'대화 검색'}).locator('.nubi-history-item').first().click();}
 try{
  await app.firstWindow();await app.evaluate(async({BrowserWindow},file)=>{const window=new BrowserWindow({width:1280,height:950,webPreferences:{sandbox:true,contextIsolation:true,nodeIntegration:false}});await window.loadFile(file);},path.join(bundle,'index.html'));
- p=app.windows().at(-1);p.setDefaultTimeout(10000);p.on('pageerror',e=>errors.push(e.message));
+ p=app.windows().at(-1);p.setDefaultTimeout(10000);p.on('pageerror',e=>{errors.push(e.message);console.error('PAGE ERROR',e.stack);});
  if(!process.env.NUBI_BIRD_MOTION_ONLY&&!process.env.NUBI_WELCOME_ONLY&&!process.env.NUBI_PICKER_ONLY&&!process.env.NUBI_COMPOSER_ONLY&&!process.env.NUBI_NAV_ONLY){
  for(const width of (process.env.NUBI_MAIL_FLOW_ONLY?[]:[1280,440])){
   await p.setViewportSize({width,height:950});
@@ -72,16 +80,18 @@ try{
   await p.getByRole('button',{name:'메일',exact:true}).click();await p.getByRole('heading',{name:'메일',exact:true}).waitFor();await audit('mail-empty-'+width);
   await p.getByRole('button',{name:'메일 연결',exact:true}).click();await p.getByRole('textbox',{name:'아이디',exact:true}).waitFor();await audit('mail-connect-'+width);await close();
   await load('screen=workbench&integrated&noproject');await p.getByRole('button',{name:'AI Pro',exact:true}).waitFor();await audit('login-'+width);await p.getByRole('button',{name:'AI Pro',exact:true}).click();await p.getByRole('region',{name:'프로젝트 열기'}).waitFor();await audit('project-start-'+width);
-  for(const [screen,wait] of [['startup','메일을 연결해 주세요'],['usage','사용량'],['models-long','모델 선택'],['mail-settings','메일 설정'],['registration','스킬 등록'],['skills','스킬 관리'],['marketplace','스킬 관리'],['account','회사 계정']]){
-   await load('screen='+screen);await p.getByRole('dialog',{name:wait,exact:true}).waitFor();
-   if(screen==='account')await p.getByRole('heading',{name:'검토 계정',exact:true}).waitFor();
+  for(const [screen,wait] of [['claude-install','Claude Code 연결'],['claude-login','Claude Code 연결'],['claude-update','Claude Code 연결'],['startup','메일을 연결해 주세요'],['usage','사용량'],['models-long','모델 선택'],['mail-settings','메일 설정'],['registration','스킬 등록'],['skills','스킬 관리'],['marketplace','스킬 관리'],['account','검토 계정 @review']]){
+   await load('screen='+screen);await (screen==='account'?p.locator('.nubi-ghes-modal'):p.getByRole('dialog',{name:wait,exact:true})).waitFor();
+   if(screen==='account')await p.locator('.nubi-account-heading strong').filter({hasText:'검토 계정'}).waitFor();
    if(screen==='mail-settings')await p.getByRole('switch',{name:'메일 자동 정리'}).waitFor();
    if(screen==='skills')await p.getByText('보고서 작성',{exact:true}).waitFor();
    if(screen==='marketplace')await p.getByRole('button',{name:'보고서 작성 업데이트'}).waitFor();
    await audit(screen+'-'+width);
+   if(screen==='models-long'){assert.equal(await p.getByRole('tab',{name:'Claude',exact:true}).count(),1,'Desktop provider tabs include Claude');}
    if(screen==='skills'){
+    assert.equal(await p.getByRole('navigation',{name:'내 스킬 페이지 이동'}).count(),0,'single page has no redundant pager');
     await p.getByRole('button',{name:'보고서 작성 삭제',exact:true}).click();await p.getByRole('alertdialog').waitFor();await audit('custom-skill-delete-'+width);await close();
-    await p.getByRole('button',{name:/휴지통 보기/}).click();await p.getByRole('button',{name:'보고서 작성 복원',exact:true}).waitFor();await audit('skill-trash-'+width);
+    assert.equal(await p.getByRole('button',{name:/휴지통 보기/}).count(),0,'removed trash entry stays out of skill management');
    }
    if(screen==='marketplace'){
     await p.locator('.nubi-marketplace-card').filter({has:p.locator('strong',{hasText:'보고서 작성'})}).locator('.nubi-actions-disclosure>summary').click();
@@ -95,8 +105,19 @@ try{
   await p.locator('.nubi-mail-filters>summary').click();await audit('mail-inline-filters-'+width);
   await p.getByRole('button',{name:'저장한 검색',exact:true}).click();await p.getByRole('dialog',{name:'저장한 검색'}).waitFor();await audit('mail-saved-'+width);
   await load('screen=mail-filters');await p.getByRole('dialog',{name:'검색 조건'}).waitFor();await audit('mail-filter-dialog-'+width);
+  const period=p.getByLabel('검색 기간',{exact:true});
+  assert.equal(await period.locator('option').count(),5,'period options are real selectable values');
+  await period.selectOption('custom');await p.getByLabel('검색 시작일').fill('2026-10-01');await p.getByLabel('검색 종료일').fill('2026-10-12');
+  await p.getByLabel('보낸 사람 또는 도메인').fill('sender@example.com');await p.getByRole('button',{name:'보낸 사람 조건 추가'}).click();
+  await p.getByLabel('첨부 유무',{exact:true}).selectOption('with');
+  await p.getByText('상세 조건',{exact:true}).click();await p.getByRole('button',{name:'PDF',exact:true}).click();
+  await p.getByLabel('첨부 파일명',{exact:true}).fill('report');await p.getByRole('button',{name:'적용',exact:true}).click();
+  const applied=await p.evaluate(()=>window.appliedMailFilters);assert.equal(applied.period,'custom');assert.equal(applied.attachment,'with');assert.equal(applied.filename,'report');assert.deepEqual(applied.senders,['sender@example.com']);assert.deepEqual(applied.types,['pdf']);
+  await audit('mail-filter-expanded-'+width);
+  await p.getByRole('button',{name:'초기화',exact:true}).click();await p.getByRole('button',{name:'적용',exact:true}).click();assert.equal((await p.evaluate(()=>window.appliedMailFilters)).period,'all');
+
   for(const state of ['current','stale','ready','failed','running']){await load('screen=wiki&state='+state);await p.locator('.nubi-wiki-update').waitFor();await audit('wiki-'+state+'-'+width);}
-  for(const screen of ['question','analysis','setup','progress']){await load('screen='+screen);await p.locator('.question-card,.nubi-document-progress,.nubi-setup-card,.desktop-mail-progress').first().waitFor();await audit(screen+'-'+width);}
+  for(const screen of ['question','analysis','setup','progress']){await load('screen='+screen);await p.locator('.question-card,.nubi-document-progress,.nubi-setup-summary,.desktop-mail-progress').first().waitFor();await audit(screen+'-'+width);}
   await load('screen=applied');await p.getByRole('button',{name:'변경한 파일 보기'}).click();await p.getByRole('dialog',{name:'변경한 파일'}).waitFor();await audit('applied-'+width);
  }
  // Full mail workflow uses real production components in Electron with bounded synthetic sources.
@@ -108,13 +129,13 @@ try{
  await p.locator('.nubi-mail-results[aria-busy="false"]').waitFor();await audit('mail-flow-list');
  assert.equal(await results.locator('.nubi-mail-result').count(),20);
  const pager=p.locator('.nubi-mail-page-options>summary');assert.match(await pager.innerText(),/1–20 \/ 47/);
- await results.locator('input[type=checkbox]').nth(0).check();await results.locator('input[type=checkbox]').nth(1).check();
+ await results.locator('tbody input[type=checkbox]').nth(0).check();await results.locator('tbody input[type=checkbox]').nth(1).check();
  await p.getByRole('button',{name:'다음 메일 페이지',exact:true}).click();await p.waitForFunction(()=>document.querySelector('.nubi-mail-page-options>summary')?.textContent.includes('21–40'));
  await results.locator('.nubi-mail-result').first().click();await p.getByRole('heading',{name:'프로젝트 일정 공유 21',exact:true}).waitFor();
  await p.getByRole('button',{name:'이전 메일',exact:true}).click();await p.getByRole('heading',{name:'견적서 검토 결과 20',exact:true}).waitFor();
  await p.getByRole('button',{name:'다음 메일',exact:true}).click();await p.getByRole('heading',{name:'프로젝트 일정 공유 21',exact:true}).waitFor();await audit('mail-flow-reader');
  await p.getByRole('button',{name:'메일 목록으로',exact:true}).click();
- await results.locator('input[type=checkbox]').nth(0).check();await audit('mail-flow-selected');
+ await results.locator('tbody input[type=checkbox]').nth(0).check();await audit('mail-flow-selected');
  await p.evaluate(()=>window.mailEvidenceFailure='1'.padStart(64,'0'));
  await p.getByRole('button',{name:'AI에 질문',exact:true}).click();await p.getByRole('alert').filter({hasText:'선택한 원문이 바뀌었어요'}).waitFor();
  assert.equal(await p.evaluate(()=>window.mailSourceCalls?.length||0),0,'failed evidence does not attach a partial selection');
@@ -129,26 +150,28 @@ try{
  await p.getByLabel('연결한 메일 선택',{exact:true}).selectOption('2');await p.getByRole('heading',{name:'프로젝트 일정 공유 21',exact:true}).waitFor();await audit('mail-flow-ai');
  await p.getByRole('button',{name:'원문 닫기',exact:true}).click();await p.getByRole('button',{name:'메일',exact:true}).click();
  await p.waitForFunction(()=>document.querySelector('.nubi-mail-page-options>summary')?.textContent.includes('21–40'));assert.equal(await p.locator('.nubi-mail-selection-count').innerText(),'3개 선택');
- await results.evaluate(node=>node.scrollTop=300);const scroll=await results.evaluate(node=>node.scrollTop);
- await results.locator('.nubi-mail-result').nth(4).click();await p.getByRole('button',{name:'메일 목록으로',exact:true}).click();assert.equal(await results.evaluate(node=>node.scrollTop),scroll);
+ await results.evaluate(node=>node.scrollTop=300);
+ await results.locator('.nubi-mail-result').nth(8).click();const scroll=await results.evaluate(node=>node.scrollTop);await p.getByRole('button',{name:'메일 목록으로',exact:true}).click();assert.equal(await results.evaluate(node=>node.scrollTop),scroll);
  await pager.click();await p.getByLabel('메일 페이지',{exact:true}).fill('3');await p.getByLabel('메일 페이지',{exact:true}).press('Enter');await p.waitForFunction(()=>document.querySelector('.nubi-mail-page-options>summary')?.textContent.includes('41–47'));
  await p.getByLabel('메일 목록 간격',{exact:true}).selectOption('compact');await p.getByLabel('메일 페이지',{exact:true}).press('Escape');assert.equal(await results.locator('.nubi-mail-result').count(),7);
- await p.setViewportSize({width:440,height:900});await results.locator('.nubi-mail-result').first().click();await p.locator('.nubi-mail-history-detail').waitFor({state:'visible'});assert.equal(await p.locator('.nubi-mail-history-list').isVisible(),false);await audit('mail-flow-reader-narrow');
+ await p.setViewportSize({width:440,height:900});await results.locator('.nubi-mail-result').first().click();await p.locator('.nubi-mail-history-detail').waitFor({state:'visible'});assert.equal(await p.locator('.nubi-mail-history-list').isVisible(),true);await audit('mail-flow-reader-narrow');
  await p.getByRole('button',{name:'메일 목록으로',exact:true}).click();await p.locator('.nubi-mail-history-list').waitFor({state:'visible'});await audit('mail-flow-list-narrow');
  assert.match(await pager.innerText(),/41–47/);await p.getByRole('searchbox',{name:'메일 검색',exact:true}).fill('예산 승인');await p.locator('.nubi-mail-results[aria-busy="false"]').waitFor();await p.waitForFunction(()=>document.querySelectorAll('.nubi-mail-result').length===16);assert.equal(await p.locator('.nubi-mail-selection-count').count(),0);
  await pager.click();await p.getByLabel('메일 목록 간격',{exact:true}).selectOption('comfortable');await pager.click();
  await p.getByRole('button',{name:'홈',exact:true}).click();await draft.waitFor();await draft.press('Enter');await p.locator('.nubi-task').waitFor();
  const sent=await p.evaluate(()=>window.mailFlowCalls.find(call=>call.method==='createTask'));assert.equal(sent.mailReferences.length,3);assert(sent.mailReferences.every(item=>item.sourceHash==='a'.repeat(64)));
 
+ await p.setViewportSize({width:1280,height:950});await load('screen=skills&many');
+ await p.getByRole('button',{name:'내 스킬 다음 페이지'}).click();await p.getByText('스킬 11',{exact:true}).waitFor();assert.equal(await p.locator('.nubi-custom-skill-row').count(),1);await p.getByRole('button',{name:'내 스킬 이전 페이지'}).click();await p.getByText('스킬 1',{exact:true}).waitFor();assert.equal(await p.locator('.nubi-custom-skill-row').count(),10);
  await p.setViewportSize({width:1280,height:950});await load('integrated&modals&toolbar&mail-flow&mail-disconnected');
  await p.getByRole('button',{name:'메일',exact:true}).click();await p.locator('.nubi-mail-results[aria-busy="false"]').waitFor();
- await p.locator('.nubi-mail-results input[type=checkbox]').nth(0).check();await p.locator('.nubi-mail-results input[type=checkbox]').nth(1).check();await p.getByRole('button',{name:'AI에 질문',exact:true}).click();
+ await p.locator('.nubi-mail-results tbody input[type=checkbox]').nth(0).check();await p.locator('.nubi-mail-results tbody input[type=checkbox]').nth(1).check();await p.getByRole('button',{name:'AI에 질문',exact:true}).click();
  await p.locator('.nubi-mail-login-context').waitFor();assert.match(await p.locator('.nubi-mail-login-context').innerText(),/선택한 메일 2개/);await audit('mail-flow-reconnect');
  await p.getByRole('button',{name:'AI Pro',exact:true}).click();await draft.waitFor();assert.match(await p.locator('.composer .nubi-mail-evidence-group').innerText(),/선택한 메일 2개/);assert.equal(await p.evaluate(()=>window.mailFlowCalls.filter(call=>call.method==='createTask'||call.method==='startAgent').length),0);
  await audit('mail-flow-reconnected');
 
  await p.setViewportSize({width:1280,height:950});
- for(const screen of (process.env.NUBI_MAIL_FLOW_ONLY?[]:['models-long','mail-settings','registration','skills','marketplace','usage'])){await load('screen='+screen);await p.getByRole('dialog').waitFor();await p.evaluate(()=>document.documentElement.style.fontSize='200%');await audit(screen+'-200pct');}
+ for(const screen of (process.env.NUBI_MAIL_FLOW_ONLY?[]:['models-long','mail-settings','mail-filters','registration','skills','marketplace','usage','claude-install','claude-login','claude-update'])){await load('screen='+screen);await p.getByRole('dialog').waitFor();await p.evaluate(()=>document.documentElement.style.fontSize='200%');await audit(screen+'-200pct');}
  }
  if(process.env.NUBI_WELCOME_ONLY){
   await p.addInitScript(()=>{const hour=new URLSearchParams(location.search).get('greeting-hour');if(hour!==null){const NativeDate=Date,fixed=new NativeDate(2026,9,12,Number(hour)).getTime();window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[fixed]));}static now(){return fixed;}}}});

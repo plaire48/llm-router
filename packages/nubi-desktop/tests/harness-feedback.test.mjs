@@ -235,7 +235,7 @@ test('side work between reviews does not postpone the handover; a new proposal d
 });
 
 test('the review instruction states the verdict at an approval boundary',()=>{
-  assert.match(REVIEW_PROMPT,/already list as proposed/);
+  assert.match(REVIEW_PROMPT,/all remaining actions await existing host approvals/);
   assert.match(REVIEW_PROMPT,/use ready/);
 });
 
@@ -354,7 +354,7 @@ test('the executor and the review are told that a question goes through ask_user
   assert.match(system,/Name the files or Wiki pages an answer rests on, with path and lines when known\./);
   assert.match(system,/When the command asked for is wrong[^.]*whether its run failed or project files show it[^.]*do not stop at reporting it: propose the corrected command[^.]*do not run a command known to be wrong/);
   assert.match(continued,/call ask_user/);
-  assert.match(REVIEW_PROMPT,/asks the user to decide[^.]*ask_user/);
+  assert.match(REVIEW_PROMPT,/user decision is needed[^.]*ask_user/);
 });
 
 // Found in B1 and B2 case L1: in the third turn of one task the review still
@@ -368,8 +368,8 @@ test('the review is told which turn the answer belongs to',()=>{
   assert.deepEqual(later.corrections,['회의록을 정리해 줘.','주문 상태 순서를 위키에서 찾아 줘.'],'earlier turns stay in view');
   const first=resultReviewInput({task:{...turns,messages:[]},evidence:[],receipts:{},candidate:'답',model:{contextLength:200000},history:[]}).data;
   assert.deepEqual(first.requirements[0],{id:'request',text:'먼저 배송 정책을 설명해 줘.'});assert.equal('currentTurn' in first,false);
-  assert.match(REVIEW_PROMPT,/currentTurn is the latest task message: judge requirement turn by whether the candidate does what it asks/);
-  assert.match(REVIEW_PROMPT,/do not require repeating earlier answers/);
+  assert.match(REVIEW_PROMPT,/currentTurn is the latest request: judge requirement turn against it/);
+  assert.match(REVIEW_PROMPT,/not an earlier answer/);
 });
 
 test('an answer to a question is not taken for a new turn',()=>{
@@ -384,9 +384,9 @@ test('an answer to a question is not taken for a new turn',()=>{
 // Found in B2 cases W3 and D3: the Wiki did not cover what was asked and the
 // answer said so, but the review kept asking for the fact the sources lack.
 test('the review instruction accepts a report that the sources lack the fact',()=>{
-  assert.match(REVIEW_PROMPT,/A sourced absence is an answer if the evidence covers where the fact would be/);
-  assert.match(REVIEW_PROMPT,/Code or behavior questions require source coverage, not only Wiki/);
-  assert.match(REVIEW_PROMPT,/Do not demand facts absent from those sources/);
+  assert.match(REVIEW_PROMPT,/Sourced absence answers only within covered scope/);
+  assert.match(REVIEW_PROMPT,/For behavior\/code questions verify relevant source, not only Wiki/);
+  assert.match(REVIEW_PROMPT,/do not demand unavailable facts/);
 });
 
 // Found in B6 case L1: the planner returned steps without a status, twice.

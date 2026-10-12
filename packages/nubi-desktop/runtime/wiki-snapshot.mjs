@@ -1,27 +1,65 @@
 import {mkdir,readFile,writeFile,readdir,lstat,realpath,rm} from 'node:fs/promises';
 import path from 'node:path';
-import {git,listFiles,readSource,fail,gitOpenFailure} from './files.mjs';
+import {git,listFiles,readSource,fail,gitOpenFailure,privatePath} from './files.mjs';
 import {OpenWikiIgnore} from '../generated/openwiki.mjs';
 
 export const WIKI_CHECKPOINT='openwiki/.nubi-sources.json';
+// Nubi's own records under openwiki/ are not Wiki pages: they neither make a Wiki nor reach the agent as one (2026-10-12).
+export const NUBI_RECORD_DIRECTORIES=new Set(['openwiki/nubi-evidence','openwiki/nubi-map']);
+// Generated pages are often gitignored. Count actual local Markdown pages,
+// independently of Git's source inventory, without reading every page body.
+export async function listWikiPages(root,{includeNubi=false}={}){
+  const pages=[];let visited=0;
+  async function visit(directory,relative){
+    let stat;try{stat=await lstat(directory);}catch(error){if(error.code==='ENOENT')return;throw error;}
+    if(stat.isSymbolicLink()||!stat.isDirectory())fail('path_scope');
+    for(const entry of await readdir(directory,{withFileTypes:true})){
+      if(++visited>20000)fail('wiki_source_limit');
+      const rel=relative+'/'+entry.name;
+      if(entry.name.startsWith('.')||privatePath(rel)||(!includeNubi&&NUBI_RECORD_DIRECTORIES.has(rel)))continue;
+      if(entry.isSymbolicLink())fail('path_scope');
+      if(entry.isDirectory())await visit(path.join(directory,entry.name),rel);
+      else if(entry.isFile()&&entry.name.endsWith('.md'))pages.push(rel);
+    }
+  }
+  await visit(path.join(root,'openwiki'),'openwiki');return pages.sort();
+}
+export async function listWikiSourceFiles(root,lister=listFiles){
+  const listed=await lister(root);let deleted,index;
+  try{[deleted,index]=await Promise.all([git(root,['ls-files','--deleted','-z']),git(root,['ls-files','--stage','-v','-z'])]);}
+  catch(error){if(['not_git_repository','git_unavailable'].includes(gitOpenFailure(error)))return listed;throw error;}
+  // ls-files --cached also lists deleted files, sparse entries and gitlinks.
+  // These are not available source files. Never initialize/fetch submodules
+  // or expand a sparse checkout just to prepare a Wiki.
+  const excluded=new Set(deleted.split('\0').filter(Boolean));
+  for(const row of index.split('\0')){
+    const match=/^([A-Za-z]) (\d{6}) [a-f0-9]+ \d\t([\s\S]+)$/.exec(row);
+    if(match&&(match[2]==='160000'||match[1].toUpperCase()==='S'))excluded.add(match[3]);
+  }
+  return {...listed,paths:listed.paths.filter(rel=>!excluded.has(rel)),unavailableFiles:listed.paths.filter(rel=>excluded.has(rel)).length};
+}
+
+export async function readWikiSource(root,rel){
+  try{return await readSource(root,rel);}catch(error){if(error.code==='ENOENT')fail('source_stale');throw error;}
+}
 export async function hasWikiPages(root){
-  async function visit(directory){
+  async function visit(directory,relative){
     try{if((await lstat(directory)).isSymbolicLink())fail('path_scope');}catch(error){if(error.code==='ENOENT')return false;throw error;}
     for(const entry of await readdir(directory,{withFileTypes:true})){
       if(entry.isFile()&&entry.name.endsWith('.md'))return true;
-      if(entry.isDirectory()&&await visit(path.join(directory,entry.name)))return true;
+      if(entry.isDirectory()&&!NUBI_RECORD_DIRECTORIES.has(relative+'/'+entry.name)&&await visit(path.join(directory,entry.name),relative+'/'+entry.name))return true;
     }
     return false;
   }
-  return visit(path.join(root,'openwiki'));
+  return visit(path.join(root,'openwiki'),'openwiki');
 }
 export async function wikiSources(root){
   root=await realpath(root);
-  const listed=await listFiles(root);if(listed.truncated)fail('wiki_source_limit');
+  const listed=await listWikiSourceFiles(root);if(listed.truncated)fail('wiki_source_limit');
   const ignore=await OpenWikiIgnore.load(root),files=[];
   for(const rel of listed.paths){
     if(rel.startsWith('openwiki/')||ignore.ignores(rel))continue;
-    try{files.push(await readSource(root,rel));}catch(error){if(!['file_too_large','binary_file','file_encoding'].includes(error.message))throw error;}
+    try{files.push(await readWikiSource(root,rel));}catch(error){if(!['file_too_large','binary_file','file_encoding'].includes(error.message))throw error;}
   }
   return files;
 }

@@ -23,8 +23,8 @@ export function WorkspaceToolbar({host, layoutRoot, title, project, status, side
   if (!host) return null;
   return createPortal(<header className="nubi-window-toolbar" aria-label="Workspace 상단 메뉴">
     <div ref={navigation} className="nubi-toolbar-navigation">
-      {project && <WorkspaceIconAction icon={sidebarOpen?'panelLeftClose':'panelLeft'} label={sidebarOpen?'사이드바 접기':'사이드바 펼치기'} visibleLabel="대화 목록" aria-expanded={sidebarOpen} onClick={onToggleSidebar}/>}
       <NubiLogo size={22} product="Workspace" versionLabel="Beta"/>
+      {project && <WorkspaceIconAction icon={sidebarOpen?'panelLeftClose':'panelLeft'} iconOnly label={sidebarOpen?'사이드바 접기':'사이드바 펼치기'} aria-expanded={sidebarOpen} onClick={onToggleSidebar}/>}
     </div>
     <div className="nubi-toolbar-context" title={title}>
       {project?<FolderMark size={18}/>:<Icon name="message" size={18}/>}<span>{title}</span>

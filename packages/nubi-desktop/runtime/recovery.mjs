@@ -12,7 +12,7 @@ export const recoveryCode=error=>safeError(error);
 
 // Reuse Nubi's p-retry transport. Only inference is repeated; tool receipts
 // already in the transcript are never executed by a transport retry.
-export function modelTransport(service,{signal,onRetry,metrics}){
+export function modelTransport(service,{signal,onRetry,metrics,onText}){
   const cooldown=createModelCooldown();
   // Telemetry reads the model name defensively: it must not add a failure path.
   const modelName=()=>{try{return service.providers.status().model;}catch{return null;}};
@@ -20,8 +20,9 @@ export function modelTransport(service,{signal,onRetry,metrics}){
   return (messages,tools,childSignal=signal,purpose='actor',{retries,visionModel,maxTokens,toolChoice,responseFormat,retryInvalidResponse=true}={})=>{
     const options={retries:2,...service.recoveryOptions?.model};
     return recoverModel(async ({signal:attemptSignal,activity,attempt})=>{
+      if(purpose==='actor')onText?.('');
       const measured=metrics?.beginModel({purpose,attempt,messages,tools,model:visionModel||modelName()});
-      try{const result=await service.providers.complete(messages,tools,attemptSignal,activity,activity,activity,{...(visionModel?{visionModel}:{}),...(Number.isSafeInteger(maxTokens)&&maxTokens>0?{maxTokens}:{}),...(toolChoice==='required'?{toolChoice}:{}),...(responseFormat?.type==='json_object'?{responseFormat:{type:'json_object'}}:{})});measured?.end(result);return result;}
+      try{const result=await service.providers.complete(messages,tools,attemptSignal,text=>{activity();if(purpose==='actor'&&typeof text==='string')onText?.(text);},activity,activity,{...(visionModel?{visionModel}:{}),...(Number.isSafeInteger(maxTokens)&&maxTokens>0?{maxTokens}:{}),...(toolChoice==='required'?{toolChoice}:{}),...(responseFormat?.type==='json_object'?{responseFormat:{type:'json_object'}}:{})});measured?.end(result);return result;}
       // A response the connection rejects (response_invalid: a stream error, an empty answer, too many tool calls) is
       // asked for again within this budget: the shared policy retries only network, timeout, 429 and 5xx, and one
       // server-side stream error ended a run (measured 2026-10-12, S29: 2 of 6 identical requests for an hour).
@@ -73,7 +74,7 @@ export function installRecovery(ProjectService){
     return this.startAgent({taskId,...(recoveryProcessId?{recoveryProcessId}:{})});
   };
   ProjectService.prototype.processFinished=function(record){
-    if(!record.autoDiagnose||!(['failed','timed_out'].includes(record.state)||record.state==='completed'&&(record.repairOf||record.setupActionId))||this.disposed)return;
+    if(!record.autoDiagnose||!record.taskId||record.terminal||!['failed','timed_out','completed'].includes(record.state)||this.disposed)return;
     this.recoveryQueue ||=new Set();this.recoveryQueue.add(record.id);
     record.recoveryState='queued';this.store.set('process:'+record.id,record);
     this.drainRecovery().catch(()=>{});

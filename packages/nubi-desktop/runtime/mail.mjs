@@ -1,3 +1,4 @@
+import {recipientRole as classifyRecipient,mailAddresses} from './mail-presentation.mjs';
 import {DESKTOP_FEATURES} from './beta-features.mjs';
 import {responseTimer} from './response-timing.mjs';
 import {Worker} from 'node:worker_threads';
@@ -16,7 +17,7 @@ import {synthesizePersonalMail,retrieveWikiEvidence,resolveOpenWikiHomeDir} from
 
 const sha=value=>createHash('sha256').update(value).digest('hex'),now=()=>new Date().toISOString();
 const servers=Object.freeze({company:Object.freeze({host:'pop3.samsung.net',port:995,tls:true}),gmail_test:Object.freeze({host:'pop.gmail.com',port:995,tls:true})});
-const errors=new Set(['mail_input_invalid','mail_auth_failed','mail_gmail_app_password_format','mail_gmail_app_password_required','mail_gmail_web_login_required','mail_gmail_pop_disabled','mail_gmail_credentials_invalid','mail_tls_error','mail_tls_untrusted','mail_tls_expired','mail_tls_hostname','mail_tls_unavailable','mail_dns_failed','mail_connection_refused','mail_listing_failed','mail_retrieval_failed','mail_timeout','mail_connection_failed','mail_uidl_invalid','mail_uidl_format','mail_uidl_characters','mail_uidl_number_conflict','mail_protocol','mail_size_limit','mail_cancelled','mail_parse_failed','mail_summary_invalid','mail_source_changed','mail_model_changed','mail_model_missing','mail_file_conflict','mail_storage_failed','mail_storage_permission','mail_summary_failed']);
+const errors=new Set(['mail_input_invalid','mail_auth_failed','mail_gmail_app_password_format','mail_gmail_app_password_required','mail_gmail_web_login_required','mail_gmail_pop_disabled','mail_gmail_credentials_invalid','mail_tls_error','mail_tls_untrusted','mail_tls_expired','mail_tls_hostname','mail_tls_unavailable','mail_dns_failed','mail_connection_refused','mail_listing_failed','mail_retrieval_failed','mail_timeout','mail_connection_failed','mail_uidl_invalid','mail_uidl_format','mail_uidl_id_length','mail_uidl_characters','mail_uidl_number_conflict','mail_protocol','mail_size_limit','mail_cancelled','mail_parse_failed','mail_summary_invalid','mail_source_changed','mail_model_changed','mail_model_missing','mail_file_conflict','mail_storage_failed','mail_storage_permission','mail_summary_failed']);
 const code=error=>errors.has(error?.message)?error.message:'mail_storage_failed';
 export const MAIL_SUMMARY_RETRIES=3;
 const model=host=>{const value=host.providers?.status();return value?.connected&&value.model?{provider:value.provider,model:value.model}:null;};
@@ -214,6 +215,11 @@ export class PersonalMail {
     }catch(error){if(generation===this.generation){this.credentials=null;this.error=code(error);}throw new Error(code(error));}
     finally{if(this.connecting===attempt)this.connecting=null;credentials.password=this.credentials===credentials?credentials.password:'';}
   }
+  recipientRole(mail,row){
+    if(row.account===this.account&&this.credentials)return classifyRecipient(mail,this.credentials.user);
+    for(const role of ['to','cc','bcc'])for(const address of mailAddresses(mail[role]))if(Object.values(servers).some(server=>sha(server.host+'\0'+address)===row.account))return role;
+    return 'unknown';
+  }
   async prepare(){await privateDir(this.root);await privateDir(path.join(this.root,'raw'));await privateDir(this.wikiRoot);}
   pull(input){
     if(this.pullOverride)return this.pullOverride(input);
@@ -258,7 +264,7 @@ export class PersonalMail {
       if(manifest){if(manifest.sourceHash!==sourceHash||manifest.id!==id)throw new Error('mail_source_changed');}
       else{manifest={version:1,id,uidl:mail.uidl,sourceHash,fetchedAt:now(),mail:mail.normalized};await exclusive(path.join(directory,'manifest.json'),JSON.stringify(manifest));}
       if(generation!==this.generation||!this.autoWiki)throw new Error('mail_cancelled');
-      if(!this.store.get('mail:'+id))this.store.set('mail:'+id,{id,account:this.account,uidl:mail.uidl,subject:manifest.mail.subject,from:manifest.mail.from,date:manifest.mail.date,fetchedAt:manifest.fetchedAt,sourceHash,manifestHash:sha(JSON.stringify(manifest)),state:'queued',attachmentState:manifest.mail.attachments.length?(DESKTOP_FEATURES.mailAttachmentReading?'queued':'unsupported'):'complete'});
+      if(!this.store.get('mail:'+id))this.store.set('mail:'+id,{id,account:this.account,mailbox:'inbox',recipientRole:classifyRecipient(manifest.mail,this.credentials?.user),uidl:mail.uidl,subject:manifest.mail.subject,from:manifest.mail.from,date:manifest.mail.date,fetchedAt:manifest.fetchedAt,sourceHash,manifestHash:sha(JSON.stringify(manifest)),state:'queued',attachmentState:manifest.mail.attachments.length?(DESKTOP_FEATURES.mailAttachmentReading?'queued':'unsupported'):'complete'});
       } catch(error) {if(created&&!this.store.get('mail:'+id))await rm(directory,{recursive:true,force:true});throw error;}
       // Checkpoint only after raw bytes, manifest and durable queue all exist.
       const account=this.store.get('account:'+this.account);if(!account.seen.includes(mail.uidl))this.store.set('account:'+this.account,{...account,seen:[...account.seen,mail.uidl]});

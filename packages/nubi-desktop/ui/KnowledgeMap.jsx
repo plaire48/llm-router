@@ -1,6 +1,7 @@
 import {DriftLabel} from './DriftLabel.jsx';
 import React,{useEffect,useRef,useState} from 'react';
-import {CxButton, CxInput, CxSelect, CxNotice, Icon} from '@e2e/cx-design-system';
+import {CxButton, CxInput, CxNotice, Icon} from '@e2e/cx-design-system';
+import {CxSelect} from './WorkspaceSelect.jsx';
 import {WorkspaceAction as ActionButton} from './WorkspaceAction.jsx';
 import {DeckDisclosure,DeckStatus} from '../../../extensions/aipro-chat/src/DeckSurfaces.jsx';
 

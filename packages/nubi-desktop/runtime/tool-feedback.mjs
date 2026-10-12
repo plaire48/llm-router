@@ -18,7 +18,7 @@ const GUIDANCE=Object.freeze({
   parent_missing:UNCHANGED+'The parent directory is missing. Creating it requires a separate user-approved setup command.',
   project_rules_changed:UNCHANGED+'Project rules changed. Read the source or inspect_path again, then refresh the change plan.',
   rules_unavailable:'Project rules could not be read. Inspect the path and report the missing rules instead of assuming them.',
-  setup_invalid:'Propose ONE exact command with observed evidence hashes, expected effects and a verification step.',
+  setup_invalid:'No command was executed and no approval card was created. Correct only the fields identified in details.issues and call propose_setup_action again. script, reason, effects and verification are strings; kind is inspect/install/configure/build/start/verify. Omit unused optional fields, never send null. Copy references as path/hash pairs from this run. Never invent hashes, assume approval or repeat an already issued command.',
   setup_changed:'The evidence for this setup proposal changed. Inspect the environment again before proposing.',
   search_unavailable:'Search is unavailable. Use read_source or inspect_path on known paths.',
   workspace_status_invalid:'Pass no path to list changed files, or one changed file path to read its diff.',

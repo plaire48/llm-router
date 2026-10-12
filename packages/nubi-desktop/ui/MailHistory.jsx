@@ -1,3 +1,6 @@
+import {WorkspaceCatalogTabs} from './WorkspaceCatalogTabs.jsx';
+import {AgentMark} from '../../../extensions/aipro-chat/src/AgentMark.jsx';
+import './mail-table.css';
 import React,{useEffect,useRef,useState} from 'react';
 import {CxButton, Icon} from '@e2e/cx-design-system';
 import {WorkspaceAction as ActionButton} from './WorkspaceAction.jsx';
@@ -8,6 +11,7 @@ import {durationLabel} from '../runtime/response-timing.mjs';
 import {notifyWorkspaceToast} from './WorkspaceToast.jsx';
 
 export function MailHistory({api,onDocument,onAsk,onAskSearch,onSettings,connectionRef,sourceTarget,onReturn,viewState}){
+ const [mailbox,setMailbox]=useState(()=>viewState?.current?.mailbox||'inbox');
  const [status,setStatus]=useState(null),[refreshing,setRefreshing]=useState(false),[searchRevision,setSearchRevision]=useState(0);
  const [page,setPage]=useState({messages:[],total:0}),[query,setQuery]=useState(()=>viewState?.current?.query||''),[source,setSource]=useState(null),[loading,setLoading]=useState(false);
  const [navigation,setNavigation]=useState(null),pendingNavigation=useRef(null),listRoot=useRef(null);
@@ -53,13 +57,14 @@ export function MailHistory({api,onDocument,onAsk,onAskSearch,onSettings,connect
  }
  const checkedAt=status?.progress?.checkedAt||status?.lastCheckedAt;
  const revision=JSON.stringify([searchRevision,page.total,page.messages.map(row=>[row.id,row.state,row.attachmentState])]);
- return <section className="nubi-mail-history" data-selected={!!source||loading} aria-label="메일 이력">
+ return <section className="nubi-mail-history" data-layout="table" data-selected={!!source||loading} aria-label="메일 이력">
   <header className="nubi-mail-history-bar">{onReturn&&<ActionButton action="back" label="대화로 돌아가기" onClick={onReturn}/>}<Icon name="mail" size={22}/><h1>메일</h1><span>{page.total}개</span><ActionButton action="refresh" label="메일 다시 확인" disabled={refreshing||status?.checking||status?.connecting} onClick={reload}/>{(refreshing||status?.checking)&&<span className="status-spinner" role="status" aria-label="메일 확인 중"/>}<CxButton ref={connectionRef} className="nubi-mail-connect-link" onClick={onSettings}><Icon name="mail" size={18}/><span>메일 연결</span></CxButton></header>
+  <WorkspaceCatalogTabs label="메일함" idPrefix="mailbox" active={mailbox} onChange={value=>{closeReader();setMailbox(value);setQuery('');if(viewState)viewState.current={...viewState.current,mailbox:value,query:'',search:undefined};}} items={[{key:'inbox',label:<><Icon name="mail" size={16}/>받은메일함</>},{key:'sent',label:<><Icon name="send" size={16}/>보낸메일함</>}]}/>
   <div className="nubi-mail-history-body">
-   <div ref={listRoot} className="nubi-mail-history-list"><MailKnowledgeSearch api={api} query={query} onQuery={setQuery} lastAppliedAt={status?.progress?.lastAppliedAt} revision={revision} selectedId={source?.id} onOpen={open} onAskSearch={onAskSearch} onAskSelected={onAsk} onResults={setNavigation} viewState={viewState}/></div>
+   <div ref={listRoot} className="nubi-mail-history-list">{mailbox==='sent'&&<p className="nubi-mailbox-note"><Icon name="infoCircle" size={16}/>현재 POP3 연결은 받은메일만 가져와요. 보낸메일 수집은 지원하지 않아요.</p>}<MailKnowledgeSearch key={mailbox} mailbox={mailbox} api={api} query={query} onQuery={setQuery} lastAppliedAt={status?.progress?.lastAppliedAt} revision={revision} selectedId={source?.id} onOpen={open} onAskSearch={mailbox==='inbox'?onAskSearch:undefined} onAskSelected={onAsk} onResults={setNavigation} viewState={viewState}/></div>
    <article className="nubi-mail-history-detail" aria-label="메일 본문" aria-busy={loading}>
-    <div className="nubi-mail-reader-navigation"><ActionButton action="back" label="메일 목록으로" onClick={closeReader}/><span>{position>=0?`${navigation.offset+position+1} / ${navigation.total}`:''}</span><ActionButton action="previousMedia" iconOnly label="이전 메일" disabled={loading||navigation?.blocked||position<0||(position===0&&navigation.page<=1)} onClick={()=>adjacent(-1)}/><ActionButton action="nextMedia" iconOnly label="다음 메일" disabled={loading||navigation?.blocked||position<0||(position===navigation.results.length-1&&navigation.page>=navigation.totalPages)} onClick={()=>adjacent(1)}/></div>
-    {loading?<p role="status">메일 읽는 중</p>:source?<MailReader key={source.id} source={source} api={api} onDocument={onDocument} onAsk={onAsk} onLocalChange={(id,local)=>{setSource(current=>current?.id===id?{...current,local}:current);setSearchRevision(value=>value+1);}}/>:null}
+    {(source||loading)&&<div className="nubi-mail-reader-navigation"><ActionButton action="back" label="메일 목록으로" onClick={closeReader}/><span>{position>=0?`${navigation.offset+position+1} / ${navigation.total}`:''}</span><ActionButton action="previousMedia" iconOnly label="이전 메일" disabled={loading||navigation?.blocked||position<0||(position===0&&navigation.page<=1)} onClick={()=>adjacent(-1)}/><ActionButton action="nextMedia" iconOnly label="다음 메일" disabled={loading||navigation?.blocked||position<0||(position===navigation.results.length-1&&navigation.page>=navigation.totalPages)} onClick={()=>adjacent(1)}/></div>}
+    {loading?<p role="status">메일 읽는 중</p>:source?<MailReader key={source.id} source={source} api={api} onDocument={onDocument} onAsk={onAsk} onLocalChange={(id,local)=>{setSource(current=>current?.id===id?{...current,local}:current);setSearchRevision(value=>value+1);}}/>:<div className="nubi-mail-reader-empty"><AgentMark size={64} mood="idle"/><strong>선택된 항목이 없습니다.</strong><p>목록에서 항목을 선택하세요.</p></div>}
    </article>
   </div>
   {(checkedAt||status?.progress?.lastAppliedAt||status?.recentChecks?.length>0)&&<details className="nubi-mail-recent"><summary><Icon name="clock" size={14}/>최근 수집</summary><div><MailTimestamp at={status?.progress?.lastAppliedAt}/><MailTimestamp at={checkedAt} label="서버 확인"/></div><ol>{(status.recentChecks||[]).map((record,index)=><li key={`${record.at}:${index}`}><time dateTime={record.at}>{new Date(record.at).toLocaleString()}</time><span>{record.kind==='organized'?`정리 완료 ${record.completed}개${durationLabel(record.durationMs)?` / ${durationLabel(record.durationMs)}`:''}`:record.kind==='error'?'서버 연결 확인 필요':`수신 ${record.received}개${record.pendingServer===null?'':` / 남음 ${record.pendingServer}개`}${record.attention?` / 확인 필요 ${record.attention}개`:''}`}</span></li>)}</ol></details>}

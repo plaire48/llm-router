@@ -5,7 +5,9 @@
   --cx-font-family:var(--nubi-font-family);
   --cx-field-height:var(--nubi-work-control-height);
   --cx-radius-control:var(--nubi-work-control-radius);
-  --brand-action:var(--deck-blue);
+  --nubi-dialog-action:var(--deck-blue-deep);
+  --nubi-dialog-action-ink:var(--nubi-surface-base);
+  --brand-action:var(--nubi-dialog-action);
   --brand-ink:var(--nubi-text-action);
   --brand-soft:var(--nubi-surface-selected);
   --brand-surface:var(--nubi-surface-selected);
@@ -46,6 +48,7 @@
 :root:has(.desktop-shell) .deck-dialog .cx-panel-header > div:first-child { min-width:0; }
 :root:has(.desktop-shell) .deck-dialog .cx-panel-header h2 {
   display:flex;
+  flex-wrap:nowrap;
   align-items:center;
   min-height:var(--nubi-modal-title-height);
   margin:0;
@@ -54,27 +57,29 @@
   font-weight:var(--nubi-weight-emphasis);
   color:var(--nubi-text-primary);
 }
-:root:has(.desktop-shell) .deck-dialog .nubi-panel-title { display:inline-flex; align-items:center; gap:var(--cx-space-3); }
+:root:has(.desktop-shell) .deck-dialog .nubi-panel-title { display:inline-flex; align-items:center; gap:var(--nubi-work-control-gap); min-width:0; white-space:nowrap; }
+:root:has(.desktop-shell) .deck-dialog .nubi-panel-title > :is(svg,img) { width:var(--nubi-icon-large); height:var(--nubi-icon-large); flex:none; object-fit:contain; }
 :root:has(.desktop-shell) .deck-dialog .nubi-panel-title-icon {
   display:inline-flex; align-items:center; justify-content:center; flex:none;
   width:var(--nubi-dialog-symbol-size); height:var(--nubi-dialog-symbol-size);
   border-radius:var(--nubi-work-control-radius);
   background:var(--nubi-surface-selected); color:var(--nubi-text-action);
 }
-:root:has(.desktop-shell) .deck-dialog .nubi-panel-title-icon > svg { width:var(--nubi-work-control-icon); height:var(--nubi-work-control-icon); flex:none; }
+:root:has(.desktop-shell) .deck-dialog .nubi-panel-title-icon > :is(svg,img) { width:var(--nubi-work-control-icon); height:var(--nubi-work-control-icon); flex:none; }
 :root:has(.desktop-shell) .deck-dialog :is(h3,h4) {
   font-size:var(--deck-type-body); line-height:var(--deck-line-body);
   font-weight:var(--nubi-weight-emphasis); color:var(--nubi-text-primary);
 }
 :root:has(.desktop-shell) .deck-dialog :is(strong,b) { font-weight:var(--nubi-weight-emphasis); }
 :root:has(.desktop-shell) .deck-dialog :is(p,ul,ol) { margin-block:var(--cx-space-2); }
-:root:has(.desktop-shell) .deck-dialog > .cx-panel-body > :is(p,section,form,details,div) { margin-block:0; }
+:root:has(.desktop-shell) .deck-dialog > .cx-panel-body > :is(p,section,form,details,div,ul,ol) { margin-block:0; }
 :root:has(.desktop-shell) .deck-dialog > .cx-panel-body > :first-child { margin-top:0; }
 :root:has(.desktop-shell) .deck-dialog > .cx-panel-body > :last-child { margin-bottom:0; }
 :root:has(.desktop-shell) .deck-dialog :is(.nubi-library,.nubi-settings,.fabrix-fields,.fabrix-form) { gap:var(--nubi-modal-section-gap); }
 :root:has(.desktop-shell) .deck-dialog :is(.deck-field-label,.nubi-settings-field>label,.nubi-mail-field-title) {
-  gap:var(--nubi-dialog-field-gap); font-weight:var(--nubi-weight-label); color:var(--nubi-text-secondary);
+  gap:var(--nubi-dialog-field-gap); font-weight:var(--nubi-weight-emphasis); color:var(--nubi-text-primary);
 }
+:root:has(.desktop-shell) .deck-dialog :is(button[aria-selected="true"],button[aria-checked="true"],[role="tab"][aria-selected="true"]) { font-weight:var(--nubi-weight-emphasis); }
 :root:has(.desktop-shell) .deck-dialog :is(.deck-field-label,.nubi-settings-field>label,.nubi-mail-field-title) svg { width:var(--nubi-icon-small); height:var(--nubi-icon-small); flex:none; }
 :root:has(.desktop-shell) .deck-dialog :is(input,select,textarea) { font:var(--deck-font-body); color:var(--nubi-text-primary); }
 :root:has(.desktop-shell) .deck-dialog :is(.cx-kit-input,.cx-input-shell,select) {
@@ -108,17 +113,29 @@
 :root:has(.desktop-shell) .deck-dialog .cx-panel-footer :is(.cx-kit-button,.cx-action-button) {
   padding-inline:var(--cx-space-4); background:transparent; color:var(--nubi-text-secondary); border:1px solid var(--deck-line);
 }
-:root:has(.desktop-shell) .deck-dialog .cx-panel-footer .cx-button--primary {
-  font-weight:var(--nubi-weight-emphasis); background:var(--deck-blue-deep); color:var(--deck-card); border-color:transparent;
+:root:has(.desktop-shell) .deck-dialog .cx-button--primary:not(.provider-button,.provider-connect-button) {
+  font-weight:var(--nubi-weight-emphasis); background:var(--nubi-dialog-action); color:var(--nubi-dialog-action-ink); border-color:transparent;
 }
-:root:has(.desktop-shell) .deck-dialog .cx-panel-footer .cx-button--danger { background:var(--deck-red); color:var(--deck-card); }
+:root:has(.desktop-shell) .deck-dialog .cx-button--danger { background:var(--deck-red); color:var(--nubi-surface-base); }
+/* File selection is an action inside the modal body, not a footer action.
+   Keep its fill and foreground paired after the shared gradient reset. */
+:root:has(.desktop-shell) .deck-dialog .nubi-skill-import-actions .cx-kit-button {
+  min-width:112px; padding-inline:var(--cx-space-4);
+  border:1px solid var(--deck-line); background:var(--nubi-surface-base); color:var(--nubi-text-primary);
+}
+:root:has(.desktop-shell) .deck-dialog .nubi-skill-import-actions .cx-button--primary {
+  background:var(--deck-blue-deep); color:var(--nubi-surface-base); border-color:var(--deck-blue-deep);
+}
+:root:has(.desktop-shell) .deck-dialog .nubi-skill-import-actions .cx-kit-button:hover:not(:disabled) {
+  background:var(--nubi-surface-selected); color:var(--nubi-text-action); border-color:var(--deck-blue-deep);
+}
 :root:has(.desktop-shell) .deck-dialog :is(button,input,select,summary):focus-visible { outline:2px solid var(--deck-blue-deep); outline-offset:2px; }
 /* Three surface levels: white modal, pale grouped content, blue selection.
    Red/amber/green appear only for an actual error/warning/result. */
 :root:has(.desktop-shell) .deck-dialog :is(.deck-disclosure,.nubi-recovery-card,.nubi-setup-card,.nubi-document-progress,.deck-guidance,.deck-subsection) {
   padding:var(--cx-space-3); border-radius:var(--nubi-work-control-radius);
 }
-:root:has(.desktop-shell) .deck-dialog .cx-kit-notice.is-danger { background:var(--deck-red-soft); color:var(--deck-red); }
+:root:has(.desktop-shell) .deck-dialog .cx-kit-notice.is-danger { background:var(--nubi-surface-danger); color:var(--nubi-text-danger); }
 :root:has(.desktop-shell) .deck-dialog .deck-confirmation-content { align-items:center; gap:var(--cx-space-3); }
 :root:has(.desktop-shell) .deck-dialog .deck-confirmation-content > .deck-symbol {
   width:var(--nubi-dialog-symbol-size); height:var(--nubi-dialog-symbol-size);
@@ -131,9 +148,112 @@
   :root:has(.desktop-shell) .deck-dialog :is(button,input,select,.cx-input-shell) { border:1px solid ButtonText; }
 }
 
-:root:has(.desktop-shell) .cx-panel-backdrop > .nubi-panel { width:min(var(--nubi-dialog-width-standard),100%); }
+:root:has(.desktop-shell) .cx-panel-backdrop > .deck-dialog { width:min(var(--nubi-dialog-width-standard),100%); }
 :root:has(.desktop-shell) .cx-panel-backdrop > .nubi-panel--wide { width:min(var(--nubi-dialog-width-wide),100%); }
 :root:has(.desktop-shell) .cx-panel-backdrop > :is(.deck-confirmation,.nubi-ghes-modal,.nubi-wiki-progress-dialog) { width:min(var(--nubi-dialog-width-compact),100%); }
 :root:has(.desktop-shell) .cx-panel-backdrop > .model-dialog { width:min(var(--nubi-dialog-width-choice),100%); }
-:root:has(.desktop-shell) :is(.nubi-delete-conversation,.nubi-delete-skill) .cx-panel-footer .cx-button--primary { background:var(--deck-red); }
+:root:has(.desktop-shell) :is(.nubi-delete-conversation,.nubi-delete-skill) { --nubi-dialog-action:var(--deck-red); }
 :root:has(.desktop-shell) :is(.nubi-delete-conversation,.nubi-delete-skill) .deck-confirmation-content > .deck-symbol { color:var(--deck-red); background:var(--deck-red-soft); }
+
+/* Apply the same semantic hierarchy inside portals without recoloring brands. */
+:root:has(.desktop-shell) .deck-dialog .cx-kit-notice.is-warning { color:var(--nubi-text-warning); background:var(--nubi-surface-warning); }
+:root:has(.desktop-shell) .deck-dialog .cx-kit-notice.is-success { color:var(--nubi-text-success); background:var(--nubi-surface-success); }
+
+/* Constrain the shell, scroll its content, and reserve actions at every height. */
+:root:has(.desktop-shell) .cx-panel-backdrop > .deck-dialog {
+  min-width:0; min-height:0;
+  max-width:min(100%,calc(100dvw - 2 * var(--cx-space-3)));
+  max-height:calc(100dvh - 2 * var(--cx-space-3));
+}
+:root:has(.desktop-shell) .deck-dialog > :is(.cx-panel-header,.cx-panel-footer) { flex:0 0 auto; min-width:0; }
+:root:has(.desktop-shell) .deck-dialog > .cx-panel-body { min-width:0; min-height:0; overflow:auto; overscroll-behavior:contain; }
+:root:has(.desktop-shell) .deck-dialog > .cx-panel-body > * { min-width:0; flex-shrink:0; }
+:root:has(.desktop-shell) .deck-dialog .cx-panel-heading { flex:1; min-width:0; }
+:root:has(.desktop-shell) .deck-dialog .cx-panel-header-actions { flex:none; }
+:root:has(.desktop-shell) .deck-dialog :is(input,select,textarea) { min-width:0; max-width:100%; }
+
+/* A decision is a compact message dialog using the same modal tokens. */
+:root:has(.desktop-shell) .cx-panel-backdrop>.nubi-decision-dialog { width:min(580px,100%); }
+:root:has(.desktop-shell) .nubi-decision-dialog .question-option-copy { display:flex; flex-direction:row; align-items:center; gap:var(--cx-space-3); min-width:0; }
+:root:has(.desktop-shell) .nubi-decision-dialog .question-option-copy strong { flex:none; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-decision-dialog .question-option-copy>span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--nubi-text-secondary); }
+:root:has(.desktop-shell) .nubi-decision-dialog .question-option.cx-kit-button { min-height:44px; padding:var(--cx-space-2) var(--cx-space-3); gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-decision-dialog .question-option-index { display:none; }
+:root:has(.desktop-shell) .nubi-decision-dialog .interaction-input { padding:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-decision-dialog .interaction-input:focus-within { box-shadow:none; border-color:var(--deck-line); }
+:root:has(.desktop-shell) .nubi-decision-dialog .nubi-approval-bar { flex-wrap:nowrap; gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-decision-dialog .nubi-approval-bar>.cx-kit-button { min-width:0; padding-inline:var(--cx-space-2); }
+
+/* Four Desktop providers need room for the icon and name of each service. */
+:root:has(.desktop-shell) .cx-panel-backdrop > .model-dialog:has([data-provider="claude"]) { width:min(var(--nubi-dialog-width-standard),100%); }
+:root:has(.desktop-shell) .model-dialog:has([data-provider="claude"]) .provider-toolbar { container-type:inline-size; }
+@container (max-width:400px) {
+  .model-dialog .provider-tab-name { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+}
+
+/* Placeholder and secondary copy stay legible on the inset field surface. */
+:root:has(.desktop-shell) .deck-dialog :is(input,textarea)::placeholder { color:var(--nubi-text-meta); opacity:1; }
+:root:has(.desktop-shell) .deck-dialog .cx-button--primary:not(.provider-button,.provider-connect-button):hover:not(:disabled) { background:color-mix(in srgb,var(--nubi-dialog-action) 88%,var(--nubi-text-primary)); color:var(--nubi-dialog-action-ink); }
+
+:root:has(.desktop-shell) .deck-dialog .nubi-panel-title-icon[data-provider="claude"] { color:var(--provider-claude-ink); background:var(--provider-claude-soft); }
+
+/* Three common conditions stay visible; secondary facets are disclosed. */
+:root:has(.desktop-shell) .nubi-mail-filter-form { display:grid; gap:var(--cx-space-4); }
+:root:has(.desktop-shell) .nubi-mail-filter-form section { display:grid; gap:var(--cx-space-2); min-width:0; }
+:root:has(.desktop-shell) .nubi-mail-filter-form>section { grid-template-columns:88px minmax(0,1fr); align-items:center; column-gap:var(--cx-space-3); }
+:root:has(.desktop-shell) .nubi-mail-filter-form h3 { display:flex; align-items:center; gap:var(--cx-space-2); margin:0; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-mail-filter-form h3>svg { flex:none; color:var(--nubi-text-secondary); }
+:root:has(.desktop-shell) .nubi-mail-filter-form :is(input,select) { width:100%; background-color:var(--nubi-surface-base); border:1px solid var(--deck-line); }
+:root:has(.desktop-shell) .nubi-mail-filter-form select { appearance:auto; padding-right:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-mail-filter-form form { display:flex; align-items:center; gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-mail-filter-form form input { flex:1; min-width:0; }
+:root:has(.desktop-shell) .nubi-mail-filter-form form button { flex:none; width:var(--nubi-work-control-height); padding:0; }
+:root:has(.desktop-shell) :is(.nubi-mail-filter-choices,.nubi-mail-sender-options) { display:flex; flex-wrap:wrap; gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-mail-sender-options { grid-column:2; }
+:root:has(.desktop-shell) .nubi-mail-sender-options:empty { display:none; }
+:root:has(.desktop-shell) .nubi-mail-filter-form button[aria-pressed] { padding-inline:var(--cx-space-3); background:var(--nubi-surface-base); color:var(--nubi-text-secondary); border:1px solid var(--deck-line); max-width:100%; }
+:root:has(.desktop-shell) .nubi-mail-filter-form button[aria-pressed]>span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-mail-filter-form button[aria-pressed=true] { background:var(--nubi-surface-selected); color:var(--nubi-text-action); font-weight:var(--nubi-weight-emphasis); border-color:transparent; }
+
+:root:has(.desktop-shell) .nubi-mail-filter-form details { border-top:1px solid var(--deck-line); padding-top:var(--cx-space-3); }
+:root:has(.desktop-shell) .nubi-mail-filter-form summary { color:var(--nubi-text-secondary); font-weight:var(--nubi-weight-label); cursor:pointer; }
+:root:has(.desktop-shell) .nubi-mail-filter-form details>section { margin-top:var(--cx-space-4); }
+:root:has(.desktop-shell) .nubi-mail-date-fields { grid-column:2; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--cx-space-3); }
+:root:has(.desktop-shell) .nubi-mail-date-fields label { display:grid; gap:var(--cx-space-1); color:var(--nubi-text-secondary); font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-mail-filter-dialog>.cx-panel-footer { justify-content:flex-end; }
+:root:has(.desktop-shell) .nubi-mail-filter-dialog>.cx-panel-footer>button:first-child { margin-right:auto; }
+@media(max-width:600px) {
+ :root:has(.desktop-shell) .nubi-mail-filter-form>section { grid-template-columns:76px minmax(0,1fr); gap:var(--cx-space-2); }
+ :root:has(.desktop-shell) .nubi-mail-date-fields { grid-column:1 / -1; }
+}
+/* Explain skill scope once and keep list actions beside their target. */
+:root:has(.desktop-shell) .deck-dialog .nubi-skill-purpose { margin:0 0 var(--cx-space-4); color:var(--nubi-text-secondary); font:var(--deck-font-body); }
+:root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-list { padding-block:var(--cx-space-2) 0; }
+:root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-row { gap:var(--cx-space-3); padding:var(--cx-space-3) var(--cx-space-2); border-radius:var(--nubi-work-control-radius); background:var(--nubi-surface-inset); }
+:root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-mark { color:var(--nubi-text-action); }
+:root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-copy p { flex:1; min-width:0; margin:0; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+:root:has(.desktop-shell) .nubi-wiki-update[data-current=true] { padding-block:var(--cx-space-4); }
+:root:has(.desktop-shell) .nubi-wiki-update[data-current=true] .nubi-action-head { align-items:center; margin:0; }
+:root:has(.desktop-shell) .nubi-wiki-update[data-current=true] .nubi-action-head h3 { margin:0; }
+:root:has(.desktop-shell) .nubi-wiki-update[data-current=true] .nubi-action-head p { margin:var(--cx-space-1) 0 0; color:var(--nubi-text-secondary); font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-wiki-update[data-current=true] .nubi-action-tile { color:var(--nubi-text-success); background:var(--nubi-surface-success); }
+
+:root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-copy strong { flex:0 0 auto; max-width:50%; }
+@media(max-width:600px) {
+ :root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-copy p { display:none; }
+ :root:has(.desktop-shell) .deck-dialog .nubi-custom-skill-copy strong { max-width:100%; }
+}
+
+/* A filter chip keeps its label and state mark in a stable, single row. */
+:root:has(.desktop-shell) .nubi-mail-filter-form .nubi-filter-choice.cx-kit-button {
+ --nubi-chip-gap:var(--cx-space-2);
+ display:inline-flex; align-items:center; justify-content:flex-start; gap:var(--nubi-chip-gap);
+ min-height:36px; padding:6px var(--cx-space-3); border-radius:var(--nubi-work-control-radius);
+ font:var(--deck-font-caption); font-weight:var(--nubi-weight-label); white-space:nowrap;
+}
+:root:has(.desktop-shell) .nubi-mail-filter-form .nubi-filter-choice[aria-pressed=true] { font-weight:var(--nubi-weight-emphasis); }
+:root:has(.desktop-shell) .nubi-mail-filter-form .nubi-filter-choice:hover { border-color:var(--deck-blue); }
+:root:has(.desktop-shell) .nubi-mail-filter-form .nubi-filter-choice-check { width:16px; height:16px; flex:none; }
+:root:has(.desktop-shell) .nubi-mail-filter-form .nubi-filter-choice[aria-pressed=false] .nubi-filter-choice-check { visibility:hidden; }
+:root:has(.desktop-shell) .nubi-mail-filter-form .desktop-file-icon { flex:none; display:inline-flex; align-items:center; justify-content:center; width:24px; }
+:root:has(.desktop-shell) .nubi-filter-active { margin-left:var(--cx-space-2); color:var(--nubi-text-action); font:var(--deck-font-caption); font-weight:var(--nubi-weight-emphasis); }

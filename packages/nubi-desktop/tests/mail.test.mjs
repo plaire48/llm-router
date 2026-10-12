@@ -53,6 +53,15 @@ test('TLS, split terminator, Korean MIME, attachment bytes, stable UIDL and no D
  f.uidl(true);await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_listing_failed/);
  await assert.rejects(pullPop3({...credentials,user:'bad\r\nDELE 1',endpoint:f.endpoint}),/mail_input_invalid/);
 });
+test('compatible UIDL rows retain opaque IDs across TLS retrieval and repeated synchronization',async t=>{
+ const f=await fixture(t),longId='a'.repeat(96);
+ f.mailbox.push({uidl:longId,raw:simple('first')},{uidl:'other',raw:simple('second')});
+ f.listing('  \n001\t'+longId+' \n002 other');
+ const first=await pullPop3({...credentials,endpoint:f.endpoint,known:[]});assert.deepEqual(first.uidls,[longId,'other']);assert.equal(first.mails.length,2);
+ const next=await pullPop3({...credentials,endpoint:f.endpoint,known:first.uidls});assert.equal(next.mails.length,0);assert.deepEqual(next.uidls,first.uidls);
+ f.listing('1 '+longId+'\n2 missing extra');await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint,known:[]}),/mail_uidl_format/);
+ assert(!f.commands.includes('DELE'));
+});
 test('durable personal intake, attachments, no secret persistence, restart and user edits',async t=>{
  const f=await fixture(t);f.mailbox.push({uidl:'old',raw:simple('old')});let calls=0;
  const host={storageRoot:path.join(f.root,'state'),providers:{catalogs:()=>CATALOGS,status:()=>({connected:true,...destination}),complete:async()=>{calls++;return {content:JSON.stringify(answer)};}}};

@@ -1,4 +1,8 @@
 const reasons={
+  claude_login_failed:'Claude 로그인을 마치지 못했어요. 다시 연결해 주세요.',
+  claude_login_required:'Claude 인증을 확인하지 못했어요. 다시 로그인해 주세요.',
+  claude_cli_timeout:'Claude 로그인 시간이 초과됐어요. 다시 연결해 주세요.',
+  browser_unavailable:'로그인 페이지를 열지 못했어요. 다시 연결해 주세요.',
   tls_untrusted:'회사 인증서를 확인하지 못했어요. Windows의 회사 인증서 등록 상태를 확인해 주세요.',
   tls_expired:'인증서 유효기간을 확인해 주세요. PC 날짜와 서버 인증서가 맞아야 합니다.',
   tls_hostname:'서버 주소와 인증서가 다릅니다. 연결 주소를 확인해 주세요.',

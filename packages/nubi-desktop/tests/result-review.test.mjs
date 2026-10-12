@@ -5,7 +5,7 @@ import path from 'node:path';
 import {fixture} from './fixtures.mjs';
 import {ProjectService} from '../runtime/project-service.mjs';
 import {installAgent} from '../runtime/agent.mjs';
-import {REVIEW_PROMPT,resultReviewInput,reviewResult,createReviewProgress} from '../runtime/result-review.mjs';
+import {REVIEW_PROMPT,resultReviewInput,reviewResult,createReviewProgress,runReviewedAgent} from '../runtime/result-review.mjs';
 installAgent(ProjectService);
 const status=()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]});
 const reply=content=>({content,calls:[]});
@@ -126,6 +126,56 @@ test('truncated evidence never supports a requirement: the check is kept as unve
   const review=await reviewResult({...args,invoke:async messages=>{calls++;const body=JSON.parse(decision(messages).content);body.checks[0].state='supported';body.checks[0].evidenceIds=['tool:0'];return reply(JSON.stringify(body));}});
   assert.equal(calls,1);assert.equal(review.checks[0].state,'unknown');assert.deepEqual(review.checks[0].evidenceIds,[]);assert.deepEqual(review.setAside,['tool:0']);
   assert.equal(review.evidence.find(e=>e.id==='tool:0').usable,false);
+  assert.equal(review.status,'revise','removing the sole proof must recheck the candidate, not just its badge');
+  assert.equal(review.normalized,'unsupported_evidence');
+});
+
+test('failed and unmatched evidence cannot leave an unsupported claim ready',async()=>{
+  for(const result of [{error:'file_missing'},{ok:false},{content:'old wiki',currentPageMatched:false}]){
+    const args=input();args.evidence=[{tool:'read_source',result}];
+    const review=await reviewResult({...args,invoke:async messages=>{
+      const value=JSON.parse(decision(messages).content);value.checks[0]={...value.checks[0],state:'supported',evidenceIds:['tool:0']};return reply(JSON.stringify(value));
+    }});
+    assert.equal(review.status,'revise');assert.equal(review.checks[0].state,'unknown');
+    assert.match(review.nextStep,/재실행하지/);
+  }
+});
+
+test('honest unknowns remain deliverable and losing a model-only interpretation does not block delivery',async()=>{
+  const args=input();args.evidence=[{tool:'read_source',result:{error:'file_missing'}}];
+  const honest=await reviewResult({...args,invoke:async messages=>decision(messages)});
+  assert.equal(honest.status,'ready');
+  args.task.workPlan={intent:{outcomes:['Additional model interpretation']}};
+  const interpretation=await reviewResult({...args,invoke:async messages=>{
+    const value=JSON.parse(decision(messages).content),check=value.checks.find(c=>c.requirementId.startsWith('intent:'));
+    check.state='supported';check.evidenceIds=['tool:0'];return reply(JSON.stringify(value));
+  }});
+  assert.equal(interpretation.status,'ready');
+});
+
+test('discarding sole evidence continues the same run and replaces the unsupported final answer',async()=>{
+  const args=input();args.evidence=[{tool:'read_source',result:{error:'file_missing'}}];
+  const outcomes=[];let runs=0;
+  const answer=await runReviewedAgent({messages:[],signal:args.signal,waiting:()=>false,continuation:()=>[],
+    run:async messages=>{runs++;if(runs>1)assert.match(messages.at(-1).content,/Do not repeat completed or uncertain actions/);return reply(runs===1?'파일 저장을 확인했습니다.':'파일을 읽지 못해 저장 여부를 확인하지 못했습니다.');},
+    snapshot:()=>args,
+    review:async value=>reviewResult({...args,candidate:value.candidate,invoke:async messages=>{
+      const body=JSON.parse(decision(messages).content);
+      if(runs===1)body.checks[0]={...body.checks[0],state:'supported',evidenceIds:['tool:0']};
+      return reply(JSON.stringify(body));
+    }}),onReview:async outcome=>outcomes.push(outcome.status)});
+  assert.equal(runs,2);assert.deepEqual(outcomes,['revise','ready']);assert.equal(answer.content,'파일을 읽지 못해 저장 여부를 확인하지 못했습니다.');
+});
+
+test('progress ignores unmatched Wiki but distinguishes different mail identities',()=>{
+  const progress=createReviewProgress();
+  const fact=id=>[{tool:'read_personal_mail',result:{id,subject:'Same title',body:'Same body'}}];
+  assert.equal(progress(fact('mail-a')),false);
+  assert.equal(progress(fact('mail-a')),false);
+  assert.equal(progress(fact('mail-b')),false);
+  assert.equal(progress(fact('mail-b')),false,'another mail reset the no-progress streak');
+  assert.equal(progress([{tool:'wiki_read',result:{currentPageMatched:false,content:'fabricated different content'}}]),false);
+  assert.equal(progress([{tool:'wiki_read',result:{currentPageMatched:false,content:'another unmatched excerpt'}}]),true);
 });
 test('review rejects missing criteria, invented evidence and tool calls',async()=>{
   for(const mode of ['missing','invented','tool-call']){

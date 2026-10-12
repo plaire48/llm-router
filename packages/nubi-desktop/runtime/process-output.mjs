@@ -3,6 +3,7 @@ import {constants} from 'node:fs';
 import {isUtf8} from 'node:buffer';
 import path from 'node:path';
 import {hash,fail} from './files.mjs';
+import {processOutputDiagnostic} from './powershell-output.mjs';
 
 const PAGE_BYTES=8000,SCAN_BYTES=262144,MAX_MATCHES=10;
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
@@ -40,10 +41,10 @@ export function commandProblem(record){
 }
 
 export function processOutputPreview(record){
-  const text=record.output||'',truncated=text.length>2*PREVIEW_EDGE,problem=commandProblem(record);
+  const text=record.output||'',truncated=text.length>2*PREVIEW_EDGE,problem=commandProblem(record),diagnostic=processOutputDiagnostic(record);
   return {output:truncated?text.slice(0,PREVIEW_EDGE)+'\n[... retained output omitted; use read_process_output ...]\n'+text.slice(-PREVIEW_EDGE):text,
     outputScope:'retained_buffer',outputTruncated:truncated,logIncomplete:!!record.logIncomplete,
-    outputReference:{tool:'read_process_output',processId:record.id},...(problem?{commandProblem:problem}:{})};
+    outputReference:{tool:'read_process_output',processId:record.id},...(problem?{commandProblem:problem}:{}),...(diagnostic?{outputDiagnostic:diagnostic}:{})};
 }
 
 function utf8Range(buffer,start,end){

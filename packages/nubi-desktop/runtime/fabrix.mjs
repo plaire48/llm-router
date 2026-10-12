@@ -16,7 +16,7 @@ export async function fabrix({method,testId,connection}) {
   }
   if(method==='CONNECT_FABRIX'){
     const entry=this.fabrixTests.get(testId);if(!entry?.verified)throw new Error('fabrix_test_expired');
-    if(!this.providers)this.providers=createProviders({hostLabel:'누비 워크스페이스'});
+    if(!this.providers)await this.provider();
     const result=await this.providers.connect({provider:'fabrix',...entry.connection});
     entry.provider.dispose();this.fabrixTests.delete(testId);return {connected:result.connected};
   }

@@ -7,4 +7,5 @@ for(const file of ['document-extract.mjs','mail-attachment-worker.mjs','pdf.work
 let count=0,bytes=0;async function walk(directory){for(const item of await readdir(directory,{withFileTypes:true})){const file=path.join(directory,item.name);if(item.isDirectory())await walk(file);else{count++;bytes+=(await stat(file)).size;}}}await walk(root);
 if(!files.some(file=>file.endsWith('/ripgrep-win32-x64/bin/rg.exe')))throw Error('native_search_missing');
 await stat(path.join(root,'resources/app.asar.unpacked/node_modules/@vscode/ripgrep-win32-x64/bin/rg.exe'));
-await writeFile('verification/windows-package.json',JSON.stringify({asar:true,archiveEntries:files.length,physicalFiles:count,bytes,deferredAttachmentsAbsent:true,nativeSearchUnpacked:true},null,2));
+await stat(path.join(root,'resources/git/cmd/git.exe'));await stat(path.join(root,'resources/git/LICENSE.txt'));
+await writeFile('verification/windows-package.json',JSON.stringify({asar:true,bundledGit:true,archiveEntries:files.length,physicalFiles:count,bytes,deferredAttachmentsAbsent:true,nativeSearchUnpacked:true},null,2));

@@ -1,6 +1,6 @@
 {
   "name": "@nubi/electron-app",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "dependencies": {
     "@earendil-works/pi-agent-core": "0.86.1",
@@ -11,6 +11,7 @@
     "knex-schema-inspector": "3.1.0",
     "minisearch": "7.2.0",
     "mysql2": "3.24.4",
+    "node-pty": "1.1.0",
     "oracledb": "7.0.1",
     "pg": "8.23.0",
     "pixelmatch": "7.1.0",

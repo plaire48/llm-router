@@ -19,22 +19,21 @@ function RoleProgress({analysis,taskRunning,showWork=false}) {
   const open=expanded??running;
   const status=worker=>worker.status==='done'?({partial:'일부 확인',blocked:'확인 필요'}[worker.analysis?.outcome]||(worker.analysis?.delivered?'메인에 전달됨':'응답 수신')):worker.status==='cancelled'?'중지':worker.status==='error'?'실패':!running?'응답 미확인':worker.status==='queued'?'대기':worker.analysis?.phase==='reading'?'근거 읽는 중':worker.analysis?.phase==='thinking'?'모델 분석 중':worker.analysis?.phase==='synthesizing'?'결과 정리 중':'분석 중';
   return <section className="nubi-document-progress nubi-role-progress" aria-label="역할별 분석 진행">
-    <div className="nubi-document-progress-heading" role="status"><Icon name="layers" size={18}/><strong>{showWork?`서브에이전트 ${workers.length}명`:running?'역할을 나눠 확인하고 있어요':states[analysis.state]||'응답 미확인'}</strong>{showWork&&!running&&<span>{states[analysis.state]||'응답 미확인'}</span>}<span>응답 {received}/{workers.length}</span></div>
     <details open={open} onToggle={event=>{if(event.target===event.currentTarget&&event.currentTarget.open!==open)setExpanded(event.currentTarget.open);}}>
-      <summary>분담과 결과 <span>{workers.length}개</span><Icon name="chevronDown" size={14}/></summary>
+      <summary className="nubi-document-progress-heading" aria-label="분담과 결과"><Icon name="layers" size={18}/><strong>{showWork?'서브에이전트':running?'역할을 나눠 확인하고 있어요':states[analysis.state]||'응답 미확인'}</strong><span title={`응답 ${received}/${workers.length}`}>{showWork&&!running&&analysis.state!=='complete'&&states[analysis.state]?states[analysis.state]:`응답 ${received}/${workers.length}`}</span><Icon name="chevronDown" size={14}/></summary>
       <ol>{workers.map((worker,index)=><li key={worker.id} data-tool={worker.tool} data-status={worker.status}>
         <div className="nubi-document-worker-heading"><strong><Icon name={worker.tool==='analysis_review'?'check':'search'} size={16}/>{labels[worker.tool]||'하위 분석'} {index+1}</strong><span>{running&&worker.status==='running'&&<span className="status-spinner" aria-hidden="true"/>}{status(worker)}</span></div>
         {worker.analysis?.task&&<p className="nubi-document-question">{worker.analysis.task}</p>}
-        {worker.analysis?.summary&&<p>{worker.analysis.summary}</p>}
         {worker.analysis?.delivered&&['partial','blocked'].includes(worker.analysis?.outcome)&&<small>메인에 전달됨</small>}
         {(worker.analysis?.uncertainties?.length>0||worker.analysis?.nextStep||worker.analysis?.error)&&<div className="nubi-document-attention" aria-label="남은 확인"><strong>남은 확인</strong>
           {worker.analysis?.uncertainties?.length>0&&<ul>{worker.analysis.uncertainties.map((text,index)=><li key={index}>{text}</li>)}</ul>}
           {worker.analysis?.nextStep&&<p>{worker.analysis.nextStep}</p>}
           {worker.analysis?.error&&<p>분석 응답을 받지 못했어요.</p>}
         </div>}
-        {worker.analysis?.doneWhen&&<small>확인할 결과: {worker.analysis.doneWhen}</small>}
-        {!!worker.analysis?.sources?.length&&<details><summary>연결된 근거 {worker.analysis.sources.length}개</summary><ul>{worker.analysis.sources.map(source=><li key={source.id}><span>{source.path||sourceLabels[source.tool]||source.tool||source.id}</span>{source.read&&<small>원문 열람</small>}{source.hasImage&&<small>{source.imageRead?'화면 캡처 열람':'화면 캡처 제공됨'}</small>}{source.historical&&<small>이전 기록</small>}</li>)}</ul></details>}
-        <details><summary>분석 상세</summary>
+        <details className="nubi-worker-detail"><summary>결과와 근거<Icon name="chevronDown" size={14}/></summary>
+          {worker.analysis?.summary&&<p>{worker.analysis.summary}</p>}
+          {worker.analysis?.doneWhen&&<p>확인할 결과: {worker.analysis.doneWhen}</p>}
+          {!!worker.analysis?.sources?.length&&<ul>{worker.analysis.sources.map(source=><li key={source.id}><span>{source.path||sourceLabels[source.tool]||source.tool||source.id}</span>{source.read&&<small>원문 열람</small>}{source.hasImage&&<small>{source.imageRead?'화면 캡처 열람':'화면 캡처 제공됨'}</small>}{source.historical&&<small>이전 기록</small>}</li>)}</ul>}
           <small>모델 호출 {count(worker.analysis?.calls)}회 / 근거 읽기 {count(worker.analysis?.reads)}회</small>
           {worker.analysis?.error&&<p>진단 코드: <code>{worker.analysis.error}</code></p>}
         </details>
@@ -48,7 +47,7 @@ function Record({record,running,showWork}) {
 }
 
 /** Read-only history. Request generations prevent stale pages crossing tasks or unmounts. */
-export function AnalysisHistory({api,task}) {
+export function AnalysisHistory({api,task,showHistory=false}) {
   const [records,setRecords]=useState([]),[next,setNext]=useState(null),[loading,setLoading]=useState(false),[error,setError]=useState(false);
   const generation=useRef(0),busy=useRef(false),failedCursor=useRef(undefined),paged=useRef(false);
   const running=task.state==='running';
@@ -86,11 +85,11 @@ export function AnalysisHistory({api,task}) {
   const current=sameRun.filter(record=>record.kind!=='review'||record===latestReview);
   for(const record of merged)if(!record.runId&&record.kind==='document'&&record.id===task.documentAnalysis?.id&&!current.includes(record))current.push(record);
   if(!current.length&&running)current.push(...merged.filter(record=>record.state==='running'));
-  if(!current.length&&merged.length)current.push(merged[0]);
+  if(showHistory&&!current.length&&merged.length)current.push(merged[0]);
   const earlier=merged.filter(record=>!current.includes(record));
   return <section className="nubi-analysis-history" aria-label="분석 과정과 이력">
     {current.map(record=><Record key={key(record)} record={record} running={running} showWork={!!runId&&record.runId===runId}/>)}
-    {(earlier.length>0||next)&&<details className="nubi-analysis-older"><summary>이전 분석 {earlier.length?`${earlier.length}개`:''}<Icon name="chevronDown" size={14}/></summary>
+    {showHistory&&(earlier.length>0||next)&&<details className="nubi-analysis-older"><summary>이전 분석 {earlier.length?`${earlier.length}개`:''}<Icon name="chevronDown" size={14}/></summary>
       {earlier.map(record=><Record key={key(record)} record={record} running={running}/>)}
       {next&&<CxButton disabled={loading} onClick={()=>fetchPage(next)}><Icon name="chevronDown" size={16}/>이전 분석 더 보기</CxButton>}
     </details>}

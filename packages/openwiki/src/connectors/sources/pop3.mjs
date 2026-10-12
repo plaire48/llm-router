@@ -4,6 +4,9 @@ import {createHash} from 'node:crypto';
 
 export const POP3_SERVER=Object.freeze({host:'pop3.samsung.net',port:995,tls:true});
 const MAX_UIDL=4*1024*1024, MAX_MAIL=10*1024*1024;
+// RFC 1939 specifies 70 octets. Tolerate bounded, longer opaque server IDs
+// without truncating, case-folding or replacing them with unstable mail numbers.
+const MAX_COMPAT_UIDL=1024;
 export const digest=value=>createHash('sha256').update(value).digest('hex');
 
 export function parseUidlListing(buffer){
@@ -12,11 +15,13 @@ export function parseUidlListing(buffer){
   // instead of rejecting the entire mailbox or suffixing a moving message number.
   if(buffer.some(byte=>byte>126||byte<32&&![9,10,13].includes(byte)))throw new Error('mail_uidl_characters');
   const entries=[],numbers=new Set(),ids=new Set();
-  for(const line of buffer.toString('ascii').split('\r\n')){
-    if(!line)continue;
-    const match=/^[ \t]*([1-9]\d*)[ \t]+([!-~]{1,70})[ \t]*$/.exec(line);
+  for(const line of buffer.toString('ascii').split(/\r?\n/)){
+    if(/^[ \t]*$/.test(line))continue;
+    const match=/^[ \t]*(\d+)[ \t]+([!-~]+)[ \t]*$/.exec(line);
     if(!match)throw new Error('mail_uidl_format');
     const number=Number(match[1]),uidl=match[2];
+    if(number<1)throw new Error('mail_uidl_format');
+    if(uidl.length>MAX_COMPAT_UIDL)throw new Error('mail_uidl_id_length');
     if(!Number.isSafeInteger(number)||numbers.has(number))throw new Error('mail_uidl_number_conflict');
     numbers.add(number);
     if(!ids.has(uidl)){ids.add(uidl);entries.push({number,uidl});}
@@ -47,7 +52,7 @@ async function bytes(stream,max){
   return Buffer.from(Buffer.concat(chunks).toString('latin1').replace(/(^|\r\n)\.\./g,'$1.'),'latin1');
 }
 export function classifyPop3Error(error,endpoint=POP3_SERVER){
-  if(['mail_size_limit','mail_uidl_invalid','mail_uidl_characters','mail_uidl_format','mail_uidl_number_conflict','mail_protocol','mail_cancelled','mail_timeout'].includes(error?.message))return error.message;
+  if(['mail_size_limit','mail_uidl_invalid','mail_uidl_characters','mail_uidl_id_length','mail_uidl_format','mail_uidl_number_conflict','mail_protocol','mail_cancelled','mail_timeout'].includes(error?.message))return error.message;
   const code=String(error?.code||error?.cause?.code||'');
   if(code==='ERR_TLS_CERT_ALTNAME_INVALID')return 'mail_tls_hostname';
   if(['CERT_HAS_EXPIRED','CERT_NOT_YET_VALID'].includes(code))return 'mail_tls_expired';
@@ -108,7 +113,7 @@ export async function pullPop3({user,password,known=null,skip=[],signal,endpoint
             return {id:String(index).padStart(3,'0')+'-'+sha256.slice(0,16),filename,contentType:a.contentType,size:a.size,sha256,content:a.content,text,contentState};
           });
           const text=(parsed.text||'').slice(0,32000);
-          mails.push({...entry,raw,attachments,normalized:{subject:(parsed.subject||'(제목 없음)').slice(0,1000),from:address(parsed.from),to:address(parsed.to),cc:address(parsed.cc),date:parsed.date?.toISOString()||null,messageId:(parsed.messageId||'').slice(0,1000)||null,inReplyTo:(parsed.inReplyTo||'').slice(0,1000)||null,references:[].concat(parsed.references||[]).slice(0,200).map(value=>String(value).slice(0,1000)),text,truncated:(parsed.text||'').length>text.length,attachments:attachments.map(({content,...metadata})=>metadata)}});
+          mails.push({...entry,raw,attachments,normalized:{subject:(parsed.subject||'(제목 없음)').slice(0,1000),from:address(parsed.from),to:address(parsed.to),cc:address(parsed.cc),bcc:address(parsed.bcc),sender:parsed.from?.value?.length===1?{name:parsed.from.value[0].name||'',address:parsed.from.value[0].address||''}:undefined,date:parsed.date?.toISOString()||null,messageId:(parsed.messageId||'').slice(0,1000)||null,inReplyTo:(parsed.inReplyTo||'').slice(0,1000)||null,references:[].concat(parsed.references||[]).slice(0,200).map(value=>String(value).slice(0,1000)),text,truncated:(parsed.text||'').length>text.length,attachments:attachments.map(({content,...metadata})=>metadata)}});
         }catch{failed.push({...entry,error:'mail_parse_failed'});}
       }
       if(!terminated)await client.command('QUIT');

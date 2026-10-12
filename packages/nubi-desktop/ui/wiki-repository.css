@@ -1,0 +1,69 @@
+.nubi-wiki-repository { display:flex; flex-direction:column; flex:1; min-height:0; overflow:auto; padding:var(--cx-space-4); gap:var(--cx-space-3); color:var(--nubi-text-primary); font:var(--deck-font-body); }
+.nubi-wiki-repo-heading,.nubi-wiki-repo-toolbar,.nubi-wiki-repo-search { display:flex; align-items:center; gap:var(--cx-space-2); min-width:0; }
+.nubi-wiki-repo-heading>div { flex:1; min-width:0; }
+.nubi-wiki-repo-heading h2 { margin:0; font:var(--deck-font-heading); font-weight:600; }
+.nubi-wiki-repo-heading p { margin:var(--cx-space-1) 0 0; font:var(--deck-font-caption); color:var(--nubi-text-secondary); }
+.nubi-wiki-repo-heading button,.nubi-wiki-repo-search button { flex:none; white-space:nowrap; }
+.nubi-wiki-repo-toolbar>.agent-tabs { flex:1; min-width:0; }
+.nubi-wiki-repo-toolbar [role=tab] { display:inline-flex; align-items:center; justify-content:center; gap:var(--cx-space-2); white-space:nowrap; }
+.nubi-wiki-repo-search>input { min-width:0; flex:1; }
+.nubi-wiki-repo-search>svg { flex:none; color:var(--nubi-text-secondary); }
+.nubi-wiki-repo-list { display:grid; gap:var(--cx-space-2); }
+.nubi-wiki-repo-list article { display:flex; align-items:center; min-width:0; padding:var(--cx-space-2); border:1px solid var(--deck-line); border-radius:var(--nubi-work-control-radius); background:var(--nubi-surface-base); }
+.nubi-wiki-repo-open { display:flex; align-items:center; gap:var(--cx-space-3); flex:1; min-width:0; border:0; background:transparent; text-align:left; color:inherit; font:inherit; padding:var(--cx-space-1); cursor:pointer; }
+.nubi-wiki-repo-open:focus-visible { outline:2px solid var(--deck-blue-deep); border-radius:var(--nubi-work-control-radius); }
+.nubi-wiki-repo-symbol { display:flex; align-items:center; justify-content:center; flex:none; width:36px; height:36px; border-radius:var(--nubi-work-control-radius); background:var(--nubi-surface-selected); color:var(--nubi-text-action); }
+.nubi-wiki-repo-copy { display:grid; min-width:0; flex:1; gap:var(--cx-space-1); }
+.nubi-wiki-repo-copy>strong { font-weight:600; }
+.nubi-wiki-repo-copy>strong,.nubi-wiki-repo-copy>span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nubi-wiki-repo-copy>span,.nubi-wiki-repo-copy>small { font:var(--deck-font-caption); color:var(--nubi-text-secondary); }
+.nubi-wiki-version { flex:none; font:var(--deck-font-caption); color:var(--nubi-text-secondary); }
+.nubi-wiki-repo-empty { display:grid; justify-items:center; gap:var(--cx-space-3); padding:var(--cx-space-6) var(--cx-space-2); color:var(--nubi-text-secondary); text-align:center; }
+.nubi-wiki-repo-empty>strong { font-weight:600; color:var(--nubi-text-primary); }
+.nubi-wiki-repo-empty>span { font:var(--deck-font-caption); }
+.nubi-wiki-repo-source { display:flex; align-items:center; gap:var(--cx-space-2); color:var(--nubi-text-secondary); font:var(--deck-font-caption); margin-top:auto; padding-top:var(--cx-space-3); }
+.nubi-wiki-repo-error { padding:var(--cx-space-3); background:var(--nubi-surface-danger); color:var(--nubi-text-danger); border-radius:var(--nubi-work-control-radius); font:var(--deck-font-body); }
+.nubi-wiki-metadata { display:grid; grid-template-columns:88px minmax(0,1fr); gap:var(--cx-space-2); margin:0; font:var(--deck-font-caption); }
+.nubi-wiki-metadata dt { color:var(--nubi-text-secondary); }
+.nubi-wiki-metadata dd { margin:0; overflow-wrap:anywhere; }
+.nubi-wiki-detail-copy h3 { margin:0; }
+.nubi-wiki-detail-copy p { color:var(--nubi-text-secondary); }
+.nubi-wiki-field,.nubi-wiki-editor-form { display:grid; gap:var(--cx-space-2); min-width:0; }
+.nubi-wiki-editor-form { gap:var(--cx-space-4); }
+.nubi-wiki-field { font:var(--deck-font-body); font-weight:600; }
+.nubi-wiki-field-pair { display:grid; grid-template-columns:1fr 1fr; gap:var(--cx-space-3); }
+.nubi-wiki-field input,.nubi-wiki-field select { width:100%; font-weight:400; }
+.nubi-wiki-upload>div:first-child { display:flex; align-items:center; justify-content:space-between; gap:var(--cx-space-2); }
+.nubi-wiki-upload>p { font:var(--deck-font-caption); color:var(--nubi-text-secondary); }
+.nubi-wiki-select-all { display:flex; align-items:center; gap:var(--cx-space-2); font:var(--deck-font-caption); margin-block:var(--cx-space-3); }
+.nubi-wiki-select-all>span { margin-left:auto; color:var(--nubi-text-action); }
+.nubi-wiki-file-checks,.nubi-wiki-files { max-height:200px; overflow:auto; display:grid; gap:var(--cx-space-2); padding:var(--cx-space-2); border:1px solid var(--deck-line); border-radius:var(--nubi-work-control-radius); }
+.nubi-wiki-file-checks label,.nubi-wiki-files li { display:flex; align-items:center; gap:var(--cx-space-2); min-width:0; font:var(--deck-font-caption); }
+.nubi-wiki-file-checks span,.nubi-wiki-files span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nubi-wiki-file-checks input,.nubi-wiki-select-all input { flex:none; accent-color:var(--deck-blue); }
+.nubi-wiki-upload-progress { display:grid; gap:var(--cx-space-2); font:var(--deck-font-caption); color:var(--nubi-text-action); }
+.nubi-wiki-upload-progress progress { width:100%; accent-color:var(--deck-blue); }
+.desktop-team-workspace>.nubi-team-sections { flex:none; display:flex; align-items:center; gap:var(--cx-space-2); padding:var(--cx-space-2) var(--cx-space-3); border-bottom:1px solid var(--deck-line); }
+.nubi-team-sections button { display:inline-flex; align-items:center; gap:var(--cx-space-2); white-space:nowrap; }
+.nubi-team-sections button[aria-selected=true] { background:var(--nubi-surface-selected); color:var(--nubi-text-action); font-weight:600; }
+.desktop-team-workspace>iframe[hidden] { display:none; }
+.nubi-wiki-detail>.cx-panel-footer,.nubi-wiki-editor>.cx-panel-footer { justify-content:flex-end; }
+@media(max-width:600px) { .nubi-wiki-repo-search button>span { display:none; } }
+.desktop-team-workspace-source[hidden] { display:none; }
+/* Match the shared dialog hierarchy; emphasize the action, not its container. */
+.nubi-skill-page-body>.agent-tabs { margin-bottom:var(--cx-space-4); }
+.nubi-skill-page-body>.agent-tabs [role=tab] { display:inline-flex; align-items:center; gap:var(--cx-space-2); white-space:nowrap; }
+.nubi-skill-page-body>.nubi-wiki-repository { padding:0; overflow:visible; }
+.nubi-wiki-repo-heading .nubi-wiki-add { display:inline-flex; align-items:center; justify-content:center; gap:var(--cx-space-2); min-height:var(--nubi-work-control-height); padding:0 var(--cx-space-3); border:1px solid var(--deck-line); border-radius:var(--nubi-work-control-radius); background:var(--nubi-surface-base); color:var(--nubi-text-action); font:var(--deck-font-body); font-weight:600; box-shadow:none; }
+.nubi-wiki-add:disabled { opacity:.45; }
+.nubi-wiki-add:hover:not(:disabled) { background:var(--nubi-surface-selected); }
+.nubi-wiki-signin { display:flex; align-items:center; gap:var(--cx-space-3); padding-block:var(--cx-space-5); color:var(--nubi-text-secondary); }
+.nubi-wiki-signin strong { flex:1; font:var(--deck-font-body); font-weight:500; }
+.nubi-wiki-signin button { display:inline-flex; align-items:center; gap:var(--cx-space-2); white-space:nowrap; }
+.nubi-wiki-editor .nubi-wiki-field { font:var(--deck-font-caption); font-weight:600; color:var(--nubi-text-secondary); }
+.nubi-wiki-editor .nubi-wiki-field input { color:var(--nubi-text-primary); }
+.nubi-wiki-editor .nubi-wiki-upload>div>strong { font:var(--deck-font-body); font-weight:600; }
+.nubi-wiki-detail .nubi-wiki-detail-copy h3 { font:var(--deck-font-heading); font-weight:600; }
+.nubi-wiki-detail-copy p { font:var(--deck-font-body); line-height:var(--deck-line-body); }
+.nubi-wiki-metadata dd { font-weight:500; color:var(--nubi-text-primary); }
+.nubi-team-loading { padding:var(--cx-space-4); color:var(--nubi-text-secondary); font:var(--deck-font-body); }

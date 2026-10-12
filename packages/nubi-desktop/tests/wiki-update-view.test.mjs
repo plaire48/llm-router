@@ -10,7 +10,7 @@ test('a stale Wiki offers an update and says what it costs and what it sends',()
   assert.equal(view.title,'위키 갱신 제안');
   assert.deepEqual(view.pages,[{path:'openwiki/home.md',label:'원본이 바뀜'},{path:'openwiki/old.md',label:'원본이 없음'}]);
   assert.match(view.lines.join('\n'),/마지막 갱신 뒤 바뀐 파일 2개/);
-  assert.match(view.lines.join('\n'),/커밋하지 않은 변경 1개는 갱신에 들어가지 않아요/);
+  assert.match(view.lines.join('\n'),/커밋하지 않은 변경 1개도 현재 파일 그대로 갱신에 들어가요/);
   assert.match(view.lines.join('\n'),/저장소 내용이 모델에 전달/);assert.match(view.lines.join('\n'),/결과를 확인한 뒤에 반영/);
   assert.deepEqual(view.actions,['run']);
 });
@@ -47,4 +47,18 @@ test('the end of an update is said plainly',()=>{
   assert.match(wikiUpdateView({status:stale,update:{state:'cancelled'}}).lines[0],/작업 공간은 그대로/);
   assert.match(wikiUpdateView({status:stale,update:{state:'failed',error:'model_unavailable'}}).lines[0],/모델에 연결/);
   assert.match(wikiUpdateView({status:stale,update:{state:'discarded'}}).lines[0],/버렸어요/);
+});
+
+
+test('absent Wiki pages explain initialization state without claiming lost generation history',()=>{
+  const expected={running:/만들고 있어요/,attention:/생성이 중단/,cancelled:/생성을 중지/,waiting_model:/모델을 연결/,completed:/아직 위키가 생성되지/};
+  for(const [state,pattern] of Object.entries(expected)){
+    const view=wikiUpdateView({status:{state:'unknown',reason:'no_wiki_pages'},initialization:{state}});
+    assert.match(view.lines.join(' '),pattern);
+    assert.doesNotMatch(view.lines.join(' '),/생성 기록이 없어/);
+    assert.deepEqual(view.actions,[]);
+  }
+  const recovery=wikiUpdateView({status:{state:'stale',reason:'no_generation_record'}});
+  assert.deepEqual(recovery.actions,['run']);
+  assert.match(recovery.lines.join(' '),/기록을 복구/);
 });

@@ -72,6 +72,7 @@ if ($registration.Count -ne 1 -or $registration[0].DisplayName -ne "$expectedNam
 @{ productName=$metadata.ProductName; fileVersion=$metadata.FileVersion; iconMatchesMaster=$true; shortcuts=$links; uninstallName=$registration[0].DisplayName } | ConvertTo-Json -Depth 4 | Set-Content verification/windows-branding.json
 
 $env:NUBI_TEST_EXECUTABLE = $exe
+$env:NUBI_TEST_WITHOUT_GIT = '1'
 Stage 'first-launch'
 node scripts/check-electron-shell.mjs
 if ($LASTEXITCODE -ne 0) { throw 'Installed app smoke failed' }
@@ -87,6 +88,17 @@ $durations.reinstallSeconds=$stopwatch.Elapsed.TotalSeconds
 Stage 'second-launch'
 node scripts/check-electron-shell.mjs
 if ($LASTEXITCODE -ne 0) { throw 'Reinstalled app smoke failed' }
+Stage 'silent-update-and-relaunch'
+$p = Start-Process $installer.FullName -ArgumentList @('/S', '--updated', '--force-run', "/D=$target") -Wait -PassThru
+if ($p.ExitCode -ne 0) { throw 'Silent update failed' }
+$launched = $null
+for ($i=0; $i -lt 30 -and !$launched; $i++) {
+  $launched = @(Get-Process | Where-Object { $_.Path -eq $exe })
+  if (!$launched) { Start-Sleep -Seconds 1 }
+}
+if (!$launched) { throw 'Updated app did not relaunch' }
+$launched | Stop-Process -Force
+Start-Sleep -Seconds 2
 Stage 'uninstall'
 $stopwatch.Restart()
 $uninstall = Get-ChildItem $target/*Uninstall*.exe | Select-Object -First 1
@@ -96,7 +108,7 @@ if ($p.ExitCode -ne 0) { throw "Uninstall failed: $($p.ExitCode)" }
 for ($i = 0; $i -lt 20 -and (Test-Path $exe); $i++) { Start-Sleep -Seconds 1 }
 if (Test-Path $exe) { throw 'Uninstall did not remove application' }
 $durations.uninstallSeconds=$stopwatch.Elapsed.TotalSeconds
-@{ durations=$durations; upgradeFromPrevious=$upgradeVerified; install=$true; launch=$true; reinstall=$true; reinstallLaunch=$true; uninstall=$true; authenticode=(Get-AuthenticodeSignature $installer.FullName).Status.ToString(); windows=(Get-CimInstance Win32_OperatingSystem).Caption } | ConvertTo-Json | Set-Content verification/windows-installer.json
+@{ durations=$durations; upgradeFromPrevious=$upgradeVerified; install=$true; launch=$true; reinstall=$true; reinstallLaunch=$true; silentUpdateRelaunch=$true; withoutSystemGit=$true; uninstall=$true; authenticode=(Get-AuthenticodeSignature $installer.FullName).Status.ToString(); windows=(Get-CimInstance Win32_OperatingSystem).Caption } | ConvertTo-Json | Set-Content verification/windows-installer.json
 (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLower() + '  ' + $installer.Name | Set-Content ($installer.FullName + '.sha256')
 
 Stage 'complete'

@@ -42,6 +42,13 @@
   --nubi-welcome-title: clamp(29px,4.2vw,50px);
   --nubi-welcome-copy: clamp(15px,1.75vw,19px);
   --nubi-terminal-surface: #17171C;
+  --nubi-terminal-bar: #202127;
+  --nubi-terminal-ink: #E5E8EB;
+  --nubi-terminal-muted: #AEB6C0;
+  --nubi-terminal-line: #3B3B46;
+  --nubi-terminal-accent: #80B7FF;
+  --nubi-terminal-danger: #FFADB4;
+  --nubi-terminal-selection: #294B75;
   --nubi-pointer-ink: #171717;
   --nubi-pointer-shadow: drop-shadow(0 1px 1px #0008);
   --nubi-modal-inset: var(--cx-space-6);
@@ -80,6 +87,14 @@
   --nubi-text-primary: var(--deck-ink);
   --nubi-text-secondary: var(--deck-sub);
   --nubi-text-action: var(--deck-blue-deep);
+  /* Meaning, not decoration: pair each state ink with its quiet surface. */
+  --nubi-text-meta: var(--nubi-note-ink);
+  --nubi-text-success: color-mix(in srgb, var(--deck-green) 86%, var(--deck-ink));
+  --nubi-text-warning: color-mix(in srgb, var(--deck-orange) 42%, var(--deck-ink));
+  --nubi-text-danger: color-mix(in srgb, var(--deck-red) 80%, var(--deck-ink));
+  --nubi-surface-success: var(--deck-green-soft);
+  --nubi-surface-warning: var(--deck-orange-soft);
+  --nubi-surface-danger: var(--deck-red-soft);
   --nubi-dialog-width-choice: 26.25rem;
   --nubi-dialog-width-compact: 30rem;
   --nubi-dialog-width-standard: 37.5rem;
@@ -137,17 +152,26 @@
 .desktop-git-history .desktop-git-back:hover { color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
 .desktop-git-scroll { overflow:auto; min-height:0; flex:1; padding:0 var(--cx-space-3) var(--cx-space-4); scrollbar-gutter:stable; }
 .desktop-git-commits { display:flex; flex-direction:column; gap:var(--cx-space-1); }
-.desktop-git-history .desktop-git-commit { display:flex; width:100%; align-items:flex-start; gap:var(--cx-space-3); padding:var(--cx-space-3); border:0; box-shadow:none; border-radius:var(--deck-control-radius); background:transparent; color:var(--deck-ink); text-align:left; white-space:normal; font:var(--deck-font-body); }
+.desktop-git-history .desktop-git-commit { display:flex; width:100%; align-items:center; gap:var(--cx-space-3); min-height:0; height:auto; padding:8px 12px; border:0; box-shadow:none; border-radius:8px; background:transparent; color:var(--deck-ink); text-align:left; white-space:nowrap; font:var(--deck-font-body); }
 .desktop-git-history .desktop-git-commit:hover { background:var(--deck-blue-soft); }
-.desktop-git-commit > svg { flex:none; margin-top:var(--cx-space-1); color:var(--deck-sub); }
+.desktop-git-commit > svg { flex:none; margin-top:0; color:var(--deck-sub); }
 .desktop-git-commit-copy { flex:1; min-width:0; }
-.desktop-git-commit-copy > strong { display:block; width:100%; font-weight:600; }
-.desktop-git-commit-copy small, .desktop-git-summary p { display:flex; flex-wrap:wrap; align-items:center; gap:var(--cx-space-2); margin:var(--cx-space-1) 0 0; font:var(--deck-font-caption); color:var(--deck-sub); }
+.desktop-git-commit-copy > strong { display:block; width:100%; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.desktop-git-commit-copy small, .desktop-git-summary p { display:flex; flex-wrap:nowrap; align-items:center; gap:var(--cx-space-2); margin:var(--cx-space-1) 0 0; font:var(--deck-font-caption); color:var(--deck-sub); white-space:nowrap; min-width:0; }
+.desktop-git-commit-copy > small .desktop-git-author { flex:1; min-width:0; max-width:none; }
+.desktop-git-commit-copy :is(code,time) { flex:none; font:inherit; font-variant-numeric:tabular-nums; }
+.desktop-git-commit-copy code { color:var(--nubi-text-secondary); font-family:var(--deck-mono); }
 .desktop-git-commit-copy small span { overflow:hidden; text-overflow:ellipsis; max-width:45%; white-space:nowrap; }
-.desktop-git-refs { display:flex; gap:var(--cx-space-1); margin-top:var(--cx-space-2); flex-wrap:wrap; }
-.desktop-git-refs > span { border-radius:var(--deck-control-radius); background:var(--deck-blue-soft); color:var(--deck-blue-deep); padding:0 var(--cx-space-2); font:var(--deck-font-caption); overflow-wrap:anywhere; }
+.desktop-git-refs { display:flex; align-items:center; gap:var(--cx-space-1); margin-top:var(--cx-space-1); flex-wrap:nowrap; color:var(--deck-blue-deep); font:var(--deck-font-caption); }
+.desktop-git-refs > svg,.desktop-git-refs > small { flex:none; margin:0; color:inherit; }
+.desktop-git-refs > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .desktop-git-summary { padding:var(--cx-space-3) var(--cx-space-2) var(--cx-space-4); }
-.desktop-git-summary h3 { margin:0; font-size:var(--cx-type-section); line-height:var(--deck-line-heading); font-weight:600; overflow-wrap:anywhere; }
+.desktop-git-summary h3 { margin:0; font-size:var(--deck-type-body); line-height:var(--deck-line-heading); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.desktop-git-summary p > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.desktop-git-summary p > :is(code,time) { flex:none; font-variant-numeric:tabular-nums; }
+.desktop-git-pagination { display:flex; align-items:center; justify-content:flex-end; flex:none; gap:var(--cx-space-2); padding:var(--cx-space-2) var(--cx-space-4); border-top:1px solid var(--deck-line); color:var(--deck-sub); font:var(--deck-font-caption); font-variant-numeric:tabular-nums; }
+.desktop-git-history .desktop-git-pagination .cx-kit-button { width:36px; min-width:36px; height:36px; min-height:36px; padding:0; border:0; background:transparent; color:var(--deck-sub); box-shadow:none; border-radius:var(--deck-control-radius); }
+.desktop-git-history .desktop-git-pagination .cx-kit-button:hover:not(:disabled) { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
 .desktop-git-summary-count { display:flex; justify-content:space-between; gap:var(--cx-space-3); margin-top:var(--cx-space-3); font:var(--deck-font-caption); }
 .desktop-git-history .desktop-git-caption { margin:var(--cx-space-3) var(--cx-space-2); color:var(--deck-sub); font:var(--deck-font-caption); }
 .desktop-git-summary .desktop-git-caption { margin:var(--cx-space-2) 0 0; }
@@ -252,7 +276,7 @@
 .desktop-empty { margin:auto; padding:var(--cx-space-4); text-align:center; color:var(--deck-muted); font:var(--deck-font-body); }
 .desktop-image-preview { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--cx-space-3); flex:1; min-height:0; padding:var(--cx-space-3); overflow:auto; color:var(--deck-muted); font:var(--deck-font-caption); }
 .desktop-image-preview > img { max-width:100%; max-height:calc(100% - 32px); object-fit:contain; }
-.desktop-terminal { --nubi-code-family:ui-monospace,SFMono-Regular,Consolas,"Noto Sans KR",monospace; display:flex; flex-direction:column; flex:1; height:auto; min-height:0; padding:var(--cx-space-2) var(--cx-space-3); gap:var(--cx-space-2); border:0; background:var(--deck-card); box-sizing:border-box; }
+.desktop-terminal { --nubi-code-family:Menlo,Consolas,"Liberation Mono",monospace; display:flex; flex-direction:column; flex:1; height:auto; min-height:0; padding:var(--cx-space-2) var(--cx-space-3); gap:var(--cx-space-2); border:0; background:var(--deck-card); box-sizing:border-box; }
 .desktop-terminal-heading { display:flex; align-items:center; gap:var(--cx-space-2); color:var(--deck-sub); font:var(--deck-font-label); }
 .desktop-terminal-heading > span { flex:1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; color:var(--deck-muted); font:var(--deck-font-caption); }
 .desktop-terminal-output { flex:1; min-height:0; overflow:hidden; font-family:var(--nubi-code-family); font-size:13px; }
@@ -260,10 +284,10 @@
 .desktop-pane .desktop-terminal-input > .cx-kit-button { display:flex; border:0; background:var(--deck-blue-soft); color:var(--deck-blue-deep); min-width:32px; padding:var(--cx-space-2); box-shadow:none; }
 .desktop-browser { display:flex; flex-direction:column; flex:1; min-height:0; background:var(--deck-card); }
 .desktop-pane .desktop-browser-toolbar { padding:var(--cx-space-2); background:var(--deck-card); }
-.desktop-browser-address { display:flex; align-items:center; gap:var(--cx-space-2); flex:1; min-width:0; padding-inline:var(--cx-space-3); border-radius:999px; background:var(--deck-tint); color:var(--deck-muted); }
+.desktop-browser-address { display:flex; align-items:center; gap:var(--cx-space-2); flex:1; min-width:0; height:36px; box-sizing:border-box; padding-inline:var(--cx-space-3); border-radius:var(--deck-control-radius); background:var(--deck-tint); color:var(--deck-muted); }
 .desktop-browser-login-code { display:flex; align-items:center; gap:var(--cx-space-3); padding:var(--cx-space-2) var(--cx-space-3); background:var(--deck-blue-soft); color:var(--deck-sub); font:var(--deck-font-body); }
 .desktop-browser-login-code strong { margin-left:auto; color:var(--deck-blue); }
-.desktop-pane .desktop-browser-address input { flex:1; min-width:0; padding:var(--cx-space-2) 0; border:0; background:transparent; font:var(--deck-font-body); }
+.desktop-pane .desktop-browser-address input { flex:1; min-width:0; height:100%; min-height:0; box-sizing:border-box; padding:0; border:0; background:transparent; font:var(--deck-font-body); }
 .desktop-browser-find { display:flex; align-items:center; gap:var(--cx-space-2); padding:var(--cx-space-2) var(--cx-space-3); background:var(--deck-tint); }
 .desktop-pane .desktop-browser-find input { min-width:0; flex:1; padding:var(--cx-space-2); border:0; background:var(--deck-card); font:var(--deck-font-body); }
 .desktop-browser-find > small { color:var(--deck-muted); font:var(--deck-font-caption); }
@@ -569,7 +593,8 @@
 .nubi-start-projects>button>svg { flex:none; }
 .nubi-drift-label { display:block; flex:1 1 0%; width:100%; max-width:100%; min-width:0; overflow:hidden; }
 .nubi-drift-label > .nubi-drift-window { display:block; flex:1; width:100%; min-width:0; overflow:hidden; white-space:nowrap; }
-.nubi-drift-text { display:inline-block; width:max-content; white-space:nowrap; }
+.nubi-drift-text { display:inline-block; max-width:100%; width:max-content; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; vertical-align:bottom; }
+.nubi-drift-label[data-drifting="true"] .nubi-drift-text { max-width:none; text-overflow:clip; }
 .nubi-sidebar-project svg:last-child { margin-left:auto; flex:none; }
 .nubi-sidebar-actions { margin:var(--cx-space-3) 0 var(--cx-space-6); }
 .nubi-sidebar-quick-actions { justify-content:flex-end; margin:0 0 var(--cx-space-2); }
@@ -990,14 +1015,14 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .nubi-workbench .nubi-reasoning-reset.cx-kit-button:hover:not(:disabled) { color:var(--deck-blue); background:var(--deck-tint); }
 .nubi-reasoning-slider-wrap { position:relative; height:var(--nubi-reasoning-track-height); }
 .nubi-reasoning-slider { position:relative; display:block; appearance:none; width:100%; height:var(--nubi-reasoning-track-height); padding:0; margin:0; background:transparent; cursor:pointer; touch-action:pan-y; }
-.nubi-reasoning-slider::-webkit-slider-runnable-track { height:var(--nubi-reasoning-track-height); border-radius:var(--deck-pill-radius); background:linear-gradient(to right,var(--deck-blue) 0 var(--nubi-reasoning-progress),var(--deck-line) var(--nubi-reasoning-progress) 100%); }
+.nubi-reasoning-slider::-webkit-slider-runnable-track { height:var(--nubi-reasoning-track-height); border-radius:var(--deck-pill-radius); background:linear-gradient(to right,transparent 0 var(--nubi-reasoning-progress),var(--deck-line) var(--nubi-reasoning-progress) 100%),var(--nubi-reasoning-fill,linear-gradient(var(--deck-blue),var(--deck-blue))); }
 .nubi-reasoning-slider::-webkit-slider-thumb { appearance:none; width:var(--nubi-reasoning-track-height); height:var(--nubi-reasoning-track-height); background:var(--deck-card); border:0; border-radius:50%; box-shadow:0 1px 4px color-mix(in srgb,var(--deck-ink) 12%,transparent); cursor:grab; }
 .nubi-reasoning-slider:active::-webkit-slider-thumb { cursor:grabbing; }
-.nubi-reasoning-slider:focus-visible { outline:2px solid var(--deck-blue); outline-offset:var(--cx-space-1); border-radius:var(--deck-pill-radius); }
+.nubi-reasoning-slider:focus-visible { outline:2px solid var(--nubi-reasoning-ink,var(--deck-blue)); outline-offset:var(--cx-space-1); border-radius:var(--deck-pill-radius); }
 .nubi-reasoning-ticks { position:absolute; z-index:1; inset:0 calc(var(--nubi-reasoning-track-height) / 2); display:flex; justify-content:space-between; align-items:center; pointer-events:none; }
 .nubi-reasoning-ticks span { width:var(--nubi-reasoning-tick-size); height:var(--nubi-reasoning-tick-size); border-radius:50%; background:var(--deck-sub); opacity:.7; }
 .nubi-reasoning-ticks span[data-filled="true"] { background:var(--deck-card); }
-.nubi-reasoning-ticks span.is-selected { background:var(--deck-blue); opacity:1; }
+.nubi-reasoning-ticks span.is-selected { background:var(--nubi-reasoning-ink,var(--deck-blue)); opacity:1; }
 .nubi-workspace-rail [aria-pressed="true"] { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
 @media(max-width:520px) {
   :root { --nubi-page-inset:var(--cx-space-4); --nubi-row-inset:var(--cx-space-5); }
@@ -1414,8 +1439,8 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 @container nubi-mail-view (max-width:720px) {
  .nubi-mail-history-body { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr); overflow:hidden; }
  .nubi-mail-history-list { height:auto; max-height:none; overflow:hidden; }
- .nubi-mail-history[data-selected=false] .nubi-mail-history-detail { display:none; }
- .nubi-mail-history[data-selected=true] .nubi-mail-history-body { grid-template-rows:minmax(260px,1fr) minmax(180px,1fr); overflow:auto; }
+ .nubi-mail-history:not([data-layout=table])[data-selected=false] .nubi-mail-history-detail { display:none; }
+ .nubi-mail-history:not([data-layout=table])[data-selected=true] .nubi-mail-history-body { grid-template-rows:minmax(260px,1fr) minmax(180px,1fr); overflow:auto; }
  .nubi-mail-history-detail { min-height:0; overflow:auto; padding-top:var(--cx-space-2); }
 }
 @supports selector(::-webkit-scrollbar){.nubi-mail-results,.nubi-mail-history-detail,.nubi-mail-history-body { scrollbar-width:auto; scrollbar-color:auto; }}
@@ -1488,7 +1513,13 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .nubi-mail-search-input-row .cx-search-field { flex:1; min-width:0; }
 .nubi-mail-saved-trigger.cx-kit-button,.nubi-mail-local-action.cx-kit-button { display:inline-flex; align-items:center; justify-content:center; flex:none; min-width:30px; min-height:30px; padding:6px; border:0; box-shadow:none; background:transparent; color:var(--deck-sub); border-radius:var(--deck-control-radius); }
 .nubi-mail-saved-trigger:hover,.nubi-mail-local-action:hover,.nubi-mail-local-action[aria-pressed=true] { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
-.nubi-mail-filters[open]>.nubi-mail-filter-fields { max-height:min(340px,35vh); overflow-y:auto; }
+.nubi-mail-filters[open]>.nubi-mail-filter-fields { max-height:none; overflow:visible; }
+.nubi-mail-search:has(>.nubi-mail-filters[open]) { overflow-y:auto; }
+.nubi-mail-search:has(>.nubi-mail-filters[open])>.nubi-mail-results { min-height:180px; }
+@container mail-list (min-width:660px) {
+ .nubi-mail-filters>.nubi-mail-filter-fields,.nubi-mail-extra-filters>div { grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:var(--cx-space-4); }
+ .nubi-mail-extra-filters { grid-column:1/-1; }
+}
 .nubi-mail-extra-filters>summary { display:flex; align-items:center; justify-content:space-between; gap:var(--cx-space-2); padding:6px 0; cursor:pointer; color:var(--deck-sub); }
 .nubi-mail-extra-filters>div { display:grid; gap:var(--cx-space-2); padding-top:var(--cx-space-1); }
 .nubi-mail-pin-filter.cx-kit-button { justify-self:start; display:flex; align-items:center; gap:var(--cx-space-1); padding:5px 8px; border:0; box-shadow:none; background:transparent; color:var(--deck-sub); font:var(--deck-font-caption); }
@@ -1534,3 +1565,7 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .nubi-progress.is-indeterminate span { width:30%;animation:nubi-wiki-scan 1.8s ease-in-out infinite alternate; }
 @keyframes nubi-wiki-scan { to { transform:translateX(230%); } }
 @media(prefers-reduced-motion:reduce){.nubi-progress.is-indeterminate span{animation:none;}}
+
+/* Git empty results share the existing Nubi mascot and readable CX tokens. */
+.nubi-git-empty-state { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:var(--cx-space-4); min-height:196px; padding:var(--cx-space-5) var(--cx-space-3); box-sizing:border-box; }
+.nubi-git-empty-state > strong { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font:var(--deck-font-label); font-weight:600; color:var(--deck-ink); text-align:center; }

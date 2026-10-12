@@ -60,3 +60,9 @@ test('AI handoff preserves the draft and search conditions, uses mail command an
   assert(mailSearchDraft('작성 중인 초안', '예산',{}).startsWith('작성 중인 초안\n\n'));
   assert.throws(()=>mailSearchDraft('x'.repeat(16000),'예산'),/agent_input_invalid/);
 });
+test('table sorting covers all filtered results before pagination and mailbox never guesses from sender',async()=>{
+ const {search,rows,sources}=fixture();sources.one.subject='Zulu';sources.two.subject='Alpha';rows[1].mailbox='sent';rows[0].recipientRole='cc';
+ const first=await search.search({sort:'subject-asc',limit:1});assert.equal(first.results[0].id,'two');const second=await search.search({sort:'subject-asc',limit:1,cursor:first.nextCursor});assert.equal(second.results[0].id,'one');
+ const inbox=await search.search({filters:{mailbox:'inbox'}});assert.deepEqual(inbox.results.map(r=>r.id),['one']);assert.equal(inbox.results[0].recipientRole,'cc');assert.equal(inbox.results[0].senderLabel,'김누비 / nubi@example.test');
+ assert.deepEqual((await search.search({filters:{mailbox:'sent'}})).results.map(r=>r.id),['two']);
+});

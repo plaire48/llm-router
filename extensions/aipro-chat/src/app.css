@@ -213,7 +213,7 @@ h1 { font-size: var(--cx-type-title); font-weight: 900; letter-spacing: -.02em; 
 .steering-message-status { display: flex; align-items: center; justify-content: space-between; gap: var(--cx-space-3); margin-top: var(--cx-space-2); color: var(--layout-muted); font: var(--deck-font-body); }
 .steering-message-status > [data-pending] { color: var(--brand-ink); font-weight: 600; }
 .steering-message-status .cx-action-button[data-action='delete']:not(:disabled), .agent-input-actions .cx-action-button[data-action='delete']:not(:disabled) { color: var(--layout-muted); background: transparent; border-color: transparent; box-shadow: none; }
-.copy-control { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--cx-space-2); min-width: 0; max-width: 100%; }
+.copy-control { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: var(--cx-space-2); min-width: 0; max-width: 100%; }
 .copy-complete.cx-action-button { color: var(--brand-ink); background: var(--brand-soft); border-color: var(--brand-border); }
 .copy-error { color: var(--cx-danger); font-size: var(--cx-type-body); overflow-wrap: anywhere; }
 .reply-status { display: flex; width: fit-content; max-width: 100%; align-items: center; gap: var(--cx-space-2); margin-block: var(--cx-space-2); padding: var(--cx-space-1) var(--cx-space-2); border-radius: var(--cx-radius-control); background: var(--brand-soft); color: var(--brand-ink); font-size: var(--cx-type-body); }

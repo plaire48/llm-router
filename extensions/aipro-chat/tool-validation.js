@@ -6,6 +6,25 @@ const escape = value => value.replaceAll('~', '~0').replaceAll('/', '~1');
 const unescape = value => value.replaceAll('~1', '/').replaceAll('~0', '~');
 const variants = schema => schema && typeof schema === 'object' ? [schema, ...['anyOf', 'oneOf', 'allOf'].flatMap(key => (schema[key] || []).flatMap(variants))] : [];
 
+// Return only the failing field's declared constraints, never its rejected
+// value. A bare "type"/"enum" error gives compatible models too little help
+// to repair nested command proposals without guessing again.
+function valueHints(candidates) {
+  const valueSchemas=[];let remaining=1200;
+  for(const candidate of candidates){
+    const hint={};
+    for(const key of ['type','enum','const','minimum','maximum','minLength','maxLength','minItems','maxItems','pattern']){
+      if(!Object.hasOwn(candidate,key))continue;
+      const value=candidate[key],encoded=JSON.stringify(value);
+      if(encoded.length>remaining||encoded.length>800)continue;
+      hint[key]=value;remaining-=encoded.length;
+    }
+    if(Object.keys(hint).length&&!valueSchemas.some(item=>JSON.stringify(item)===JSON.stringify(hint)))valueSchemas.push(hint);
+    if(valueSchemas.length===4)break;
+  }
+  return valueSchemas.length?{valueSchemas}:{};
+}
+
 // Only names from the host's declared schema enter repair feedback. Keep union
 // and intersection fragments separate: merging their required keys would
 // invent a condition that no individual union branch requires.
@@ -71,6 +90,7 @@ export function toolArgumentIssues(schema, args) {
           if (candidates.some(item => item.required?.includes(key) && Object.hasOwn(item.properties || {}, key))) add({path: `${path}/${escape(key)}`, rule: 'required', ...(resolved ? objectHints(candidates, path) : {})});
         }
       } else add({path, rule: error.keyword,
+        ...(resolved && ['type','enum','const','minimum','maximum','minLength','maxLength','minItems','maxItems','pattern'].includes(error.keyword) ? valueHints(candidates) : {}),
         ...(resolved && ['additionalProperties', 'anyOf', 'oneOf'].includes(error.keyword) ? objectHints(candidates, path) : {})});
       if (issues.length === 4) break;
     }

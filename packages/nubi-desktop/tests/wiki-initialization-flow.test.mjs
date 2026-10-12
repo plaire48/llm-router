@@ -8,6 +8,7 @@ import {git,hash} from '../runtime/files.mjs';
 import {RepositoryEvidenceResolver} from '../generated/openwiki.mjs';
 import {wikiUpdateStatus} from '../runtime/wiki-update.mjs';
 import {wikiInitializationError} from '../runtime/wiki-initialization-error.mjs';
+import {listWikiSourceFiles,readWikiSource} from '../runtime/wiki-snapshot.mjs';
 
 async function setup(t,{gitProject=false}={}){
   const temp=await mkdtemp(path.join(os.tmpdir(),'nubi-wiki-flow-')),root=path.join(temp,'source');await mkdir(root);await writeFile(path.join(root,'app.txt'),'initial source\n');
@@ -55,12 +56,24 @@ test('plain-folder update reads the current Wiki, proposes a result and preserve
   const conflict=await settle(service,next.id);await assert.rejects(service.wikiUpdate({method:'apply',id:conflict.id,fingerprint:conflict.fingerprint}),/wiki_update_conflict/);
   assert.equal(await readFile(path.join(root,'openwiki/home.md'),'utf8'),'human edits while generating');
 });
-test('Git updates include the current uncommitted Wiki and still use committed source scope',async t=>{
+// User decision 2026-10-12: the update reads the sources as the working tree holds them, as the status that proposed it did.
+test('Git updates include the current uncommitted Wiki and the working tree sources, and the result is current afterwards',async t=>{
   const {root,service}=await setup(t,{gitProject:true});await writeFile(path.join(root,'app.txt'),'committed change\n');
   await git(root,['add','app.txt']);await git(root,['-c','user.name=Fixture','-c','user.email=fixture@localhost','-c','commit.gpgSign=false','commit','-qm','Changed source']);
-  service.wikiUpdater=async({root:copy})=>{assert.match(await readFile(path.join(copy,'openwiki/home.md'),'utf8'),/initial source/);assert.equal((await readFile(path.join(copy,'app.txt'),'utf8')).replace(/\r\n/g,'\n'),'committed change\n');await publish(copy,'# App\n\ncommitted change\n');return {};};
+  await writeFile(path.join(root,'app.txt'),'uncommitted change\n');await writeFile(path.join(root,'new.txt'),'new source\n');
+  service.wikiUpdater=async({root:copy})=>{assert.match(await readFile(path.join(copy,'openwiki/home.md'),'utf8'),/initial source/);assert.equal((await readFile(path.join(copy,'app.txt'),'utf8')).replace(/\r\n/g,'\n'),'uncommitted change\n');assert.equal(await readFile(path.join(copy,'new.txt'),'utf8'),'new source\n');await publish(copy,'# App\n\nuncommitted change\n');return {};};
   const proposal=await service.wikiUpdate({method:'propose'});await service.wikiUpdate({method:'run',id:proposal.id,fingerprint:proposal.fingerprint});
   const ready=await settle(service,proposal.id);assert.equal(ready.state,'ready',JSON.stringify(ready));
+  assert.deepEqual(ready.outside,[],'the working tree edits are not the runner\'s changes');
+  await service.wikiUpdate({method:'apply',id:ready.id,fingerprint:ready.fingerprint});
+  const status=await wikiUpdateStatus(root);assert.equal(status.state,'current',JSON.stringify(status));assert.deepEqual(status.uncommitted,['app.txt','new.txt']);
+});
+
+test('an uncommitted edit counts as a change once it differs from the sources the last run read',async t=>{
+  const {root}=await setup(t,{gitProject:true});
+  assert.equal((await wikiUpdateStatus(root)).state,'current');
+  await writeFile(path.join(root,'app.txt'),'edited, not committed\n');
+  const status=await wikiUpdateStatus(root);assert.equal(status.state,'stale');assert.deepEqual(status.changedFiles,['app.txt']);assert.deepEqual(status.uncommitted,['app.txt']);
 });
 
 test('initialization returns its scanning job before a slow listing and cancellation remains responsive',async t=>{
@@ -94,6 +107,33 @@ test('Wiki failure diagnostics preserve actionable codes without raw errors',()=
   assert.equal(wikiInitializationError(Error('unknown_private_reply'),'planning'),'wiki_failed');
 });
 
+test('deleted tracked files, sparse entries and uninitialized submodules do not abort source reading',async t=>{
+  const {root,service}=await setup(t,{gitProject:true});await rm(path.join(root,'openwiki'),{recursive:true});service.store.set('wiki-init',null);
+  await writeFile(path.join(root,'deleted.txt'),'removed');await writeFile(path.join(root,'sparse.txt'),'sparse');
+  await git(root,['add','deleted.txt','sparse.txt']);await git(root,['-c','user.name=Fixture','-c','user.email=fixture@localhost','-c','commit.gpgSign=false','commit','-qm','Tracked sources']);
+  const head=(await git(root,['rev-parse','HEAD'])).trim();
+  await rm(path.join(root,'deleted.txt'));await git(root,['update-index','--skip-worktree','sparse.txt']);await rm(path.join(root,'sparse.txt'));
+  await git(root,['update-index','--add','--cacheinfo',`160000,${head},vendor/library`]);
+  const listed=await listWikiSourceFiles(root);assert.deepEqual(listed.paths,['app.txt']);assert.equal(listed.unavailableFiles,3);
+  await service.initializeWiki();await service.wikiInitPromise;
+  assert.equal(service.wikiInitialization().state,'completed',JSON.stringify(service.wikiInitialization()));assert.equal(service.wikiInitialization().excludedFiles,3);
+  await assert.rejects(access(path.join(root,'vendor/library')));await assert.rejects(readWikiSource(root,'missing.txt'),/source_stale/);
+});
+
+// User decision 2026-10-12: a source that moves while the model works no longer discards its work.
+test('a source added or removed while generating is published for its snapshot and reported for an update',async t=>{
+  const {root,service}=await setup(t,{gitProject:true});await rm(path.join(root,'openwiki'),{recursive:true});service.store.set('wiki-init',null);
+  service.wikiInitializer=async({root:copy})=>{await publish(copy,'# Outdated');await writeFile(path.join(root,'new.txt'),'new source');};
+  await service.initializeWiki();await service.wikiInitPromise;
+  let job=service.wikiInitialization();assert.equal(job.state,'completed',JSON.stringify(job));assert.equal(job.changedDuringRun,1);await access(path.join(root,'openwiki/home.md'));
+  assert.deepEqual((await wikiUpdateStatus(root)).uncommitted,['new.txt'],'the untracked file is named apart until it is committed');
+  await rm(path.join(root,'openwiki'),{recursive:true});await rm(path.join(root,'new.txt'));service.store.set('wiki-init',null);
+  service.wikiInitializer=async({root:copy})=>{await publish(copy,'# Outdated');await rm(path.join(root,'app.txt'));};
+  await service.initializeWiki();await service.wikiInitPromise;
+  job=service.wikiInitialization();assert.equal(job.state,'completed',JSON.stringify(job));assert.equal(job.changedDuringRun,1);
+  const status=await wikiUpdateStatus(root);assert.equal(status.state,'stale');assert.deepEqual(status.stalePages,[{path:'openwiki/home.md',freshness:'unavailable'}]);
+});
+
 
 test('remote clone nested in another repository retains history and its own root during Wiki initialization',async t=>{
   const temp=await realpath(await mkdtemp(path.join(os.tmpdir(),'nubi-remote-wiki-'))),remote=path.join(temp,'remote'),parent=path.join(temp,'parent'),clone=path.join(parent,'cloned');
@@ -115,8 +155,10 @@ test('remote clone nested in another repository retains history and its own root
   assert(!await git(clone,['worktree','list','--porcelain']).then(text=>text.includes(analysisRoot)));await assert.rejects(access(analysisRoot));
 });
 
-test('a commit changed during initialization refuses Wiki publication and removes its worktree',async t=>{
+test('a commit made during initialization is published for the snapshot commit and its worktree is removed',async t=>{
   const {root,service}=await setup(t,{gitProject:true});await rm(path.join(root,'openwiki'),{recursive:true});service.store.set('wiki-init',null);let copy;
   service.wikiInitializer=async({root:analysis})=>{copy=analysis;await git(root,['-c','user.name=Fixture','-c','user.email=fixture@localhost','-c','commit.gpgSign=false','commit','--allow-empty','-qm','Concurrent commit']);await publish(analysis,'# Outdated');};
-  await service.initializeWiki();await service.wikiInitPromise;assert.equal(service.wikiInitialization().error,'source_stale');await assert.rejects(access(path.join(root,'openwiki/home.md')));await assert.rejects(access(copy));
+  await service.initializeWiki();await service.wikiInitPromise;
+  const job=service.wikiInitialization();assert.equal(job.state,'completed',JSON.stringify(job));assert.equal(job.changedDuringRun,0);await access(path.join(root,'openwiki/home.md'));await assert.rejects(access(copy));
+  assert.equal((await wikiUpdateStatus(root)).state,'current','an empty commit changed no source');
 });

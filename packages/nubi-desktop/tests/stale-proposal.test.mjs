@@ -51,6 +51,6 @@ test('a proposal from before the latest user message is marked for the agent and
 
 test('the review is told that such a proposal is not the approval that a correction waits for',()=>{
   assert.match(REVIEW_PROMPT,/beforeLatestUserMessage/);
-  assert.match(REVIEW_PROMPT,/corrects what the proposal changes/);
+  assert.match(REVIEW_PROMPT,/corrections require corrected proposals/);
   // The limit of the review instruction is kept in tests/review-user-text.test.mjs.
 });

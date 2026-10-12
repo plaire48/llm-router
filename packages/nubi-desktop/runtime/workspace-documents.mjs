@@ -21,10 +21,10 @@ async function safeTarget(root,rel){
 
 // Bounded descriptor reads avoid readFile allocating an unbounded growing file.
 // Sources remain references; this never touches SourceObservations.
-export async function documentSnapshot(root,paths,signal,{maxFiles=DOCUMENT_LIMITS.files,kind='folder'}={}){
+export async function documentSnapshot(root,paths,signal,{maxFiles=DOCUMENT_LIMITS.files,kind='folder',skipped=null}={}){
   if(!Array.isArray(paths)||!paths.length||paths.length>maxFiles||new Set(paths).size!==paths.length)fail('document_arguments');
   root=await realpath(root);const documents=[];let total=0;
-  for(const rel of paths){
+  const readOne=async rel=>{
     signal.throwIfAborted();
     const target=await safeTarget(root,rel);
     const file=await open(target,constants.O_RDONLY|(constants.O_NOFOLLOW||0));
@@ -45,10 +45,15 @@ export async function documentSnapshot(root,paths,signal,{maxFiles=DOCUMENT_LIMI
       const bytes=Buffer.concat(blocks);
       if(/\.(?:pdf|docx?|pptx?|xlsx?|od[tpfs]|png|jpe?g|gif|webp|zip)$/i.test(rel)||bytes.subarray(0,5).toString()==='%PDF-'||bytes.subarray(0,4).equals(Buffer.from([80,75,3,4])))fail('document_format');
       if(bytes.includes(0)||!isUtf8(bytes))fail('document_encoding');
-      const text=bytes.toString('utf8');total+=text.length;
-      if(text.length>DOCUMENT_LIMITS.characters||total>DOCUMENT_LIMITS.totalCharacters)fail('document_limit');
+      const text=bytes.toString('utf8');
+      if(text.length>DOCUMENT_LIMITS.characters||total+text.length>DOCUMENT_LIMITS.totalCharacters)fail('document_limit');
+      total+=text.length;
       documents.push({id:'document:'+hash(rel).slice(7),title:path.posix.basename(rel),path:rel,text,kind,version:hash(bytes)});
     }finally{await file.close();}
+  };
+  for(const rel of paths){
+    // A Wiki question skips a page it cannot read (skipped names it); a document analysis refuses the selection.
+    try{await readOne(rel);}catch(error){if(!skipped||signal.aborted)throw error;skipped.push(rel);}
   }
   return documents;
 }
@@ -87,8 +92,10 @@ export function interruptDocumentResearch(store){
 // supplies documents, the OpenWiki agent of the shared runtime does the research.
 export async function wikiSnapshot({root,pages,projectId,signal}){
   if(!Array.isArray(pages)||!pages.length)fail('document_wiki_missing');
-  const documents=await documentSnapshot(root,pages.slice(0,WIKI_LIMITS.files),signal,{maxFiles:WIKI_LIMITS.files,kind:'wiki'});
-  return {wikiId:'external:'+projectId,documents,sourceComplete:pages.length<=WIKI_LIMITS.files};
+  // One page the host cannot read (too large, not UTF-8, gone) no longer fails the whole question (2026-10-12).
+  const skipped=[],documents=await documentSnapshot(root,pages.slice(0,WIKI_LIMITS.files),signal,{maxFiles:WIKI_LIMITS.files,kind:'wiki',skipped});
+  if(!documents.length)fail('document_wiki_missing');
+  return {wikiId:'external:'+projectId,documents,sourceComplete:pages.length<=WIKI_LIMITS.files&&!skipped.length};
 }
 
 export async function analyzeWorkspaceDocuments({root,args,signal,modelId,complete,taskId,runId,onRecord,store},engine){

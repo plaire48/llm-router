@@ -49,9 +49,9 @@ export function FabrixConnection({title='FabriX 연결', initial, rpc, onClose, 
     <ActionButton action="login" iconOnly={!showActionLabels} className="icon-commit" label="연결" title="FabriX 연결" disabled={!result || testing} busy={connecting} onClick={connect}/>
   </>}>
     <form ref={formRef} className="fabrix-fields" onSubmit={event => {event.preventDefault(); test();}}>
-      <DeckField icon="linkExternal" label="Endpoint" required><CxInput type="url" value={form.endpoint} disabled={testing || connecting} autoComplete="off" placeholder="https://fabrix.company.com/openapi" onChange={event => change('endpoint', event.target.value)}/></DeckField>
-      <DeckField icon="logIn" label="Client Key" required><CxInput type="password" value={form.clientKey} disabled={testing || connecting} autoComplete="new-password" maxLength={16384} onChange={event => change('clientKey', event.target.value)}/></DeckField>
-      <DeckField icon="logIn" label="API Token" required><CxInput type="password" value={form.token} disabled={testing || connecting} autoComplete="new-password" maxLength={16384} onChange={event => change('token', event.target.value)}/></DeckField>
+      <DeckField icon="linkExternal" label="Endpoint URL" required><CxInput type="url" value={form.endpoint} disabled={testing || connecting} autoComplete="off" placeholder="https://nsds-api.fabrix-s.samsungsds.com/sds/trial/api-chat" onChange={event => change('endpoint', event.target.value)}/></DeckField>
+      <DeckField icon="logIn" label="x-fabrix-client" required><CxInput type="password" value={form.clientKey} disabled={testing || connecting} autoComplete="new-password" maxLength={16384} onChange={event => change('clientKey', event.target.value)}/></DeckField>
+      <DeckField icon="logIn" label="x-openapi-token" required><CxInput type="password" value={form.token} disabled={testing || connecting} autoComplete="new-password" maxLength={16384} onChange={event => change('token', event.target.value)}/></DeckField>
       {testing && <p className="fabrix-test-status" data-state="running" role="status"><span className="status-spinner" aria-hidden="true"/>연결 확인 중</p>}
       {result && <p className="fabrix-test-status" data-state="done" role="status"><Icon name="check" size={14}/><span title="사용 가능한 모델 목록을 확인했습니다.">테스트 통과</span></p>}
       {error && !onError && <CxNotice tone="danger">{error}</CxNotice>}

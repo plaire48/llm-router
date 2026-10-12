@@ -12,6 +12,8 @@ import {MailLibrary} from '../ui/MailLibrary.jsx';
 import {MailHistory} from '../ui/MailHistory.jsx';
 import {MailFilterDialog,DEFAULT_MAIL_FILTERS} from '../ui/MailSearchToolbar.jsx';
 import {SavedMailSearches} from '../ui/SavedMailSearches.jsx';
+import {SkillLibrary} from '../ui/SkillLibrary.jsx';
+import {DESKTOP_PROVIDER_LABELS} from '../ui/provider-labels.mjs';
 import {CustomSkills} from '../ui/CustomSkills.jsx';
 import {SkillMarketplace} from '../ui/SkillMarketplace.jsx';
 import {SkillRegistration} from '../ui/SkillRegistration.jsx';
@@ -20,6 +22,7 @@ import {AnalysisHistory} from '../ui/AnalysisHistory.jsx';
 import {DocumentAnalysisProgress} from '../ui/DocumentAnalysisProgress.jsx';
 import {SetupActions} from '../ui/SetupActions.jsx';
 import {AppliedFileChanges} from '../ui/AppliedFileChanges.jsx';
+import {ClaudeConnection} from '../ui/ClaudeConnection.jsx';
 import {ReasoningPicker} from '../ui/ReasoningPicker.jsx';
 import {GhesAccount} from '../ui/GhesAccount.jsx';
 import {MailProgress} from '../ui/MailProgress.jsx';
@@ -50,7 +53,7 @@ async function api(method,args={}){
   if(args.action==='saveSearch')return {...args,id:'new-search'};
   return structuredClone(mail);
  }
- if(method==='listSkills')return {skills:params.has('empty')?[]:[skill],issues:[],truncated:false};
+ if(method==='listSkills')return {skills:params.has('empty')?[]:params.has('many')?Array.from({length:11},(_,index)=>({...skill,id:'skill-'+index,name:'skill-'+index,title:'스킬 '+(index+1)})):[skill],issues:[],truncated:false};
  if(method==='skillTrash')return {items:[{...skill,id:'trash',removedAt:'2026-10-09T01:00:00Z'}]};
  if(method==='removeSkill')return {...skill};
  if(method==='chooseSkillPackage')return {cancelled:true};
@@ -67,15 +70,16 @@ async function api(method,args={}){
 const no=()=>{},dialog=(title,child)=><DetailPanel title={title} variant="modal" className="deck-dialog nubi-panel" onClose={no}>{child}</DetailPanel>;
 function Samples(){
  const [accountOpen,setAccountOpen]=useState(true);
+ if(screen.startsWith('claude-'))return <ClaudeConnection initialIssue={{'claude-install':'claude_cli_missing','claude-login':'claude_login_required','claude-update':'claude_cli_update'}[screen]} api={api} onClose={no} onConnected={no} openWebPage={no}/>;
  if(screen==='startup')return <StartupConnections onConnect={no} onClose={no}/>;
  if(screen==='mail-settings')return dialog('메일 설정',<MailLibrary api={api} provider={provider} onProviderAction={no} onProviderLogin={no}/>);
  if(screen==='mail')return <MailHistory api={api} onSettings={no} onDocument={no} onAsk={no} onAskSearch={no} onReturn={no}/>;
- if(screen==='mail-filters')return <MailFilterDialog filters={DEFAULT_MAIL_FILTERS} facets={{senders:[],tags:[]}} initial="period" onApply={no} onClose={no}/>;
+ if(screen==='mail-filters')return <MailFilterDialog filters={DEFAULT_MAIL_FILTERS} facets={{senders:[],tags:[]}} initial="period" onApply={value=>{window.appliedMailFilters=value;}} onClose={no}/>;
  if(screen==='mail-saved')return <SavedMailSearches api={api} query="승인" filters={DEFAULT_MAIL_FILTERS} sort="newest" onApply={no} onClose={no}/>;
- if(screen==='skills')return dialog('스킬 관리',<CustomSkills api={api} openPath={no} onRegister={no}/>);
+ if(screen==='skills')return dialog('스킬 관리',<SkillLibrary api={api} openPath={no} onRegister={no}/>);
  if(screen==='marketplace')return dialog('스킬 관리',<SkillMarketplace api={api} openPath={no} connectMarketplace={async()=>({loginRequired:true})} openTeamWorkspace={no}/>);
  if(screen==='registration')return dialog('스킬 등록',<SkillRegistration api={api} onBusy={no} onRegistered={no}/>);
- if(screen==='models-long')return <ModelSelection showActionLabels data={{activeProvider:'aipro',connections:{aipro:{present:true}},catalogs:{aipro:{models:modelRows}},selectedModels:{aipro:'model-0'}}} title="모델 선택" showProviderNames providerLabels={{aipro:'AI Pro',chatgpt:'ChatGPT',fabrix:'FabriX'}} onClose={no} onSelect={async()=>{}} onRefresh={no} onProviderSelect={no}/>;
+ if(screen==='models-long')return <ModelSelection showActionLabels data={{activeProvider:'aipro',connections:{aipro:{present:true}},catalogs:{aipro:{models:modelRows}},selectedModels:{aipro:'model-0'}}} title="모델 선택" showProviderNames providerLabels={DESKTOP_PROVIDER_LABELS} onClose={no} onSelect={async()=>{}} onRefresh={no} onProviderSelect={no} onLogin={no}/>;
  if(screen==='usage')return <UsagePanel showActionLabels data={{auth:{provider:'aipro',present:true},connections:{},usage:{today:{aipro:{calls:3,measured:2,total:18300,input:18000,output:300}},total:{aipro:{calls:5,measured:4,total:32200,input:31600,output:600}}}}} scopeLabel="이 앱에서 사용한 토큰" onClose={no}/>;
  if(screen==='question')return <QuestionForm showActionLabels question={{id:'question',kind:'choice',text:'어떤 문서를 기준으로 정리할까요?',options:[{id:'current',label:'현재 보고서'},{id:'template',label:'회사 양식'}],inputPlaceholder:'다른 기준을 입력해 주세요'}} onChoose={no}/>;
  if(screen==='wiki')return dialog('프로젝트 자료',<WikiUpdate api={api} openPath={no}/>);

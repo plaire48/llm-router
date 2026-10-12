@@ -36,6 +36,8 @@ import {
   OPENAI_CHATGPT_REFRESH_TOKEN_ENV_KEY,
   OPENAI_COMPATIBLE_API_KEY_ENV_KEY,
   OPENAI_COMPATIBLE_BASE_URL_ENV_KEY,
+  OPENAI_COMPATIBLE_AUTH_ENV_KEY,
+  OPENAI_COMPATIBLE_ENTRA_SCOPE_ENV_KEY,
   OPENAI_COMPATIBLE_REASONING_EFFORT_SUPPORTED_ENV_KEY,
   OPENAI_COMPATIBLE_STREAMING_ENV_KEY,
   OPENAI_COMPATIBLE_STREAM_MESSAGES_ENV_KEY,
@@ -66,12 +68,14 @@ import {
   OPENWIKI_MODEL_ID_ENV_KEY,
   OPENWIKI_PROVIDER_ENV_KEY,
   OPENWIKI_REASONING_EFFORT_ENV_KEY,
+  OPENWIKI_PAGE_CONCURRENCY_ENV_KEY,
   OPENWIKI_PROVIDER_RETRY_ATTEMPTS_ENV_KEY,
   OPENWIKI_STREAM_IDLE_TIMEOUT_ENV_KEY,
   resolveConfiguredProvider,
   resolveBedrockMaxTokens,
   resolveMaxOutputTokens,
   resolveOpenRouterMaxTokens,
+  resolvePageConcurrency,
   resolveProviderRetryAttempts,
   resolveStreamIdleTimeout,
   type OpenWikiProvider,
@@ -130,6 +134,8 @@ export const MANAGED_ENV_KEYS = [
   OPENAI_CHATGPT_PLAN_ENV_KEY,
   OPENAI_COMPATIBLE_API_KEY_ENV_KEY,
   OPENAI_COMPATIBLE_BASE_URL_ENV_KEY,
+  OPENAI_COMPATIBLE_AUTH_ENV_KEY,
+  OPENAI_COMPATIBLE_ENTRA_SCOPE_ENV_KEY,
   OPENAI_COMPATIBLE_STREAMING_ENV_KEY,
   OPENAI_COMPATIBLE_STREAM_MESSAGES_ENV_KEY,
   OPENAI_COMPATIBLE_USE_RESPONSES_API_ENV_KEY,
@@ -152,6 +158,7 @@ export const MANAGED_ENV_KEYS = [
   OPENWIKI_MAX_OUTPUT_TOKENS_ENV_KEY,
   OPENWIKI_STREAM_IDLE_TIMEOUT_ENV_KEY,
   OPENWIKI_PROVIDER_RETRY_ATTEMPTS_ENV_KEY,
+  OPENWIKI_PAGE_CONCURRENCY_ENV_KEY,
   OPENWIKI_REASONING_EFFORT_ENV_KEY,
   OPENWIKI_NOTION_TOKEN_ENV_KEY,
   OPENWIKI_NOTION_MCP_CLIENT_ID_ENV_KEY,
@@ -441,10 +448,12 @@ function createCredentialDiagnostic(
                     ? getBooleanWarnings(value)
                     : key === OPENWIKI_PROVIDER_RETRY_ATTEMPTS_ENV_KEY
                       ? getRetryAttemptsWarnings(value)
-                      : key === OPENWIKI_REASONING_EFFORT_ENV_KEY
-                        ? getReasoningEffortWarnings(value)
-                        : (getBaseUrlDiagnosticWarnings(key, value) ??
-                          getCredentialWarnings(value)),
+                      : key === OPENWIKI_PAGE_CONCURRENCY_ENV_KEY
+                        ? getPageConcurrencyWarnings(value)
+                        : key === OPENWIKI_REASONING_EFFORT_ENV_KEY
+                          ? getReasoningEffortWarnings(value)
+                          : (getBaseUrlDiagnosticWarnings(key, value) ??
+                            getCredentialWarnings(value)),
   };
 }
 
@@ -514,6 +523,7 @@ function isNonSecretDiagnosticKey(key: string): boolean {
     key === OPENWIKI_BEDROCK_MAX_TOKENS_ENV_KEY ||
     key === OPENWIKI_STREAM_IDLE_TIMEOUT_ENV_KEY ||
     key === OPENWIKI_PROVIDER_RETRY_ATTEMPTS_ENV_KEY ||
+    key === OPENWIKI_PAGE_CONCURRENCY_ENV_KEY ||
     key === OPENWIKI_REASONING_EFFORT_ENV_KEY ||
     key === OPENWIKI_OPENROUTER_MAX_TOKENS_ENV_KEY ||
     key === OPENWIKI_OPENROUTER_PROVIDER_ONLY_ENV_KEY ||
@@ -521,6 +531,8 @@ function isNonSecretDiagnosticKey(key: string): boolean {
     key === OPENAI_COMPATIBLE_STREAMING_ENV_KEY ||
     key === OPENAI_COMPATIBLE_STREAM_MESSAGES_ENV_KEY ||
     key === OPENAI_COMPATIBLE_REASONING_EFFORT_SUPPORTED_ENV_KEY ||
+    key === OPENAI_COMPATIBLE_AUTH_ENV_KEY ||
+    key === OPENAI_COMPATIBLE_ENTRA_SCOPE_ENV_KEY ||
     key === ANTHROPIC_BASE_URL_ENV_KEY ||
     key === BASETEN_BASE_URL_ENV_KEY ||
     key === BOB_BASE_URL_ENV_KEY ||
@@ -578,6 +590,18 @@ function getBooleanWarnings(value: string): string[] {
   return booleanDiagnosticValues.has(value.trim().toLowerCase())
     ? []
     : [invalidBooleanWarning];
+}
+
+function getPageConcurrencyWarnings(value: string): string[] {
+  try {
+    resolvePageConcurrency({
+      [OPENWIKI_PAGE_CONCURRENCY_ENV_KEY]: value,
+    });
+
+    return [];
+  } catch {
+    return ["invalid page concurrency"];
+  }
 }
 
 function getRetryAttemptsWarnings(value: string): string[] {

@@ -85,7 +85,7 @@ export const ERROR_TEXT = {
   image_unavailable: '원본 이미지를 가져오지 못했습니다. 이미지가 열린 페이지에서 다시 요청해 주세요.',
   image_too_large: '20 MB 이하 이미지만 가져올 수 있습니다.',
   fabrix_endpoint: 'HTTPS Endpoint를 확인해 주세요.',
-  fabrix_credentials: 'Client Key와 API Token을 확인해 주세요.',
+  fabrix_credentials: 'x-fabrix-client와 x-openapi-token을 확인해 주세요.',
   fabrix_network: 'FabriX에 연결하지 못했습니다. 회사망과 Endpoint를 확인해 주세요.',
   fabrix_tool_protocol: 'FabriX 도구 응답 형식이 맞지 않습니다. 설정의 연결 진단을 확인해 주세요.',
   fabrix_tool_test: '이 모델의 도구 호출을 확인하지 못했습니다. 다른 모델을 선택해 주세요.',

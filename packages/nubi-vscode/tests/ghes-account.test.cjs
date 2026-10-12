@@ -97,7 +97,7 @@ test('successful read-only reconnect clears the previous failed identity diagnos
 test('protected avatars become bounded image data; external or SVG avatars never receive credentials',async()=>{
   const png=Buffer.from([137,80,78,71,13,10,26,10]);
   const f=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,avatar_url:ORIGIN+'/avatars/42'},new Response(png,{headers:{'content-type':'image/png'}})]});
-  assert.match((await login(f)).profile.avatar,/^data:image\/png;base64,/);assert.equal(f.calls.at(-1).options.redirect,'error');
+  assert.match((await login(f)).profile.avatar,/^data:image\/png;base64,/);assert.equal(f.calls.at(-1).options.redirect,'manual');
   const external=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,avatar_url:'https://attacker.invalid/a'}]});assert.equal((await login(external)).profile.avatar,null);assert.equal(external.calls.length,3);
   const svg=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,avatar_url:ORIGIN+'/avatar'},new Response('<svg/>',{headers:{'content-type':'image/svg+xml'}})]});assert.equal((await login(svg)).profile.avatar,null);
 });
@@ -118,4 +118,18 @@ test('profile exposes verified company and valid email without inventing missing
   assert(!JSON.stringify(view).includes('TOKEN'));assert(!JSON.stringify(view).includes('device_code'));
   const missing=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,company:null,email:'<invalid@example.test>'}]});
   const other=await login(missing);assert(!Object.hasOwn(other.profile,'company'));assert(!Object.hasOwn(other.profile,'email'));
+});
+
+test('profile display fields are bounded and copied only from verified GHES identity',async()=>{
+  const f=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,bio:'  업무 소개  ',location:'  서울  ',company:'개발팀',email:'user@example.test',token:'PRIVATE'}]});
+  const value=(await login(f)).profile;
+  assert.equal(value.bio,'업무 소개');assert.equal(value.location,'서울');assert.equal(value.company,'개발팀');assert.equal(value.email,'user@example.test');assert.equal(value.token,undefined);
+});
+
+test('profile photo follows only same-company redirects with a bounded thumbnail request',async()=>{
+ const png=Buffer.from([137,80,78,71,13,10,26,10,0]);
+ const f=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,avatar_url:ORIGIN+'/avatars/42'},new Response(null,{status:302,headers:{location:'/avatars/42.png'}}),new Response(png,{headers:{'content-type':'image/png'}})]});
+ assert.match((await login(f)).profile.avatar,/^data:image\/png;base64,/);assert.equal(new URL(f.calls[3].url).searchParams.get('s'),'128');
+ const external=fixture({responses:[device,{access_token:'TOKEN',token_type:'bearer'},{...profile,avatar_url:ORIGIN+'/avatars/42'},new Response(null,{status:302,headers:{location:'https://attacker.invalid/photo'}})]});
+ assert.equal((await login(external)).profile.avatar,null);assert.equal(external.calls.length,4);
 });

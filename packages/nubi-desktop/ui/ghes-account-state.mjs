@@ -7,7 +7,7 @@ export const ghesMessages={
   ghes_login_endpoint_unavailable:'회사 로그인 경로를 찾지 못했어요. 관리자에게 앱 로그인 설정을 확인해 주세요.',
   ghes_identity_unavailable:'로그인 계정을 확인하지 못했어요. 회사 API 연결을 확인해 주세요.',
   ghes_resource_missing:'요청한 회사 서비스 경로를 찾지 못했어요.',
-  ghes_sso_required:'회사 SSO 로그인을 마친 뒤 다시 확인해 주세요.',ghes_permission:'이 작업에 필요한 계정과 앱 권한을 확인해 주세요.',
+  ghes_sso_required:'사내 Github SSO 로그인을 마친 뒤 다시 확인해 주세요.',ghes_permission:'이 작업에 필요한 계정과 앱 권한을 확인해 주세요.',
   ghes_repository_missing:'저장소를 읽을 수 없어요. 접근 권한과 앱 설치 범위를 확인해 주세요.',ghes_repository_limit:'조회 범위를 넘었어요. 저장소 주소로 복제해 주세요.',
   ghes_git_unavailable:'Git 연결을 준비하지 못했어요. Git 확장과 설치 상태를 확인해 주세요.',ghes_rate_limited:'회사 서버의 요청 한도에 도달했어요. 잠시 후 다시 확인해 주세요.',
   ghes_storage:'계정을 안전하게 저장하지 못했어요. 다시 연결해 주세요.',ghes_session_changed:'계정이 바뀌었어요. 현재 계정으로 다시 확인해 주세요.',

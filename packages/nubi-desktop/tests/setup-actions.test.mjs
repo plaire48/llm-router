@@ -13,6 +13,29 @@ const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'functi
 const spec=ref=>({title:'로컬 실행 준비',kind:'configure',profile:'bash',script:"printf 'once\n' >> setup-result.txt",reason:'프로젝트 실행 결과를 확인합니다.',effects:'현재 프로젝트에 확인 파일을 만듭니다.',verification:'파일 내용이 once 한 줄인지 확인합니다.',references:[{path:ref.path,hash:ref.hash}]});
 async function prepare(service,taskId){const source=await service.read({taskId,path:'app.txt'}),observations=new SourceObservations();observations.observe(source);return prepareSetupAction(service,taskId,spec(source),observations);}
 
+test('malformed setup arguments return actionable fields and the corrected model call creates only an approval card',async t=>{
+  const {service,root}=await fixture(t),task=await service.createTask({request:'실행 준비안을 만들고 결과를 확인해 줘.'});
+  let round=0,source,sawRepair=false;
+  service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async messages=>{
+    if(++round===1)return call('read_source',{path:'app.txt'});
+    if(round===2){source=JSON.parse(messages.findLast(m=>m.role==='tool').content);return call('propose_setup_action',{...spec(source),kind:'test',effects:['프로젝트 확인 파일 생성'],profile:null});}
+    if(round===3){
+      const feedback=JSON.parse(messages.findLast(m=>m.role==='tool').content);
+      assert.equal(feedback.error,'tool_arguments_invalid');assert.equal(feedback.actionIssued,false);
+      assert(feedback.issues.find(i=>i.path==='/kind').valueSchemas.some(v=>v.enum?.includes('verify')));
+      assert(feedback.issues.find(i=>i.path==='/effects').valueSchemas.some(v=>v.type==='string'));
+      assert.equal(service.state().setupActions.length,0);assert.equal(service.store.list('process:').length,0);
+      sawRepair=true;return call('propose_setup_action',{...spec(source),kind:'verify'});
+    }
+    return {content:'명령을 준비했습니다. 승인하면 실행합니다.',calls:[]};
+  }};
+  await service.startAgent({taskId:task.id});await service.agent.promise;
+  assert(sawRepair);assert.equal(service.state().setupActions.length,1);
+  assert.equal(service.state().setupActions[0].state,'proposed');
+  assert.equal(service.store.list('process:').length,0);await assert.rejects(access(path.join(root,'setup-result.txt')));
+  assert.notEqual(service.task(task.id).state,'paused');
+});
+
 test('setup proposal does not execute; exact approval executes once despite concurrent delivery',async t=>{
   const {service,root}=await fixture(t),task=await service.createTask({request:'Prepare local environment'}),action=await prepare(service,task.id);
   assert.equal(service.store.list('process:').length,0);await assert.rejects(access(path.join(root,'setup-result.txt')));

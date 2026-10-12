@@ -14,7 +14,7 @@ export function installWorkspaceBrowser(service){
   process.on('message',message=>{
     const reply=message?.workspacePageReply,item=pending.get(reply?.id);if(!item)return;
     clearTimeout(item.timer);pending.delete(reply.id);
-    reply.error?item.reject(Error(/^[a-z_]+$/.test(reply.error)?reply.error:'browser_unavailable')):item.resolve({opened:reply.opened===true,userInteractionRequired:true});
+    reply.error?item.reject(Error(/^[a-z_]+$/.test(reply.error)?reply.error:'browser_unavailable')):item.resolve({opened:reply.opened===true,...(typeof reply.tabId==='string'?{tabId:reply.tabId}:{}),userInteractionRequired:true});
   });
   process.on('disconnect',()=>{for(const item of pending.values()){clearTimeout(item.timer);item.reject(Error('browser_unavailable'));}pending.clear();});
   service.openWorkspacePage=async({url,authentication=false})=>{
@@ -24,5 +24,9 @@ export function installWorkspaceBrowser(service){
       pending.set(id,{resolve,reject,timer});
       process.send({workspacePageRequest:{id,url:target,authentication:authentication===true}},error=>{if(!error)return;const item=pending.get(id);if(item){clearTimeout(item.timer);pending.delete(id);reject(Error('browser_unavailable'));}});
     });
+  };
+  service.closeWorkspaceAuthPage=async tabId=>{
+    if(typeof tabId!=='string')return;
+    process.send({workspaceAuthPageClose:{tabId}});
   };
 }

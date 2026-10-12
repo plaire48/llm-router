@@ -26,14 +26,14 @@ async function twoTurns(t,{reads=40,history=[],second=SECOND}={}){
   await mkdir(path.join(root,'docs'));
   await writeFile(path.join(root,'docs','big.md'),Array.from({length:900},(_,i)=>`line ${i+1} `+'reference text for the measurement of compaction. '.repeat(2)).join('\n'));
   await git(root,['add','-A']);await git(root,['commit','-qm','big document']);
-  let turn=1,step=0,summaries=0,next=1;const compacted=[];
+  let turn=1,step=0,summaries=0,next=1,readSpan=9;const compacted=[];
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:26000}]}),dispose(){},async complete(messages,tools,signal,onText,onPhase,onActivity,options){
     if(messages[0].content.startsWith('Summarize conversation')){assert.ok(Number.isSafeInteger(options?.maxTokens)&&options.maxTokens<=8192,'summary budget reaches provider transport');summaries++;return {content:JSON.stringify(summary),calls:[]};}
     if(turn===1)return {content:'app.txt를 확인했습니다.',calls:[]};
     if(messages.some(message=>message.role==='user'&&String(message.content).includes('Current task memory')))compacted.push(messages);
     const last=messages.findLast(message=>message.role==='tool');
-    if(last){const result=JSON.parse(last.content);if(result.nextStart)next=result.nextStart;}
-    return step++<reads?call('read_source',{path:'docs/big.md',start:next,end:next+9}):{content:'KEY-777 항목은 문서에 없습니다.',calls:[]};
+    if(last){const result=JSON.parse(last.content);if(result.contextCleared&&result.source?.start){next=result.source.start;readSpan=Math.max(0,Math.floor(readSpan/2));}else if(result.nextStart)next=result.nextStart;}
+    return step++<reads?call('read_source',{path:'docs/big.md',start:next,end:next+readSpan}):{content:'KEY-777 항목은 문서에 없습니다.',calls:[]};
   }};
   const task=await service.createTask({request:FIRST});
   if(history.length){task.messages=history;service.store.set('task:'+task.id,task);}
@@ -130,7 +130,7 @@ test('a revision after a compaction continues without losing or breaking message
   await mkdir(path.join(root,'docs'));
   await writeFile(path.join(root,'docs','big.md'),Array.from({length:900},(_,i)=>`line ${i+1} `+'reference text for the measurement of compaction. '.repeat(2)).join('\n'));
   await git(root,['add','-A']);await git(root,['commit','-qm','big document']);
-  let step=0,next=1,reviews=0,summaries=0;const rounds=[];
+  let step=0,next=1,readSpan=9,reviews=0,summaries=0;const rounds=[];
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:26000}]}),dispose(){},async complete(messages){
     if(messages[0].content.startsWith('Summarize conversation')){summaries++;return {content:JSON.stringify(summary),calls:[]};}
     if(messages[0].content.startsWith(REVIEW_PROMPT)){
@@ -139,10 +139,10 @@ test('a revision after a compaction continues without losing or breaking message
     }
     rounds.push({reviews,messages:structuredClone(messages)});
     const last=messages.findLast(message=>message.role==='tool');
-    if(last){const result=JSON.parse(last.content);if(result.nextStart)next=result.nextStart;}
+    if(last){const result=JSON.parse(last.content);if(result.contextCleared&&result.source?.start){next=result.source.start;readSpan=Math.max(0,Math.floor(readSpan/2));}else if(result.nextStart)next=result.nextStart;}
     // Thirty short reads, an answer, then after the revision two more reads and the final answer.
     step++;
-    if(step<=30||step===32||step===33)return call('read_source',{path:'docs/big.md',start:next,end:next+9});
+    if(step<=30||step===32||step===33)return call('read_source',{path:'docs/big.md',start:next,end:next+readSpan});
     return {content:step===31?'앞부분까지 확인했습니다.':'KEY-777 항목은 문서에 없습니다.',calls:[]};
   }};
   const task=await service.createTask({request:SECOND});await service.startAgent({taskId:task.id});await service.agent.promise;
@@ -174,7 +174,7 @@ test('protected messages that the window cannot hold are left to the summary ins
   // Longer than what the window leaves beside the fixed part. A small window offers fewer tools
   // since B8, so the fixed part is smaller and the answer is longer than it was.
   const long='앞부분까지 확인했습니다. '+'확인한 내용을 자세히 적은 문장입니다. '.repeat(520);
-  let step=0,next=1,reviews=0,summaries=0;const rounds=[];
+  let step=0,next=1,readSpan=9,reviews=0,summaries=0;const rounds=[];
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:26000}]}),dispose(){},async complete(messages){
     if(messages[0].content.startsWith('Summarize conversation')){summaries++;return {content:JSON.stringify(summary),calls:[]};}
     if(messages[0].content.startsWith(REVIEW_PROMPT)){
@@ -183,9 +183,9 @@ test('protected messages that the window cannot hold are left to the summary ins
     }
     rounds.push({reviews,messages:structuredClone(messages)});
     const last=messages.findLast(message=>message.role==='tool');
-    if(last){const result=JSON.parse(last.content);if(result.nextStart)next=result.nextStart;}
+    if(last){const result=JSON.parse(last.content);if(result.contextCleared&&result.source?.start){next=result.source.start;readSpan=Math.max(0,Math.floor(readSpan/2));}else if(result.nextStart)next=result.nextStart;}
     step++;
-    if(step<=3||step>=5&&step<=34)return call('read_source',{path:'docs/big.md',start:next,end:next+9});
+    if(step<=3||step>=5&&step<=34)return call('read_source',{path:'docs/big.md',start:next,end:next+readSpan});
     return {content:step===4?long:'KEY-777 항목은 문서에 없습니다.',calls:[]};
   }};
   const task=await service.createTask({request:SECOND});await service.startAgent({taskId:task.id});await service.agent.promise;

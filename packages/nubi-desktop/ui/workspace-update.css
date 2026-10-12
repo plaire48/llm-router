@@ -1,0 +1,14 @@
+.nubi-workspace-update { display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding-top:16px; border-top:1px solid var(--deck-line); font:var(--deck-font-body); }
+.nubi-update-heading { display:flex; align-items:center; gap:8px; }
+.nubi-update-heading strong { font-weight:600; }.nubi-update-heading span,.nubi-update-meta { font:var(--deck-font-caption); color:var(--nubi-text-secondary); }
+.nubi-workspace-update button { display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+.nubi-workspace-update p { font:var(--deck-font-caption); color:var(--nubi-text-secondary); white-space:pre-line; margin:0; }
+.nubi-workspace-update progress { width:100%; accent-color:var(--deck-blue); }
+.nubi-workspace-update.is-compact { display:inline-flex; padding:0; border:0; }
+.nubi-workspace-update.is-compact button { color:var(--nubi-text-action); font-weight:600; -webkit-app-region:no-drag; }
+@media(max-width:800px){.nubi-workspace-update.is-compact button>span { display:none; }}
+.nubi-update-progress { display:grid; gap:16px; }
+.nubi-update-progress strong { font:var(--deck-font-body); font-weight:600; }
+.nubi-update-progress>div { display:flex; justify-content:space-between; gap:16px; font-variant-numeric:tabular-nums; color:var(--nubi-text-action); font-weight:600; }
+.nubi-update-progress progress { width:100%; accent-color:var(--deck-blue); }
+.nubi-update-progress p,.nubi-update-progress>span { font:var(--deck-font-caption); color:var(--nubi-text-secondary); margin:0; }

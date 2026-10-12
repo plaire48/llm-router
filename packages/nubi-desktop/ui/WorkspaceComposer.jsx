@@ -8,7 +8,19 @@ import {useComposerCommands} from './ComposerCommands.jsx';
 // While running, a draft goes to the inbox and Stop remains available.
 export function WorkspaceComposer({className = '', inputRef, id = 'message-input', value, onSubmit, sendDisabled, sending=false, modelControl, actionControl, contextControl, evidenceControl, onStop, onMinimumWidth, commandApi, taskId, onCommand, ...inputProps}) {
   const commands=useComposerCommands({api:commandApi,taskId,value,inputRef,onChange:inputProps.onChange,onCommand});
-  const form = useRef(null);
+  const form = useRef(null), previousLayout=useRef(null), entrance=useRef(null);
+  useLayoutEffect(()=>{
+    const node=form.current;if(!node)return;
+    const rect=node.getBoundingClientRect(),previous=previousLayout.current;
+    previousLayout.current={top:rect.top,value};
+    // Animate only the first Send's layout change. Work starts immediately;
+    // admission and subsequent typing never wait for a transition to finish.
+    if(previous?.value&&!value&&sending&&node.closest('.nubi-submit-scene')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      const offset=previous.top-rect.top;
+      if(Math.abs(offset)>2){entrance.current?.cancel();entrance.current=node.animate([{transform:`translateY(${offset}px)`},{transform:'translateY(0)'}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)'});}
+    }
+  },[value,sending]);
+  useLayoutEffect(()=>()=>entrance.current?.cancel(),[]);
   const [expanded, setExpanded] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   useLayoutEffect(() => {

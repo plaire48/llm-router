@@ -26,7 +26,7 @@ export function newLedger(now = Date.now()) {return {version: 1, startedAt: now,
 // One snapshot per model request, including tool follow-up calls. Repeated SSE
 // usage frames replace that call's counters; they are never added twice.
 export function recordUsage(ledger, {requestId, round, provider, phase, usage}, now = Date.now()) {
-  if (!requestId || !Number.isSafeInteger(round) || round < 1 || !providers.includes(provider) || !['start', 'report', 'finish'].includes(phase)) return ledger;
+  if (!requestId || !Number.isSafeInteger(round) || round < 1 || ![...providers,'claude'].includes(provider) || !['start', 'report', 'finish'].includes(phase)) return ledger;
   const next = ledger?.version === 1 ? structuredClone(ledger) : newLedger(now);
   if (next.active?.requestId !== requestId) {
     finishActive(next);

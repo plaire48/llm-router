@@ -69,7 +69,7 @@ try{
  await p.getByRole('button',{name:/파일 자동 반영/}).click();await p.keyboard.press('Escape');assert.equal(await p.getByRole('menu',{name:'승인 방식'}).count(),0);
  await p.getByRole('button',{name:/파일 자동 반영/}).click();await p.getByRole('menuitemradio',{name:/매번 확인/}).click();
  checks.push('the approval mode is chosen below the input; its menu shows the three modes, the always-allowed commands and what always waits');
- await p.getByRole('textbox',{name:'작업 요청'}).fill('문구를 간결하게 해 주세요.');await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('article',{name:/ 답변$/}).getByText(/합성 응답/).waitFor();await p.getByRole('textbox',{name:'추가 요청'}).fill('기존 조건도 유지해 주세요.');await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('article',{name:'내 메시지'}).getByText('기존 조건도 유지해 주세요.').waitFor();assert.equal(await p.getByRole('navigation',{name:'작업 보기'}).count(),0);assert.equal(await p.getByRole('textbox',{name:'로컬 실행',exact:true}).count(),0);await p.getByRole('region',{name:'작업 계획',exact:true}).waitFor();assert.equal(await p.getByRole('region',{name:'작업 계획',exact:true}).locator('li').count(),2);assert.equal(await p.locator('.nubi-work-plan > details').getAttribute('open'),'');/* the current run's plan opens by default; only historical runs collapse (2026-10-02) */assert.equal(await p.locator('.deck-blob').first().evaluate(e=>getComputedStyle(e).animationPlayState),'paused');checks.push('one task surface presents a concise plan and pauses background motion during work');
+ await p.getByRole('textbox',{name:'작업 요청'}).fill('문구를 간결하게 해 주세요.');await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('article',{name:/ 답변$/}).getByText(/합성 응답/).waitFor();await p.getByRole('textbox',{name:'추가 요청'}).fill('기존 조건도 유지해 주세요.');await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('article',{name:'내 메시지'}).getByText('기존 조건도 유지해 주세요.').waitFor();assert.equal(await p.getByRole('navigation',{name:'작업 보기'}).count(),0);assert.equal(await p.getByRole('textbox',{name:'로컬 실행',exact:true}).count(),0);await p.getByRole('region',{name:'작업 계획',exact:true}).waitFor();assert.equal(await p.getByRole('region',{name:'작업 계획',exact:true}).locator('li').count(),2);assert.equal(await p.locator('.nubi-work-plan > details').getAttribute('open'),null);/* Delivered results collapse automatically (user decision 2026-10-12); saved steps remain available. */await p.locator('.nubi-work-plan > details > summary').click();assert.equal(await p.locator('.nubi-work-plan > details').getAttribute('open'),'');assert.equal(await p.locator('.deck-blob').first().evaluate(e=>getComputedStyle(e).animationPlayState),'paused');checks.push('one task surface presents a concise plan and pauses background motion during work');
  assert.equal(await p.getByRole('button',{name:'새 작업',exact:true}).count(),0);assert.equal(await p.locator('.nubi-task-heading').getByText('REQ-fixture',{exact:true}).count(),0);
  await p.getByRole('textbox',{name:'추가 요청'}).fill('이 대화에서만 유지할 초안');
  await newConversation();
@@ -80,7 +80,7 @@ try{
  checks.push('new-task button and internal ID are absent from the conversation; history search and separate drafts preserve navigation context');
  const emphasis=p.getByRole('article',{name:/ 답변$/}).first().locator('.message-body strong');assert.deepEqual(await emphasis.evaluateAll(es=>es.map(e=>({color:getComputedStyle(e).color,weight:getComputedStyle(e).fontWeight}))),[{color:'rgb(25, 31, 40)',weight:'600'},{color:'rgb(25, 31, 40)',weight:'600'}]);checks.push('reading emphasis uses the common ink and semibold tokens');await p.screenshot({path:'verification/ui-workspace-fixture.png',animations:'disabled'});
  await newConversation();assert.equal(await p.getByRole('textbox',{name:'작업 요청'}).inputValue(),'다른 요청의 초안');await p.getByRole('textbox',{name:'작업 요청'}).fill('');await modelControl.click();await p.getByRole('button',{name:'AI Pro 로그아웃',exact:true}).click();await p.keyboard.press('Escape');await p.locator('.aipro-login').waitFor();checks.push('logout returns to Nubi login');
- await p.getByRole('button',{name:'FabriX',exact:true}).click();await p.getByRole('dialog',{name:'FabriX 연결'}).waitFor();await p.getByLabel('Endpoint').fill('https://fixture.example/openapi');await p.getByLabel('Client Key').fill('fixture');await p.getByLabel('API Token').fill('fixture');await p.getByRole('button',{name:'연결 테스트',exact:true}).click();await p.getByText('테스트 통과',{exact:true}).waitFor();await p.getByRole('button',{name:'연결',exact:true}).click();await p.getByRole('textbox',{name:'작업 요청'}).waitFor();checks.push('same FabriX test-then-connect dialog uses desktop permission adapter');assert.deepEqual(errors,[]);
+ await p.getByRole('button',{name:'FabriX',exact:true}).click();await p.getByRole('dialog',{name:'FabriX 연결'}).waitFor();await p.getByLabel('Endpoint').fill('https://fixture.example/openapi');await p.getByLabel('x-fabrix-client').fill('fixture');await p.getByLabel('x-openapi-token').fill('fixture');await p.getByRole('button',{name:'연결 테스트',exact:true}).click();await p.getByText('테스트 통과',{exact:true}).waitFor();await p.getByRole('button',{name:'연결',exact:true}).click();await p.getByRole('textbox',{name:'작업 요청'}).waitFor();checks.push('same FabriX test-then-connect dialog uses desktop permission adapter');assert.deepEqual(errors,[]);
  await openHistory();await p.getByRole('dialog',{name:'대화 검색',exact:true}).locator('.nubi-history-item').filter({hasText:/문구를 간결하게 해 주세요/}).click();await p.getByRole('article',{name:/ 답변$/}).getByText('연결 후 대기 중인 오류 분석을 확인한 합성 결과입니다.',{exact:true}).waitFor();checks.push('provider reconnection refreshes queued recovery work and its finished result');assert.deepEqual(errors,[]);
 
  if(DESKTOP_FEATURES.computerUse){// the app connection dialog needs the computer-use feature (off since 2026-10-05)
@@ -191,11 +191,11 @@ try{
  await p.goto(page('command=1'));
  await openHistory();await p.getByRole('dialog',{name:'대화 검색',exact:true}).locator('.nubi-history-item').filter({hasText:/무료 배송 기준을 고치고/}).click();
  const checkCard=p.getByRole('region',{name:'실행 준비 승인',exact:true});await checkCard.waitFor();
- assert.equal(await checkCard.getByRole('button',{name:/^실행$/}).isDisabled(),true);assert.equal(await checkCard.getByRole('button',{name:/항상 허용/}).isDisabled(),true);
- await checkCard.getByText('수정안을 반영하면 실행할 수 있어요',{exact:true}).waitFor();await checkCard.screenshot({path:'verification/ui-command-waits-for-fix.png'});
+ assert.equal(await checkCard.getByRole('button',{name:'확인하고 실행',exact:true}).isDisabled(),true);assert.equal(await p.getByRole('dialog',{name:'이 명령을 실행할까요?',exact:true}).count(),0);
+ await checkCard.getByText('수정안을 반영하면 실행할 수 있어요.',{exact:true}).waitFor();await checkCard.screenshot({path:'verification/ui-command-waits-for-fix.png'});
  await p.locator('.nubi-file-card').getByRole('button',{name:'반영',exact:true}).click();
- await p.waitForFunction(()=>!document.querySelector('.nubi-approval-note'));
- await checkCard.getByRole('button',{name:/항상 허용/}).click();await checkCard.getByText('실행 요청됨',{exact:true}).waitFor();
+ const commandDecision=p.getByRole('dialog',{name:'이 명령을 실행할까요?',exact:true});await commandDecision.waitFor();
+ await commandDecision.getByRole('button',{name:/항상 허용/}).click();await checkCard.getByText('실행 요청됨',{exact:true}).waitFor();
  assert.deepEqual(await p.evaluate(()=>window.approvalPolicy.allowedCommands.map(item=>item.script)),['npm test']);
  checks.push('a check proposed with its fix waits for the fix; always allow approves it and remembers the command');assert.deepEqual(errors,[]);
  if(DESKTOP_FEATURES.computerUse){
@@ -217,12 +217,14 @@ try{
  checks.push('synthetic compaction phase has a concise status and stop control while original messages remain visible');assert.deepEqual(errors,[]);
  await p.goto(page('elevation=1'));
  await openHistory();await p.getByRole('dialog',{name:'대화 검색',exact:true}).locator('.nubi-history-item').filter({hasText:/관리자 승인 화면 검증/}).click();
- const adminCard=title=>p.getByRole('region',{name:'실행 준비 승인',exact:true}).filter({has:p.getByRole('heading',{name:title,exact:true})});
- await adminCard('관리자 실행 거절').getByRole('button',{name:'실행 안 함',exact:true}).click();await adminCard('관리자 실행 거절').getByText('실행하지 않음',{exact:true}).waitFor();
- await adminCard('관리자 실행 검증').getByText(/Windows UAC/).waitFor();
+ const adminDialog=p.getByRole('dialog',{name:'이 명령을 실행할까요?',exact:true});await adminDialog.waitFor();
+ await adminDialog.getByText(/Windows UAC/).waitFor();
  await p.screenshot({path:'verification/ui-administrator-approval.png',animations:'disabled'});
- await adminCard('관리자 실행 검증').getByRole('button',{name:'관리자 권한으로 실행',exact:true}).click();await p.getByText('합성 관리자 승인 전달을 확인했습니다. 실제 UAC 실행은 하지 않았습니다.',{exact:true}).waitFor();
- assert.equal(await adminCard('관리자 실행 검증').getByRole('button',{name:'관리자 권한으로 실행',exact:true}).count(),0);
+ await adminDialog.getByRole('button',{name:'관리자 권한으로 실행',exact:true}).click();
+ await p.getByRole('region',{name:'실행 준비 승인',exact:true}).filter({hasText:'관리자 실행 검증'}).getByText('실행 요청됨',{exact:true}).waitFor();
+ await adminDialog.waitFor();await adminDialog.getByRole('button',{name:'실행 안 함',exact:true}).click();await adminDialog.waitFor({state:'hidden'});
+ await p.getByText('실행하지 않음',{exact:true}).waitFor();
+ await p.getByText('합성 관리자 승인 전달을 확인했습니다. 실제 UAC 실행은 하지 않았습니다.',{exact:true}).waitFor();
  checks.push('administrator card distinguishes dedicated consent, rejection and OS UAC from ordinary command approval');assert.deepEqual(errors,[]);
  await p.goto(page('apply=1'));
  await openHistory();await p.getByRole('dialog',{name:'대화 검색',exact:true}).locator('.nubi-history-item').filter({hasText:/준비한 두 파일을 반영/}).click();
@@ -273,8 +275,8 @@ try{
  await analyses.getByText('이전 분석 1개',{exact:true}).click();
  const roles=p.getByRole('region',{name:'역할별 분석 진행'});
  await roles.getByText('저장 결과 화면을 확인합니다.',{exact:true}).waitFor();
- assert.equal(await roles.getByText('모델 호출 2회 / 근거 읽기 1회',{exact:true}).isVisible(),false);await roles.getByText('분석 상세',{exact:true}).click();await roles.getByText('모델 호출 2회 / 근거 읽기 1회',{exact:true}).waitFor();await roles.getByText('근거 읽는 중',{exact:true}).waitFor();
- await roles.getByText('연결된 근거 1개',{exact:true}).click();
+ assert.equal(await roles.getByText('모델 호출 2회 / 근거 읽기 1회',{exact:true}).isVisible(),false);await roles.getByText('결과와 근거',{exact:true}).click();await roles.getByText('모델 호출 2회 / 근거 읽기 1회',{exact:true}).waitFor();await roles.getByText('근거 읽는 중',{exact:true}).waitFor();
+
  await roles.getByText('화면 캡처 열람',{exact:true}).waitFor();await roles.getByText('이전 기록',{exact:true}).waitFor();
  assert.equal(await p.locator('[data-tool="analysis_page"]').count(),1);
  await analyses.getByRole('button',{name:'이전 분석 더 보기',exact:true}).click();
@@ -298,6 +300,7 @@ try{
  await p.goto(page('progress'));
  await openSidebar();await p.getByRole('button',{name:'선택 메일 확인',exact:true}).click();
  const recordedProgress=p.locator('.nubi-agent-activity .agent-trace');
+ if(await recordedProgress.getAttribute('open')===null)await recordedProgress.locator(':scope > summary').click();
  assert.equal(await recordedProgress.locator('li[data-tool]').count(),6,'completed source reads remain visible beyond the former recent-three limit');
  await recordedProgress.getByText('메일과 개인 위키 검색',{exact:true}).waitFor();
  assert.equal(await recordedProgress.getByText('메일 원문과 개인 위키 조회',{exact:true}).count(),2);
@@ -318,7 +321,8 @@ try{
  await analyses.getByText('이전 분석 1개',{exact:true}).click();
  const reviewProgress=p.getByRole('region',{name:'분석 결과 검토',exact:true});
  await reviewProgress.getByText('보완할 결과가 있어요',{exact:true}).waitFor();
- await reviewProgress.getByText('아직 확인하지 못한 결과 1개',{exact:true}).waitFor();
+ assert.equal(await reviewProgress.locator('.nubi-review-open-items [data-check=unknown]').count(),1);
+ await reviewProgress.locator('.nubi-review-open-items [data-check=unknown] p').waitFor();
  await reviewProgress.getByText('확인 항목',{exact:true}).click();
  await reviewProgress.getByText('문맥 한도로 제외한 하위 분석 1개',{exact:true}).waitFor();
  await reviewProgress.getByText('제외된 분석 중 미해결 분담 1개',{exact:true}).waitFor();
@@ -359,13 +363,13 @@ try{
  assert.equal(await row('수정할 문서 확인').getAttribute('data-current'),'true');assert.equal(await row('실행 중인 분석').getAttribute('data-current'),'false');
  const reviewDraft=p.getByRole('textbox',{name:'추가 요청'});assert.equal(await reviewDraft.isEnabled(),true);
  await reviewDraft.fill('다른 대화의 미전송 초안');
- assert.equal(await p.getByRole('button',{name:'전송',exact:true}).isDisabled(),true);
- await p.getByText('다른 대화가 진행 중입니다. 초안은 저장돼요.',{exact:true}).waitFor();
+ assert.equal(await p.getByRole('button',{name:'전송',exact:true}).isEnabled(),true);
+ assert.equal(await p.getByText('다른 대화가 진행 중입니다. 초안은 저장돼요.',{exact:true}).count(),0);
  await open('실행 중인 분석').click();await open('수정할 문서 확인').click();
  assert.equal(await reviewDraft.inputValue(),'다른 대화의 미전송 초안');
  await newConversation();// '새 대화' is a sidebar button (2026-10-02)
  await p.getByRole('textbox',{name:'작업 요청'}).fill('새 대화의 초안');
- assert.equal(await p.getByRole('button',{name:'전송',exact:true}).isDisabled(),true);
+ assert.equal(await p.getByRole('button',{name:'전송',exact:true}).isEnabled(),true);
  await open('수정할 문서 확인').click();
  assert.equal(await reviewDraft.inputValue(),'다른 대화의 미전송 초안');
  await p.getByRole('complementary',{name:'프로젝트 대화'}).getByRole('button',{name:'새 대화',exact:true}).click();
@@ -397,7 +401,7 @@ try{
  assert.equal(await confirmDelete.getByRole('button').count(),3,'the header X, 취소 and 확인 (user decision 2026-10-02)');await confirmDelete.getByRole('button',{name:'취소',exact:true}).click();await confirmDelete.waitFor({state:'detached'});
  assert.equal(await p.evaluate(()=>window.deletedTasks?.length||0),0,'cancelling deletes nothing');
  if(await row('수정할 문서 확인').locator('.nubi-actions-disclosure').getAttribute('open')===null)await row('수정할 문서 확인').locator('.nubi-actions-disclosure>summary').click();
- await row('수정할 문서 확인').getByRole('button',{name:'수정할 문서 확인 삭제',exact:true}).click();await confirmDelete.getByRole('button',{name:'확인',exact:true}).click();
+ await row('수정할 문서 확인').getByRole('button',{name:'수정할 문서 확인 삭제',exact:true}).click();await confirmDelete.getByRole('button',{name:'삭제',exact:true}).click();
  await row('수정할 문서 확인').waitFor({state:'detached'});assert.deepEqual(await p.evaluate(()=>window.deletedTasks),['session-review']);
  await p.getByText('대화를 삭제했어요.',{exact:true}).waitFor();
  await openHistory();
@@ -422,6 +426,16 @@ try{
  await p.getByRole('button',{name:'메일',exact:true}).click();
  await p.getByRole('searchbox',{name:'메일 검색',exact:true}).fill('김누비 예산 승인');
  await p.locator('.nubi-mail-filters>summary').click();await p.getByLabel('메일 기간',{exact:true}).selectOption('7');
+ await p.locator('.nubi-mail-extra-filters>summary').click();
+ for(const width of [440,1280]){
+   await p.setViewportSize({width,height:850});
+   const fields=p.locator('.nubi-mail-filters>.nubi-mail-filter-fields');
+   assert(await fields.evaluate(e=>e.scrollHeight<=e.clientHeight+1&&e.scrollWidth<=e.clientWidth+1),'mail filters have no nested scroll or clipping');
+   await p.getByLabel('메일 검색 위치',{exact:true}).selectOption('body');await p.getByLabel('메일 검색 위치',{exact:true}).selectOption('');
+   await p.screenshot({path:`verification/mail-filters-no-scroll-${width}.png`,animations:'disabled'});
+ }
+ await p.locator('.nubi-mail-extra-filters>summary').click();
+ checks.push('mail search filters fit without an inner scrollbar and all fields stay reachable at 440/1280px');
  await p.getByLabel('메일 보낸 사람',{exact:true}).fill('김누비');
  await p.getByRole('button',{name:'AI로 찾기',exact:true}).click();
  await mailDraft.waitFor();const searchDraft=await mailDraft.inputValue();assert(searchDraft.startsWith('기존 초안\na\n\n'));
@@ -458,5 +472,19 @@ try{
  await hit.click();await search.waitFor({state:'detached'});await p.getByRole('article',{name:/ 답변$/}).getByText('따뜻한 빵과 우유를 추천합니다. 식빵도 좋아요.',{exact:true}).waitFor();
  }
  checks.push('conversation search finds assistant body, highlights literal Korean keywords, removes copy, and opens the matching conversation at wide and narrow widths');
+ for(const width of [1280,620,440]){
+   await p.setViewportSize({width,height:900});await p.goto(page('queue-layout'));await openHistory();await p.getByRole('dialog',{name:'대화 검색',exact:true}).locator('.nubi-history-item').filter({hasText:'진행 내용을 간결하게 정리해 주세요.'}).click();await closeSidebar();
+   const queue=p.getByRole('list',{name:'대기 메시지',exact:true});assert.equal(await queue.locator('.agent-input-order').count(),0);assert.equal(await queue.locator('.agent-input-actions').innerText(),'');assert(await queue.locator('.agent-input-actions button').evaluateAll(buttons=>buttons.every(button=>button.getAttribute('aria-label')&&button.title)));
+   await p.screenshot({path:`verification/ui-queue-icons-${width}.png`,animations:'disabled'});
+   await p.getByRole('button',{name:'지금 반영',exact:true}).click();
+   await p.getByRole('article',{name:'반영 대기 메시지'}).waitFor();
+   const pendingLayout=await p.locator('.agent-input-pending').evaluate(node=>{const bubble=node.querySelector('.nubi-user-bubble').getBoundingClientRect(),footer=node.querySelector('.nubi-pending-footer').getBoundingClientRect();return {gap:footer.top-bubble.bottom,inside:footer.bottom<=node.getBoundingClientRect().bottom+1};});
+   assert(pendingLayout.gap>=3&&pendingLayout.gap<=5&&pendingLayout.inside);
+   await p.getByText('추가 요청까지 반영했습니다. 이 화면은 배치 확인용 예시입니다.',{exact:true}).waitFor();
+   const layouts=await p.locator('.message-user').evaluateAll(nodes=>nodes.map(node=>{const bubble=node.querySelector('.nubi-user-bubble').getBoundingClientRect(),footer=node.querySelector('.message-actions').getBoundingClientRect(),box=node.getBoundingClientRect();return {gap:footer.top-bubble.bottom,inside:footer.bottom<=box.bottom+1,position:getComputedStyle(node.querySelector('.message-actions')).position};}));
+   assert(layouts.length===2&&layouts.every(item=>item.gap>=3&&item.gap<=5&&item.inside&&item.position==='static'),'queue admission retains metadata in normal flow next to its own bubble');
+   await p.screenshot({path:`verification/ui-queue-layout-${width}.png`,animations:'disabled'});
+ }
+ checks.push('queued input, pending admission and consumed message keep metadata in normal flow at 1280, 620 and 440px');
  await writeFile('verification/shared-ui-result.json',JSON.stringify({scope:'synthetic UI provider states; not live authentication or model inference',checks,errors},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:'verification/shared-ui-failure.png'});await writeFile('verification/shared-ui-failure.html',await p.content());throw error;}finally{await browser?.close();server.close();}

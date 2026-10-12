@@ -1,7 +1,7 @@
 const fs=require('node:fs/promises');
 const path=require('node:path');
 const {randomUUID}=require('node:crypto');
-const KEYS=new Set(['provider:aipro','provider:chatgpt','provider:fabrix','provider:active','nubi.ghes.code.sdsdev.co.kr']);
+const KEYS=new Set(['provider:aipro','provider:chatgpt','provider:fabrix','provider:claude','provider:active','nubi.ghes.code.sdsdev.co.kr']);
 
 // Only the trusted main/worker pair can access these records. Never expose
 // vault operations through renderer RPC, snapshots, logs or model tools.

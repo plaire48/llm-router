@@ -16,5 +16,6 @@ export function useComposerDraft(projectId,taskId) {
     try{if(next)sessionStorage.setItem(key,next);else sessionStorage.removeItem(key);}catch{}
     render(n=>n+1);
   }
-  return [value,setValue,()=>key?cache.current.get(key)||'':''];
+  function moveTo(nextTaskId){if(!key)return;const nextKey=`nubi-composer-v1:${JSON.stringify([projectId,nextTaskId])}`,text=cache.current.get(key)||'';cache.current.set(nextKey,text);try{if(text)sessionStorage.setItem(nextKey,text);else sessionStorage.removeItem(nextKey);}catch{}setValue('');}
+  return [value,setValue,()=>key?cache.current.get(key)||'':'',moveTo];
 }

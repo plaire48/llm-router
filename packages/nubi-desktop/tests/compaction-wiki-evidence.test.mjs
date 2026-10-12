@@ -32,18 +32,18 @@ async function run(t){
   await mkdir(path.join(root,'openwiki','.claims'));
   await writeFile(path.join(root,'openwiki','.claims','home.json'),JSON.stringify({schemaVersion:1,pageVersion:hash(content),claims:[{id:'claim-1',statement:'The welcome screen uses app.txt.',evidence:[{resource,version:evidence.evidence.version}]}]}));
   await git(root,['add','-A']);await git(root,['commit','-qm','big document and claims']);
-  let step=0,next=1,summaries=0,atQuery=null,atPlan=null,visible=null,evidenceId=null;const results=[];
+  let step=0,next=1,readSpan=9,summaries=0,atQuery=null,atPlan=null,visible=null,evidenceId=null;const results=[];
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:26000}]}),dispose(){},async complete(messages){
     if(messages[0].content.startsWith('Summarize conversation')){summaries++;return {content:JSON.stringify(summary),calls:[]};}
     const last=messages.findLast(message=>message.role==='tool'),result=last?JSON.parse(last.content):null;
-    if(result?.nextStart)next=result.nextStart;
+    if(result?.contextCleared&&result.source?.start){next=result.source.start;readSpan=Math.max(0,Math.floor(readSpan/2));}else if(result?.nextStart)next=result.nextStart;
     step++;
-    if(step<=24)return call('read_source',{path:'docs/big.md',start:next,end:next+9});
+    if(step<=24)return call('read_source',{path:'docs/big.md',start:next,end:next+readSpan});
     if(step===25)return call('read_source',{path:'app.txt'});
     if(step===26){atQuery=summaries;return call('wiki_query',{query:'welcome'});}
     if(step===27)evidenceId=result.results?.[0]?.evidenceId;
     // More reading until one compaction has happened since the Wiki was queried.
-    if(atPlan===null&&summaries===atQuery&&step<50)return call('read_source',{path:'docs/big.md',start:next,end:next+4});
+    if(atPlan===null&&summaries===atQuery&&step<50)return call('read_source',{path:'docs/big.md',start:next,end:next+Math.min(4,readSpan)});
     if(atPlan===null){
       atPlan=summaries;
       visible=messages.some(message=>message.role==='tool'&&message.content.includes(JSON.stringify(evidenceId)));

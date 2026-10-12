@@ -1,12 +1,12 @@
 /* Component sizes derive from the shared CX scale; colors and type remain theme aliases. */
 .nubi-account-control, .nubi-ghes-modal {
   --nubi-account-avatar-size:calc(var(--cx-space-6) + var(--cx-space-1));
-  --nubi-account-profile-size:calc(var(--cx-space-6) * 3);
+  --nubi-account-profile-size:56px;
   --nubi-account-action-size:calc(var(--cx-space-8) + var(--cx-space-3));
   --nubi-account-icon-size:calc(var(--cx-space-4) + var(--cx-space-1));
   --nubi-account-inset:var(--cx-space-8);
   --nubi-account-stack:var(--cx-space-4);
-  --nubi-account-row-gap:var(--cx-space-4);
+  --nubi-account-row-gap:var(--cx-space-2);
 }
 .nubi-account-control { flex:none; }
 .nubi-account-diagnostic { display:flex; align-items:center; gap:var(--cx-space-2); margin:0; color:var(--deck-sub); font-size:var(--cx-type-caption); white-space:nowrap; }
@@ -15,7 +15,7 @@
 .nubi-account-avatar img { width:100%; height:100%; object-fit:cover; }
 .nubi-workspace-rail .nubi-account-button { padding:var(--cx-space-1); }
 .nubi-workspace-navigation.nubi-workspace-rail .nubi-account-button .nubi-account-avatar { position:static; width:var(--nubi-account-avatar-size); height:var(--nubi-account-avatar-size); margin:0; clip-path:none; white-space:normal; }
-.nubi-account-profile { display:flex; align-items:center; gap:var(--cx-space-4); margin-bottom:var(--nubi-account-stack); }
+.nubi-account-profile { display:flex; align-items:center; gap:var(--cx-space-3); margin:0; min-width:0; }
 .nubi-account-profile .nubi-account-avatar { width:var(--nubi-account-profile-size); height:var(--nubi-account-profile-size); font-size:var(--cx-type-title); }
 .nubi-account-profile > div { min-width:0; overflow-wrap:anywhere; }
 .cx-detail-panel.nubi-ghes-modal .nubi-account-profile h3 { margin:0; font-weight:var(--cx-weight-medium); line-height:var(--cx-space-8); font-size:var(--cx-type-title); color:var(--deck-ink); }
@@ -32,13 +32,13 @@
 .cx-panel-backdrop.is-modal > .nubi-panel.nubi-ghes-modal { width:min(480px,100%); }
 .nubi-account-info { padding-top:var(--cx-space-4); border-top:1px solid var(--deck-line); }
 .nubi-account-info dl { display:grid; gap:var(--nubi-account-row-gap); margin:0; line-height:var(--cx-space-6); }
-.nubi-account-info dl > div { display:grid; grid-template-columns:var(--cx-space-6) minmax(0,1fr); gap:var(--cx-space-3); align-items:baseline; }
+.nubi-account-info dl > div { display:grid; grid-template-columns:84px minmax(0,1fr); gap:var(--cx-space-3); align-items:baseline; }
 .nubi-account-info dt { font-size:var(--cx-type-caption); color:var(--deck-sub); }
 .nubi-account-info dd { margin:0; font-size:var(--cx-type-body); color:var(--deck-ink); overflow-wrap:anywhere; }
 .nubi-account-settings { margin-top:var(--nubi-account-stack); padding-top:var(--cx-space-4); border-top:1px solid var(--deck-line); }
 .nubi-account-settings > summary { display:flex; align-items:center; gap:var(--cx-space-2); list-style:none; cursor:pointer; color:var(--deck-sub); font:var(--deck-font-label); }
 .nubi-account-settings[open] > summary { margin-bottom:var(--cx-space-3); }
-.nubi-account-footer { display:flex; justify-content:space-between; align-items:center; gap:var(--cx-space-4); margin-top:var(--nubi-account-stack); }
+.nubi-account-footer { display:flex; justify-content:flex-end; align-items:center; gap:var(--cx-space-2); margin-top:var(--nubi-account-stack); }
 .nubi-account-footer > div { display:flex; align-items:center; gap:var(--cx-space-1); }
 .nubi-account-footer .cx-kit-button { border:0; background:transparent; padding-inline:0; color:var(--deck-sub); }
 
@@ -72,3 +72,16 @@
 @media (max-width:480px) {
   .nubi-ghes-modal { --nubi-account-inset:var(--cx-space-6); }
 }
+
+.nubi-account-heading { display:grid; gap:4px; min-width:0; }
+.nubi-account-heading strong { font-size:var(--deck-type-heading); font-weight:var(--nubi-weight-emphasis); line-height:1.4; color:var(--deck-ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nubi-account-heading small { font:var(--deck-font-caption); color:var(--deck-sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nubi-account-bio { margin:0; padding:0; color:var(--deck-sub); font:var(--deck-font-body); line-height:var(--deck-line-body); white-space:pre-wrap; overflow-wrap:anywhere; }
+.nubi-account-info h3 { margin:0 0 12px; font:var(--deck-font-label); font-weight:600; color:var(--deck-ink); }
+.nubi-account-info dd { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nubi-account-footer .cx-action-button { width:36px; min-width:36px; height:36px; padding:8px; }
+.nubi-account-footer .cx-action-button:hover { color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
+
+.nubi-toolbar-account .nubi-account-button > span:not(.nubi-account-avatar) { max-width:160px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-weight:500; }
+
+.nubi-account-button[data-connected="false"] .nubi-account-avatar { background:transparent; color:var(--nubi-text-primary,var(--deck-ink)); }

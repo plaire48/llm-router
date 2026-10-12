@@ -4,7 +4,7 @@ import {normalizePlan, planDifference, planUpdateHistory} from '../task-plan.js'
 import {TOOL_LABELS} from '../agent-trace.js';
 import {InlineMarkdown} from './MessageBody.jsx';
 
-export function TaskPlan({className = '', overviewClassName, debugMode = false, progress, trace = [], phase, question, detailsId, countId, countSuffix = '', stepAttributes, statusLabel, defaultExpanded = true}) {
+export function TaskPlan({compactOverview = false, className = '', overviewClassName, debugMode = false, progress, trace = [], phase, question, detailsId, countId, countSuffix = '', stepAttributes, statusLabel, defaultExpanded = true}) {
   const [expanded, setExpanded] = useState(null);
   const Overview=overviewClassName?'div':React.Fragment;
   const plan = normalizePlan(progress?.plan);
@@ -27,11 +27,19 @@ export function TaskPlan({className = '', overviewClassName, debugMode = false, 
   const recent = current && trace.findLast(step => step.planStep === current.text && !['update_plan', 'progress_note'].includes(step.tool) && TOOL_LABELS[step.tool]);
   const executionStatus = {running: '실행 중', done: '도구 실행 완료', error: '실행 실패', cancelled: '취소', waiting: '확인 대기', recovered: '복구 확인', deferred: '보류'};
 
+  const stepContext = current && <details className="task-plan-context"><summary><Icon name="infoCircle" size={14}/><span>단계 상세</span><Icon name="chevronDown" size={14}/></summary>
+      <dl>
+        <div><dt><Icon name="check" size={14}/>완료 기준</dt><dd>{current.expected_outcome || '구체적인 완료 기준이 아직 없습니다.'}</dd></div>
+        {recent && <div><dt><Icon name="clock" size={14}/>최근 실행</dt><dd><InlineMarkdown content={recent.label || TOOL_LABELS[recent.tool]}/><span className="task-plan-tool">{executionStatus[recent.status] || '상태 미확인'}</span></dd></div>}
+        {next && <div><dt><Icon name="arrowRight" size={14}/>다음 계획</dt><dd><InlineMarkdown content={next.text}/></dd></div>}
+      </dl>
+    </details>;
+
   return <section className={`task-plan ${className}`} aria-label="작업 계획" data-status={progress.status} data-finalizing={finalizing || undefined}>
     <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">{`작업 계획 ${completed}/${plan.length} 완료. ${status}${current ? `: ${current.text}` : ''}${latest ? `. 최근 계획 수정: ${latest.reason || summary}` : ''}`}</span>
-    {current && !(expanded ?? defaultExpanded) && <div className="task-plan-current"><span>{currentLabel}</span><InlineMarkdown content={current.text}/></div>}
+    {!compactOverview && current && !(expanded ?? defaultExpanded) && <div className="task-plan-current"><span>{currentLabel}</span><InlineMarkdown content={current.text}/></div>}
     <Overview {...(overviewClassName?{className:overviewClassName}:{})}><details data-plan-overview id={detailsId} open={expanded ?? defaultExpanded} onToggle={event => {if(event.target===event.currentTarget && event.currentTarget.open !== (expanded ?? defaultExpanded))setExpanded(event.currentTarget.open);}}>
-      <summary><Icon name="layers" size={16}/><span>작업 계획</span><span id={countId} className="task-plan-count" title={`${plan.length}단계 중 ${completed}단계 완료`}>{completed}/{plan.length}{countSuffix}</span>{(waiting || paused || finalizing) && <span className="task-plan-pause">{status}</span>}<Icon name="chevronDown" size={14}/></summary>
+      <summary><Icon name="layers" size={16}/><span>작업 계획</span>{compactOverview&&current&&<span className="task-plan-inline-current" title={current.text}>{current.text}</span>}<span id={countId} className="task-plan-count" title={`${plan.length}단계 중 ${completed}단계 완료`}>{completed}/{plan.length}{countSuffix}</span>{(waiting || paused || finalizing) && <span className="task-plan-pause">{status}</span>}<Icon name="chevronDown" size={14}/></summary>
       <ol>{plan.map((step, index) => {
         const active = step.status === 'in_progress', done = step.status === 'completed';
         const stopped = active && (waiting || paused);
@@ -43,6 +51,7 @@ export function TaskPlan({className = '', overviewClassName, debugMode = false, 
           {change?.added.some(item => item.text === step.text) && <span className="task-plan-added" title="최근 계획에 추가된 단계"><Icon name="plus" size={14}/><span className="visually-hidden">최근 계획에 추가된 단계</span></span>}
         </li>;
       })}</ol>
+    {compactOverview && stepContext}
     </details>
     </Overview>
     {latest && <details className="task-plan-update" key={latest.revision}>
@@ -60,13 +69,7 @@ export function TaskPlan({className = '', overviewClassName, debugMode = false, 
         {change.reordered && <li><span>순서</span><span>{latest.after.map(step => step.text).join(' → ')}</span></li>}
       </ul>
     </details>}
-    {current && <details className="task-plan-context"><summary><Icon name="infoCircle" size={14}/><span>단계 상세</span><Icon name="chevronDown" size={14}/></summary>
-      <dl>
-        <div><dt><Icon name="check" size={14}/>완료 기준</dt><dd>{current.expected_outcome || '구체적인 완료 기준이 아직 없습니다.'}</dd></div>
-        {recent && <div><dt><Icon name="clock" size={14}/>최근 실행</dt><dd><InlineMarkdown content={recent.label || TOOL_LABELS[recent.tool]}/><span className="task-plan-tool">{executionStatus[recent.status] || '상태 미확인'}</span></dd></div>}
-        {next && <div><dt><Icon name="arrowRight" size={14}/>다음 계획</dt><dd><InlineMarkdown content={next.text}/></dd></div>}
-      </dl>
-    </details>}
+    {!compactOverview && stepContext}
     {debugMode && updates.length > 1 && <details className="task-plan-history"><summary><Icon name="clock" size={14}/><span>변경 기록</span><Icon name="chevronDown" size={14}/></summary>
       {updates[0].revision > 1 && <p className="task-plan-tool">최근 {updates.length}회 표시</p>}
       <ol>{[...updates].reverse().map(entry => {const diff = planDifference(entry.before, entry.after), active = entry.after.find(step => step.status === 'in_progress');return <li key={entry.revision}><span className="task-plan-history-version">{entry.revision}</span><div><span>{!entry.before.length ? '계획 시작' : diff.revised ? '계획 수정' : diff.reopened.length ? '완료 단계 다시 확인' : '단계 진행'}</span>{entry.reason && <p>{entry.reason}</p>}{diff.completed.length > 0 && <p>완료: {diff.completed.map(step => step.text).join(', ')}</p>}{active && <p>진행: {active.text}</p>}{diff.added.length > 0 && entry.before.length > 0 && <p>추가: {diff.added.map(step => step.text).join(', ')}</p>}{diff.removed.length > 0 && <p>제외: {diff.removed.map(step => step.text).join(', ')}</p>}</div></li>;})}</ol>

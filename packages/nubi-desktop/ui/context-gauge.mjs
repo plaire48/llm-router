@@ -24,14 +24,14 @@ export function contextMeterInfo(usage, catalogModel){
   const reportedWindow=Number.isSafeInteger(usage.window)&&usage.window>0?usage.window:null;
   const fallbackWindow=Number.isSafeInteger(model.contextLength)&&model.contextLength>0?model.contextLength:null;
   const capacity=reportedWindow||fallbackWindow;
-  const compacted=!measured&&usage.reason==='compaction';
-  const note=measured?'모델이 알려 준 요청 사용량입니다.':compacted?'요약 후 컨텍스트를 추정했어요. 다음 응답에서 사용량을 갱신해요.':
+  const compacted=!measured&&usage.reason==='compaction',pending=!measured&&usage.reason==='request_pending';
+  const note=measured?'모델이 알려 준 요청 사용량입니다.':pending?'전송한 대화와 도구의 추정치예요. 응답이 오면 갱신해요.':compacted?'요약 후 컨텍스트를 추정했어요. 다음 응답에서 사용량을 갱신해요.':
     reported?'일부 사용량만 받아 전체 컨텍스트는 추정했어요.':usage.reason==='response_usage_missing'?
       '이번 응답의 사용량을 받지 못해 대화와 도구 결과로 추정했어요.':'대화와 도구 결과로 추정한 사용량입니다.';
   return {used,capacity,ratio:capacity?used/capacity:null,kind:measured?'measured':'estimated',
     ...summaryPolicy({...model,contextLength:capacity}),
     usage:reported,
-    source:measured?'마지막 응답 실측':compacted?'요약 후 추정':'마지막 응답 추정',
+    source:measured?'마지막 응답 실측':pending?'전송 문맥 추정':compacted?'요약 후 추정':'마지막 응답 추정',
     note:[note,
       !reportedWindow&&fallbackWindow?'현재 모델 목록의 최대 컨텍스트를 사용해요.':''].filter(Boolean).join(' ')};
 }

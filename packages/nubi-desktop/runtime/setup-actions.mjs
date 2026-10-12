@@ -3,13 +3,17 @@ import {fail,hash,readSource} from './files.mjs';
 import {shellProfiles} from './processes.mjs';
 import Ajv from 'ajv';
 import {preferredShell} from './environment-inspection.mjs';
+import {toolArgumentIssues} from '../../../extensions/aipro-chat/tool-validation.js';
 
 const text = maxLength => ({type:'string',minLength:1,maxLength});
 export const SETUP_ACTION_SCHEMA = {
   type:'object',additionalProperties:false,
-  properties:{title:text(120),kind:{type:'string',enum:['inspect','install','configure','build','start','verify']},profile:text(40),script:text(16000),reason:text(1000),effects:text(1500),verification:text(1000),
-    privilege:{type:'string',enum:['user','administrator']},privilegeReason:text(1000),
-    references:{type:'array',minItems:1,maxItems:10,items:{type:'object',additionalProperties:false,properties:{path:text(1000),hash:text(100)},required:['path','hash']}}},
+  properties:{title:{...text(120),description:'Short approval card title.'},kind:{type:'string',enum:['inspect','install','configure','build','start','verify'],description:'Use start for running an app/server, verify for tests, inspect for a version check.'},
+    profile:{...text(40),description:'Exact availableShells ID from inspect_environment, e.g. powershell, cmd or bash. Omit to use the host default; do not send null.'},
+    script:{...text(16000),description:'ONE exact shell command as a string, not an array/object. This field is script, not command. Use the selected shell syntax.'},
+    reason:{...text(1000),description:'Why this command is needed, as a string.'},effects:{...text(1500),description:'Downloads, hooks, changes and their scope, as one string, not a list.'},verification:{...text(1000),description:'How its result will be checked, as one string, not an object or list.'},
+    privilege:{type:'string',enum:['user','administrator'],description:'Omit for ordinary execution. Administrator requires separate consent.'},privilegeReason:text(1000),
+    references:{type:'array',minItems:0,maxItems:10,description:'Copy path/hash pairs from this run\'s inspect_environment.references or read_source results. Never invent a hash. Use [] only when the command is independent of project files, such as an explicit host/version check. If it depends on a project script/configuration, read and reference that file.',items:{type:'object',additionalProperties:false,properties:{path:text(1000),hash:text(100)},required:['path','hash']}}},
   required:['title','kind','script','reason','effects','verification','references']
 };
 
@@ -17,7 +21,7 @@ const validate=new Ajv().compile(SETUP_ACTION_SCHEMA);
 
 // Approval is not a shell sandbox. Keep model-described effects and the exact command visible.
 export async function prepareSetupAction(service,taskId,args,observations) {
-  if(!validate(args))fail('setup_invalid');
+  if(!validate(args))throw Object.assign(Error('setup_invalid'),{details:{issues:toolArgumentIssues(SETUP_ACTION_SCHEMA,args)},actionIssued:false});
   if(service.task(taskId).question)fail('question_pending');
   const profiles=await shellProfiles();args={...args,profile:args.profile||preferredShell(profiles,process.platform,service.shellPreference())};
   if(args.privilege==='administrator'){

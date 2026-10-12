@@ -2,7 +2,7 @@ import {mkdir, realpath, writeFile, readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {stringify} from 'yaml';
 import {qualityLabel} from './quality-status.mjs';
-import {git, hash, readSource, scopedFile, fail} from './files.mjs';
+import {git, hash, readSource, scopedFile, fail, gitOpenFailure} from './files.mjs';
 
 const statusText = {pending_creation:'생성 승인 대기',attention:'저장 확인 필요',conflicted:'기존 파일 확인 필요',creating:'저장 확인 중',timed_out:'시간 초과',paused:'복구 대기',proposed:'검토 대기',applied:'반영 확인',superseded:'후속 제안으로 대체',running:'실행 중',stopping:'중지 중',completed:'실행 종료',failed:'실패',cancelled:'중지',interrupted:'결과 미확정',unknown:'미확인',matching:'기준 내용과 일치',changed:'기준 이후 변경',unavailable:'현재 파일 확인 불가'};
 const plain = value => String(value).replace(/[\r\n]/g, ' ').replace(/[<>`|]/g, character => `&#${character.charCodeAt(0)};`);
@@ -25,7 +25,8 @@ export async function collectKnowledge(service, taskId) {
     try { const file = await readSource(root, source.path); sources.push({...source,currentHash:file.hash,state:file.hash === source.hash ? 'matching' : 'changed'}); }
     catch(error) { sources.push({...source,currentHash:null,state:error.code==='ENOENT'&&source.hash==='absent'?'pending_creation':'unavailable'}); }
   }
-  const head = (await git(root, ['rev-parse','--verify','HEAD'])).trim();
+  // A folder without Git, or a repository without a commit, has no HEAD to record; such folders open (user decision 2026-10-04).
+  let head=null;try{head=(await git(root,['rev-parse','--verify','HEAD'])).trim();}catch(error){if(!['not_git_repository','git_unavailable'].includes(gitOpenFailure(error)))throw error;}
   const processes = service.store.list('process:').filter(p => p.taskId === taskId).reverse().map(({id,profile,state,exitCode,startedAt,finishedAt}) => ({id,profile,state,exitCode,startedAt,finishedAt:finishedAt || null}));
   const comparisons = service.store.list('comparison:').filter(c => c.taskId === taskId).reverse().map(({id,createdAt,state,changedPixels,sourceAssociation}) => ({id,createdAt,state,changedPixels,sourceAssociation}));
   const operations=service.store.list('operation:').filter(o=>o.taskId===taskId).slice(0,30).map(({id,tool,state,outcome,receipt})=>({id,tool,state,outcome:outcome||null,error:receipt?.error||null}));
@@ -55,7 +56,7 @@ function renderRecord(packet, {revision,createdAt,digest,previous}) {
     `\n\n## 변경 계획과 확인한 요구사항\n\n${packet.changePlan ? plain(packet.changePlan.summary)+'\n'+packet.changePlan.checks.map(c=>' - '+plain(c.description)+' — 검증 전').join('\n') : '- 변경 계획 없음'}\n${packet.decisions.map(q=>'- '+plain(q.text)+' → '+plain(q.answer.text)).join('\n')}` +
     '\n\n## 계획에 사용한 Wiki\n\n' +
     (packet.changePlan?.wikiEvidence?.length ? packet.changePlan.wikiEvidence.map(row=>`- ${plain(row.path)}:${row.start}–${row.end}\n  - 연결한 요구사항: ${packet.changePlan.requirements.filter(r=>r.evidenceIds?.includes(row.evidenceId)).map(r=>plain(r.text)).join(', ')}\n  - 관찰 해시: ${row.hash}\n  - 계획 시점: ${row.freshness==='source_matched'?'출처 버전 일치':'최신성 미확인'}`).join('\n') : '- 연결한 Wiki 근거 없음') +
-    `\n\n## 소스 근거\n\n기준 커밋: ${packet.head}\n\n` +
+    `\n\n## 소스 근거\n\n기준 커밋: ${packet.head||'없음'}\n\n` +
     (packet.sources.length ? packet.sources.map(s => `- ${plain(s.path)} — ${statusText[s.state]}\n  - 관찰 해시: ${s.hash}\n  - 현재 해시: ${s.currentHash || '미확인'}`).join('\n') : '- 아직 관찰하거나 변경한 소스가 없습니다.') +
     '\n\n## 변경 제안\n\n' +
     (packet.proposals.length ? packet.proposals.map(p => `- ${plain(p.path)} — ${statusText[p.state] || plain(p.state)}${p.stats?.state === 'counted' ? `, +${p.stats.added} / -${p.stats.removed}줄` : ''} (${p.id})`).join('\n') : '- 변경 제안 없음') +

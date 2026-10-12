@@ -4,7 +4,7 @@ import {AgentTabs} from './AgentTabs.jsx';
 import {ERROR_TEXT, PROVIDER_LABELS} from '../core.js';
 import {compactTokens, contextPercent, contextUsage, formatTokens} from '../usage.js';
 
-const providerIcons = {aipro: 'aipro.svg', chatgpt: 'openai.svg', fabrix: 'fabrix.svg'};
+const providerIcons = {aipro: 'aipro.svg', chatgpt: 'openai.svg', fabrix: 'fabrix.svg', claude: 'claude.svg'};
 export function ProviderIcon({provider}) {
   if (provider === 'aipro-cli' || provider === 'compatible') return <Icon name="code" size={20} className="connection-logo"/>;
   return <img className="connection-logo" src={`./icons/${providerIcons[provider] || providerIcons.aipro}`} alt="" width="20" height="20"/>;
@@ -106,7 +106,7 @@ export function ModelSelection({title='모델 선택', data, initialProvider, lo
   const accountActions=(connected || connection.present) && <div className="provider-account-actions" role="group" aria-label="모델 연결 관리">
         {connected && (current || data.catalogs) && <ActionButton action="refresh" iconOnly={!showActionLabels} label={showActionLabels?'새로고침':'모델 목록 새로고침'} aria-label="모델 목록 새로고침" busy={loading} disabled={blocked || loading} onClick={() => refreshModels()}/>}
         {connected && provider === 'fabrix' && <ActionButton action="edit" iconOnly={!showActionLabels} label={showActionLabels?'연결 편집':'FabriX 연결 편집'} aria-label="FabriX 연결 편집" disabled={blocked} onClick={connect}/>}
-        {connection.present && <ActionButton action="logout" iconOnly={!showActionLabels} label={showActionLabels?'로그아웃':`${providerLabels[provider]} 로그아웃`} aria-label={`${providerLabels[provider]} 로그아웃`} disabled={blocked} onClick={disconnect}/>}
+        {connection.present && <ActionButton action="logout" iconOnly={!showActionLabels} label={showActionLabels?(provider==='claude'?'연결 해제':'로그아웃'):`${providerLabels[provider]} ${provider==='claude'?'연결 해제':'로그아웃'}`} aria-label={`${providerLabels[provider]} ${provider==='claude'?'연결 해제':'로그아웃'}`} disabled={blocked} onClick={disconnect}/>}
     </div>;
   const content=<>
     <div className="provider-toolbar">
@@ -139,7 +139,7 @@ export function ModelSelection({title='모델 선택', data, initialProvider, lo
   </DetailPanel>;
 }
 
-export function ContextMeter({dialogTitle='컨텍스트', messages, draft, model, busy, partial, promptContext, memory, stats, task, onCompact, usageInfo, showActionLabels = false}) {
+export function ContextMeter({dialogTitle='컨텍스트', messages, draft, model, busy, partial, promptContext, memory, stats, task, onCompact, usageInfo, showActionLabels = false, showTokenCount = false}) {
   const [open, setOpen] = useState(false);
   const estimatedInfo = useMemo(() => contextUsage(messages, draft, model, busy, partial, promptContext), [messages, draft, model, busy, partial, promptContext]);
   const info = usageInfo || estimatedInfo;
@@ -150,8 +150,8 @@ export function ContextMeter({dialogTitle='컨텍스트', messages, draft, model
   const progress = Math.min(100, Math.max(0, (info.ratio || 0) * 100));
   const ringLabel = info.ratio === null ? '—' : String(Math.round(progress));
   return <>
-    <CxButton className="context-trigger" aria-label="컨텍스트 사용량" aria-haspopup="dialog" aria-expanded={open} title={title} onClick={() => setOpen(true)}>
-      <svg className="context-ring" viewBox="0 0 40 40" aria-hidden="true"><circle className="context-track" cx="20" cy="20" r="15"/><circle cx="20" cy="20" r="15" pathLength="100" strokeDasharray={`${progress} 100`} transform="rotate(-90 20 20)"/><text x="20" y="20" textAnchor="middle" dominantBaseline="middle">{ringLabel}</text></svg>{showActionLabels&&<span className="nubi-action-label">문맥</span>}
+    <CxButton className="context-trigger" data-token-count={showTokenCount || undefined} aria-label="컨텍스트 사용량" aria-haspopup="dialog" aria-expanded={open} title={title} onClick={() => setOpen(true)}>
+      <svg className="context-ring" viewBox="0 0 40 40" aria-hidden="true"><circle className="context-track" cx="20" cy="20" r="15"/><circle cx="20" cy="20" r="15" pathLength="100" strokeDasharray={`${progress} 100`} transform="rotate(-90 20 20)"/><text x="20" y="20" textAnchor="middle" dominantBaseline="middle">{ringLabel}</text></svg>{showTokenCount&&<span className="context-token-count">{estimated?'≈':''}{compactTokens(info.used)}</span>}{showActionLabels&&<span className="nubi-action-label">문맥</span>}
     </CxButton>
     {open && <DetailPanel title={dialogTitle} variant="modal" className="deck-dialog context-dialog" hideHelp onClose={() => setOpen(false)}>
       <div className="context-summary">

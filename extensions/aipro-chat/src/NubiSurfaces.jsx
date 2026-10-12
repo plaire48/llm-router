@@ -13,13 +13,13 @@ export function NubiHeaderActions({history, expand, usage, settings}) {
   </>;
 }
 
-export function NubiLogin({mood, intro, error, pending, onLogin, onCancel, children}) {
+export function NubiLogin({mood, intro, error, pending, onLogin, onCancel, children, checkingProvider=null, providerLabels={aipro:'AI Pro',chatgpt:'ChatGPT',fabrix:'FabriX'}}) {
   const pendingLabel={waiting:'로그인 대기 중',callback_received:'로그인 응답 확인 중',exchanging:'인증 확인 중',loading_models:'모델 목록 확인 중'}[pending?.phase]||'로그인 대기 중';
   return <section className="aipro-login"><div className="aipro-login-card">
     <WelcomeMark mood={mood}/>{intro!==false&&<AgentIntro {...intro}/>} 
     {error && <CxNotice tone="danger">{error}</CxNotice>}
     <div className="provider-options">
-      {['aipro','chatgpt','fabrix'].map(provider=><CxButton key={provider} data-provider={provider} className="provider-button" variant={provider==='aipro' ? 'primary' : 'secondary'} disabled={!!pending && (provider==='fabrix' || pending.provider!==provider)} busy={pending?.provider===provider} onClick={()=>onLogin(provider)}><span className="provider-label"><img className="provider-logo" src={`./icons/${{aipro:'aipro',chatgpt:'openai',fabrix:'fabrix'}[provider]}.svg`} alt="" width="24" height="24"/><span>{pending?.provider===provider ? pendingLabel : {aipro:'AI Pro',chatgpt:'ChatGPT',fabrix:'FabriX'}[provider]}</span></span></CxButton>)}
+      {Object.keys(providerLabels).map(provider=><CxButton key={provider} data-provider={provider} className="provider-button" variant={provider==='aipro' ? 'primary' : 'secondary'} disabled={!!checkingProvider || !!pending && (provider==='fabrix' || pending.provider!==provider)} busy={checkingProvider===provider || pending?.provider===provider} onClick={()=>onLogin(provider)}><span className="provider-label"><img className="provider-logo" src={`./icons/${{aipro:'aipro',chatgpt:'openai',fabrix:'fabrix',claude:'claude'}[provider]}.svg`} alt="" width="24" height="24"/><span>{checkingProvider===provider ? '연결 확인 중' : pending?.provider===provider ? pendingLabel : providerLabels[provider]}</span></span></CxButton>)}
       {pending && <ActionButton action="cancel" label="로그인 취소" onClick={onCancel}/>}
     </div>
     {children}

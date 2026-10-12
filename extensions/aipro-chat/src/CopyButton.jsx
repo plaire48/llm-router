@@ -1,7 +1,7 @@
 import React, {useEffect, useId, useLayoutEffect, useRef, useState} from 'react';
 import {ActionButton, notifyToast} from '@e2e/cx-design-system';
 
-export function CopyButton({text, getText, label = '복사', successMessage = '복사했습니다.', showActionLabels = false}) {
+export function CopyButton({text, getText, onCopy, resetKey, disabled=false, label = '복사', successMessage = '복사했습니다.', showActionLabels = false}) {
   const [status, setStatus] = useState('idle');
   const timer = useRef(null), generation = useRef(0), inFlight = useRef(false), latestStatus = useRef('idle');
   const button = useRef(null), restoreFocus = useRef(false);
@@ -13,23 +13,26 @@ export function CopyButton({text, getText, label = '복사', successMessage = '�
       generation.current++; clearTimeout(timer.current);
       if (latestStatus.current === 'error') notifyToast('', {source});
     };
-  }, [text, source]);
+  }, [text, resetKey, source]);
   useLayoutEffect(() => {
     if (status !== 'copied' && status !== 'error') return;
     if (restoreFocus.current && document.activeElement === document.body) button.current?.focus({preventScroll: true});
     restoreFocus.current = false;
   }, [status]);
   async function copy() {
-    if (inFlight.current) return;
+    if (disabled || inFlight.current) return;
     inFlight.current = true; clearTimeout(timer.current);
     restoreFocus.current = document.activeElement === button.current;
     const version = ++generation.current;
     update('copying');
     try {
-      const value = getText ? await getText() : text;
-      if (version !== generation.current) return;
-      if (typeof value !== 'string') throw new Error('copy_unavailable');
-      await navigator.clipboard.writeText(value);
+      if(onCopy){if(await onCopy()===false)throw new Error('copy_unavailable');}
+      else {
+        const value = getText ? await getText() : text;
+        if (version !== generation.current) return;
+        if (typeof value !== 'string') throw new Error('copy_unavailable');
+        await navigator.clipboard.writeText(value);
+      }
       if (version !== generation.current) return;
       update('copied'); notifyToast(successMessage, {source});
       timer.current = setTimeout(() => update('idle'), 2000);
@@ -40,7 +43,8 @@ export function CopyButton({text, getText, label = '복사', successMessage = '�
   }
   return <span className="copy-control" data-copy-state={status}>
     <ActionButton ref={button} action="copy" iconOnly={!showActionLabels} aria-label={status === 'copied' ? `${label} 완료` : label} label={showActionLabels ? (status === 'copied' ? '복사 완료' : '복사') : status === 'copied' ? `${label} 완료` : label} title={status === 'copied' ? '복사했습니다.' : status === 'error' ? '복사 다시 시도' : label}
-      className={status === 'copied' ? 'copy-complete' : ''} busy={status === 'copying'} success={status === 'copied'} aria-describedby={status === 'error' ? failureId : undefined} onClick={copy}/>
-    {status === 'error' && <span id={failureId} className="copy-error">복사 실패. 다시 눌러주세요.</span>}
+      className={status === 'copied' ? 'copy-complete' : ''} disabled={disabled} busy={status === 'copying'} success={status === 'copied'} aria-describedby={status === 'error' ? failureId : undefined} onClick={copy}/>
+    <span className="visually-hidden" role="status">{status === 'copied' ? '복사했습니다.' : ''}</span>
+    {status === 'error' && <span id={failureId} className="copy-error visually-hidden">복사 실패. 다시 눌러주세요.</span>}
   </span>;
 }

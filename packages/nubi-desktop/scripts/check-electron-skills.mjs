@@ -1,7 +1,7 @@
 // Skill registration and use in the real Electron app (2026-10-07). A loopback OpenAI-compatible fixture serves the
 // model through the worker's own "compatible" provider, so the composer and the skill menu open without a product hook
 // or a real login. Covers folder, ZIP and Markdown registration, a duplicate and a cancelled pick, a malformed instruction
-// disclosed and recovered, delete to the trash and restore, a skill chosen in the composer that a run discovers, loads and
+// disclosed and recovered, remove from the project without a trash browser, a skill chosen in the composer that a run discovers, loads and
 // follows, the instruction opened in the editor, and registrations surviving a restart.
 // Run from the package dir after scripts/build-electron.mjs: node scripts/check-electron-skills.mjs
 import {_electron as electron} from 'playwright';
@@ -82,9 +82,8 @@ try{
   stage('malformed instruction disclosed and recovered');
   await row('zipped-skill').getByRole('button',{name:'zipped-skill 삭제'}).click();await page.getByText('스킬을 삭제할까요?').waitFor();await page.getByRole('alertdialog').getByRole('button',{name:'삭제',exact:true}).click();
   await row('zipped-skill').waitFor({state:'detached'});assert.equal(await exists(zipped),false,'a deleted skill leaves the project');
-  await skillsDialog().getByRole('button',{name:/^휴지통 보기 \(1개\)/}).click();await row('zipped-skill').getByRole('button',{name:'zipped-skill 복원'}).click();await row('zipped-skill').waitFor({state:'detached'});
-  await skillsDialog().getByRole('button',{name:'등록 목록 보기',exact:true}).click();await row('zipped-skill').waitFor();assert.equal(await readFile(zipped,'utf8'),intact,'a restored skill is back as it was');
-  stage('delete to the trash and restore');
+  assert.equal(await skillsDialog().getByRole('button',{name:/휴지통/}).count(),0);
+  stage('remove skill with no trash browser in My Skills');
   await page.keyboard.press('Escape');await skillsDialog().waitFor({state:'hidden'});
   await trigger().click();await page.getByRole('dialog',{name:'스킬 목록',exact:true}).getByRole('button',{name:'fixture-skill 스킬 사용'}).click();await toast('스킬을 요청에 추가했습니다').waitFor();
   const composer=page.getByRole('textbox',{name:'작업 요청'});assert.match(await composer.inputValue(),/^\/fixture-skill /,'the command leads the draft');
@@ -98,7 +97,7 @@ try{
   await page.getByRole('tab',{name:/SKILL\.md/}).waitFor();await page.waitForFunction(sentinel=>document.querySelector('.desktop-editor')?.textContent.includes(sentinel),SENTINEL);
   stage('the instruction opens in the editor');
   await mkdir('verification',{recursive:true});await page.screenshot({path:'verification/electron-skills.png'});
-  await app.close();await open();await openManagement();for(const name of ['fixture-skill','zipped-skill','quick-note'])await row(name).waitFor();assert.equal(await skillsDialog().locator('.nubi-custom-skill-row').count(),3);
+  await app.close();await open();await openManagement();for(const name of ['fixture-skill','quick-note'])await row(name).waitFor();assert.equal(await row('zipped-skill').count(),0);assert.equal(await skillsDialog().locator('.nubi-custom-skill-row').count(),2);
   stage('registrations survive a restart');
   await writeFile('verification/electron-skills.json',JSON.stringify({platform:process.platform,checks,modelRequests:seen,toolCalls:calls,plannerOfferedSkill:planned,reviewProblems,boundary:'Local Electron with a scripted loopback model. No real provider login, marketplace or Windows installation.'},null,2));
   console.log(JSON.stringify({checks,toolCalls:calls,modelRequests:seen.length}));

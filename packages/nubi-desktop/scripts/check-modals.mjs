@@ -48,7 +48,7 @@ try{
   // The AI Workspace tab (2026-10-07): the company catalog with install, update, info and instruction controls inside the same dialog.
   {const dialog=p.getByRole('dialog',{name:'스킬 관리',exact:true});await dialog.getByRole('tab',{name:'AI Workspace',exact:true}).click();const card=name=>dialog.locator('.nubi-marketplace-card').filter({has:p.locator('strong',{hasText:name})});await card('보고서 검토').getByRole('button',{name:'보고서 검토 다운로드',exact:true}).waitFor();await card('간단 덧셈').getByRole('button',{name:'간단 덧셈 업데이트',exact:true}).waitFor();assert.equal(await card('간단 덧셈').getByRole('button',{name:'간단 덧셈 업데이트',exact:true}).getAttribute('title'),'v1.0.0 → v1.2.0');await card('간단 덧셈').locator('.nubi-actions-disclosure>summary').click();await card('간단 덧셈').getByRole('button',{name:'간단 덧셈 지침 열기',exact:true}).waitFor();await card('간단 덧셈').locator('.nubi-actions-disclosure>summary').click();await card('보고서 검토').locator('.nubi-actions-disclosure>summary').click();await card('보고서 검토').getByRole('button',{name:'보고서 검토 정보',exact:true}).click();await card('보고서 검토').locator('.nubi-skill-expanded').waitFor();assert.equal(await dialog.getByRole('button',{name:'마켓플레이스 새로고침',exact:true}).count(),1);await inspect('스킬 관리','marketplace-'+suffix);await card('보고서 검토').locator('.nubi-actions-disclosure>summary').click();await card('보고서 검토').getByRole('button',{name:'보고서 검토 정보',exact:true}).focus();const utilityHint=p.getByRole('tooltip');if(await utilityHint.count()){await p.keyboard.press('Escape');await utilityHint.waitFor({state:'hidden'});}await p.keyboard.press('Escape');assert.equal(await card('보고서 검토').locator('.nubi-actions-disclosure').getAttribute('open'),null,'Escape collapses the focused management group');}await p.keyboard.press('Escape');await p.getByRole('dialog',{name:'스킬 관리',exact:true}).waitFor({state:'hidden'});
   // The company account dialog from the rail (2026-10-07): a guest sees the SSO button, login shows the device code, cancel returns to the guest view.
-  {await p.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='스킬 관리');/* the skills dialog has handed focus back before the rail is used */await p.getByRole('button',{name:'회사 계정 메뉴',exact:true}).click();const dialog=p.getByRole('dialog',{name:'회사 계정',exact:true});await dialog.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).waitFor();await inspect('회사 계정','account-'+suffix);await dialog.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).click();await dialog.getByText('NUBI-1234',{exact:true}).waitFor();await dialog.getByRole('button',{name:'로그인 코드 복사',exact:true}).waitFor();await dialog.getByRole('button',{name:'로그인 취소',exact:true}).click();await dialog.waitFor({state:'hidden'});/* cancelling a company login closes the dialog and returns to where the user was (cancelCompanyConnection) */await p.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='회사 계정 메뉴');}
+  {await p.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='스킬 관리');/* the skills dialog has handed focus back before the rail is used */await p.getByRole('button',{name:'로그인',exact:true}).click();const dialog=p.getByRole('dialog',{name:'로그인',exact:true});await dialog.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).waitFor();await inspect('로그인','account-'+suffix);await dialog.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).click();await dialog.getByText('NUBI-1234',{exact:true}).waitFor();await dialog.getByRole('button',{name:'로그인 코드 복사',exact:true}).waitFor();await dialog.getByRole('button',{name:'로그인 취소',exact:true}).click();await dialog.waitFor({state:'hidden'});/* cancelling a company login closes the dialog and returns to where the user was (cancelCompanyConnection) */await p.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='로그인');}
   await history();await inspect('대화 검색','history-'+suffix);await p.keyboard.press('Escape');await closeSidebar();
   await p.getByRole('button',{name:'컨텍스트 사용량',exact:true}).click();await inspect('컨텍스트 사용량','context-'+suffix);await p.keyboard.press('Escape');
   await p.getByRole('button',{name:'모델 변경',exact:true}).click();await inspect('모델 선택','models-'+suffix);
@@ -85,7 +85,7 @@ try{
   await p.setViewportSize({width,height:800});await p.goto(origin+'/?context&modals&integrated&wiki-progress');
   const wiki=p.getByRole('dialog',{name:'위키 준비',exact:true});await wiki.waitFor();
   assert.equal(await wiki.getByRole('progressbar').getAttribute('aria-valuenow'),'30');
-  assert.match(await wiki.innerText(),/현재 단계 약/);assert.match(await wiki.innerText(),/진행 \d+분 \d+초/);
+  assert.match(await wiki.innerText(),/현재 단계 약/);assert.match(await wiki.innerText(),/진행 (?:[1-9]\d*분(?: [1-9]\d*초)?|[1-9]\d*초)/);
   assert(await wiki.evaluate(e=>e.scrollWidth<=e.clientWidth+1),'wiki progress fits the modal');
   await p.screenshot({path:path.join(dir,`wiki-progress-${width}.png`),animations:'disabled'});
   await wiki.getByRole('button',{name:'백그라운드로',exact:true}).click();await wiki.waitFor({state:'hidden'});
@@ -117,17 +117,18 @@ try{
  await p.screenshot({path:path.join(dir,'command-followup-queue.png'),animations:'disabled'});
  checks.push('Send racing automatic command review refreshes state and queues the exact message once without a busy error');
  // Company sign-in must be discoverable in the titlebar, including before a project/model is connected.
- for(const variant of [{width:1280,height:720},{width:800,height:600},{width:440,height:500},{width:440,height:500,noProject:true},{width:1280,height:720,connected:true}]){
+ for(const variant of [{width:1280,height:720},{width:800,height:600},{width:440,height:500},{width:440,height:500,noProject:true},{width:1280,height:720,connected:true},{width:440,height:600,connected:true}]){
   await p.setViewportSize({width:variant.width,height:variant.height});
   await p.goto(origin+'/?context&modals&integrated&toolbar'+(variant.noProject?'&noproject':'')+(variant.connected?'&company-connected':''));
   const account=p.locator('.nubi-toolbar-account button');await account.waitFor();
   assert.equal(await p.locator('.nubi-account-button').count(),1,'one account controller, without duplicate polling or dialogs');
-  assert.equal(await account.locator('span:not(.nubi-account-avatar)').innerText(),'회사 계정','stable short label keeps long profiles from widening the toolbar');
+  assert.equal(await account.locator(':scope > span:not(.nubi-account-avatar)').innerText(),variant.connected?'긴 이름의 회사 계정 화면 검토 사용자':'로그인');
+  assert.equal(await account.locator('.nubi-account-avatar').isVisible(),true,'avatar remains visible at every toolbar width');
   assert(await account.evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight;}),'company account is visible without scrolling');
   assert.deepEqual(await p.locator('.nubi-window-toolbar button').evaluateAll(es=>es.filter(e=>{const r=e.getBoundingClientRect();return r.left<0||r.right>innerWidth+1||r.bottom>document.querySelector('.desktop-titlebar').getBoundingClientRect().bottom+1;}).map(e=>e.textContent.trim())),[],'toolbar actions stay inside the titlebar');
   await p.screenshot({path:path.join(dir,`company-menu-${variant.width}${variant.noProject?'-start':''}${variant.connected?'-connected':''}.png`),animations:'disabled'});
-  await account.click();const dialog=p.getByRole('dialog',{name:'회사 계정',exact:true});await dialog.waitFor();
-  if(variant.connected){await dialog.getByRole('heading',{name:'긴 이름의 회사 계정 화면 검토 사용자',exact:true}).waitFor();}
+  await account.click();const dialog=p.locator('.nubi-ghes-modal');await dialog.waitFor();
+  if(variant.connected){await dialog.locator('.nubi-account-heading strong').filter({hasText:'긴 이름의 회사 계정 화면 검토 사용자'}).waitFor();await dialog.getByText('기본 정보',{exact:true}).waitFor();assert.equal(await dialog.getByText('회사 저장소 열기',{exact:true}).count(),0);assert.equal(await dialog.locator('.nubi-account-avatar img').evaluate(img=>img.complete&&img.naturalWidth>0),true);}
   else{assert.doesNotMatch(await dialog.innerText(),/code\.sdsdev\.co\.kr/,'company connection keeps its host out of the visible copy');await dialog.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).waitFor();}
   await p.screenshot({path:path.join(dir,`company-login-${variant.width}${variant.noProject?'-start':''}${variant.connected?'-connected':''}.png`),animations:'disabled'});
   await p.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});assert(await account.evaluate(e=>e===document.activeElement),'Escape returns to the titlebar account button');
@@ -135,7 +136,7 @@ try{
  }
  await p.setViewportSize({width:440,height:700});await p.goto(origin+'/?context&modals&integrated&toolbar&company-login-error');
  await p.locator('.nubi-toolbar-account button').click();
- const loginError=p.getByRole('dialog',{name:'회사 계정',exact:true});await loginError.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).click();
+ const loginError=p.getByRole('dialog',{name:'로그인',exact:true});await loginError.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).click();
  await loginError.getByText('로그인 코드 발급 / HTTP 404',{exact:true}).waitFor();
  assert.match(await loginError.innerText(),/회사 로그인 경로를 찾지 못했어요/);assert.doesNotMatch(await loginError.innerText(),/저장소를 읽을 수 없어요|code\.sdsdev\.co\.kr/);
  assert(await loginError.locator('.nubi-account-diagnostic').evaluate(e=>e.scrollWidth<=e.clientWidth),'safe diagnostic stays on one line');
@@ -151,6 +152,26 @@ try{
  await skillSearch.fill('');await p.screenshot({path:path.join(dir,'nubi-workspace-skills.png'),animations:'disabled'});
  await p.getByRole('tab',{name:'내 스킬',exact:true}).click();await p.getByRole('textbox',{name:'내 스킬 검색'}).fill('보고서');await p.locator('.nubi-custom-skill-row').first().waitFor();await p.screenshot({path:path.join(dir,'nubi-my-skills.png'),animations:'disabled'});
  for(const width of [440,800,1280]){await p.setViewportSize({width,height:850});for(const tabName of ['AI Workspace','내 스킬']){await p.getByRole('tab',{name:tabName,exact:true}).click();const tabs=p.locator('.nubi-skill-tabs');assert(await tabs.evaluate(node=>node.scrollWidth<=node.clientWidth),'skill tabs fit at '+width);assert(await tabs.getByRole('tab').evaluateAll(items=>items.every(tab=>{const r=tab.getBoundingClientRect();return r.height>=44&&r.width>=44;})),'skill tab targets');}await p.screenshot({path:path.join(dir,'nubi-my-skills-'+width+'.png'),animations:'disabled'});}
+ // Pagination searches the full catalog and resets on filtering.
+ await p.evaluate(()=>{window.skillFixtureCount=22;});
+ for(const entry of [{tab:'내 스킬',search:'내 스킬 검색',refresh:'목록 새로고침',prefix:'내 스킬',row:'.nubi-custom-skill-row',term:'검토 스킬 22',total:23},{tab:'AI Workspace',search:'AI Workspace 스킬 검색',refresh:'마켓플레이스 새로고침',prefix:'AI Workspace 스킬',row:'.nubi-marketplace-card',term:'공유 스킬 22',total:24}]){
+   await p.getByRole('tab',{name:entry.tab,exact:true}).click();await p.getByRole('textbox',{name:entry.search}).fill('');await p.getByRole('button',{name:entry.refresh,exact:true}).click();
+   const pager=p.getByRole('navigation',{name:entry.prefix+' 페이지 이동'});await pager.getByText('1–10 / '+entry.total,{exact:true}).waitFor();assert.equal(await p.locator(entry.row).count(),10);
+   await pager.getByRole('button',{name:entry.prefix+' 다음 페이지',exact:true}).click();await pager.getByText('11–20 / '+entry.total,{exact:true}).waitFor();
+   await pager.getByRole('button',{name:entry.prefix+' 다음 페이지',exact:true}).click();await pager.getByText('21–'+entry.total+' / '+entry.total,{exact:true}).waitFor();assert(await pager.getByRole('button',{name:entry.prefix+' 다음 페이지',exact:true}).isDisabled());
+   await p.getByRole('textbox',{name:entry.search}).fill(entry.term);await pager.getByText('1–1 / 1',{exact:true}).waitFor();assert.equal(await p.locator(entry.row).count(),1);
+   await p.getByRole('textbox',{name:entry.search}).fill('');await pager.getByText('1–10 / '+entry.total,{exact:true}).waitFor();
+ }
+ await p.getByRole('tab',{name:'내 스킬',exact:true}).click();
+ for(const width of [440,1280]){
+   await p.setViewportSize({width,height:850});assert.equal(await p.getByRole('button',{name:/휴지통/}).count(),0);
+   const register=p.getByRole('button',{name:'등록',exact:true});assert(await register.evaluate(e=>e.getBoundingClientRect().width>=88&&e.querySelector('span').checkVisibility()));
+   await p.screenshot({path:path.join(dir,'skills-pagination-'+width+'.png'),animations:'disabled'});
+   await p.evaluate(()=>{window.nubi={...window.nubi,platform:'win32'};});await register.click();const registration=p.getByRole('dialog',{name:'스킬 등록',exact:true});await registration.waitFor();
+   for(const name of ['파일 선택','폴더 선택']){const button=registration.getByRole('button',{name,exact:true});await button.waitFor();const style=await button.evaluate(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {bg:s.backgroundColor,fg:s.color,border:s.borderWidth,width:r.width,height:r.height};});assert.notEqual(style.bg,'rgba(0, 0, 0, 0)');assert.notEqual(style.bg,style.fg);assert(style.width>=112&&style.height>=40);assert.notEqual(style.border,'0px');}
+   await p.screenshot({path:path.join(dir,'skill-registration-'+width+'.png'),animations:'disabled'});await p.keyboard.press('Escape');await registration.waitFor({state:'hidden'});
+ }
+ checks.push('skill pagination across full local/company catalogs, filter reset, visible file/folder buttons, no trash toolbar, wide registration at 440/1280px');
  await p.getByRole('button',{name:'대화로 돌아가기'}).click();assert.equal(await input.inputValue(),'보존할 대화 초안');
  await p.mouse.move(1,1);await input.blur();const surface=p.locator('.nubi-composer-surface').first();const calm=await surface.evaluate(el=>getComputedStyle(el).borderColor);await surface.hover();assert.equal(await surface.evaluate(el=>getComputedStyle(el).borderColor),calm);
  await input.focus();const focus=await surface.evaluate(el=>({border:getComputedStyle(el).borderColor,shadow:getComputedStyle(el).boxShadow}));assert.notEqual(focus.border,calm);assert.notEqual(focus.shadow,'none');assert(!focus.border.includes('78, 89, 104'),'focus does not use the dark text token');await p.screenshot({path:path.join(dir,'composer-soft-focus.png'),animations:'disabled'});
@@ -158,7 +179,7 @@ try{
  for(const phase of ['running','paused']){
   await p.setViewportSize({width:1280,height:900});await p.goto(origin+'/?command&command-analysis='+phase+'&modals&integrated');
   await openSidebar();await p.getByRole('button',{name:'대화 검색',exact:true}).click();await p.getByRole('dialog',{name:'대화 검색'}).locator('.nubi-history-item').first().click();
-  const card=p.getByRole('region',{name:'실행 준비 승인'});await card.getByText(phase==='running'?'결과 분석 중':'결과 분석 중단',{exact:true}).waitFor();
+  const card=p.getByRole('region',{name:'실행 준비 승인'});await card.getByText(phase==='running'?'결과 확인 중':'결과 확인 중단',{exact:true}).waitFor();
   const output=card.getByRole('button',{name:'실행 결과 보기',exact:true});assert(await output.isEnabled());await output.click();await p.getByText('결과 확인용 출력',{exact:true}).waitFor();
   if(phase==='paused'){await p.getByText('응답 형식 확인 필요',{exact:false}).first().waitFor();assert.equal(await p.getByText('실행 실패',{exact:true}).count(),0);}
   await p.screenshot({path:path.join(dir,'command-analysis-'+phase+'.png'),animations:'disabled'});

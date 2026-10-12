@@ -7,6 +7,7 @@ import {promisify} from 'node:util';
 import {StringDecoder} from 'node:string_decoder';
 import {POWERSHELL_TEXT_ARGS,POWERSHELL_UTF8_PREFIX} from './powershell-encoding.mjs';
 import {startElevated,stopElevated} from './elevated-process.mjs';
+import {powerShellOutputDecoder,processOutputDiagnostic} from './powershell-output.mjs';
 const executeFile=promisify(execFile);
 export const hostShell = (platform=process.platform) => platform==='win32'?'powershell':'bash';
 
@@ -62,13 +63,14 @@ export class Processes {
     record.state='running';record.execution='started';record.lastOutputAt=Date.now();
     const child = spawn(shell.executable, args, {cwd, env, detached: process.platform !== 'win32', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe']});
     this.active.set(id, child); this.records.set(id, record); this.store.set('process:' + id, record);
-    const decoders=[new StringDecoder('utf8'),new StringDecoder('utf8')];
-    const append = (data,decoder) => { try {appendFileSync(record.logPath,data);} catch {record.logIncomplete=true;} record.lastOutputAt=Date.now();record.output = (record.output + decoder.write(data)).slice(-128000); this.store.set('process:' + id, record); };
-    child.stdout.on('data', data=>append(data,decoders[0])); child.stderr.on('data', data=>append(data,decoders[1]));
+    const decoders=[new StringDecoder('utf8'),new StringDecoder('utf8')],formatters=[powerShellOutputDecoder(),powerShellOutputDecoder()];
+    const retain=text=>{record.output=(record.output+text).slice(-128000);const diagnostic=processOutputDiagnostic({output:text});if(diagnostic)record.outputDiagnostic=diagnostic;else record.outputDiagnostic ||= processOutputDiagnostic(record)||undefined;};
+    const append = (data,index) => { try {appendFileSync(record.logPath,data);} catch {record.logIncomplete=true;} record.lastOutputAt=Date.now();retain(formatters[index].write(decoders[index].write(data))); this.store.set('process:' + id, record); };
+    child.stdout.on('data', data=>append(data,0)); child.stderr.on('data', data=>append(data,1));
     let timer;
     if (timeoutMs > 0) timer = setTimeout(() => this.stop(id,'timeout'), timeoutMs);
     child.on('error', error => { record.state = 'failed';record.execution='not_started';record.fault='shell_spawn_failed'; record.output += '\n' + error.code; this.store.set('process:' + id, record); });
-    child.on('close', (code, signal) => { clearTimeout(timer);record.output=(record.output+decoders.map(d=>d.end()).join('')).slice(-128000); record.exitCode = code; record.signal = signal; if (record.stopReason==='timeout'){record.state='timed_out';record.fault='process_timeout';}else if (record.cancellationRequested) record.state='cancelled'; else if (record.state === 'running') record.state = code === 0 ? 'completed' : 'failed';if(record.state==='failed')record.fault ||= code===127?'command_not_found':'command_failed';this.active.delete(id); this.records.delete(id);finish(); });
+    child.on('close', (code, signal) => { clearTimeout(timer);decoders.forEach((decoder,index)=>retain(formatters[index].write(decoder.end())+formatters[index].end())); record.exitCode = code; record.signal = signal; if (record.stopReason==='timeout'){record.state='timed_out';record.fault='process_timeout';}else if (record.cancellationRequested) record.state='cancelled'; else if (record.state === 'running') record.state = code === 0 ? 'completed' : 'failed';if(record.state==='failed')record.fault ||= code===127?'command_not_found':'command_failed';this.active.delete(id); this.records.delete(id);finish(); });
     this.store.event('process_started', {id, taskId}); return {...record};
   }
   poll(id) { const item = this.store.get('process:' + id); if (!item) throw new Error('process_missing'); return {...item,...(item.state==='running'?{quietForMs:Date.now()-item.lastOutputAt}:{})}; }

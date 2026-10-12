@@ -1,5 +1,6 @@
 const {GhesAccount,ORIGIN,SECRET_KEY}=require('../../nubi-vscode/src/ghes.cjs');
 const {chooseRepository}=require('../../nubi-vscode/src/ghes-git.cjs');
+const {WikiRepository}=require('./wiki-repository.cjs');
 const {startTeamWorkspace}=require('./team-workspace.cjs');
 const {spawn}=require('node:child_process');
 const {createServer}=require('node:net');
@@ -11,9 +12,10 @@ const missingWorkspaceBrowser=async()=>{throw Error('ghes_browser_unavailable');
 const quote=value=>"'"+value.replaceAll("'","'\\''")+"'";
 function remote(input){
   if(typeof input!=='string'||input.length>2000||/[\s\x00-\x1f]/.test(input))throw Error('remote_invalid');
-  if(/^[\w.-]+@[\w.-]+:[^:\s][^\s]*$/.test(input))return {href:input,pathname:input.slice(input.indexOf(':')+1),origin:null,protocol:'ssh:'};
+  if(/^[\w.-]+@[\w.-]+:[^:\s][^\s]*$/.test(input)){const href=input.replace(/\/+$/,'');return {href,pathname:href.slice(href.indexOf(':')+1),origin:null,protocol:'ssh:'};}
   let url;try{url=new URL(input);}catch{throw Error('remote_invalid');}
   if(!['https:','http:','ssh:','git:'].includes(url.protocol)||!url.hostname||url.password||url.search||url.hash)throw Error('remote_invalid');
+  url.pathname=url.pathname.replace(/\/+$/,'');
   return url;
 }
 class ElectronHost{
@@ -22,8 +24,9 @@ class ElectronHost{
     this.confirmWorkspaceSave=confirmWorkspaceSave;
     this.account=new GhesAccount({fetcher,openExternal:openBrowser,copyCode:async()=>{},
       secrets:{get:key=>keyStore.getPassword(SECRET_SERVICE,key),store:(key,value)=>keyStore.setPassword(SECRET_SERVICE,key,value),delete:key=>keyStore.deletePassword(SECRET_SERVICE,key)},
-      onInvalidated:async()=>{this.workspace?.close();this.workspace=null;this.repositories.clear();for(const child of this.children)child.kill();await invoke('disconnectSkillMarketplace').catch(()=>{});}});
+      onInvalidated:async()=>{this.workspace?.close();this.workspace=null;this.wikis?.cancel();this.repositories.clear();for(const child of this.children)child.kill();await invoke('disconnectSkillMarketplace').catch(()=>{});}});
   }
+  get wikiRepository(){return this.wikis??=new WikiRepository({account:this.account,confirmSave:this.confirmWorkspaceSave});}
   async accountAction(operation){return this.account.action(operation);}
   async openTeamWorkspace({refresh=false}={}){
     if(!(await this.account.status()).connected)return {loginRequired:true};
@@ -82,7 +85,7 @@ class ElectronHost{
       const env={...process.env,ELECTRON_RUN_AS_NODE:'1',GIT_TERMINAL_PROMPT:'0',GIT_ASKPASS:askpass,NUBI_GIT_SOCKET:socketPath,NUBI_GIT_NONCE:nonce};
       for(const key of Object.keys(env))if(/^GIT_TRACE|^GIT_CURL_VERBOSE$|^GIT_SSL_NO_VERIFY$/.test(key))delete env[key];
       await new Promise((resolve,reject)=>{
-        const child=this.spawnProcess('git',[...(credential?['-c','credential.helper=']:[]),'-c','http.sslVerify=true','clone','--',address.href,target],{env,stdio:['ignore','pipe','pipe'],windowsHide:true});this.children.add(child);
+        const child=this.spawnProcess(this.platform==='win32'&&process.env.NUBI_BUNDLED_GIT||'git',[...(credential?['-c','credential.helper=']:[]),...(this.platform==='win32'?['-c','http.sslBackend=schannel']:[]),'-c','http.sslVerify=true','clone','--',address.href,target],{env,stdio:['ignore','pipe','pipe'],windowsHide:true});this.children.add(child);
         child.stdout.on('data',()=>{});child.stderr.on('data',()=>{});
         child.once('error',()=>{this.children.delete(child);reject(Error('clone_failed'));});
         child.once('exit',code=>{this.children.delete(child);code===0?resolve():reject(Error('clone_failed'));});
@@ -91,6 +94,6 @@ class ElectronHost{
       return {cloned:true,root:target};
     }finally{if(server)await new Promise(resolve=>{server.close(resolve);});await rm(temp,{recursive:true,force:true});}
   }
-  dispose(){this.workspace?.close();this.workspace=null;this.account.dispose();for(const child of this.children)child.kill();this.repositories.clear();}
+  dispose(){this.wikis?.cancel();this.workspace?.close();this.workspace=null;this.account.dispose();for(const child of this.children)child.kill();this.repositories.clear();}
 }
 module.exports={ElectronHost,SECRET_SERVICE,remote};

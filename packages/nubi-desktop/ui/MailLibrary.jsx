@@ -1,12 +1,15 @@
+import {DESKTOP_PROVIDER_LABELS} from './provider-labels.mjs';
+import {CopyButton} from '../../../extensions/aipro-chat/src/CopyButton.jsx';
 import React,{useEffect,useRef,useState} from 'react';
-import {CxButton, CxInput, CxSelect, Icon} from '@e2e/cx-design-system';
+import {CxButton, CxInput, Icon} from '@e2e/cx-design-system';
+import {CxSelect} from './WorkspaceSelect.jsx';
 import {WorkspaceAction as ActionButton} from './WorkspaceAction.jsx';
 import {notifyWorkspaceToast} from './WorkspaceToast.jsx';
 import {BrowserMark,PersonMark,FolderMark} from './marks.jsx';
 import {ModelSelection,ProviderIcon} from '../../../extensions/aipro-chat/src/ChatControls.jsx';
 import {mailPassword} from '../runtime/mail-credentials.mjs';
 import {mailConnectionErrors,mailConnectionDiagnostic} from './mail-connection-error.mjs';
-const labels={aipro:'AI Pro',chatgpt:'ChatGPT',fabrix:'FabriX'};
+const labels=DESKTOP_PROVIDER_LABELS;
 const errors={mail_input_invalid:'아이디와 비밀번호를 확인해 주세요.',mail_model_missing:'정리할 모델을 먼저 선택해 주세요.',mail_model_changed:'선택한 모델의 연결을 확인해 주세요.',mail_check_wait:'다음 확인 시간이 되면 새 메일을 가져와요.',mail_busy:'진행 중인 작업이 끝난 뒤 다시 눌러 주세요.',mail_not_connected:'메일 계정을 먼저 연결해 주세요.',mail_source_changed:'보관한 원문이 바뀌었어요. 원문을 확인해 주세요.',mail_summary_failed:'메일을 정리하는 중 모델 응답을 받지 못했어요. 다시 시도해 주세요.',mail_storage_failed:'정리한 내용을 저장하지 못했어요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',mail_file_conflict:'정리한 메일 파일이 바뀌어 저장하지 않았어요. 다시 정리해 주세요.',mail_size_limit:'메일이 너무 커요. 11 MB까지 처리할 수 있어요.',mail_missing:'메일을 찾을 수 없어요. 목록을 새로고침해 주세요.'};
 Object.assign(errors,{mail_gmail_app_password_required:'Google이 앱 비밀번호를 요구했어요. 계정 비밀번호 대신 앱 비밀번호를 입력해 주세요.',mail_gmail_web_login_required:'Google에서 웹 로그인을 확인해야 해요. Gmail에 로그인한 뒤 다시 연결해 주세요.',mail_gmail_pop_disabled:'Google이 POP 사용이 꺼져 있다고 응답했어요. Gmail의 POP 설정을 확인해 주세요.',mail_gmail_credentials_invalid:'Google이 주소 또는 앱 비밀번호를 거절했어요. 앱 비밀번호를 발급한 계정과 Gmail 주소가 같은지 확인해 주세요.'});
 const modelKey=value=>value?`${value.provider}:${value.model}`:'';
@@ -15,20 +18,12 @@ errors.mail_gmail_app_password_format='Google에서 생성한 16자리 앱 비�
 const pickerError=message=>notifyWorkspaceToast(message,{error:true});
 const sectionTitle=(icon,text)=><span className="nubi-mail-section-title"><span className="nubi-mail-section-icon" aria-hidden="true"><Icon name={icon} size={18}/></span><strong>{text}</strong></span>;
 function MailStorage({api,status}){
-  const [copying,setCopying]=useState(null),copyLock=useRef(false),mounted=useRef(true);
-  useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;};},[]);
-  async function copyPath(kind){
-    if(copyLock.current)return;copyLock.current=true;setCopying(kind);
-    try{await api('copyMailStoragePath',{kind});if(mounted.current)notifyWorkspaceToast('저장 경로가 복사되었습니다.',{success:true});}
-    catch{if(mounted.current)notifyWorkspaceToast('경로를 복사하지 못했어요. 다시 눌러 주세요.',{error:true});}
-    finally{copyLock.current=false;if(mounted.current)setCopying(null);}
-  }
   const paths=[{kind:'raw',label:'메일과 첨부 원본',path:status?.rawRoot},{kind:'wiki',label:'정리한 위키',path:status?.wikiRoot}];
   return <details className="nubi-mail-storage">
     <summary><span className="nubi-mail-field-title"><FolderMark size={16}/>저장 위치</span><Icon name="chevronDown" size={16}/></summary>
     <dl aria-label="메일 저장 경로">{paths.map(item=><div className="nubi-mail-storage-row" key={item.kind}>
       <dt>{item.label}</dt><dd><code>{item.path||(status?'경로를 확인하지 못했어요.':'불러오는 중…')}</code>
-        <ActionButton action="copy" iconOnly label={`${item.label} 경로 복사`} title={`${item.label} 경로 복사`} disabled={!item.path||copying!==null} busy={copying===item.kind} onClick={()=>copyPath(item.kind)}/>
+        <CopyButton label={`${item.label} 경로 복사`} resetKey={item.path} disabled={!item.path} onCopy={()=>api('copyMailStoragePath',{kind:item.kind})}/>
       </dd>
     </div>)}</dl>
   </details>;
@@ -112,7 +107,7 @@ export function MailLibrary({api,openWebPage,provider,onProviderLogin,onProvider
       </form>:null}
       {failure&&<details className="nubi-mail-connection-error" key={connectionCode}>
         <summary><Icon name="alertCircle" size={16}/><strong role="status" title={failure.title}>{failure.title}</strong><Icon name="chevronDown" size={16}/></summary>
-        <p>{failure.detail}</p><div className="nubi-mail-error-code"><code>{connectionCode}</code><ActionButton action="copy" iconOnly label="연결 오류 복사" onClick={async()=>{try{await navigator.clipboard.writeText(mailConnectionDiagnostic(connectionCode));notifyWorkspaceToast('오류 코드가 복사되었습니다.',{success:true});}catch{notifyWorkspaceToast('복사하지 못했어요. 오류 코드를 선택해 복사해 주세요.',{error:true});}}}/></div>
+        <p>{failure.detail}</p><div className="nubi-mail-error-code"><code>{connectionCode}</code><CopyButton label="연결 오류 복사" text={mailConnectionDiagnostic(connectionCode)}/></div>
       </details>}
     </section>
     {showSettings&&<><section className="nubi-mail-section nubi-mail-organize" aria-label="자동 정리 설정"><div className="nubi-mail-switch-row"><div>{sectionTitle('sliders','자동 정리')}<small>끄면 새 수집과 정리를 멈춰요.</small></div>

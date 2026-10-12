@@ -82,3 +82,26 @@ node-pop3 0.15.3, MIT, https://github.com/node-pop3/node-pop3 — POP3/TLS comma
 Computer perception (2026-10-01): Agent S3 and UI-TARS inform grounding/reflection design; their SDKs and weights are not bundled. The optional OmniParser adapter uses its HTTP contract without redistributing parser code or weights. No Python/GPU runtime is added. Review code/dependency/weight licenses separately before installing a parser. See docs/COMPUTER-PERCEPTION-2026-10-01.md.
 
 Arborist and xterm full MIT notices are retained in vendor/licenses/React-Arborist-LICENSE.txt, xterm-LICENSE.txt and xterm-addon-fit-LICENSE.txt. Native Chromium browsing uses the pinned Electron distribution and its bundled third-party notices.
+
+## node-pty 1.1.0
+
+- Upstream: https://github.com/microsoft/node-pty/tree/1.1.0
+- License: MIT. The full notice is in `vendor/licenses/node-pty-MIT.txt`.
+- Used by the dedicated Electron terminal worker for native pseudoterminal sessions. The renderer continues to use xterm.js. Agent commands retain their existing approval and execution-receipt implementation.
+- The Windows x64 package excludes other-platform prebuilds, debug symbols and build source. Native modules and their runtime helpers are unpacked from ASAR.
+- Bundled winpty notice: `vendor/licenses/node-pty-winpty-LICENSE.txt`.
+
+## Claude identification icon
+
+`extensions/aipro-chat/public/icons/claude.svg` is from Simple Icons (CC0-1.0), retrieved 2026-10-12 from https://github.com/simple-icons/simple-icons/blob/develop/icons/claude.svg. The path is unchanged; fill is Claude terracotta `#D97757`. License: `vendor/licenses/Simple-Icons-LICENSE.md`. The icon identifies the user's Claude Code connection and does not imply Anthropic endorsement. Claude Code itself is discovered on the user's PC, not copied into this app.
+
+## Git for Windows / MinGit (Windows installation only)
+
+Unmodified official MinGit 2.56.0.2 x64 is distributed as a separate executable under `resources/git`. Git is GPL-2.0; additional component license texts and exact package versions are preserved in the bundle (`LICENSE.txt`, `ucrt64/share/licenses`, `usr/share/licenses`, `etc/package-versions.txt`).
+
+Binary and published SHA-256: https://github.com/git-for-windows/git/releases/tag/v2.56.0.windows.2
+Git source: https://github.com/git-for-windows/git/tree/v2.56.0.windows.2
+Distribution build scripts: https://github.com/git-for-windows/build-extra/tree/main/mini-git
+Dependency sources: https://github.com/git-for-windows/MSYS2-packages and https://github.com/git-for-windows/MINGW-packages (versions recorded in the bundled package-versions.txt).
+
+Nubi invokes this executable without modifying it or linking Git code into the application. No global PATH, credential store or Git configuration is installed.

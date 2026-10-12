@@ -2,6 +2,7 @@ import path from 'node:path';
 import {retrieveWikiEvidence,parseFrontmatterFields,ClaimsStore,isGroundedWikiPage,toClaimsSidecarRelativePath,RepositoryEvidenceResolver,parseRepositoryEvidenceResource,OpenWikiIgnore} from '../generated/openwiki.mjs';
 import {readSource,listFiles,relativeFile,hash,fail} from './files.mjs';
 import {queryKnowledgeMap,buildKnowledgeMap,CATALOG_PATH} from './knowledge-map.mjs';
+import {listWikiPages} from './wiki-snapshot.mjs';
 
 const MAX_DOCUMENTS=400,MAX_BYTES=4*1024*1024,MAX_CANDIDATES=12,MAX_REFERENCES=64;
 const uncertain=new Set(['source_changed','document_changed','unavailable']);
@@ -124,7 +125,8 @@ async function grounding(doc,reads){
 export async function queryWiki({query,taskId,includeHistory=false}){
   if(typeof query!=='string'||!query.trim()||query.length>500||typeof includeHistory!=='boolean')fail('input_invalid');
   const root=await this.target(taskId),reads={...await reader(root),root},listed=await listFiles(root);
-  const files=listed.paths.filter(p=>/^(openwiki|docs|openspec)\/.+\.md$/.test(p)&&!p.includes('/.claims/')&&!reads.ignore.ignores(p));
+  // Wiki pages come from the folder (a generated Wiki is often gitignored); docs and specs from Git's inventory.
+  const files=[...await listWikiPages(root,{includeNubi:true}),...listed.paths.filter(p=>/^(docs|openspec)\/.+\.md$/.test(p))].filter(p=>!p.includes('/.claims/')&&!reads.ignore.ignores(p));
   const documents=[];let skipped=0,bytes=0;
   for(const rel of files.slice(0,MAX_DOCUMENTS)){
     try{const file=await readSource(root,rel);bytes+=Buffer.byteLength(file.content);if(bytes>MAX_BYTES)break;documents.push(document(file));}catch{skipped++;}
@@ -170,9 +172,11 @@ export async function stalePages(root,{references=4000}={}){
   }
   return rows;
 }
+// The pages of the folder, as the overview counts them: a generated Wiki is often gitignored, and Git's inventory
+// hid it from the agent while the screen showed it (2026-10-12).
 export async function wikiPages(root){
-  const reads=await reader(root),listed=await listFiles(root);
-  return listed.paths.filter(p=>/^openwiki\/.+\.md$/.test(p)&&!p.includes('/.claims/')&&!/^openwiki\/nubi-(evidence|map)\//.test(p)&&!reads.ignore.ignores(p)).sort();
+  const reads=await reader(root);
+  return (await listWikiPages(root)).filter(p=>!p.includes('/.claims/')&&!reads.ignore.ignores(p)).sort();
 }
 export async function wikiOverview(service,taskId){
   const root=await service.target(taskId),files=await wikiPages(root);
@@ -253,8 +257,10 @@ function excerptWindow(entry,claims,size) {
 // room: the tokens one request has left for the answer. measure: the token
 // estimate of a text. Only an answer that one request of the model cannot
 // hold has cited text shortened, the last cited first, and says so.
-export function wikiAnswer(result,{room=Infinity,measure=text=>text.length}={}) {
+export function wikiAnswer(result,{room=Infinity,measure=text=>text.length,grounded}={}) {
   if(!result||result.error||result.dataKind!=='openwiki_reference'||!Array.isArray(result.evidence))return {delivered:result,entries:[{tool:'ask_openwiki',result}]};
+  const matches=grounded===undefined?null:new Map(grounded.map(row=>[row.openwikiId,row]));
+  const grounding=matches?{matched:result.evidence.filter(entry=>matches.has(entry.id)).map(entry=>({id:entry.id,freshness:matches.get(entry.id).freshness})),unmatched:result.evidence.filter(entry=>!matches.has(entry.id)).map(entry=>entry.id)}:null;
   const claims=id=>(result.findings||[]).filter(finding=>finding.citations?.includes(id)).map(finding=>finding.text).join(' ')||result.answer||'';
   const sources=[...new Set(result.evidence.map(entry=>entry.path).filter(path=>typeof path==='string'&&path))];
   // The Wiki does not cover every detail of the code. An answer that leaves the question open is a reason to look at the source, not a result.
@@ -262,7 +268,7 @@ export function wikiAnswer(result,{room=Infinity,measure=text=>text.length}={}) 
   const note=(open?'The Wiki did not settle this question. Continue with source_search and read_source before reporting that it is not found. ':'')+'Name the pages of sources in the answer. The evidence ids of this answer can be cited in record_change_plan. The Wiki can be older than the source.';
   const build=whole=>{
     const evidence=result.evidence.map((entry,index)=>{if(index<whole)return entry;const short=excerptWindow(entry,claims(entry.id),SHORT_EXCERPT);return short.excerptTruncated?{...entry,...short}:entry;}),omitted=evidence.filter(entry=>entry.excerptTruncated).length;
-    return {...result,evidence,desktop:{sources,note:note+(omitted?' An entry marked excerptTruncated shows a part of its text: read the cited path with read_source for the rest.':''),...(omitted?{omittedExcerpts:omitted}:{})}};
+    return {...result,evidence,desktop:{sources,...(grounding?{grounding}:{}),note:(grounding?.unmatched.length?'Some excerpts no longer match the current Wiki. Refresh the relevant pages before relying on them; do not cite unmatched IDs as current evidence. ':'')+note+(omitted?' An entry marked excerptTruncated shows a part of its text: read the cited path with read_source for the rest.':''),...(omitted?{omittedExcerpts:omitted}:{})}};
   };
   let whole=result.evidence.length,delivered=build(whole);
   while(whole>0&&measure(JSON.stringify(delivered))>room)delivered=build(--whole);
@@ -270,6 +276,6 @@ export function wikiAnswer(result,{room=Infinity,measure=text=>text.length}={}) 
   return {delivered,
     // For the review the answer and each cited text are separate entries, because it can use no entry above 12,000 characters.
     // The answer is recorded last, so the review keeps it when older entries do not fit.
-    entries:[...result.evidence.map(entry=>({tool:'openwiki_excerpt',result:{...source(entry),wikiId:result.wikiId,excerpt:entry.excerpt,dataKind:'openwiki_reference'}})),
-      {tool:'ask_openwiki',result:{...result,evidence:result.evidence.map(source),desktop:{sources}}}]};
+    entries:[...result.evidence.map(entry=>({tool:'openwiki_excerpt',result:{...source(entry),wikiId:result.wikiId,excerpt:entry.excerpt,dataKind:'openwiki_reference',...(matches?{currentPageMatched:matches.has(entry.id),freshness:matches.get(entry.id)?.freshness||'unavailable',sourceReferences:matches.get(entry.id)?.sourceReferences||[]}:{} )}})),
+      {tool:'ask_openwiki',result:{...result,evidence:result.evidence.map(source),desktop:{sources,...(grounding?{grounding}:{})}}}]};
 }

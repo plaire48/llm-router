@@ -1,11 +1,9 @@
 import {createHash} from 'node:crypto';
 import {realpath, lstat, readFile, readdir} from 'node:fs/promises';
 import path from 'node:path';
-import {execFile} from 'node:child_process';
-import {promisify} from 'node:util';
+import {runGit} from './git-runtime.mjs';
 import {isUtf8} from 'node:buffer';
 
-const exec = promisify(execFile);
 export const hash = value => 'sha256:' + createHash('sha256').update(value).digest('hex');
 export const fail = code => { throw new Error(code); };
 export const privatePath = value => /(^|\/)(?:\.git|node_modules|\.env(?:\..*)?|\.npmrc|\.pypirc|credentials(?:\..*)?|secrets?(?:\..*)?|tokens?(?:\..*)?|\.playwright-mcp|auth\.json|id_rsa|id_ed25519)(\/|$)|\.(?:pem|p12|pfx|key)$/i.test(value);
@@ -13,7 +11,7 @@ export const privatePath = value => /(^|\/)(?:\.git|node_modules|\.env(?:\..*)?|
 export const gitOpenFailure = error => error?.code === 'ENOENT' ? 'git_unavailable' : error?.killed ? 'git_timeout'
   : /dubious ownership/i.test(String(error?.stderr || '')) ? 'git_unsafe_directory' : 'not_git_repository';
 export async function git(root, args, options = {}) {
-  const {stdout} = await exec('git', ['-C', root, ...args], {maxBuffer: 12 * 1024 * 1024, timeout: 20000, windowsHide: true, ...options});
+  const {stdout} = await runGit(['-C', root, ...args], {maxBuffer: 12 * 1024 * 1024, timeout: 20000, windowsHide: true, ...options});
   return stdout;
 }
 export function relativeFile(value) {

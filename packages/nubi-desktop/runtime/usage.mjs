@@ -37,7 +37,7 @@ export class DesktopUsage {
     this.save();
   }
   start({provider}) {
-    if (this.closed || !['aipro', 'chatgpt', 'fabrix'].includes(provider)) return null;
+    if (this.closed || !['aipro', 'chatgpt', 'fabrix', 'claude'].includes(provider)) return null;
     const requestId = randomUUID();
     const frame = recordUsage(newLedger(), {requestId, round:1, provider, phase:'start'});
     this.calls.set(requestId, frame); this.add(frame);

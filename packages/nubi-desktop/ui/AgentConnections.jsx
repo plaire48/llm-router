@@ -1,3 +1,4 @@
+import {CopyButton} from '../../../extensions/aipro-chat/src/CopyButton.jsx';
 import React,{useRef,useState} from 'react';
 import {CxInput, CxNotice, Icon} from '@e2e/cx-design-system';
 import {WorkspaceAction as ActionButton} from './WorkspaceAction.jsx';
@@ -14,7 +15,7 @@ const appName=role=>ROLE_NAMES[role]||'다른 앱';
 // The header's agent connection (user decision 2026-10-01): pairing with Nubi in the browser or Office, and the
 // requests they send, which run only after this user accepts them. Sending stays in each conversation.
 export function AgentConnections({project,api,refresh,disabled,onOpenTask,onInvite}){
-  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[invite,setInvite]=useState(null),[copied,setCopied]=useState(false);
+  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[invite,setInvite]=useState(null);
   const pending=useRef(false);
   async function act(args,after){
     if(pending.current)return;pending.current=true;setBusy(true);setError('');
@@ -32,11 +33,11 @@ export function AgentConnections({project,api,refresh,disabled,onOpenTask,onInvi
       {Object.entries(ROLE_NAMES).filter(([role])=>role!=='office').map(([role,label])=><div className="nubi-agent-link" key={role}>
         <span className="nubi-settings-row-icon" aria-hidden="true"><Icon name="link" size={18}/></span>
         <div><strong>{label} 누비</strong><p className="nubi-muted">{paired.has(role)?'연결됨':'연결 안 됨'}</p></div>
-        <ActionButton action="add" label={`${label} 누비 연결 주소 만들기`} disabled={busy||disabled} onClick={()=>act({action:'invite',recipient:role},value=>{setInvite({...value,pairedUntil:expiry(role)});setCopied(false);onInvite?.(value.expiresAt);})}/>
+        <ActionButton action="add" label={`${label} 누비 연결 주소 만들기`} disabled={busy||disabled} onClick={()=>act({action:'invite',recipient:role},value=>{setInvite({...value,pairedUntil:expiry(role)});onInvite?.(value.expiresAt);})}/>
       </div>)}
       {shown&&<div className="nubi-agent-invite">
         <label htmlFor="nubi-agent-invite">{appName(shown.recipient)} 누비 설정의 ‘누비 작업 연결’에 붙여넣으세요. 10분 안에 한 번 쓸 수 있어요.</label>
-        <div className="nubi-agent-invite-field"><CxInput id="nubi-agent-invite" readOnly value={shown.url} onFocus={e=>e.target.select()}/><ActionButton action="copy" label={copied?'복사됨':'연결 주소 복사'} onClick={async()=>{try{await navigator.clipboard.writeText(shown.url);setCopied(true);}catch{setError('주소를 선택해서 복사해 주세요.');}}}/></div>
+        <div className="nubi-agent-invite-field"><CxInput id="nubi-agent-invite" readOnly value={shown.url} onFocus={e=>e.target.select()}/><CopyButton label="연결 주소 복사" text={shown.url}/></div>
       </div>}
     </section>
     <section aria-label="받은 요청">

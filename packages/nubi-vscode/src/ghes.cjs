@@ -87,14 +87,24 @@ class GhesAccount {
     const url=safeUrl(value.html_url),avatar=safeUrl(value.avatar_url);
     const company=typeof value.company==='string'?value.company.trim().slice(0,200):'';
     const email=typeof value.email==='string'&&value.email.length<=254&&/^[^\s@<>]+@[^\s@<>]+$/.test(value.email)?value.email:null;
-    return {id:value.id,login:value.login,name:name||value.login,...(company?{company}:{}),...(email?{email}:{}),...(url?{url:url.href}:{}),avatar:avatar?await this.avatar(avatar,record.token,signal):null};
+    const bio=typeof value.bio==='string'?value.bio.trim().slice(0,500):'';
+    const location=typeof value.location==='string'?value.location.trim().slice(0,200):'';
+    return {id:value.id,login:value.login,name:name||value.login,...(bio?{bio}:{}),...(location?{location}:{}),...(company?{company}:{}),...(email?{email}:{}),...(url?{url:url.href}:{}),avatar:avatar?await this.avatar(avatar,record.token,signal):null};
   }
   async avatar(url,token,signal){
     // Protected company avatars become bounded image bytes. External avatar URLs
     // fall back to the person glyph; never send a GHES token to Gravatar/CDNs.
     try{
-      const response=await this.fetcher(url.href,{redirect:'error',cache:'no-store',credentials:'omit',headers:{Authorization:'Bearer '+token},signal:AbortSignal.any([...(signal?[signal]:[]),AbortSignal.timeout(5000)])});
-      if(!response.ok)return null;const bytes=await bounded(response,256*1024),mime=(response.headers.get('content-type')||'').split(';')[0];
+      const deadline=AbortSignal.any([...(signal?[signal]:[]),AbortSignal.timeout(5000)]);
+      let target=new URL(url.href),response;target.searchParams.set('s','128');
+      for(let redirects=0;;redirects++){
+        response=await this.fetcher(target.href,{redirect:'manual',cache:'no-store',credentials:'omit',headers:{Authorization:'Bearer '+token},signal:deadline});
+        if(![301,302,303,307,308].includes(response.status))break;
+        const location=response.headers.get('location'),next=location&&safeUrl(new URL(location,target).href);
+        await response.body?.cancel();
+        if(!next||redirects>=2)return null;target=next;
+      }
+      if(!response.ok)return null;const bytes=await bounded(response,256*1024),mime=(response.headers.get('content-type')||'').split(';')[0].trim().toLowerCase();
       const valid=mime==='image/png'&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||mime==='image/jpeg'&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255||mime==='image/gif'&&/^GIF8[79]a$/.test(bytes.subarray(0,6).toString())||mime==='image/webp'&&bytes.subarray(0,4).toString()==='RIFF'&&bytes.subarray(8,12).toString()==='WEBP';
       return valid?'data:'+mime+';base64,'+bytes.toString('base64'):null;
     }catch{return null;}

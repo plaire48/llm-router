@@ -7,19 +7,24 @@ import {useAnchoredModal} from './useAnchoredModal.js';
 
 const OPTIONS = {
   aipro: [{id:'low', label:'Low'}, {id:'medium', label:'Medium'}, {id:'xhigh', label:'Extra high'}],
-  chatgpt: [{id:'low', label:'Light'}, {id:'medium', label:'Medium'}, {id:'high', label:'High'}, {id:'xhigh', label:'Extra high'}, {id:'max', label:'Ultra'}]
+  chatgpt: [{id:'low', label:'Light'}, {id:'medium', label:'Medium'}, {id:'high', label:'High'}, {id:'xhigh', label:'Extra high'}, {id:'max', label:'Ultra'}],
+  claude: [{id:'low',label:'Low'}, {id:'medium',label:'Medium'}, {id:'high',label:'High'}, {id:'xhigh',label:'Xhigh'}, {id:'max',label:'Max'}]
 };
-const DEFAULTS = {aipro:'medium', chatgpt:'medium'};
+const DEFAULTS = {aipro:'medium', chatgpt:'medium', claude:'medium'};
 const ADJUST_KEYS = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown']);
 
 function readStored(provider) {
+  if (provider === 'claude') return DEFAULTS.claude;
   try { const stored = localStorage.getItem(`nubi-reasoning:${provider}`), value = provider === 'chatgpt' && stored === 'ultra' ? 'max' : stored; return OPTIONS[provider]?.some(item => item.id === value) ? value : DEFAULTS[provider]; } catch { return DEFAULTS[provider]; }
 }
 
 export function ReasoningPicker({api, provider, disabled}) {
+  const claude=provider?.provider==='claude';
   const optional = provider?.provider === 'chatgpt' && provider?.connected ? [{id:'none',label:'None'},{id:'minimal',label:'Minimal'}].filter(item=>provider.reasoningOptions?.includes(item.id)) : [];
-  const options = [...optional, ...(OPTIONS[provider?.provider] || []).filter(item => !provider?.connected || !Array.isArray(provider.reasoningOptions) || provider.reasoningOptions.includes(item.id))];
-  const [open, setOpen] = useState(false), [changing, setChanging] = useState(false), [effort, setEffort] = useState(() => readStored(provider?.provider));
+  const options = claude
+    ? (provider.reasoningOptions || []).map(id => OPTIONS.claude.find(item => item.id === id)).filter(Boolean)
+    : [...optional, ...(OPTIONS[provider?.provider] || []).filter(item => !provider?.connected || !Array.isArray(provider.reasoningOptions) || provider.reasoningOptions.includes(item.id))];
+  const [open, setOpen] = useState(false), [changing, setChanging] = useState(false), [effort, setEffort] = useState(() => provider?.reasoningEffort === 'ultra' ? 'max' : provider?.reasoningEffort || readStored(provider?.provider));
   const [menuStyle, setMenuStyle] = useState(undefined);
   const anchor = useRef(null), dialog = useRef(null), trigger = useRef(null), pending = useRef(false), currentSelection = useRef(null), mounted = useRef(true);
   const confirmed = useRef(effort), gesture = useRef(null);
@@ -32,7 +37,7 @@ export function ReasoningPicker({api, provider, disabled}) {
     setEffort(value);
   }, [provider?.provider, provider?.model, provider?.reasoningEffort]);
   useEffect(()=>{setOpen(false);},[provider?.provider,provider?.model]);
-  useAnchoredModal(dialog, trigger, open, 'input[type="range"]');
+  useAnchoredModal(dialog, trigger, open, 'input[type="range"]', true);
   useLayoutEffect(() => {
     if (!open || !anchor.current) return;
     const node = anchor.current, content = node.closest('.nubi-workbench-content');
@@ -75,16 +80,16 @@ export function ReasoningPicker({api, provider, disabled}) {
       if (result?.reasoningEffort !== item.id) throw Error('reasoning_not_applied');
       if (!mounted.current || currentSelection.current !== selection) return;
       confirmed.current = item.id;
-      try { localStorage.setItem(`nubi-reasoning:${providerId}`, item.id); } catch {}
+      if (providerId !== 'claude') try { localStorage.setItem(`nubi-reasoning:${providerId}`, item.id); } catch {}
     } catch (error) {
       if (!mounted.current || currentSelection.current !== selection) return;
       setEffort(previous);
       notifyWorkspaceToast(error.message==='reasoning_changed'?'모델이 바뀌었어요. 현재 모델에서 다시 선택해 주세요.':provider?.connected ? '추론 정도를 적용하지 못했습니다. 연결을 확인하고 다시 선택해 주세요.' : '모델을 연결한 뒤 추론 정도를 선택해 주세요.', {error: true});
     } finally { pending.current = false; if (mounted.current) setChanging(false); }
   }
-  return <div className="nubi-reasoning-anchor" ref={anchor} onKeyDown={event => { if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); cancelGesture(); setOpen(false); anchor.current?.querySelector('.nubi-reasoning-trigger')?.focus(); } }}>
-    <CxButton ref={trigger} className="nubi-reasoning-trigger" aria-label="추론 정도" title={`추론 정도: ${selected.label}`} aria-haspopup="dialog" aria-expanded={open} disabled={disabled||changing} onClick={() => setOpen(value => !value)}><Icon name="automation" size={18}/><span className="nubi-reasoning-label"><span>{selected.label}</span></span></CxButton>
-    {open && createPortal(<div ref={dialog} className="nubi-reasoning-menu" style={menuStyle} role="dialog" aria-modal="true" aria-label="추론 정도 조절" aria-busy={changing}>
+  return <div className="nubi-reasoning-anchor" data-provider={provider?.provider} ref={anchor} onKeyDown={event => { if (event.key === 'Escape' && open) { event.preventDefault(); event.stopPropagation(); cancelGesture(); setOpen(false); anchor.current?.querySelector('.nubi-reasoning-trigger')?.focus(); } }}>
+    <CxButton ref={trigger} className="nubi-reasoning-trigger" aria-label="추론 정도" title={claude?`Claude 추론 요청: --effort ${selected.id}`:`추론 정도: ${selected.label}`} aria-haspopup="dialog" aria-expanded={open} disabled={disabled||changing} onClick={() => setOpen(value => !value)}><Icon name="automation" size={18}/><span className="nubi-reasoning-label"><span>{selected.label}</span></span></CxButton>
+    {open && createPortal(<div ref={dialog} className="nubi-reasoning-menu" data-provider={provider?.provider} style={menuStyle} role="dialog" aria-modal="true" aria-label="추론 정도 조절" aria-busy={changing}>
       <div className="nubi-reasoning-heading"><strong>{selected.label}</strong><CxButton className="nubi-reasoning-reset" data-icon-only aria-label="추론 정도를 기본값으로 되돌리기" title="기본값으로 되돌리기" disabled={disabled||changing} onClick={() => choose(options.find(item => item.id === DEFAULTS[provider.provider]) || options[0])}><Icon name="resetFilters" size={18}/></CxButton><CxButton className="nubi-reasoning-close nubi-modal-close" data-icon-only aria-label="추론 창 닫기" title="닫기" disabled={changing} onClick={()=>{cancelGesture();setOpen(false);anchor.current?.querySelector('.nubi-reasoning-trigger')?.focus();}}><Icon name="xClose" size={18}/></CxButton></div>
       <div className="nubi-reasoning-slider-wrap" style={{'--nubi-reasoning-progress':`${selectedIndex / Math.max(1, options.length - 1) * 100}%`}}>
         <input className="nubi-reasoning-slider" type="range" min="0" max={options.length - 1} step="1" value={selectedIndex} disabled={disabled||changing} aria-label="추론 정도" aria-valuetext={selected.label}

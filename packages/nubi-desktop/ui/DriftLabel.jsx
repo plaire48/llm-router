@@ -9,12 +9,13 @@ export function DriftLabel({as: Element = 'span', className = '', children, ...p
     if (!node || !frame || !label) return;
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let animation, hovering = false, focused = false;
-    const stop = () => { animation?.cancel(); animation = null; };
+    const stop = () => { animation?.cancel(); animation = null; delete node.dataset.drifting; };
     const start = () => {
       stop();
       if ((!hovering && !focused) || motion.matches || !label.animate) return;
-      const width = label.getBoundingClientRect().width, space = frame.clientWidth;
-      if (!width || !space) return;
+      const width = label.scrollWidth, space = frame.clientWidth;
+      if (!space || width <= space + 1) return;
+      node.dataset.drifting = "true";
       const exit = width / (width + space);
       // Start at the resting position. Reset only when both positions are
       // outside the clipped viewport, then enter from its right edge.

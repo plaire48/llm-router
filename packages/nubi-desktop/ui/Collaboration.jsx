@@ -1,6 +1,7 @@
 import {AgentMark} from '../../../extensions/aipro-chat/src/AgentMark.jsx';
 import React,{useState,useRef} from 'react';
-import {CxButton,CxNotice,CxSelect,CxTextarea,CxField,Icon} from '@e2e/cx-design-system';
+import {CxButton, CxNotice, CxTextarea, CxField, Icon} from '@e2e/cx-design-system';
+import {CxSelect} from './WorkspaceSelect.jsx';
 import {DeckDisclosure} from '../../../extensions/aipro-chat/src/DeckSurfaces.jsx';
 import {A2A_ERRORS,ROLE_NAMES} from '../../nubi-a2a/contract.mjs';
 import {MessageBody} from '../../../extensions/aipro-chat/src/MessageBody.jsx';

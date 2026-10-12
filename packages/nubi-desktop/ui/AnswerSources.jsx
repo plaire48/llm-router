@@ -13,12 +13,12 @@ export function AnswerSources({message,onOpen}) {
   if(!cited.length&&!consulted.length)return null;
   const row=source=>{
     const name=source.filename||source.title||source.path||'제목 없음';
-    const type=source.attachmentId?'첨부 파일':source.kind==='mail'?'메일':'문서';
+    const type=source.attachmentId?'첨부 파일':source.kind==='mail'?'메일':source.kind==='wiki'?'위키':'문서';
     const location=sourceLocation(source),attention=['source_changed','document_changed','unavailable'].includes(source.freshness);
     return <CxButton type="button" className="nubi-answer-source" key={source.citationId}
       aria-label={`${source.number?`출처 ${source.number}, `:''}${type}: ${name}${location?`, ${location}`:''}${attention?', 원본 확인 필요':''}, 원문 보기`}
       title={[`${type} 원문 보기`,source.title,source.filename||source.path,location,attention?'원본 확인 필요':null].filter(Boolean).join('\n')} onClick={()=>onOpen?.(source)}>
-      <Icon name={source.kind==='mail'&&!source.attachmentId?'mail':'file'} size={16}/>
+      <Icon name={source.kind==='mail'&&!source.attachmentId?'mail':source.kind==='wiki'?'bookmark':'file'} size={16}/>
       <span className="nubi-source-number" aria-hidden="true">{source.number||'–'}</span>
       <span className="nubi-source-title">{name}</span>
       <span className="nubi-source-meta">{location&&<small>{location}</small>}{attention&&<small className="nubi-source-attention"><Icon name="alertCircle" size={14}/>원본 확인 필요</small>}</span>

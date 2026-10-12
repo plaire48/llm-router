@@ -1,0 +1,18 @@
+import {build} from 'esbuild';
+import {_electron as electron} from 'playwright';
+import {createRequire} from 'node:module';
+import {mkdir,writeFile,mkdtemp,rm} from 'node:fs/promises';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+const dir=path.resolve('verification/release-flow');await mkdir(dir,{recursive:true});
+await build({entryPoints:['tests/release-flow-fixture.jsx'],outfile:dir+'/app.js',bundle:true,format:'esm',platform:'browser',nodePaths:[path.resolve('node_modules')],alias:{...Object.fromEntries(['react','react-dom','@e2e/cx-design-system'].map(name=>[name,path.resolve('node_modules',name)])),'@e2e/cx-design-system/styles.css':path.resolve('node_modules/@e2e/cx-design-system/dist/styles.css')},loader:{'.woff2':'file','.woff':'file'},define:{'process.env.NODE_ENV':'"production"'}});
+await writeFile(dir+'/index.html','<!doctype html><html lang="ko"><head><meta charset="UTF-8"><link rel="stylesheet" href="app.css"></head><body><div class="desktop-shell"><div id="root" style="width:100%;height:100vh;display:flex"></div></div><script type="module" src="app.js"></script></body></html>');
+const storage=await mkdtemp('/tmp/nubi-release-ui-'),require=createRequire(import.meta.url),app=await electron.launch({executablePath:require('electron'),args:['electron-app'],env:{...process.env,NUBI_STORAGE_ROOT:storage,ELECTRON_RUN_AS_NODE:undefined}}),errors=[],checks=[];
+try{const p=await app.firstWindow();p.setDefaultTimeout(8000);p.on('pageerror',e=>errors.push(e.message));await p.addInitScript(()=>{window.nubi={platform:'win32'};});await p.setViewportSize({width:1000,height:800});await p.goto('file://'+dir+'/index.html');await p.evaluate(()=>document.fonts.ready);
+ await p.locator('#short').hover();assert.equal(await p.locator('#short').evaluate(e=>e.getAnimations({subtree:true}).length),0);checks.push('short name stays still');
+ await p.locator('#long').hover();await p.waitForFunction(()=>document.querySelector('#long [data-drifting]'));await p.waitForTimeout(200);assert(await p.locator('#long').evaluate(e=>e.getAnimations({subtree:true})[0].currentTime)>100,'animation advances without resize restart loop');checks.push('only clipped name moves');
+ await p.locator('#long').evaluate(e=>e.style.width='900px');await p.waitForFunction(()=>!document.querySelector('#long [data-drifting]'));checks.push('fitting name stops on resize');
+ await p.locator('#long').evaluate(e=>e.style.width='180px');await p.emulateMedia({reducedMotion:'reduce'});await p.waitForFunction(()=>!document.querySelector('#long [data-drifting]'));checks.push('reduced motion stops drift');
+ await p.getByRole('button',{name:'업데이트',exact:true}).click();const progress=p.getByRole('progressbar',{name:'업데이트 다운로드'});await progress.waitFor();assert.equal(await progress.getAttribute('value'),'25');await p.screenshot({path:dir+'/update-progress.png'});assert.equal(await p.evaluate(()=>window.installCalls),0);checks.push('one click shows actual download percentage');
+ await p.evaluate(()=>window.fixtureUpdate={...window.fixtureUpdate,phase:'ready',percent:100});await p.waitForFunction(()=>window.installCalls===1);assert.equal(await p.evaluate(()=>window.downloadCalls),1);await p.getByText('설치 후 누비가 다시 열립니다.',{exact:true}).waitFor();checks.push('ready automatically installs once');assert.deepEqual(errors,[]);await writeFile(dir+'/result.json',JSON.stringify({checks,errors,boundary:'Production UI with fake download transport; native installer tested separately on Windows.'},null,2));console.log('Release flow UI:',checks);
+}finally{await app.close();await rm(storage,{recursive:true,force:true});}

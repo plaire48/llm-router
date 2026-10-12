@@ -1,0 +1,6 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {mailSender,mailTableDate,recipientRole} from '../runtime/mail-presentation.mjs';
+test('sender uses explicit directory fields or name/email without invented company',()=>{assert.equal(mailSender({from:'홍길동 <hong@company.test>'}),'홍길동 / hong@company.test');assert.equal(mailSender({sender:{name:'홍길동',address:'hong@company.test',department:'개발팀',company:'누비'}}),'홍길동 / 개발팀 / 누비');assert.equal(mailSender({from:'hong@company.test'}),'hong@company.test');});
+test('recipient type requires a matching address; missing To/Cc is not Bcc evidence',()=>{const mail={to:'A <a@test.com>',cc:'B <b@test.com>',bcc:'C <c@test.com>'};assert.equal(recipientRole(mail,'A@test.com'),'to');assert.equal(recipientRole(mail,'b@test.com'),'cc');assert.equal(recipientRole(mail,'c@test.com'),'bcc');assert.equal(recipientRole(mail,'d@test.com'),'unknown');assert.equal(recipientRole(mail,'username'),'unknown');});
+test('mail table shows explicit local year-month-day hour:minute and missing is distinct',()=>{assert.equal(mailTableDate(new Date(2026,9,12,9,5).toISOString()),'2026-10-12 09:05');assert.equal(mailTableDate(null),'날짜 미확인');assert.equal(mailTableDate('invalid'),'날짜 미확인');});

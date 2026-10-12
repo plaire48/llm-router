@@ -260,7 +260,7 @@ export function createProviders(deps = {}) {
     try {
     if (provider === 'chatgpt') {
       session.credential = await prepareChatGPT(authenticated,signal);
-      result = await api.completeChatGPT({fetchImpl:api.fetchImpl,onDiagnostic:detail=>{inferenceDiagnostic={...detail,model:session.model};},messages, tools, toolChoice, modelId: session.model,modelMetadata:api.accountCatalog===true?authenticated.models.find(m=>m.id===session.model):undefined, reasoningEffort: session.reasoningEffort, credential: session.credential, signal, onText, onPhase, onActivity});
+      result = await api.completeChatGPT({fetchImpl:api.fetchImpl,onMeasurement:value=>{reportedUsage=value;},onDiagnostic:detail=>{inferenceDiagnostic={...detail,model:session.model};},messages, tools, toolChoice, modelId: session.model,modelMetadata:api.accountCatalog===true?authenticated.models.find(m=>m.id===session.model):undefined, reasoningEffort: session.reasoningEffort, credential: session.credential, signal, onText, onPhase, onActivity});
     } else {
       // The model server counts the tokens of every request (user, 2026-09-30). An OpenAI-compatible stream (vLLM behind
       // AI Pro) reports them in a last chunk only when asked: stream_options.include_usage, as the browser runtime asks

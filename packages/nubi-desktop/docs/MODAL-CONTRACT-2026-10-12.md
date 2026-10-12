@@ -6,7 +6,7 @@ User request: consistent typography, emphasis, layered colors, geometry and spac
 
 - Existing Pretendard/Noto Sans KR fonts and deck/CX primitives remain the source. No new UI package or copied dialog component is introduced.
 - Global/semantic values live in `workspace-identity.css`; `workspace-dialogs.css` owns modal chrome and controls. Removed competing header/footer, close button, title icon, body gap and blue-only error overrides from identity/density/iOS layers. Login provider branding stays in its existing component.
-- Title: 18px/600. Body: 15px/400. Secondary: 14px/400. Labels/actions: 15px/500. Key values: 600. Sizes use rem; large-text and root enlargement remain supported.
+- Title: 18px/600. Body: 15px/400. Secondary: 14px/400. Field labels and primary actions: 15px/600. Secondary actions: 15px/500. Key values: 600. Sizes use rem; large-text and root enlargement remain supported.
 - Spacing: icon/label and field gap 8px; related sections 16px; horizontal gutter and bottom footer 24px (gutter 16px on narrow windows).
 - Controls: 40px high, 44px for coarse pointers; 18px action icons, 16px field icons, 20px confirmation symbols; 12px control radius, 20px modal radius. Close buttons are square.
 - Width reflects purpose: choice 420px, confirmation/account 480px, regular form 600px, wide library 760px, constrained to viewport. Composer pickers retain compact single-row navigation.
@@ -35,3 +35,30 @@ A paused result-analysis run now retains its process ID across resume. The host 
 The native Window Controls Overlay previously kept `#F1F7FE` while a CX modal dimmed the renderer. `useNativeTitlebar` now composites the visible full-window CX backdrop colors over the actual toolbar background and symbol token. It sends only validated opaque colors to the trusted desktop host. Stacked dialogs retain their combined shade; the last close restores the current theme. Renderer navigation resets the native surface. Caption height and native minimize/maximize/close behavior remain unchanged.
 
 This uses Electron's existing [`setTitleBarOverlay`](https://www.electronjs.org/docs/latest/api/base-window#winsettitlebaroverlayoptions-windows-linux) API without a new dependency or replacement window controls. Mutation updates are filtered and coalesced into one animation frame, and unchanged colors do not cross IPC. Unit checks cover compositing, restoration and payload bounds. The Windows installed-app smoke check asserts the real native API colors when settings opens and closes. macOS checks do not establish Windows 11 visual acceptance.
+
+## Follow-up token audit
+
+- The purpose-based default width now covers every shared CX dialog, including FabriX, rather than only panels bearing the Nubi-specific class.
+- Primary body and footer actions share paired foreground/background tokens; destructive actions use the same semantic danger token. Provider branding remains separate. Hover retains the correct contrasting foreground.
+- Field labels, selected controls, titles and key values use the existing 600 emphasis token; supporting copy/input examples retain normal weight. Top-level list margins no longer double the section gap. Placeholder contrast and title-icon alignment are normalized.
+- FabriX labels now match the request headers: `x-fabrix-client` and `x-openapi-token`. The Endpoint URL placeholder is `https://nsds-api.fabrix-s.samsungsds.com/sds/trial/api-chat`; this is guidance, not an automatic endpoint substitution. Password input masking and saved connection values remain intact.
+- Existing surface coverage is extended with Claude install/login/update screens at normal, narrow and 200% text sizes. Rendered fixtures and simulated connection tests are not company-service or Windows SSO verification.
+
+## Search conditions and targeted spacing
+
+- Preserve the accepted FabriX/Claude connection and settings geometry. Do not globally shrink modal padding.
+- The search dialog initially shows three aligned fields: period, sender and attachment presence. File type/name, search location and classification stay under details. Existing secondary criteria are indicated even when collapsed. Sender suggestions appear only while typing (up to six); selected senders remain visible.
+- Fix the actual CX Select contract: the local wrapper converts `options` to native option children, preserving existing children, keyboard selection, events and dropdown ownership. Previously the option array became an unused DOM attribute and the period/attachment selectors were empty.
+- Filter chips use existing caption typography, label/emphasis weights, control radius and semantic colors. File kinds reuse FileKindIcon. Selected blue styling is reinforced by a check and aria-pressed; the check has reserved space to avoid movement. Labels remain one line and retain full accessible names/tooltips.
+- Search apply/reset actions are in the fixed footer. Tests select dates, sender, attachment type and filename, assert the applied payload and reset it. Expanded and 200% text layouts are inspected separately.
+- Skill management states its project-specific purpose once, labels registration explicitly and preserves single-line names/actions. One-page catalogs no longer show disabled pagination. Eleven-item navigation remains covered.
+- Current wiki status shows a success icon, title and last update with balanced vertical inset; a one-line update date no longer requires a disclosure.
+- Desktop chat/mail model pickers and visual fixtures now share the provider labels, including Claude. The reviewed fixture previously omitted Claude although production Workbench already included it.
+
+## Copy acknowledgement
+
+All remaining Desktop copy buttons reuse the shared CopyButton. It shows the check for two seconds only after browser/native clipboard acknowledgement; failure, changed source and unmount cannot leave a false success. Keyboard focus, button bounds and reduced-motion behavior are preserved. Terminal keyboard shortcuts are unchanged.
+
+### Verification of this follow-up
+
+Electron build and identity checks passed. The final surface run completed 114 screen/layout checks, including search default/expanded, 440px and 200% text; search payload/reset and 11-skill pagination assertions also passed. No target text-size or horizontal-overflow violations were recorded. The overall suite subsequently failed its existing bird hover persistence assertion (`none` instead of `nubi-bird-dance`); do not report that whole suite as passing. These are isolated Electron component checks with sample data, not a Windows installer or live mail-provider test.

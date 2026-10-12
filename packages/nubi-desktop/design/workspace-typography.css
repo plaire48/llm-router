@@ -135,3 +135,10 @@ body {
   font-size:var(--deck-type-caption); line-height:var(--deck-line-caption);
 }
 .desktop-shell :is(.nubi-logo-product,.nubi-workbench .nubi-logo-product) { font:var(--deck-font-label); letter-spacing:normal; }
+
+/* Progress is a UI row. Do not inherit the larger answer prose metrics. */
+.desktop-shell .nubi-workbench .nubi-task .nubi-agent-activity .message-body {
+  font-size:inherit;
+  line-height:inherit;
+  color:inherit;
+}
