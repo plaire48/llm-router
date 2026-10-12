@@ -58,7 +58,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify native OpenWiki initialization and update bridge
         run: |
-          node --test tests/wiki-initialization-flow.test.mjs tests/wiki-update-bundle.test.mjs tests/wiki-update.test.mjs tests/wiki-update-view.test.mjs
+          New-Item verification -ItemType Directory -Force | Out-Null
+          node --test tests/wiki-initialization-flow.test.mjs tests/wiki-update-bundle.test.mjs tests/wiki-update.test.mjs tests/wiki-update-view.test.mjs 2>&1 | Tee-Object -FilePath verification/windows-wiki-tests.log
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Download verified upgrade baseline
         env:

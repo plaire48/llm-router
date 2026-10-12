@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "5911e1863280e118fe8527277df49a52c19adf811c7a9491f88a3e2be750b1ad",
-      "bytes": 5790
+      "sha256": "b29472b3e3ff5f0c828b71935fc8bb57b3cc085e912197620cee6c474707998f",
+      "bytes": 5924
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -2883,8 +2883,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-initialization-flow.test.mjs",
-      "sha256": "5fa491f77dfc34f467d936ec3bed1ddda35747729ae8a7982091583c594cd6ab",
-      "bytes": 6010
+      "sha256": "a973533f6722f78cd8b4eb63adf892e356f4b420bc29ee10ab42c4629a392fdf",
+      "bytes": 6072
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-steering.test.mjs",
@@ -3203,8 +3203,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/WikiUpdate.jsx",
-      "sha256": "deb17cb1754620f922537442293a88a0176a6e726811c047fe7d5c387ad999a9",
-      "bytes": 5538
+      "sha256": "4ae2f81b48fc17e0544c8cc6634674a587450b3955c2474e22e0dd1d536ecddd",
+      "bytes": 5623
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",

@@ -25,12 +25,13 @@ export function WikiUpdate({api,openPath}){
   const act=async fn=>{if(busy)return;setBusy(true);setError('');try{await fn();await load();}catch(e){setError(errors[e.message]||'갱신 작업을 마치지 못했어요.');await load();}finally{setBusy(false);}};
   const run=()=>act(async()=>{const proposal=await api('wikiUpdate',{method:'propose'});await api('wikiUpdate',{method:'run',id:proposal.id,fingerprint:proposal.fingerprint});});
   const [lead,...rest]=view.lines,modelUse=rest.find(line=>MODEL_USE.test(line)),notes=rest.filter(line=>line!==modelUse);
-  const progress=update?.state==='running'?[...(update.events||[])].reverse().find(event=>event.type==='progress'&&event.index&&event.total):null;
+  const progress=update?.state==='running'?[...(update.events||[])].reverse().find(event=>event.type==='progress'):null;
+  const completed=progress?.stage==='generating'&&progress.total>0?Math.max(0,Math.min(progress.total,progress.index-1)):null;
   const state=update?states[update.state]:data.status?.state==='current'?'최신':data.status?.state==='stale'?'갱신 필요':'';
   const quietCurrent=!update&&data.status?.state==='current';
   return <section className="nubi-recovery-card nubi-wiki-update" aria-label="위키 갱신">
     <div className="nubi-action-head"><span className="nubi-action-tile" aria-hidden="true"><Icon name="bookmark" size={20}/></span><div><h3>{view.title}</h3>{lead&&!quietCurrent&&<p>{lead}</p>}</div>{state&&!quietCurrent&&<DeckStatus>{state}</DeckStatus>}</div>
-    {progress&&<div className="nubi-progress" role="progressbar" aria-label="갱신 진행" aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={progress.index}><span style={{width:`${Math.min(100,progress.index/progress.total*100)}%`}}/></div>}
+    {completed!==null&&<div className="nubi-progress" role="progressbar" aria-label="갱신 진행" aria-valuemin={0} aria-valuemax={progress.total} aria-valuenow={completed}><span style={{width:`${completed/progress.total*100}%`}}/></div>}
     {error&&<CxNotice tone="danger">{error}</CxNotice>}
     {notes.map((line,index)=><p key={index} className="nubi-muted">{line}</p>)}
     {quietCurrent&&lead&&<details className="nubi-wiki-update-detail"><summary>갱신 기록</summary><p>{lead}</p></details>}

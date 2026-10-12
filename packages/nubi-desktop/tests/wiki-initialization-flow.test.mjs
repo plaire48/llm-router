@@ -57,7 +57,7 @@ test('plain-folder update reads the current Wiki, proposes a result and preserve
 test('Git updates include the current uncommitted Wiki and still use committed source scope',async t=>{
   const {root,service}=await setup(t,{gitProject:true});await writeFile(path.join(root,'app.txt'),'committed change\n');
   await git(root,['add','app.txt']);await git(root,['-c','user.name=Fixture','-c','user.email=fixture@localhost','-c','commit.gpgSign=false','commit','-qm','Changed source']);
-  service.wikiUpdater=async({root:copy})=>{assert.match(await readFile(path.join(copy,'openwiki/home.md'),'utf8'),/initial source/);assert.equal(await readFile(path.join(copy,'app.txt'),'utf8'),'committed change\n');await publish(copy,'# App\n\ncommitted change\n');return {};};
+  service.wikiUpdater=async({root:copy})=>{assert.match(await readFile(path.join(copy,'openwiki/home.md'),'utf8'),/initial source/);assert.equal((await readFile(path.join(copy,'app.txt'),'utf8')).replace(/\r\n/g,'\n'),'committed change\n');await publish(copy,'# App\n\ncommitted change\n');return {};};
   const proposal=await service.wikiUpdate({method:'propose'});await service.wikiUpdate({method:'run',id:proposal.id,fingerprint:proposal.fingerprint});
-  assert.equal((await settle(service,proposal.id)).state,'ready');
+  const ready=await settle(service,proposal.id);assert.equal(ready.state,'ready',JSON.stringify(ready));
 });
