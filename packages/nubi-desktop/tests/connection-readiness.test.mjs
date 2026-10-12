@@ -59,5 +59,8 @@ test('a single JSON fence is accepted as data while surrounding text, tools and 
  const plan={intent:{goal:'위키 확인',constraints:[],outcomes:['출처와 결과'],workflowIds:[],skillPaths:[]},steps:[{text:'위키 읽기',expected_outcome:'관련 원문 확인',status:'in_progress'}]};
  const args={task:{request:'위키를 확인해줘'},history:[],model:{contextLength:32000},capabilities:{workflows:[],skills:[]},signal:new AbortController().signal};
  const result=await prepareWorkPlan({...args,invoke:async()=>({content:'```json\n'+JSON.stringify(plan)+'\n```',calls:[]})});assert.equal(result.intent.goal,'위키 확인');
+ const pending={...plan,steps:plan.steps.map(step=>({...step,status:'pending'}))};
+ const started=await prepareWorkPlan({...args,invoke:async()=>({calls:[{function:{name:'update_plan',arguments:JSON.stringify(pending)}}]})});assert.equal(started.steps[0].status,'in_progress');
+ await assert.rejects(prepareWorkPlan({...args,invoke:async()=>({content:JSON.stringify({...plan,steps:plan.steps.map(step=>({...step,status:'completed'}))})})}),/work_plan_invalid/);
  await assert.rejects(prepareWorkPlan({...args,invoke:async()=>({content:JSON.stringify({...plan,intent:{...plan.intent,workflowIds:'invalid'}})})}),e=>e.message==='work_plan_invalid'&&e.planningDiagnostic.attempts===2);
 });

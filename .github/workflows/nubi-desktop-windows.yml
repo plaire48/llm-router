@@ -45,7 +45,9 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify Unicode shortcut inspection
         shell: pwsh
-        run: ./scripts/Test-ShellLink.ps1
+        run: |
+          ./scripts/Test-ShellLink.ps1
+          Add-Type -Path scripts/InstallerWindow.cs
       - name: Build standalone Electron installer with bird icon
         run: npm run package:windows
       - name: Verify body-only mail Beta scope

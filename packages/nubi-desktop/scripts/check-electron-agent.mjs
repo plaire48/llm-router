@@ -11,6 +11,9 @@ import {startFixtureModel} from './fixture-model.mjs';
 const require=createRequire(import.meta.url);
 const temporary=await realpath(await mkdtemp(path.join(os.tmpdir(),'nubi-agent-check-'))),root=path.join(temporary,'project'),storage=path.join(temporary,'state');
 await mkdir(root);await mkdir(storage);
+// This checks chat execution, not repository Wiki generation. Keep its source
+// fixture initialized so a separate initialization modal cannot intercept Send.
+await mkdir(path.join(root,'openwiki'));await writeFile(path.join(root,'openwiki/home.md'),'# Fixture\n\nexample.js contains the value under test.\n');
 const git=args=>execFileSync('git',['-C',root,...args]);git(['init']);git(['config','user.name','Fixture']);git(['config','user.email','fixture@example.invalid']);
 await writeFile(path.join(root,'example.js'),'export const value = 1;\n');git(['add','.']);git(['commit','-m','Initial fixture']);
 await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root}));
@@ -40,6 +43,7 @@ try{
   app=await electron.launch({executablePath:require('electron'),args:['electron-app'],env:{...process.env,NUBI_STORAGE_ROOT:storage,ELECTRON_RUN_AS_NODE:undefined}});
   page=await app.firstWindow();page.setDefaultTimeout(15000);page.on('pageerror',error=>console.log('PAGE ERROR:',error.message));
   await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor({timeout:30000});
+  await page.locator('.desktop-shell[data-startup-ready="true"]').waitFor({timeout:30000});
   const startup=page.getByText('메일을 연결해 주세요');if(await startup.count()){await page.keyboard.press('Escape');await startup.waitFor({state:'hidden',timeout:5000});}
   const status=await request('provider',{action:'connect',input:fixture.connection});assert.equal(status.connected,true);
   const composer=page.getByRole('textbox',{name:'작업 요청'});await composer.waitFor({timeout:20000});stage('fixture model connected');
@@ -50,11 +54,11 @@ try{
   await page.getByText('제안을 올렸어요').first().waitFor();stage('a requested change becomes a proposal card, not a write');
   // Copy buttons write the real clipboard from a user gesture (denied by the permission handler before 2026-10-09). The user's text clipboard is put back afterwards.
   {const saved=await app.evaluate(({clipboard})=>clipboard.readText());try{await app.evaluate(({clipboard})=>clipboard.writeText('nubi-check-placeholder'));await page.getByRole('button',{name:'내 메시지 복사',exact:true}).first().click();await page.getByRole('button',{name:'내 메시지 복사 완료',exact:true}).first().waitFor();assert.equal(await app.evaluate(({clipboard})=>clipboard.readText()),'example.js의 value를 2로 바꿔 줘','the message reaches the system clipboard');assert.equal(await page.locator('.copy-error').count(),0);stage('a copy button writes the system clipboard');}finally{await app.evaluate(({clipboard},text)=>clipboard.writeText(text),saved);}}
-  await card.getByRole('button',{name:'비교',exact:true}).click();await page.waitForFunction(()=>/value\s*=\s*2/.test(document.querySelector('.desktop-git-diff,.desktop-editor')?.textContent||''),null,{timeout:15000});stage('the comparison shows the proposed change');
+  await card.getByRole('button',{name:'비교',exact:true}).click();await page.waitForFunction(()=>/value\s*=\s*2/.test(document.querySelector('.desktop-git-diff,.desktop-editor')?.textContent||''),null,{timeout:15000});stage('the comparison shows the proposed change');await page.getByRole('button',{name:'오른쪽 사이드바 닫기',exact:true}).click();
   scenario.phase='verify';await card.getByRole('button',{name:'반영',exact:true}).click();await toast('파일 반영을 확인했어요.').waitFor({timeout:30000});
   assert.equal(await readFile(path.join(root,'example.js'),'utf8'),'export const value = 2;\n','applying writes the proposed content');
   await page.getByText('반영을 확인했어요. value는 이제 2예요.').waitFor({timeout:90000});
-  await page.getByRole('button',{name:'Git 변경',exact:true}).click();await page.locator('.desktop-list').getByRole('button',{name:'example.js'}).waitFor();stage('applying writes the file, the run verifies it and Git lists the change');
+  await page.getByRole('button',{name:'Git 변경',exact:true}).click();await page.locator('.desktop-list').getByRole('button',{name:'example.js'}).waitFor();stage('applying writes the file, the run verifies it and Git lists the change');await page.getByRole('button',{name:'오른쪽 사이드바 닫기',exact:true}).click();
   const state=await request('state');const task=state.tasks[0];assert.ok(task,'the task exists');assert.equal(state.proposals.filter(item=>item.state==='applied').length,1,'one applied proposal');
   fixture.setFailing(true);const followUp=page.getByRole('textbox',{name:'추가 요청'});await followUp.fill('한 줄로 다시 답해 줘');await page.getByRole('button',{name:'전송',exact:true}).click();
   await toast(/분석이 멈췄어요|모델 사용량 제한/).waitFor({timeout:60000});await page.getByRole('button',{name:'이어서 진행',exact:true}).waitFor({timeout:15000});stage('a model server failure ends the run with a readable message');

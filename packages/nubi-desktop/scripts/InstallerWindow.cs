@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Drawing;
-using System.Drawing.Imaging;
 public class InstallerControl { public long Handle; public int Id; public string Text; public string Class; public bool Enabled; }
 public static class InstallerWindow {
   delegate bool EnumProc(IntPtr hwnd, IntPtr parameter);
@@ -25,5 +23,6 @@ public static class InstallerWindow {
   }
   public static void Click(long handle){PostMessage(new IntPtr(handle),0xF5,IntPtr.Zero,IntPtr.Zero);}
   public static bool Checked(long handle){return SendMessage(new IntPtr(handle),0xF0,IntPtr.Zero,IntPtr.Zero).ToInt32()==1;}
-  public static void Capture(IntPtr hwnd,string path){Rect r;if(!GetWindowRect(hwnd,out r))throw new Exception("Installer bounds unavailable");using(var image=new Bitmap(r.Right-r.Left,r.Bottom-r.Top)){using(var g=Graphics.FromImage(image)){var dc=g.GetHdc();try{if(!PrintWindow(hwnd,dc,0))throw new Exception("Installer capture failed");}finally{g.ReleaseHdc(dc);}}image.Save(path,ImageFormat.Png);}}
+  public static int[] Bounds(IntPtr hwnd){Rect r;if(!GetWindowRect(hwnd,out r))throw new Exception("Installer bounds unavailable");return new[]{r.Right-r.Left,r.Bottom-r.Top};}
+  public static void Paint(IntPtr hwnd,IntPtr dc){if(!PrintWindow(hwnd,dc,0))throw new Exception("Installer capture failed");}
 }

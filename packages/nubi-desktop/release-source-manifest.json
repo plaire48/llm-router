@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "523bc823fb8225997fad5046d658db792af332798ec97667598c4080d642c0d8",
-      "bytes": 5305
+      "sha256": "7146901d7599039d44f8feb36598b7f677dff76302946c5f3ce7c0bdd1283d3f",
+      "bytes": 5369
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -2043,8 +2043,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/work-plan.mjs",
-      "sha256": "5921511404e0a06687f07c1f11056ac9d719c24db3fcb5caec4d0c5b438d8886",
-      "bytes": 12681
+      "sha256": "cac1bd98ca188d344ab32a06fa25cbe86749b3ad9cad863576214f5d95cc6234",
+      "bytes": 12866
     },
     {
       "path": "packages/nubi-desktop/runtime/worker-environment.mjs",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/InstallerWindow.cs",
-      "sha256": "1f2539f1f139fb875508b5ac56f5bb2448d8cf0f642815086c5983833fa065a5",
-      "bytes": 2582
+      "sha256": "d2b1d29dc646077b4e87a55bdef4e0a075bf0830843be3b91e4e915b705af8d3",
+      "bytes": 2432
     },
     {
       "path": "packages/nubi-desktop/scripts/Read-ShellLink.cs",
@@ -2078,8 +2078,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
-      "sha256": "b910546b338c6626923c6e54e2a6e824ebb6083be956393cd856045f5bb3a7ac",
-      "bytes": 2635
+      "sha256": "9b98bd5366ce34f7cde3260534ddc63eb7859f457f9e45ed6e9d7be0a3cc87b5",
+      "bytes": 2991
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
@@ -2118,8 +2118,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-agent.mjs",
-      "sha256": "c536c909e39cba24c3a58414e3f60fd66069d6eb577e6743911b8c14253831fa",
-      "bytes": 9600
+      "sha256": "d3db365536e15e2aae1dab15f9329fbfe997315b42b2f2913015b90c6b9fe90b",
+      "bytes": 10182
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-lifecycle.mjs",
@@ -2433,8 +2433,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/connection-readiness.test.mjs",
-      "sha256": "394346b47ba9cec139f7d850d4109e1869b63d1362f6a434d751796c8ce0adbf",
-      "bytes": 6255
+      "sha256": "4e9a17a5695f282dc9c22ab7ab6020530fbebe82fb86040c286757c5cd185439",
+      "bytes": 6717
     },
     {
       "path": "packages/nubi-desktop/tests/connection-vault.test.mjs",
