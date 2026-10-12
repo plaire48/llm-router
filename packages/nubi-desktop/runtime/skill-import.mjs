@@ -140,12 +140,12 @@ export async function removeSkill({taskId,name,expectedHash,preview=false}={}){
   if(typeof name!=='string'||!(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).test(name)||name.length>64)fail('input_invalid');
   this.skillImportBusy=true;
   try{
-    const root=await this.target(taskId),key='registered-skill:'+hash(root)+':'+name,record=this.store.get(key);
+    const root=this.root,key='nubi-registered-skill:'+hash(root)+':'+name,record=this.store.get(key);
     if(record?.state!=='registered')fail('skill_import_changed');
-    const parent=await skillDirectory(root,'.agents/skills'),target=path.join(parent,name),packet=await readSkillPackage(target,{validateMetadata:false}),actualHash=skillPackageHash(packet);
+    const parent=await skillDirectory(root,'.nubi/skill'),target=path.join(parent,name),packet=await readSkillPackage(target,{validateMetadata:false}),actualHash=skillPackageHash(packet);
     if(preview===true)return {name,title:record.title||name,packageHash:actualHash,fileCount:packet.files.size};
     if(actualHash!==expectedHash)fail('skill_import_changed');
-    const backup='.removed-'+randomUUID(),trashKey='skill-trash:'+hash(root)+':'+backup,removed={...record,hash:actualHash,backup,fileCount:packet.files.size};this.store.set(key,{...removed,state:'removing'});this.store.set(trashKey,{...removed,state:'removing'});
+    const backup='.removed-'+randomUUID(),trashKey='nubi-skill-trash:'+hash(root)+':'+backup,removed={...record,hash:actualHash,backup,fileCount:packet.files.size};this.store.set(key,{...removed,state:'removing'});this.store.set(trashKey,{...removed,state:'removing'});
     await rename(target,path.join(parent,backup));
     if(skillPackageHash(await readSkillPackage(path.join(parent,backup),{validateMetadata:false}))!==actualHash)fail('skill_import_changed');
     const receipt={...removed,state:'removed',removedAt:new Date().toISOString()};this.store.set(key,receipt);this.store.set(trashKey,receipt);return {removed:true,name};
@@ -156,13 +156,13 @@ async function registration(root,rel,packet,noChange,store) {
   const catalog=await skillCatalog(root),registered=catalog.skills.find(s=>s.path===rel+'/SKILL.md');
   if(!registered)fail(catalog.truncated?'skill_catalog_full':'skill_import_changed');
   if(registered.hash!==hash(packet.files.get('SKILL.md')))fail('skill_import_changed');
-  const company=store?.get('marketplace-skill:'+hash(root)+':'+registered.name);
-  if(store&&(!company||company.state==='removed'))store.set('registered-skill:'+hash(root)+':'+registered.name,{name:registered.name,title:packet.title||registered.name,description:registered.description,hash:skillPackageHash(packet),state:'registered',registeredAt:new Date().toISOString()});
+  const company=store?.get('nubi-marketplace-skill:'+hash(root)+':'+registered.name);
+  if(store&&(!company||company.state==='removed'))store.set('nubi-registered-skill:'+hash(root)+':'+registered.name,{name:registered.name,title:packet.title||registered.name,description:registered.description,hash:skillPackageHash(packet),state:'registered',registeredAt:new Date().toISOString()});
   return {...registered,title:packet.title||registered.name,fileCount:packet.files.size,totalBytes:packet.totalBytes,state:'registered',execution:'not_started',noChange};
 }
 
 export async function skillTrash({taskId,operation='list',name,trashId,expectedHash}={}){
-  this.ready();const root=await this.target(taskId),prefix='registered-skill:'+hash(root)+':',trashPrefix='skill-trash:'+hash(root)+':';
+  this.ready();const root=this.root,prefix='nubi-registered-skill:'+hash(root)+':',trashPrefix='nubi-skill-trash:'+hash(root)+':';
   if(operation==='list'){
     const receipts=this.store.list(trashPrefix),legacy=this.store.list(prefix).filter(record=>record.state==='removed'&&!receipts.some(item=>item.backup===record.backup));
     return {items:[...receipts,...legacy].filter(record=>record.state==='removed').sort((a,b)=>(b.removedAt||'').localeCompare(a.removedAt||'')).map(record=>({id:record.backup,name:record.name,title:record.title||record.name,description:record.description||'',removedAt:record.removedAt,packageHash:record.hash,fileCount:record.fileCount}))};
@@ -175,11 +175,11 @@ export async function skillTrash({taskId,operation='list',name,trashId,expectedH
     if(!/^\.removed-[a-f0-9-]{36}$/.test(id||''))fail('skill_import_changed');
     const trashKey=trashPrefix+id,record=this.store.get(trashKey)||this.store.get(key);
     if(record?.name!==name||record.backup!==id||record.state!=='removed'||record.hash!==expectedHash)fail('skill_import_changed');
-    const parent=await skillDirectory(root,'.agents/skills'),target=path.join(parent,name),backup=path.join(parent,record.backup);
+    const parent=await skillDirectory(root,'.nubi/skill'),target=path.join(parent,name),backup=path.join(parent,record.backup);
     try{await lstat(target);fail('skill_exists');}catch(error){if(error.code!=='ENOENT')throw error;}
     const packet=await readSkillPackage(backup,{validateMetadata:false});if(skillPackageHash(packet)!==expectedHash)fail('skill_import_changed');
     const catalog=await skillCatalog(root);if(catalog.truncated||catalog.capacityUsed>=MAX_SKILLS)fail('skill_catalog_full');
-    await skillDirectory(root,'.agents/skills');
+    await skillDirectory(root,'.nubi/skill');
     try{await lstat(target);fail('skill_exists');}catch(error){if(error.code!=='ENOENT')throw error;}
     this.store.set(trashKey,{...record,state:'restoring'});await rename(backup,target);
     if(skillPackageHash(await readSkillPackage(target,{validateMetadata:false}))!==expectedHash)fail('skill_import_changed');
@@ -193,19 +193,19 @@ export async function importSkill({source,taskId}={}) {
   this.skillImportBusy=true;
   let pending;
   try {
-    const root=await this.target(taskId),packet=await readSkillPackage(source),name=packet.metadata.name;
-    const rel=`.agents/skills/${name}`,target=path.join(root,rel);
+    const root=this.root,packet=await readSkillPackage(source),name=packet.metadata.name;
+    const rel=`.nubi/skill/${name}`,target=path.join(root,rel);
     let exists=false;
     try { await lstat(target);exists=true; } catch(e) { if(e.code!=='ENOENT')throw e; }
     if(exists) {
-      await skillDirectory(root,'.agents/skills');
+      await skillDirectory(root,'.nubi/skill');
       // Reconcile a lost response or explicit repeat by reading actual bytes. No write/replay.
       await verifyInstalled(target,packet);
       return registration(root,rel,packet,true,this.store);
     }
     const catalog=await skillCatalog(root);
     if(catalog.truncated||catalog.capacityUsed>=MAX_SKILLS)fail('skill_catalog_full');
-    const parent=await skillDirectory(root,'.agents/skills');
+    const parent=await skillDirectory(root,'.nubi/skill');
     pending=path.join(parent,'.pending-'+randomUUID());await mkdir(pending);
     for(const dir of packet.directories)await mkdir(path.join(pending,dir),{recursive:true});
     for(const [file,bytes] of packet.files) {
@@ -214,7 +214,7 @@ export async function importSkill({source,taskId}={}) {
       if(hash(await bytesAt(destination,SKILL_IMPORT_LIMITS.fileBytes))!==hash(bytes))fail('skill_import_changed');
     }
     if(this.disposed)fail('skill_import_changed');
-    await skillDirectory(root,'.agents/skills');
+    await skillDirectory(root,'.nubi/skill');
     try { await lstat(target);fail('skill_exists'); } catch(e) { if(e.code!=='ENOENT')throw e; }
     await rename(pending,target);pending=null;
     await verifyInstalled(target,packet);

@@ -21,3 +21,5 @@ Verification before Windows packaging:
 - Wiki/init/update: 29 tests, including immediate status during held listing, cancellation, retry, native runner bridge and conflict preservation.
 - Chrome mail settings: 8 checks. Modal suite: 34 checks, including Wiki starting beneath model selection, scanning, staged failure and background behavior. Synthetic providers, not real accounts.
 - Windows package/installer results follow below. Company POP3 and the user's failed model run remain separate verification.
+
+Full local regression: 837 total, 640 passed, 197 existing disabled-feature skips, zero failures. Native Electron project/navigation checks passed 7 cases. The user supplied the S29/S29b work report during packaging: the four referenced implementation files (`wiki-evidence.mjs`, `wiki-update.mjs`, `wiki-update-view.mjs`, `recovery.mjs`) already match this release source byte-for-byte. Keep that prior live evaluation separate from the current local and Windows checks. Correct the historical automatic-Wiki note in LIVE-EVAL.md without changing its scores or benchmark scope.

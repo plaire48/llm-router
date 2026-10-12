@@ -1,6 +1,6 @@
-import {mkdir,readFile,writeFile,readdir,lstat,realpath} from 'node:fs/promises';
+import {mkdir,readFile,writeFile,readdir,lstat,realpath,rm} from 'node:fs/promises';
 import path from 'node:path';
-import {git,listFiles,readSource,fail} from './files.mjs';
+import {git,listFiles,readSource,fail,gitOpenFailure} from './files.mjs';
 import {OpenWikiIgnore} from '../generated/openwiki.mjs';
 
 export const WIKI_CHECKPOINT='openwiki/.nubi-sources.json';
@@ -51,14 +51,31 @@ export async function initializeWikiSnapshotGit(directory){
   await git(directory,['add','--all']);
   await git(directory,[...config,'commit','--allow-empty','-qm','Snapshot for OpenWiki']);
 }
-export async function checkpointSnapshotWiki(root,sources){
+export async function wikiSourceHead(root){
+  try{return (await git(root,['rev-parse','--verify','HEAD'])).trim();}
+  catch(error){if(['not_git_repository','git_unavailable'].includes(gitOpenFailure(error)))return null;throw error;}
+}
+
+// A detached, unpopulated worktree retains the clone's actual commits and refs.
+// Only the already admitted source files are copied by the caller. No checkout
+// hooks, filters, private files or changes to the user's index are involved.
+export async function prepareWikiHistory(root,directory,head){
+  if(!head)return;
+  await git(root,['-c','core.hooksPath='+path.join(directory,'.nubi-no-hooks'),'worktree','add','--detach','--no-checkout',directory,head],{timeout:120000});
+  await git(directory,['read-tree',head]);
+}
+export async function removeWikiHistory(root,directory,head){
+  if(head){try{await git(root,['worktree','remove','--force',directory]);return;}catch{/* Remove only this run's temporary files; never prune other worktrees. */}}
+  await rm(directory,{recursive:true,force:true});
+}
+export async function checkpointSnapshotWiki(root,sources,{gitHead=null}={}){
   // Temporary commits do not exist in the user's repository. Preserve OpenWiki's
   // metadata and Claims, while dropping only those foreign Git checkpoints.
   for(const rel of ['.last-update.json','.page-manifest.json']){
     const file=path.join(root,'openwiki',rel);let value;
     try{value=JSON.parse(await readFile(file,'utf8'));}catch(error){if(error.code==='ENOENT')continue;throw error;}
-    delete value.gitHead;
-    for(const page of Object.values(value.pages||{}))delete page.gitHead;
+    if(!gitHead||value.gitHead!==gitHead)delete value.gitHead;
+    for(const page of Object.values(value.pages||{}))if(!gitHead||page.gitHead!==gitHead)delete page.gitHead;
     await writeFile(file,JSON.stringify(value,null,2)+'\n');
   }
   await mkdir(path.join(root,'openwiki'),{recursive:true});

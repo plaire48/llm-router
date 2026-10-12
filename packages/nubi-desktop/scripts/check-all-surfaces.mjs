@@ -75,7 +75,7 @@ try{
    if(screen==='account')await p.getByRole('heading',{name:'검토 계정',exact:true}).waitFor();
    if(screen==='mail-settings')await p.getByRole('switch',{name:'메일 자동 정리'}).waitFor();
    if(screen==='skills')await p.getByText('보고서 작성',{exact:true}).waitFor();
-   if(screen==='marketplace')await p.getByRole('button',{name:'1.2.0로 업데이트'}).waitFor();
+   if(screen==='marketplace')await p.getByRole('button',{name:'보고서 작성 업데이트'}).waitFor();
    await audit(screen+'-'+width);
    if(screen==='skills'){
     await p.getByRole('button',{name:'보고서 작성 삭제',exact:true}).click();await p.getByRole('alertdialog').waitFor();await audit('custom-skill-delete-'+width);await close();

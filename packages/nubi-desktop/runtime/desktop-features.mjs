@@ -9,7 +9,7 @@ import {modelTransport} from './recovery.mjs';
 import {inspectCommitHistory} from './commit-history.mjs';
 import {DESKTOP_FEATURES} from './beta-features.mjs';
 import {mailImagePreview} from './mail-image.mjs';
-import {wikiFiles,hasWikiPages,initializeWikiSnapshotGit,checkpointSnapshotWiki} from './wiki-snapshot.mjs';
+import {wikiFiles,hasWikiPages,initializeWikiSnapshotGit,checkpointSnapshotWiki,wikiSourceHead,prepareWikiHistory,removeWikiHistory} from './wiki-snapshot.mjs';
 import {wikiInitializationError} from './wiki-initialization-error.mjs';
 
 export function installDesktopFeatures(Service){
@@ -46,32 +46,34 @@ export function installDesktopFeatures(Service){
     let lastKey='',lastSaved=0;
     const persist=()=>{const key=`${job.state}:${job.stage}:${job.percent}`;if(key===lastKey&&Date.now()-lastSaved<250)return;if(this.store===store&&store.db.isOpen){store.set('wiki-init',{...job});lastKey=key;lastSaved=Date.now();}};
     const check=()=>{signal.throwIfAborted();if(this.store!==store||this.root!==root)fail('project_changed');const active=this.providers.status();if(!active.connected||active.model!==job.model||active.provider!==job.provider)fail('provider_changed');};
-    this.wikiInitPromise=(async()=>{let temporary;const published=[];try{
+    this.wikiInitPromise=(async()=>{let temporary,sourceHead;const published=[];try{
       if(await hasWikiPages(root)){check();Object.assign(job,previous?.state==='completed'?previous:{state:'existing',percent:null,finishedAt:new Date().toISOString()});persist();return;}
-      check();const files=await (this.wikiSourceLister||listFiles)(root);check();
+      check();sourceHead=await wikiSourceHead(root);const cleanHead=sourceHead&&!(await git(root,['status','--porcelain','--untracked-files=all'])).trim();const files=await (this.wikiSourceLister||listFiles)(root);check();
       if(files.truncated)fail('wiki_source_limit');
       temporary=await mkdtemp(path.join(os.tmpdir(),'nubi-wiki-init-'));const sources=[];
       const candidates=files.paths.filter(rel=>!rel.startsWith('openwiki/'));job.stage='reading';job.stageStartedAt=new Date().toISOString();job.total=candidates.length;persist();
       for(const rel of candidates){check();try{sources.push(await readSource(root,rel));}catch(error){if(!['file_too_large','binary_file','file_encoding'].includes(error.message))throw error;}job.completed++;job.percent=Math.floor(100*job.completed/Math.max(1,job.total));persist();}
       if(!sources.length)fail('wiki_no_sources');
+      job.stage='snapshot_git';job.stageStartedAt=new Date().toISOString();job.percent=null;job.total=0;job.completed=0;persist();
+      await prepareWikiHistory(root,temporary,sourceHead);check();
       job.stage='snapshot';job.stageStartedAt=new Date().toISOString();job.completed=0;job.percent=0;job.total=sources.length;persist();
       for(const source of sources){check();const file=path.join(temporary,source.path);await mkdir(path.dirname(file),{recursive:true});await writeFile(file,source.content,{flag:'wx'});job.completed++;job.percent=Math.floor(100*job.completed/Math.max(1,job.total));persist();}
       job.stage='snapshot_git';job.stageStartedAt=new Date().toISOString();job.percent=null;job.total=0;job.completed=0;persist();
-      await initializeWikiSnapshotGit(temporary);check();
+      if(!sourceHead)await initializeWikiSnapshotGit(temporary);check();
       job.stage='planning';job.stageStartedAt=new Date().toISOString();job.percent=null;job.completed=0;job.total=0;persist();
       const updater=this.wikiInitializer||defaultWikiUpdater(this);
       await updater({root:temporary,mode:'init',language:'ko',signal,updateId:job.id,onEvent:event=>{check();if(job.stage!==event.stage)job.stageStartedAt=new Date().toISOString();job.stage=event.stage;if(event.stage==='generating'&&event.total>0){job.total=event.total;job.completed=Math.max(0,Math.min(event.total,Number.isSafeInteger(event.index)?event.index-1:0));job.percent=Math.floor(100*job.completed/job.total);}else{job.percent=null;job.completed=0;job.total=0;}persist();}});
-      check();for(const source of sources)if((await readSource(root,source.path)).hash!==source.hash)fail('source_stale');
+      check();if(await wikiSourceHead(root)!==sourceHead)fail('source_stale');for(const source of sources)if((await readSource(root,source.path)).hash!==source.hash)fail('source_stale');
       // Publish native pages, update metadata and Claims together. Evidence is
       // relative to the verified source copy; never publish its temporary Git HEAD.
-      await checkpointSnapshotWiki(temporary,sources);
+      await checkpointSnapshotWiki(temporary,sources,{gitHead:cleanHead?sourceHead:null});
       const output=(await wikiFiles(temporary)).map(file=>file.path.slice('openwiki/'.length)),pages=output.filter(rel=>rel.endsWith('.md')).length;
       if(!pages)fail('wiki_empty');job.stage='publishing';job.stageStartedAt=new Date().toISOString();job.total=output.length;job.completed=0;job.percent=0;persist();
       const destination=path.join(root,'openwiki');await mkdir(destination,{recursive:true});if((await lstat(destination)).isSymbolicLink())fail('path_scope');
       for(const rel of output){check();const target=path.join(destination,rel);let parent=destination;for(const segment of rel.split('/').slice(0,-1)){parent=path.join(parent,segment);await mkdir(parent,{recursive:true});if((await lstat(parent)).isSymbolicLink())fail('path_scope');}const text=await readFile(path.join(temporary,'openwiki',rel));await writeFile(target,text,{flag:'wx'});published.push({target,hash:hash(text)});if(hash(await readFile(target))!==hash(text))fail('write_unconfirmed');job.completed++;job.percent=Math.floor(100*job.completed/job.total);persist();}
       check();Object.assign(job,{state:'completed',stage:'finished',percent:100,finishedAt:new Date().toISOString(),sourceFiles:sources.length,excludedFiles:files.paths.length-sources.length,pages});persist();
     }catch(error){for(const file of published.reverse()){try{if(!(await lstat(file.target)).isSymbolicLink()&&hash(await readFile(file.target))===file.hash)await unlink(file.target);}catch{/* Concurrent human changes remain. */}}Object.assign(job,{state:signal.aborted?'cancelled':'attention',percent:null,finishedAt:new Date().toISOString(),error:signal.aborted?'cancelled':wikiInitializationError(error,job.stage)});persist();}
-    finally{if(temporary)await rm(temporary,{recursive:true,force:true});if(this.wikiInitController===controller){this.wikiInitController=null;this.wikiInitOwner=null;}}})();return job;
+    finally{try{if(temporary)await removeWikiHistory(root,temporary,sourceHead);}finally{if(this.wikiInitController===controller){this.wikiInitController=null;this.wikiInitOwner=null;}}}})();return job;
     })();
     try{return await admission.promise;}finally{if(this.wikiInitAdmission===admission)this.wikiInitAdmission=null;}
   };

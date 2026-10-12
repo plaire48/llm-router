@@ -139,8 +139,10 @@
 .desktop-shell .nubi-sidebar-quick-actions .cx-kit-button { width:auto; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
 :root:has(.desktop-shell) :is(.nubi-mail-pin,.nubi-mail-tag,.nubi-reasoning-reset,.nubi-reasoning-close,.question-submit,.question-send) { width:auto; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2) var(--cx-space-3); }
 .desktop-shell :is(.desktop-dock-tabs .cx-kit-button,.desktop-pane-controls .cx-kit-button,.desktop-file-actions .cx-kit-button) { width:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
-.desktop-shell .desktop-dock-header { flex-wrap:wrap; row-gap:var(--cx-space-2); }
-.desktop-shell .desktop-file-tabs { flex-basis:100%; }
+.desktop-shell .desktop-dock-header { flex-wrap:nowrap; }
+.desktop-shell .desktop-file-tabs { flex:1 1 0; min-width:0; }
+.desktop-shell .desktop-dock-header .desktop-pane-controls { flex:none; }
+.desktop-shell .desktop-file-tabs > .cx-kit-button > span { display:none; }
 .desktop-shell .desktop-pane-controls { margin-left:auto; gap:var(--cx-space-2); }
 .desktop-shell .desktop-git-heading { display:flex; align-items:center; gap:var(--cx-space-2); font-size:var(--deck-type-body); }
 .desktop-shell .desktop-list>.cx-kit-button { display:flex; flex-wrap:wrap; gap:var(--cx-space-2); }
@@ -229,7 +231,8 @@
 .desktop-shell .nubi-workbench .message-actions { color:var(--deck-sub); margin-top:8px; }
 .desktop-shell .nubi-workbench .composer.nubi-compose-card { padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
 .desktop-shell .nubi-workbench .nubi-composer-surface { padding:var(--nubi-composer-block) var(--cx-space-3); border:1px solid var(--deck-line); border-radius:18px; background:var(--deck-card); }
-.desktop-shell .nubi-workbench .nubi-composer-surface:focus-within { border-color:var(--deck-sub); }
+.desktop-shell .nubi-workbench .nubi-composer-surface:hover { border-color:var(--deck-line); }
+.desktop-shell .nubi-workbench .nubi-composer-surface:focus-within { border-color:color-mix(in srgb,var(--deck-blue) 48%,var(--deck-line)); box-shadow:0 0 0 3px var(--deck-blue-soft); }
 .desktop-shell .nubi-workbench .composer textarea.aipro-message-input { display:block; min-height:var(--nubi-composer-input-min); padding:var(--cx-space-1); line-height:var(--nubi-reading-leading); }
 .desktop-shell .nubi-workbench .nubi-followup-stack .nubi-followup { margin-top:0; }
 .desktop-shell .nubi-workbench .composer-bottom { display:flex; align-items:center; flex-wrap:nowrap; gap:var(--nubi-control-gap); margin-top:var(--cx-space-1); }
@@ -523,6 +526,7 @@
 :root:has(.desktop-shell) .nubi-custom-skill-copy > strong { min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 :root:has(.desktop-shell) .nubi-custom-skill-copy > p { display:none; }
 :root:has(.desktop-shell) .nubi-custom-skill-copy > small { flex:none; margin:0; white-space:nowrap; color:var(--nubi-warning-ink); }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > .nubi-installed-source { color:var(--deck-sub); }
 :root:has(.desktop-shell) .nubi-custom-skill-actions { gap:6px; }
 :root:has(.desktop-shell) .nubi-custom-skill-actions .cx-action-button > svg { width:18px; height:18px; }
 :root:has(.desktop-shell) .nubi-skill-tabs .nubi-skill-tab-label { display:inline-flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; min-height:36px; }
@@ -606,3 +610,59 @@
 .desktop-shell[data-layout="overlay"]:has(.nubi-sidebar[data-open="true"]) .nubi-workbench-layout { z-index:auto; }
 .desktop-shell[data-layout="overlay"] .nubi-sidebar[data-open="true"] { z-index:41; }
 .desktop-shell[data-layout="overlay"] .nubi-sidebar-scrim { z-index:40; }
+
+/* Nubi's company skill catalog: direct project download, shared tokens, no web shell. */
+:root:has(.desktop-shell) .nubi-marketplace-search { display:flex; align-items:center; gap:12px; min-height:44px; margin:12px 0 16px; padding:0 14px; border:1px solid var(--deck-line); border-radius:12px; background:var(--deck-card); color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-marketplace-search:focus-within { border-color:var(--deck-blue); box-shadow:0 0 0 3px var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-marketplace-search input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--deck-ink); font:inherit; padding:10px 0; }
+:root:has(.desktop-shell) .nubi-marketplace-search > span { font:var(--deck-font-caption); font-variant-numeric:tabular-nums; }
+:root:has(.desktop-shell) .nubi-marketplace-compact .nubi-marketplace-card { display:grid; grid-template-columns:36px minmax(0,1fr) auto; column-gap:14px; row-gap:4px; padding:16px 0; border:0; border-bottom:1px solid var(--deck-line); border-radius:0; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-card-icon { width:36px; height:36px; grid-row:1 / 3; border-radius:10px; background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-name { flex-wrap:nowrap; gap:10px; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-name strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-description { display:block; grid-column:2; margin:0; line-height:1.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-actions { grid-column:3; grid-row:1 / 3; align-self:center; flex-wrap:nowrap; gap:12px; margin:0; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-version { flex-wrap:nowrap; gap:8px; white-space:nowrap; overflow:hidden; }
+:root:has(.desktop-shell) .nubi-marketplace-installed { display:inline-flex; align-items:center; gap:5px; color:var(--deck-blue-deep); }
+:root:has(.desktop-shell) .nubi-marketplace-status { display:flex; align-items:center; gap:8px; color:var(--deck-sub); margin:12px 0; font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-marketplace-download { color:var(--deck-blue-deep); background:var(--deck-blue-soft); border-color:transparent; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-expanded { grid-column:2 / -1; min-width:0; }
+@container skill-library (max-width:28em) {
+ :root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-version { display:none; }
+ :root:has(.desktop-shell) .nubi-marketplace-download-label { display:none; }
+ :root:has(.desktop-shell) .nubi-marketplace-download { min-width:44px; width:44px; padding:0; }
+}
+
+.desktop-shell .desktop-readonly-label { flex:none; white-space:nowrap; color:var(--deck-sub); font:var(--deck-font-caption); }
+.desktop-shell .desktop-tools-anchor > .desktop-dock-action { width:36px; min-width:36px; padding:0; }
+
+/* Skill navigation uses intrinsic label widths. The provider switcher's equal
+   segments squeezed the longer AI Workspace label against its selection edge. */
+:root:has(.desktop-shell) .nubi-skill-library-layout { --nubi-skill-gap:var(--cx-space-4); }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tabs { flex:0 1 auto; padding:0; background:transparent; border-radius:0; }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-highlight { display:none; }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls { gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls [role=tab] { flex:none; width:auto; min-height:44px; padding:8px 16px; border-radius:var(--deck-control-radius); font:var(--deck-font-body); font-weight:500; color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls [role=tab][aria-selected=true] { color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-skill-tabs .nubi-skill-tab-label { min-height:0; gap:8px; }
+:root:has(.desktop-shell) .nubi-skill-page { --nubi-skill-page-width:920px; }
+:root:has(.desktop-shell) .nubi-skill-page-header { max-width:var(--nubi-skill-page-width); margin:auto; padding:20px var(--nubi-page-inset) 8px; border:0; }
+:root:has(.desktop-shell) .nubi-skill-page-body { max-width:var(--nubi-skill-page-width); padding:16px var(--nubi-page-inset) 32px; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-name strong { font-weight:500; line-height:var(--deck-line-body); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-description { font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-installed { width:28px; height:28px; justify-content:center; flex:none; color:var(--deck-green); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-installed:not([data-state="installed"]) { color:var(--nubi-warning-ink); }
+:root:has(.desktop-shell) .nubi-marketplace-download { min-height:40px; padding:8px 12px; font-weight:500; }
+:root:has(.desktop-shell) .nubi-custom-skill-toolbar .nubi-custom-skill-register { font-weight:500; }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > strong { font-weight:500; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-list { max-height:none; gap:0; padding:0; overflow:visible; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-row { padding:16px 0; gap:14px; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-mark { width:36px; height:36px; align-items:center; justify-content:center; border-radius:10px; color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-copy { flex-direction:column; align-items:stretch; gap:4px; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-copy > p { display:block; margin:0; font:var(--deck-font-caption); color:var(--deck-sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@container skill-library (max-width:28em) {
+ :root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls [role=tab] { width:44px; min-width:44px; padding:0; }
+ :root:has(.desktop-shell) .nubi-custom-skill-register > span { display:none; }
+ :root:has(.desktop-shell) .nubi-custom-skill-toolbar .nubi-custom-skill-register { width:44px; min-width:44px; padding:0; }
+ :root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-actions { gap:6px; }
+}

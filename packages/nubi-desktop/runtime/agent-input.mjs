@@ -41,7 +41,7 @@ export async function agentInput({taskId,action='enqueue',id,text,mode='queue',r
     const spoken=task.messages?.find(row=>row.inputId===id);
     if(spoken){if(spoken.content!==text?.trim()||!sameMailReferences(spoken.mailReferences,mailReferences))throw Error('agent_input_changed');return task;}
     if(!inputOpen(this,task)||runId!==this.agent.runId)throw Error('agent_input_closed');
-    if(typeof text==='string'&&text.trim().startsWith('/')){const catalog=await skillCatalog(await this.target(taskId));const shortcut=resolveAgentCommand(text,catalog.skills);if(shortcut?.action)throw Error('agent_command_ui_only');}
+    if(typeof text==='string'&&text.trim().startsWith('/')){const catalog=await skillCatalog(this.root);const shortcut=resolveAgentCommand(text,catalog.skills);if(shortcut?.action)throw Error('agent_command_ui_only');}
     const references=await validateMailReferences(this,mailReferences);
     // Validate before admission, then recheck when a queued input starts.
     if(!inputOpen(this,task)||runId!==this.agent.runId)throw Error('agent_input_closed');
@@ -52,7 +52,7 @@ export async function agentInput({taskId,action='enqueue',id,text,mode='queue',r
   }else if(action==='steer'){
     if(!inputOpen(this,task)||runId!==this.agent.runId)throw Error('agent_input_closed');
     const item=inbox.find(row=>row.id===id);if(!item||!inputMatches(item,{...binding,runId:this.agent.inputChain}))throw Error('agent_input_changed');
-    if(item.text.startsWith('/')){const catalog=await skillCatalog(await this.target(taskId));const shortcut=resolveAgentCommand(item.text,catalog.skills);if(shortcut?.action)throw Error('agent_command_ui_only');if(!inputOpen(this,task)||runId!==this.agent.runId)throw Error('agent_input_closed');}
+    if(item.text.startsWith('/')){const catalog=await skillCatalog(this.root);const shortcut=resolveAgentCommand(item.text,catalog.skills);if(shortcut?.action)throw Error('agent_command_ui_only');if(!inputOpen(this,task)||runId!==this.agent.runId)throw Error('agent_input_closed');}
     task.inbox=inbox.map(row=>row.id===id?{...row,mode:'steer'}:row);mode='steer';
   }else if(action==='reorder')task.inbox=reorderInput(inbox,{id,overId,order},binding);
   else if(action==='remove'){

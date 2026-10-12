@@ -45,11 +45,12 @@ const id = () => randomUUID();
 const limited = (value, max = 16000) => typeof value === 'string' && value.trim() && value.length <= max ? value.trim() : fail('input_invalid');
 export class ProjectService {
   constructor({storageRoot = path.join(os.homedir(), '.nubi-desktop'), recoveryOptions = {}} = {}) { this.storageRoot = storageRoot; this.recoveryOptions=recoveryOptions; }
-  async open(root, {kind='project',initializeWiki=true}={}) {
+  async open(root, {kind='project',initializeWiki=true,exactRoot=false}={}) {
     // Each reason a folder cannot be opened has its own code for the "프로젝트 열기" message.
     const resolved = await realpath(limited(root, 2000)).catch(error => fail(['EACCES', 'EPERM'].includes(error?.code) ? 'project_path_denied' : 'project_path_missing'));
     // A folder without Git, or outside a repository, opens as it is (user decision 2026-10-04); the setup flow of 2026-09-30 is gone (2026-10-07).
     const top = await git(resolved, ['rev-parse', '--show-toplevel']).then(output => realpath(output.trim()), async error => {const code = gitOpenFailure(error); if (['git_unavailable', 'not_git_repository'].includes(code)) return resolved; fail(code);});
+    if(exactRoot&&top!==resolved)fail('clone_root_mismatch');
     if (this.root === top && this.store?.db.isOpen) {if(initializeWiki){this.wikiInitEnabled=true;await this.initializeWiki();}return this.overview();}
     if (this.skillImportBusy || this.vocBusy || this.computerBusy || this.newFileBusy || this.setupBusy || this.processes?.active.size || this.processes?.pending.size || this.unsettledOperations?.size || this.reconciling || this.agent?.running || this.recordingKnowledge || this.databaseBusy || this.collaborationBusy) fail('project_busy');
     const projectId = hash(top).slice(7, 31), store = new Store(path.join(this.storageRoot, projectId));
@@ -160,13 +161,13 @@ export class ProjectService {
   async removeSkill(args) {return removeSkill.call(this,args);}
   async skillTrash(args) {return skillTrash.call(this,args);}
   async listSkills({taskId}={}) {
-    this.ready();const root=await this.target(taskId),catalog=await skillCatalog(root),prefix='registered-skill:'+hash(root)+':';
+    this.ready();if(taskId)this.task(taskId);const root=this.root,catalog=await skillCatalog(root),prefix='nubi-registered-skill:'+hash(root)+':';
     const skills=catalog.skills.map(skill=>{
-      const record=this.store.get(prefix+skill.name),company=this.store.get('marketplace-skill:'+hash(root)+':'+skill.name),entry=skill.path===`.agents/skills/${skill.name}/SKILL.md`;
-      return {...skill,origin:entry&&company&&company.state!=='removed'?'workspace':'custom',...(entry&&record?.state==='registered'?{managed:true,title:record.title||skill.name,packageHash:record.hash}:{})};
+      const record=this.store.get(prefix+skill.name),company=this.store.get('nubi-marketplace-skill:'+hash(root)+':'+skill.name),entry=skill.path===`.nubi/skill/${skill.name}/SKILL.md`;
+      return {...skill,origin:entry&&company&&company.state!=='removed'?'workspace':'custom',...(entry&&company&&company.state!=='removed'?{title:company.title||skill.name}:{}),...(entry&&record?.state==='registered'?{managed:true,title:record.title||skill.name,packageHash:record.hash}:{})};
     });
     // A malformed edited instruction stays manageable without being activated by the agent.
-    const unavailable=this.store.list(prefix).filter(record=>record.state==='registered'&&!skills.some(skill=>skill.path===`.agents/skills/${record.name}/SKILL.md`)).map(record=>({name:record.name,title:record.title||record.name,description:record.description||'',path:`.agents/skills/${record.name}/SKILL.md`,origin:'custom',managed:true,state:'unavailable',packageHash:record.hash}));
+    const unavailable=this.store.list(prefix).filter(record=>record.state==='registered'&&!skills.some(skill=>skill.path===`.nubi/skill/${record.name}/SKILL.md`)).map(record=>({name:record.name,title:record.title||record.name,description:record.description||'',path:`.nubi/skill/${record.name}/SKILL.md`,origin:'custom',managed:true,state:'unavailable',packageHash:record.hash}));
     return {...catalog,skills,unavailable};
   }
 
@@ -301,7 +302,7 @@ export class ProjectService {
     if (method === 'stop') { this.ready(); return this.processes.stop(args.id); }
     if (method === 'events') { this.ready(); return this.store.events(args.after); }
     if ((!allowed.has(method)&&!['workspaceChanges','appliedFileSummary'].includes(method)) || typeof this[method] !== 'function') fail('method_invalid');
-    return method==='open'?this.open(args.root,{kind:args.kind}):this[method](args);
+    return method==='open'?this.open(args.root,{kind:args.kind,initializeWiki:args.initializeWiki,exactRoot:args.exactRoot}):this[method](args);
   }
   dispose() { this.usageLedger?.close(); this.wikiInitController?.abort(); this.wikiUpdateRun?.controller.abort(); this.localPerception?.dispose();this.marketplaceController?.abort();this.marketplaceToken=null;this.marketplaceConnected=false;this.marketplaceCatalog=null;this.personalMail?.dispose();this.computerPointer?.dispose();this.computerLauncher?.dispose?.();this.computerAdapter?.dispose?.();void this.collaborationServer?.close();this.disposed=true;this.recoveryQueue?.clear();this.databaseWorker?.terminate(); this.databaseConnections?.clear(); this.knowledge?.server.close(); this.agent?.controller.abort(); this.providers?.dispose(); for(const entry of this.fabrixTests?.values()||[])entry.provider.dispose();this.fabrixTests?.clear(); this.processes?.dispose(); }
 }

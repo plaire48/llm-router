@@ -187,7 +187,7 @@ export function installAgent(ProjectService) {
     if(!task.activityHistory?.some(run=>run.runId===priorRunId))rememberActivity(task,priorRunId);
     const controller = new AbortController(),runId=randomUUID(),timing=responseTimer(); this.agent = {controller, running: true, taskId, runId,timing,inputChain:queuedInput?.runId||runId};
     task.responseTiming={...timing.snapshot(),runId};this.store.set('task:'+taskId,task);
-    let rootRules,skills;try{const root=await this.target(taskId);rootRules=await projectRules(root);skills=await skillCatalog(root);requestCommand=resolveAgentCommand(answer??task.messages?.findLast(message=>message.role==='user')?.content??task.request,skills.skills);if(requestCommand?.action)throw Error('agent_command_ui_only');planningOnly=requestCommand?.command==='plan';}catch(error){this.agent.running=false;task.responseTiming={...timing.finish('failed'),runId};this.store.set('task:'+taskId,task);throw error;}
+    let rootRules,skills;try{const root=await this.target(taskId);rootRules=await projectRules(root);skills=await skillCatalog(this.root);requestCommand=resolveAgentCommand(answer??task.messages?.findLast(message=>message.role==='user')?.content??task.request,skills.skills);if(requestCommand?.action)throw Error('agent_command_ui_only');planningOnly=requestCommand?.command==='plan';}catch(error){this.agent.running=false;task.responseTiming={...timing.finish('failed'),runId};this.store.set('task:'+taskId,task);throw error;}
     // A missing or unreadable Wiki must not stop a run.
     let wiki=null;try{wiki=await wikiOverview(this,taskId);}catch{wiki=null;}
     if(controller.signal.aborted){this.agent.running=false;task.responseTiming={...timing.finish('cancelled'),runId};this.store.set('task:'+taskId,task);throw new Error('cancelled');}
@@ -404,7 +404,7 @@ export function installAgent(ProjectService) {
         const selectedSkillPaths=[...new Set([...(task.workPlan?.intent?.skillPaths||[]),...(requestCommand?.skill?[requestCommand.skill.path]:[])])];
         const pending=selectedSkillPaths.filter(path=>{const entry=skills.skills.find(s=>s.path===path),loaded=loadedSkills.get(path);return !entry||!loaded||loaded.hash!==entry.hash||loaded.nextOffset!==null;});
         if(pending.length)return {ok:false,error:'selected_skill_required',actionIssued:false,skills:pending.map(path=>skills.skills.find(s=>s.path===path)||{path,unavailable:true}),instruction:'Load the skills you selected with use_skill and finish their main instructions with read_skill nextOffset before project work. Refresh discovery or revise the plan if a selected skill is unavailable or irrelevant. No project action was issued.'};
-        if(selectedSkillPaths.length){const rootForSkills=await this.target(taskId);for(const path of selectedSkillPaths)await read(()=>readSkill(rootForSkills,skills,{path,expectedHash:loadedSkills.get(path).hash}));}
+        if(selectedSkillPaths.length){const rootForSkills=this.root;for(const path of selectedSkillPaths)await read(()=>readSkill(rootForSkills,skills,{path,expectedHash:loadedSkills.get(path).hash}));}
       }
       if(name==='update_plan'){const initial=task.workPlan?.runId!==runId,steps=workPlanSteps(args,{initial});const intent=args.intent?workIntent(args.intent,{...capabilityContext(),skills:skills.skills}):initial?workIntent(undefined,capabilityContext()):task.workPlan.intent;const before=initial?[]:task.workPlan?.steps||[],updates=task.workPlan?.updates||[];task.workPlan={intent,runId,updates:[...updates,{runId,revision:(task.workPlan?.revision||0)+1,before,after:steps,reason:args.explanation||'',at:new Date().toISOString()}].slice(-20),revision:(task.workPlan?.revision||0)+1,steps,at:new Date().toISOString()};persistTask();result={ok:true,plan:steps,intent,instruction:'Intent is a provisional interpretation, not permission or execution evidence. Load selected skills before using them; preserve literal requests and later answers.'};}
       else if(name==='personal_mail_query')result=await read(()=>this.mail({...args,action:'query'}));
@@ -418,15 +418,15 @@ export function installAgent(ProjectService) {
       });
       else if(name==='open_workspace_page'){if(childSignal||!this.openWorkspacePage)throw Error('browser_unavailable');result=await this.openWorkspacePage({url:args.url});}
       else if(name==='inspect_environment'){const root=await this.target(taskId);result=await read(()=>inspectEnvironment(root,{...args,selectedShell:this.shellPreference()},signal));if(signal.aborted)fail('cancelled');rememberEnvironment(observations,result);}
-      else if(name==='discover_capabilities'){const awaitRoot=await this.target(taskId);skills=await read(()=>skillCatalog(awaitRoot));result=discoverCapabilities(skills,args,tools.map(t=>t.function.name));}
+      else if(name==='discover_capabilities'){const awaitRoot=this.root;skills=await read(()=>skillCatalog(awaitRoot));result=discoverCapabilities(skills,args,tools.map(t=>t.function.name));}
       else if(name==='compare_local_pages'){
         const texts=[task.request,...(task.messages||[]).filter(m=>m.role==='user').map(m=>m.content),...leaderEvidence.filter(e=>['read_source','recovery_snapshot','read_process_output'].includes(e.tool)).map(e=>JSON.stringify(e.result))];
         if(![args.beforeUrl,args.afterUrl].every(url=>texts.some(text=>typeof text==='string'&&text.includes(url))))throw new Error('preview_source_required');
         const {beforeImage,afterImage,diffImage,...record}=await this.compare({...args,taskId});result=record;
       }
-      else if(name==='use_skill'){const awaitRoot=await this.target(taskId);result=await read(()=>useSkill(awaitRoot,skills,args));loadedSkills.set(args.path,{hash:result.hash,nextOffset:result.nextOffset});}
-      else if(name==='list_skill_resources'){const awaitRoot=await this.target(taskId);result=await read(()=>listSkillResources(awaitRoot,skills,args));}
-      else if(name==='read_skill'){const awaitRoot=await this.target(taskId);result=await read(()=>readSkill(awaitRoot,skills,args));const loaded=loadedSkills.get(args.path);if(!args.resource&&loaded?.hash===result.hash&&loaded.nextOffset===(args.offset||0))loadedSkills.set(args.path,{hash:result.hash,nextOffset:result.nextOffset});}
+      else if(name==='use_skill'){const awaitRoot=this.root;result=await read(()=>useSkill(awaitRoot,skills,args));loadedSkills.set(args.path,{hash:result.hash,nextOffset:result.nextOffset});}
+      else if(name==='list_skill_resources'){const awaitRoot=this.root;result=await read(()=>listSkillResources(awaitRoot,skills,args));}
+      else if(name==='read_skill'){const awaitRoot=this.root;result=await read(()=>readSkill(awaitRoot,skills,args));const loaded=loadedSkills.get(args.path);if(!args.resource&&loaded?.hash===result.hash&&loaded.nextOffset===(args.offset||0))loadedSkills.set(args.path,{hash:result.hash,nextOffset:result.nextOffset});}
       else if(name==='read_process_output')result=await read(()=>readProcessOutput(this,taskId,args,signal));
       else if(name==='read_conversation')result=readConversation(task,args);
       else if(name==='request_computer_connection'){result=requestComputerConnection(this,task,args);persistTask();}

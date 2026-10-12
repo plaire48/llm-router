@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,mkdir,writeFile,readFile,rm,access} from 'node:fs/promises';
+import {mkdtemp,mkdir,writeFile,readFile,rm,access,realpath} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {ProjectService} from '../runtime/project-service.mjs';
@@ -92,4 +92,31 @@ test('Wiki failure diagnostics preserve actionable codes without raw errors',()=
   assert.equal(wikiInitializationError({code:'EEXIST'},'publishing'),'wiki_output_conflict');
   assert.equal(wikiInitializationError(Error('response_invalid'),'planning'),'response_invalid');
   assert.equal(wikiInitializationError(Error('unknown_private_reply'),'planning'),'wiki_failed');
+});
+
+
+test('remote clone nested in another repository retains history and its own root during Wiki initialization',async t=>{
+  const temp=await realpath(await mkdtemp(path.join(os.tmpdir(),'nubi-remote-wiki-'))),remote=path.join(temp,'remote'),parent=path.join(temp,'parent'),clone=path.join(parent,'cloned');
+  await mkdir(remote);await mkdir(parent);
+  for(const root of [remote,parent]){await git(root,['init','-q']);await git(root,['config','user.name','Fixture']);await git(root,['config','user.email','fixture@localhost']);}
+  for(let index=1;index<=3;index++){await writeFile(path.join(remote,'app.txt'),`source ${index}\n`);await git(remote,['add','app.txt']);await git(remote,['-c','commit.gpgSign=false','commit','-qm',`History ${index}`]);}
+  await git(remote,['branch','design-history','HEAD~1']);await git(remote,['tag','v1','HEAD~2']);
+  await writeFile(path.join(parent,'parent.txt'),'Parent project');await git(parent,['add','.']);await git(parent,['-c','commit.gpgSign=false','commit','-qm','Parent']);
+  await git(parent,['clone','--',remote,clone]);
+  const service=new ProjectService({storageRoot:path.join(temp,'state')});t.after(async()=>{service.dispose();service.store?.close();await rm(temp,{recursive:true,force:true});});
+  const opened=await service.invoke('open',{root:clone,exactRoot:true,initializeWiki:false});assert.equal(opened.root,clone);assert(!opened.files.includes('parent.txt'));assert.equal(service.wikiInitEnabled,false);
+  const child=path.join(parent,'not-a-clone');await mkdir(child);await assert.rejects(service.invoke('open',{root:child,exactRoot:true}),/clone_root_mismatch/);assert.equal(service.root,clone);
+  const head=(await git(clone,['rev-parse','HEAD'])).trim(),index=await readFile(path.join(clone,'.git/index'));
+  service.providers={status:()=>({connected:true,provider:'fixture',model:'fixture'}),dispose(){}};let analysisRoot;
+  service.wikiInitializer=async({root})=>{analysisRoot=root;assert.equal((await git(root,['rev-list','--count','HEAD'])).trim(),'3');assert.equal((await git(root,['rev-parse','HEAD'])).trim(),head);assert.match(await git(root,['log','--format=%s']),/History 1/);assert.match(await git(root,['branch','-r']),/origin\/design-history/);assert.match(await git(root,['tag']),/v1/);assert.equal((await readFile(path.join(root,'app.txt'),'utf8')).replace(/\r\n/g,'\n'),'source 3\n');await publish(root,'# Real history');await writeFile(path.join(root,'openwiki/.last-update.json'),JSON.stringify({status:'complete',gitHead:head}));};
+  await service.invoke('open',{root:clone,exactRoot:true,initializeWiki:true});await service.wikiInitPromise;assert.equal(service.wikiInitialization().state,'completed',JSON.stringify(service.wikiInitialization()));
+  assert.equal((await git(clone,['rev-parse','HEAD'])).trim(),head);assert.deepEqual(await readFile(path.join(clone,'.git/index')),index);
+  assert.equal(JSON.parse(await readFile(path.join(clone,'openwiki/.last-update.json'),'utf8')).gitHead,head);
+  assert(!await git(clone,['worktree','list','--porcelain']).then(text=>text.includes(analysisRoot)));await assert.rejects(access(analysisRoot));
+});
+
+test('a commit changed during initialization refuses Wiki publication and removes its worktree',async t=>{
+  const {root,service}=await setup(t,{gitProject:true});await rm(path.join(root,'openwiki'),{recursive:true});service.store.set('wiki-init',null);let copy;
+  service.wikiInitializer=async({root:analysis})=>{copy=analysis;await git(root,['-c','user.name=Fixture','-c','user.email=fixture@localhost','-c','commit.gpgSign=false','commit','--allow-empty','-qm','Concurrent commit']);await publish(analysis,'# Outdated');};
+  await service.initializeWiki();await service.wikiInitPromise;assert.equal(service.wikiInitialization().error,'source_stale');await assert.rejects(access(path.join(root,'openwiki/home.md')));await assert.rejects(access(copy));
 });

@@ -2,7 +2,7 @@ import path from 'node:path';
 import {mkdir,writeFile,rename,rm,lstat} from 'node:fs/promises';
 import {createHash,randomUUID} from 'node:crypto';
 import {readSkillPackage,skillDirectory,verifyInstalled,skillRelativePath,skillPackageHash} from './skill-import.mjs';
-import {skillCatalog,MAX_SKILLS} from './agent-capabilities.mjs';
+import {skillCatalog,parseSkill,MAX_SKILLS} from './agent-capabilities.mjs';
 import {hash,fail} from './files.mjs';
 
 export const MARKETPLACE={repository:'https://code.sdsdev.co.kr/Manufacturing-IT/ai_workspace',branch:'main',website:'https://code.sdsdev.co.kr/pages/Manufacturing-IT/ai_workspace'};
@@ -52,7 +52,8 @@ export function ghesMarketplaceReader(token,fetcher=fetch,{signal}={}){
 async function catalog(reader){
   const tree=await reader.tree();if(!/^[a-f0-9]{40}$/.test(tree.commit)||!Array.isArray(tree.files))fail('marketplace_invalid');
   const files=new Map(tree.files.filter(f=>f.type==='blob').map(f=>[f.path,f]));
-  const read=async file=>{const entry=files.get(file);if(!entry||entry.mode!=='100644'&&entry.mode!=='100755')fail('marketplace_invalid');return reader.blob(entry);};
+  const blobs=new Map();
+  const read=async file=>{const entry=files.get(file);if(!entry||entry.mode!=='100644'&&entry.mode!=='100755')fail('marketplace_invalid');if(!blobs.has(entry.sha))blobs.set(entry.sha,reader.blob(entry).catch(error=>{blobs.delete(entry.sha);throw error;}));return blobs.get(entry.sha);};
   const readJson=async file=>{try{return JSON.parse((await read(file)).toString('utf8'));}catch(e){if(e.message.startsWith('marketplace_'))throw e;fail('marketplace_invalid');}};
   const plugins=new Map(),issues=[];
   for(const file of ['.agents/plugins/marketplace.json','.claude-plugin/marketplace.json']){
@@ -66,7 +67,8 @@ async function catalog(reader){
   }
   if(!plugins.size&&!issues.length)fail('marketplace_missing');
   const items=[];
-  for(const plugin of plugins.values()){
+  const entries=[...plugins.values()];
+  for(let offset=0;offset<entries.length;offset+=4)await Promise.all(entries.slice(offset,offset+4).map(async plugin=>{
     const base='plugins/'+plugin.name;
     try{
       const manifestPath=['.codex-plugin/plugin.json','.claude-plugin/plugin.json','plugin.json'].map(p=>base+'/'+p).find(p=>files.has(p));
@@ -77,21 +79,22 @@ async function catalog(reader){
       if(typeof title!=='string'||title.length>200||typeof description!=='string'||description.length>2000)fail('marketplace_invalid');
       const roots=[...files.keys()].filter(p=>p.startsWith(base+'/skills/')&&/^plugins\/[^/]+\/skills\/[^/]+\/SKILL\.md$/.test(p));
       if(!roots.length)fail('marketplace_no_skills');
-      for(const entry of roots){const name=entry.split('/')[3];if(!validName(name))fail('marketplace_invalid');items.push({id:plugin.name+'/'+name,name,plugin:plugin.name,title,description,version:manifest.version,prefix:entry.slice(0,-8),commit:tree.commit});}
+      for(const entry of roots){const name=entry.split('/')[3];if(!validName(name)||files.get(entry).size>32768)fail('marketplace_invalid');const metadata=parseSkill((await read(entry)).toString('utf8'),name);items.push({id:plugin.name+'/'+name,name,plugin:plugin.name,title:roots.length===1?title:name,description:metadata.description||description,version:manifest.version,prefix:entry.slice(0,-8),commit:tree.commit});}
     }catch(error){issues.push({name:plugin.name,error:error.message});}
-  }
+  }));
+  items.sort((a,b)=>a.title.localeCompare(b.title)||a.id.localeCompare(b.id));
   if(items.length>MAX_SKILLS)fail('marketplace_limit');
   return {items,issues,files,read,commit:tree.commit};
 }
 
 export const packetHash=skillPackageHash;
-const key=(root,name)=>'marketplace-skill:'+hash(root)+':'+name;
+const key=(root,name)=>'nubi-marketplace-skill:'+hash(root)+':'+name;
 async function exists(file){try{await lstat(file);return true;}catch(e){if(e.code==='ENOENT')return false;throw e;}}
 async function safeTarget(root,name){
-  let target=root;for(const part of ['.agents','skills',name]){target=path.join(target,part);try{const info=await lstat(target);if(info.isSymbolicLink())fail('marketplace_modified');}catch(e){if(e.code!=='ENOENT')throw e;}}return target;
+  let target=root;for(const part of ['.nubi','skill',name]){target=path.join(target,part);try{const info=await lstat(target);if(info.isSymbolicLink())fail('marketplace_modified');}catch(e){if(e.code!=='ENOENT')throw e;}}return target;
 }
 async function installedState(service,root){
-  const records=service.store.list('marketplace-skill:'+hash(root)+':');
+  const records=service.store.list('nubi-marketplace-skill:'+hash(root)+':');
   const items=[];
   for(const record of records){
     if(record.state==='removed')continue;
@@ -103,7 +106,7 @@ async function installedState(service,root){
 }
 
 export async function skillMarketplace({operation='status',taskId,id,expectedCommit,expectedVersion}={}){
-  this.ready();const root=await this.target(taskId);
+  this.ready();if(taskId)this.task(taskId);const root=this.root;
   if(!['status','refresh','install','remove','reconcile'].includes(operation))fail('input_invalid');
   const response=async()=>{
     const installed=await installedState(this,root),local=await skillCatalog(root),cache=this.marketplaceCatalog;
@@ -125,7 +128,7 @@ export async function skillMarketplace({operation='status',taskId,id,expectedCom
       if(connectionRevision!==(this.marketplaceRevision||0))fail('marketplace_auth');
       this.marketplaceConnected=true;this.marketplaceCatalog={...next,checkedAt:new Date().toISOString()};return await response();
     }
-    const record=this.store.list('marketplace-skill:'+hash(root)+':').find(r=>r.id===id&&r.state!=='removed');
+    const record=this.store.list('nubi-marketplace-skill:'+hash(root)+':').find(r=>r.id===id&&r.state!=='removed');
     if(operation==='reconcile'){
       if(!record||!['installing','attention','removing'].includes(record.state))fail('marketplace_reconcile');
       const target=await safeTarget(root,record.name);
@@ -136,7 +139,7 @@ export async function skillMarketplace({operation='status',taskId,id,expectedCom
     }
     if(operation==='remove'){
       if(!record||record.state!=='installed')fail('marketplace_reconcile');
-      const parent=await skillDirectory(root,'.agents/skills'),target=path.join(parent,record.name),packet=await readSkillPackage(target);
+      const parent=await skillDirectory(root,'.nubi/skill'),target=path.join(parent,record.name),packet=await readSkillPackage(target);
       if(packetHash(packet)!==record.hash)fail('marketplace_modified');
       const backup='.removed-'+randomUUID();
       this.store.set(key(root,record.name),{...record,state:'removing',backup});
@@ -150,7 +153,7 @@ export async function skillMarketplace({operation='status',taskId,id,expectedCom
     const old=this.store.get(key(root,item.name));
     if(old&&old.state!=='removed'&&(old.id!==id||old.state!=='installed'))fail('marketplace_reconcile');
     if(old?.state==='installed'&&compareVersions(item.version,old.version)<0)fail('marketplace_version');
-    const parent=await skillDirectory(root,'.agents/skills'),target=path.join(parent,item.name);
+    const parent=await skillDirectory(root,'.nubi/skill'),target=path.join(parent,item.name);
     const present=await exists(target);
     if(present){if(old?.state!=='installed')fail('skill_exists');if(packetHash(await readSkillPackage(target))!==old.hash)fail('marketplace_modified');}
     else if(old?.state==='installed')fail('marketplace_reconcile');
@@ -164,7 +167,7 @@ export async function skillMarketplace({operation='status',taskId,id,expectedCom
     const packet=await readSkillPackage(staging);if(packet.metadata.name!==item.name)fail('marketplace_invalid');
     const nextHash=packetHash(packet);
     if(old?.state==='installed'&&old.version===item.version){if(old.hash!==nextHash)fail('marketplace_version_changed');return await response();}
-    await skillDirectory(root,'.agents/skills');
+    await skillDirectory(root,'.nubi/skill');
     if(present&&packetHash(await readSkillPackage(target))!==old.hash||!present&&await exists(target))fail('marketplace_modified');
     if(this.disposed)fail('marketplace_changed');
     if(connectionRevision!==(this.marketplaceRevision||0))fail('marketplace_auth');

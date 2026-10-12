@@ -18,8 +18,8 @@ async function archive(base,records=entries,name='skill.zip'){const source=path.
 test('folder registration preserves nested references, script text, binary assets and empty directories without running code',async t=>{
   const {service,root,directory}=await fixture(t),source=await folder(directory);
   const result=await service.invoke('importSkill',{source});assert.equal(result.state,'registered');assert.equal(result.execution,'not_started');assert.equal(result.fileCount,4);
-  for(const [rel,bytes] of entries)assert.deepEqual(await readFile(path.join(root,'.agents/skills/company-writing',rel)),Buffer.from(bytes));
-  assert.ok((await stat(path.join(root,'.agents/skills/company-writing/EmptyAssets'))).isDirectory());
+  for(const [rel,bytes] of entries)assert.deepEqual(await readFile(path.join(root,'.nubi/skill/company-writing',rel)),Buffer.from(bytes));
+  assert.ok((await stat(path.join(root,'.nubi/skill/company-writing/EmptyAssets'))).isDirectory());
   assert.equal(service.state().processes.length,0);
   service.store.close();await service.open(root);
   const catalog=await service.invoke('listSkills');assert.equal(catalog.skills[0].name,'company-writing');assert.doesNotMatch(JSON.stringify(catalog),/MUST_NOT_RUN|회사 문서의 핵심/);
@@ -35,9 +35,9 @@ test('wrapped ZIP and flat ZIP have identical resources; selected folder name do
 
 test('duplicate registration never overwrites existing skill or edited resources',async t=>{
   const {service,root,directory}=await fixture(t),source=await archive(directory);
-  await service.importSkill({source});const guide=path.join(root,'.agents/skills/company-writing/references/세부/guide.md');await writeFile(guide,'Human edit');
+  await service.importSkill({source});const guide=path.join(root,'.nubi/skill/company-writing/references/세부/guide.md');await writeFile(guide,'Human edit');
   await assert.rejects(service.importSkill({source}),/skill_exists/);assert.equal(await readFile(guide,'utf8'),'Human edit');
-  assert.deepEqual(await readdir(path.join(root,'.agents/skills')),['company-writing']);
+  assert.deepEqual(await readdir(path.join(root,'.nubi/skill')),['company-writing']);
 });
 
 test('archive paths, Windows aliases, symlinks, secrets and case collisions are rejected before installation',async t=>{
@@ -46,7 +46,7 @@ test('archive paths, Windows aliases, symlinks, secrets and case collisions are 
     const source=await archive(directory,[...entries,[rel,'bad']]);await assert.rejects(service.importSkill({source}),/skill_(import_path|archive_invalid)/,rel);
   }
   for(const records of [[...entries,['assets/link','../../outside',0o120777]],[...entries,['skill.md','duplicate']],[...entries,['Assets/a.txt','a']],[...entries,['SKILL.md',instruction]]])await assert.rejects(service.importSkill({source:await archive(directory,records)}),/skill_(import_path|import_duplicate)/);
-  await assert.rejects(stat(path.join(root,'.agents')),/ENOENT/);
+  await assert.rejects(stat(path.join(root,'.nubi')),/ENOENT/);
 });
 
 test('corrupt CRC, truncated archive and expanded size budget refuse the whole package',async t=>{
@@ -54,14 +54,14 @@ test('corrupt CRC, truncated archive and expanded size budget refuse the whole p
   const bytes=zip(entries);bytes[30+Buffer.byteLength('SKILL.md')+1]^=1;await writeFile(source,bytes);await assert.rejects(service.importSkill({source}),/skill_archive_invalid/);
   await writeFile(source,bytes.subarray(0,100));await assert.rejects(service.importSkill({source}),/skill_archive_invalid/);
   await archive(directory,[...entries,['assets/huge.bin',Buffer.alloc(SKILL_IMPORT_LIMITS.fileBytes+1)]],'broken.zip');await assert.rejects(service.importSkill({source}),/skill_import_limit/);
-  await assert.rejects(stat(path.join(root,'.agents')),/ENOENT/);
+  await assert.rejects(stat(path.join(root,'.nubi')),/ENOENT/);
 });
 
 test('missing or ambiguous entrypoint, invalid metadata, folder links and linked destination are refused',async t=>{
   const {service,root,directory}=await fixture(t);
   for(const records of [[['readme.md','instructions']], [...entries,['nested/SKILL.md',instruction]], [['SKILL.md','no metadata']]])await assert.rejects(service.importSkill({source:await archive(directory,records)}),/skill_(entry_required|invalid)/);
   const source=await folder(directory);await symlink(path.join(root,'app.txt'),path.join(source,'link.md'),'file');await assert.rejects(service.importSkill({source}),/skill_import_path/);
-  await mkdir(path.join(root,'.agents'));await symlink(directory,path.join(root,'.agents/skills'),process.platform==='win32'?'junction':'dir');await assert.rejects(service.importSkill({source:await archive(directory)}),/skill_import_path/);
+  await mkdir(path.join(root,'.nubi'));await symlink(directory,path.join(root,'.nubi/skill'),process.platform==='win32'?'junction':'dir');await assert.rejects(service.importSkill({source:await archive(directory)}),/skill_import_path/);
 });
 
 test('registration cannot race an agent or change projects while copying',async t=>{
@@ -97,10 +97,10 @@ test('registered folder deletion uses a persisted whole-package receipt and keep
   const {service,root,directory}=await fixture(t);await service.importSkill({source:await folder(directory)});const skill=(await service.listSkills()).skills[0];assert.equal(skill.managed,true);
   const removed=await service.removeSkill({name:skill.name,expectedHash:skill.packageHash});assert.equal(removed.removed,true);assert.equal((await service.listSkills()).skills.length,0);
   const trash=(await service.skillTrash({operation:'list'})).items;assert.equal(trash[0]?.name,skill.name,'the deleted skill waits in the trash');
-  assert.equal(await readFile(path.join(root,'.agents/skills',trash[0].id,'references/세부/guide.md'),'utf8'),'회사 문서의 핵심 결론을 먼저 작성합니다.');
+  assert.equal(await readFile(path.join(root,'.nubi/skill',trash[0].id,'references/세부/guide.md'),'utf8'),'회사 문서의 핵심 결론을 먼저 작성합니다.');
 });
 test('registered deletion refuses edited resources, stale receipts and arbitrary source paths',async t=>{
   const {service,root,directory}=await fixture(t);await service.importSkill({source:await folder(directory)});const skill=(await service.listSkills()).skills[0];
   await assert.rejects(service.removeSkill({name:'../outside',expectedHash:skill.packageHash}),/input_invalid/);await assert.rejects(service.removeSkill({name:skill.name,expectedHash:'wrong'}),/skill_import_changed/);
-  const file=path.join(root,'.agents/skills',skill.name,'references/세부/guide.md');await writeFile(file,'Human edit');await assert.rejects(service.removeSkill({name:skill.name,expectedHash:skill.packageHash}),/skill_import_changed/);assert.equal(await readFile(file,'utf8'),'Human edit');
+  const file=path.join(root,'.nubi/skill',skill.name,'references/세부/guide.md');await writeFile(file,'Human edit');await assert.rejects(service.removeSkill({name:skill.name,expectedHash:skill.packageHash}),/skill_import_changed/);assert.equal(await readFile(file,'utf8'),'Human edit');
 });

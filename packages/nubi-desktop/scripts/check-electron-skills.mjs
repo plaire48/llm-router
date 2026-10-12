@@ -17,11 +17,13 @@ await mkdir(root);await mkdir(storage);await mkdir(path.join(packages,'fixture-s
 const git=args=>execFileSync('git',['-C',root,...args]);git(['init']);git(['config','user.name','Fixture']);git(['config','user.email','fixture@example.invalid']);
 await writeFile(path.join(root,'example.js'),'export const value = 1;\n');git(['add','.']);git(['commit','-m','Initial fixture']);
 await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root}));
+// This test isolates skill registration from the separately checked Wiki onboarding.
+await mkdir(path.join(root,'openwiki'));await writeFile(path.join(root,'openwiki','home.md'),'# Skill fixture project\n');
 const instructions=`---\nname: fixture-skill\ndescription: 검사용 스킬. 요청을 한 줄로 요약한다.\n---\n\n# 검사용 스킬\n\n답변 첫 줄에 ${SENTINEL} 표식을 그대로 적는다.\n`;
 await writeFile(path.join(packages,'fixture-skill','SKILL.md'),instructions);await writeFile(path.join(packages,'fixture-skill','scripts','run.mjs'),'console.log("fixture");\n');
 await writeFile(path.join(packages,'zipped-skill.zip'),zip([['zipped-skill/SKILL.md','---\nname: zipped-skill\ndescription: ZIP으로 등록한 스킬\n---\n\n# ZIP 스킬\n'],['zipped-skill/notes.md','참고 자료\n']]));
 await writeFile(path.join(packages,'quick-note.md'),'# 빠른 메모\n\n메모 형식으로 답한다.\n');
-const exists=file=>access(file).then(()=>true,()=>false),installed=(...parts)=>path.join(root,'.agents','skills',...parts);
+const exists=file=>access(file).then(()=>true,()=>false),installed=(...parts)=>path.join(root,'.nubi','skill',...parts);
 
 // The fixture model (scripts/fixture-model.mjs): discovers the skill, loads it with the hash the discovery returned, and
 // answers with the sentinel once the loaded instruction carried it.
@@ -41,6 +43,7 @@ const request=(method,args={})=>page.evaluate(({method,args})=>window.nubi.reque
 async function open(){
   app=await launch();page=await app.firstWindow();page.setDefaultTimeout(15000);page.on('pageerror',error=>console.log('PAGE ERROR:',error.message));
   await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor({timeout:30000});
+  await page.locator('.desktop-shell[data-startup-ready="true"]').waitFor({timeout:60000});
   const startup=page.getByText('메일을 연결해 주세요');if(await startup.count()){await page.keyboard.press('Escape');await startup.waitFor({state:'hidden',timeout:5000});}
   const status=await request('provider',{action:'connect',input:fixture.connection});
   assert.equal(status.connected,true,'the compatible provider connects to the fixture: '+JSON.stringify(status.__nubiError||status.provider));
@@ -63,7 +66,7 @@ try{
   await openManagement();await skillsDialog().getByText('등록한 스킬이 없어요.').waitFor();
   await register(path.join(packages,'fixture-skill'),'스킬을 등록했어요.');await row('fixture-skill').waitFor();
   assert.equal(await readFile(installed('fixture-skill','SKILL.md'),'utf8'),instructions);assert.equal(await exists(installed('fixture-skill','scripts','run.mjs')),true,'bundled resources are copied');
-  stage('folder registered into .agents/skills');
+  stage('folder registered into .nubi/skill');
   await register(path.join(packages,'zipped-skill.zip'),'스킬을 등록했어요.');await row('zipped-skill').waitFor();assert.equal(await readFile(installed('zipped-skill','notes.md'),'utf8'),'참고 자료\n');
   await register(path.join(packages,'quick-note.md'),'스킬을 등록했어요.');await row('quick-note').waitFor();
   const listed=await request('listSkills');const note=listed.skills.find(skill=>skill.title==='quick-note');assert.ok(note,'a Markdown file becomes a titled skill');assert.match(await readFile(path.join(root,note.path),'utf8'),/^---\nname: /,'the Markdown file gets a SKILL.md header');
@@ -74,7 +77,7 @@ try{
   stage('duplicate and cancelled picks');
   const zipped=installed('zipped-skill','SKILL.md'),intact=await readFile(zipped,'utf8');await writeFile(zipped,'---\ndescription: 이름이 없는 지침\n---\n\n깨진 스킬\n');
   await refresh();await row('zipped-skill').getByText('지침을 확인해 주세요.').waitFor();
-  const issues=skillsDialog().locator('details.nubi-skill-info');await issues.locator('summary').click();await issues.getByRole('button',{name:'.agents/skills/zipped-skill/SKILL.md'}).waitFor();
+  const issues=skillsDialog().locator('details.nubi-skill-info');await issues.locator('summary').click();await issues.getByRole('button',{name:'.nubi/skill/zipped-skill/SKILL.md'}).waitFor();
   await writeFile(zipped,intact);await refresh();await row('zipped-skill').waitFor();assert.equal(await row('zipped-skill').getByText('지침을 확인해 주세요.').count(),0);assert.equal(await issues.count(),0,'a repaired instruction leaves no issue');
   stage('malformed instruction disclosed and recovered');
   await row('zipped-skill').getByRole('button',{name:'zipped-skill 삭제'}).click();await page.getByText('스킬을 삭제할까요?').waitFor();await page.getByRole('button',{name:'확인',exact:true}).click();

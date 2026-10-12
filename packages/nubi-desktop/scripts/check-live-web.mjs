@@ -19,7 +19,7 @@ page.setDefaultTimeout(15000);page.on('pageerror',error=>errors.push(error.messa
 const stage=name=>{console.log('stage',checks.length,name);checks.push(name);};
 const request=(method,args={})=>page.evaluate(({method,args})=>window.nubi.request(method,args),{method,args});
 const openFile=async()=>{await page.getByRole('button',{name:'파일',exact:true}).click();await page.getByRole('tree',{name:'폴더의 파일 목록'}).getByRole('treeitem',{name:'example.js',exact:true}).dblclick();await page.getByRole('tab',{name:/example\.js/}).waitFor();await page.locator('.monaco-editor').first().waitFor();};
-const tool=async name=>{const add=page.getByRole('button',{name:'도구 추가',exact:true});if(!await add.isVisible().catch(()=>false))await page.getByRole('button',{name:'파일',exact:true}).click();/* one press reaches the tree from the search pane too (2026-10-07) */await add.waitFor({timeout:5000});await add.click();await page.getByRole('menuitem',{name,exact:true}).click();};
+const tool=async name=>{const add=page.getByRole('button',{name:'새 탭',exact:true});if(!await add.isVisible().catch(()=>false))await page.getByRole('button',{name:'파일',exact:true}).click();/* one press reaches the tree from the search pane too (2026-10-07) */await add.waitFor({timeout:5000});await add.click();await page.getByRole('menuitem',{name,exact:true}).click();};
 try{
   await app.firstWindow();
   await page.goto(`http://127.0.0.1:${PORT}/`);await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor({timeout:30000});

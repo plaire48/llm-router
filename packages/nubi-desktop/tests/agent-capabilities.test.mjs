@@ -8,14 +8,14 @@ import {ProjectService} from '../runtime/project-service.mjs';
 import {installAgent} from '../runtime/agent.mjs';
 installAgent(ProjectService);
 const tools=[...new Set(WORKFLOWS.flatMap(w=>w.tools))];
-async function skill(root,name='code-review',base='.agents/skills',body='Review the current source.'){const rel=`${base}/${name}/SKILL.md`;await mkdir(path.dirname(path.join(root,rel)),{recursive:true});await writeFile(path.join(root,rel),`---\nname: ${name}\ndescription: 코드 검토 code review\nallowed-tools: Bash(*)\n---\n${body}`);return rel;}
+async function skill(root,name='code-review',base='.nubi/skill',body='Review the current source.'){const rel=`${base}/${name}/SKILL.md`;await mkdir(path.dirname(path.join(root,rel)),{recursive:true});await writeFile(path.join(root,rel),`---\nname: ${name}\ndescription: 코드 검토 code review\nallowed-tools: Bash(*)\n---\n${body}`);return rel;}
 const load=(root,catalog,entry,extra={})=>readSkill(root,catalog,{path:entry.path,expectedHash:entry.hash,...extra});
 
-test('skill discovery exposes metadata only across compatible project roots and keeps duplicate names distinct',async t=>{
-  const {root}=await fixture(t);for(const base of ['.agents/skills','.claude/skills','.opencode/skills'])await skill(root,'code-review',base,'BODY_NOT_IN_CATALOG');
-  const catalog=await skillCatalog(root);assert.equal(catalog.skills.length,3);assert.doesNotMatch(JSON.stringify(catalog),/BODY_NOT_IN_CATALOG|Bash/);
-  assert.equal(new Set(catalog.skills.map(s=>s.path)).size,3);
-  const result=discoverCapabilities(catalog,{query:'review'},tools);assert.equal(result.results.filter(r=>r.kind==='skill').length,3);
+test('skill discovery reads only Nubi skills and ignores identical names in other clients',async t=>{
+  const {root}=await fixture(t);for(const base of ['.nubi/skill','.agents/skills','.claude/skills','.opencode/skills','.aipro/skills'])await skill(root,'code-review',base,'BODY_NOT_IN_CATALOG');
+  const catalog=await skillCatalog(root);assert.equal(catalog.skills.length,1);assert.doesNotMatch(JSON.stringify(catalog),/BODY_NOT_IN_CATALOG|Bash/);
+  assert.equal(new Set(catalog.skills.map(s=>s.path)).size,1);
+  const result=discoverCapabilities(catalog,{query:'review'},tools);assert.equal(result.results.filter(r=>r.kind==='skill').length,1);
   const loaded=await load(root,catalog,catalog.skills[0]);assert.equal(loaded.content,'BODY_NOT_IN_CATALOG');assert.equal(loaded.editObservation,false);assert.match(loaded.authority,/not_execution_permission/);
 });
 
@@ -46,9 +46,9 @@ test('invalid YAML, duplicate fields, aliases and oversized skills stay unavaila
 
 test('skill loader refuses symlink directories and resources even when a link remains in the workspace',async t=>{
   const {root}=await fixture(t);await skill(root);const catalog=await skillCatalog(root),entry=catalog.skills[0];
-  await mkdir(path.join(root,'.claude'),{recursive:true});await symlink(path.join(root,'.agents','skills'),path.join(root,'.claude','skills'),process.platform==='win32'?'junction':'dir');
-  assert.ok((await skillCatalog(root)).issues.some(v=>v.path==='.claude/skills'));
-  await symlink(path.join(root,'app.txt'),path.join(root,'.agents','skills','code-review','linked.md'),'file');
+  await mkdir(path.join(root,'.claude'),{recursive:true});await symlink(path.join(root,'.nubi','skill'),path.join(root,'.claude','skills'),process.platform==='win32'?'junction':'dir');
+  assert.equal((await skillCatalog(root)).issues.length,0,'other clients are not inspected');
+  await symlink(path.join(root,'app.txt'),path.join(root,'.nubi','skill','code-review','linked.md'),'file');
   await assert.rejects(load(root,catalog,entry,{resource:'linked.md'}),/skill_scope/);
 });
 
@@ -65,7 +65,7 @@ test('capability routing uses only registered host tools, offers pagination and 
 });
 
 test('real Pi tool loop loads project guidance but never gains source edit authority or script execution',async t=>{
-  const {service,root}=await fixture(t);await skill(root,'code-review','.agents/skills','Inspect app.txt and propose a change.');let round=0,entry;
+  const {service,root}=await fixture(t);await skill(root,'code-review','.nubi/skill','Inspect app.txt and propose a change.');let round=0,entry;
   const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000,maxOutputTokens:4096}]}),dispose(){},async complete(messages,definitions){
     const last=messages.findLast(m=>m.role==='tool');

@@ -16,9 +16,9 @@ const steps=[{text:'요청한 자료 확인',expected_outcome:'현재 파일에�
 const intent={goal:'현재 자료를 읽고 원인을 설명',constraints:['파일은 변경하지 않는다'],outcomes:['관찰한 근거와 미확인 결과를 구분'],workflowIds:['source-change','knowledge'],skillPaths:[]};
 const tools=['read_source','wiki_query','source_search'];
 async function skill(root,name,description,body='Use current project evidence.'){
-  const folder=path.join(root,'.agents/skills',name);await mkdir(folder,{recursive:true});
+  const folder=path.join(root,'.nubi/skill',name);await mkdir(folder,{recursive:true});
   await writeFile(path.join(folder,'SKILL.md'),`---\nname: ${name}\ndescription: ${description}\n---\n${body}`);
-  return `.agents/skills/${name}/SKILL.md`;
+  return `.nubi/skill/${name}/SKILL.md`;
 }
 
 test('intent-aware metadata retrieves a late catalog skill and never injects its instructions',async t=>{

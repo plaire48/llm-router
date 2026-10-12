@@ -50,6 +50,10 @@ jobs:
         run: |
           ./scripts/Test-ShellLink.ps1
           Add-Type -Path scripts/InstallerWindow.cs
+      - name: Verify Nubi skill scope and manual external file browsing
+        run: |
+          node --test tests/agent-capabilities.test.mjs tests/skill-import.test.mjs tests/skill-marketplace.test.mjs tests/local-file-view.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Build standalone Electron installer with bird icon
         run: npm run package:windows
       - name: Check packaged project navigation before installation

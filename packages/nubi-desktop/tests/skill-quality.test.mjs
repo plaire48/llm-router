@@ -21,7 +21,7 @@ test('long registered references are read in bounded pages and reject mixed revi
   const catalog=await skillCatalog(root),base={...args(catalog),resource:'references/guide.md'};
   const first=await readSkill(root,catalog,base);assert.equal(first.content.length,8000);
   const next=await readSkill(root,catalog,{...base,offset:first.nextOffset,resourceHash:first.hash});assert.equal(next.content,content.slice(8000,16000));
-  await writeFile(path.join(root,'.agents/skills/writing/references/guide.md'),content.replace('문서','변경'));
+  await writeFile(path.join(root,'.nubi/skill/writing/references/guide.md'),content.replace('문서','변경'));
   await assert.rejects(readSkill(root,catalog,{...base,offset:first.nextOffset,resourceHash:first.hash}),/skill_resource_changed/);
 });
 
@@ -33,11 +33,11 @@ test('binary templates return resource facts without text or invented content',a
 
 test('identical retry reconciles stored bytes after restart while extra or edited files remain conflicts',async t=>{
   const {service,root,directory}=await fixture(t),folder=await source(directory);await service.importSkill({source:folder});
-  const file=path.join(root,'.agents/skills/writing/SKILL.md'),mtime=(await stat(file)).mtimeMs;
+  const file=path.join(root,'.nubi/skill/writing/SKILL.md'),mtime=(await stat(file)).mtimeMs;
   service.store.close();await service.open(root);
   const result=await service.importSkill({source:folder});assert.equal(result.noChange,true);assert.equal((await stat(file)).mtimeMs,mtime);
-  await writeFile(path.join(root,'.agents/skills/writing/user-notes.md'),'Human notes');await assert.rejects(service.importSkill({source:folder}),/skill_exists/);
-  assert.equal(await readFile(path.join(root,'.agents/skills/writing/user-notes.md'),'utf8'),'Human notes');
+  await writeFile(path.join(root,'.nubi/skill/writing/user-notes.md'),'Human notes');await assert.rejects(service.importSkill({source:folder}),/skill_exists/);
+  assert.equal(await readFile(path.join(root,'.nubi/skill/writing/user-notes.md'),'utf8'),'Human notes');
 });
 
 test('Windows reserved destination names are refused before creating the skills folder',async t=>{
@@ -46,7 +46,7 @@ test('Windows reserved destination names are refused before creating the skills 
 });
 
 test('ignored staging folders cannot hide valid skills from the catalog',async t=>{
-  const {root}=await fixture(t),base=path.join(root,'.agents/skills');await mkdir(base,{recursive:true});
+  const {root}=await fixture(t),base=path.join(root,'.nubi/skill');await mkdir(base,{recursive:true});
   for(let i=0;i<130;i++)await mkdir(path.join(base,`.pending-${i}`));
   await mkdir(path.join(base,'writing'));await writeFile(path.join(base,'writing/SKILL.md'),markdown('writing'));
   const catalog=await skillCatalog(root);assert.equal(catalog.skills.length,1);assert.equal(catalog.truncated,false);
@@ -60,7 +60,7 @@ test('resource listing exposes later files and rejects a changed listing between
   const active=await useSkill(root,catalog,base);assert.equal(active.resources.length,100);assert.equal(active.resourcesNextOffset,100);
   const next=await listSkillResources(root,catalog,{...base,offset:100,resourcesHash:active.resourcesHash});assert.equal(next.resources.length,26);assert.equal(next.nextOffset,null);assert.equal(next.coverage,'complete');
   assert.equal(new Set([...active.resources,...next.resources].map(r=>r.path)).size,126);
-  await writeFile(path.join(root,'.agents/skills/writing/references/new.md'),'New reference');
+  await writeFile(path.join(root,'.nubi/skill/writing/references/new.md'),'New reference');
   await assert.rejects(listSkillResources(root,catalog,{...base,offset:100,resourcesHash:active.resourcesHash}),/skill_resources_changed/);
 });
 
@@ -73,7 +73,7 @@ test('reference paging requires a version hash and preserves Unicode character b
 });
 
 test('a full catalog refuses a new registration before writing any package files',async t=>{
-  const {service,root,directory}=await fixture(t),folder=await source(directory),base=path.join(root,'.agents/skills');
+  const {service,root,directory}=await fixture(t),folder=await source(directory),base=path.join(root,'.nubi/skill');
   for(let i=0;i<120;i++){const name=`skill-${i}`;await mkdir(path.join(base,name),{recursive:true});await writeFile(path.join(base,name,'SKILL.md'),markdown(name));}
   await assert.rejects(service.importSkill({source:folder}),/skill_catalog_full/);
   await assert.rejects(stat(path.join(base,'writing')),/ENOENT/);assert.equal((await skillCatalog(root)).skills.length,120);
@@ -88,7 +88,7 @@ test('Pi routes resource paging, binary facts and changed-reference recovery wit
   await service.importSkill({source:folder});let round=0,entry,page,reference;
   const call=(name,args)=>({content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name,arguments:JSON.stringify(args)}}]});
   service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000,maxOutputTokens:4096}]}),dispose(){},async complete(messages,definitions){
-    if(messages[0]?.content.startsWith('Summarize conversation'))return {content:JSON.stringify({goal:'등록 스킬의 자료 확인',constraints:['실행이나 파일 변경 없음'],decisions:[],completed:['스킬과 자료 목록 조회'],pending:['변경된 참조 다시 읽기'],references:['.agents/skills/writing/SKILL.md']}),calls:[]};
+    if(messages[0]?.content.startsWith('Summarize conversation'))return {content:JSON.stringify({goal:'등록 스킬의 자료 확인',constraints:['실행이나 파일 변경 없음'],decisions:[],completed:['스킬과 자료 목록 조회'],pending:['변경된 참조 다시 읽기'],references:['.nubi/skill/writing/SKILL.md']}),calls:[]};
     const last=messages.findLast(m=>m.role==='tool');
     if(round++===0){assert.ok(definitions.some(d=>d.function.name==='list_skill_resources'));return call('discover_capabilities',{query:'문서'});}
     if(round===2){entry=JSON.parse(last.content).results.find(r=>r.kind==='skill');return call('use_skill',{path:entry.path,expectedHash:entry.hash});}
@@ -96,7 +96,7 @@ test('Pi routes resource paging, binary facts and changed-reference recovery wit
     if(round===3){page=JSON.parse(last.content);return call('list_skill_resources',{...base,offset:page.resourcesNextOffset,resourcesHash:page.resourcesHash});}
     if(round===4){assert.ok(JSON.parse(last.content).resources.some(r=>r.path==='template.docx'));return call('read_skill',{...base,resource:'template.docx'});}
     if(round===5){assert.equal(JSON.parse(last.content).format,'binary');return call('read_skill',{...base,resource:'references/guide.md'});}
-    if(round===6){reference=JSON.parse(last.content);await writeFile(path.join(root,'.agents/skills/writing/references/guide.md'),'Revised guide '.repeat(4000));return call('read_skill',{...base,resource:'references/guide.md',offset:reference.nextOffset,resourceHash:reference.hash});}
+    if(round===6){reference=JSON.parse(last.content);await writeFile(path.join(root,'.nubi/skill/writing/references/guide.md'),'Revised guide '.repeat(4000));return call('read_skill',{...base,resource:'references/guide.md',offset:reference.nextOffset,resourceHash:reference.hash});}
     if(round===7){assert.match(last.content,/skill_resource_changed/);return call('read_skill',{...base,resource:'references/guide.md'});}
     assert.match(last.content,/Revised guide/);return {content:'변경된 참조 문서를 다시 확인했습니다. 문서 작성과 실행은 아직 하지 않았습니다.',calls:[]};
   }};

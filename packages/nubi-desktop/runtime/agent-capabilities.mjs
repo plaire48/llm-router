@@ -6,7 +6,7 @@ import {parseDocument} from 'yaml';
 import MiniSearch from 'minisearch';
 import {readSource, scopedFile, relativeFile, hash, fail} from './files.mjs';
 
-const ROOTS = ['.agents/skills', '.claude/skills', '.opencode/skills'];
+const ROOTS = ['.nubi/skill'];
 const NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const MAX_SKILLS = 120;
 const MAX_BYTES = 32768;
@@ -97,6 +97,7 @@ export function discoverCapabilities(catalog, {query='',offset=0} = {}, availabl
 }
 
 export async function readSkill(root, catalog, {path:rel,expectedHash,resource,resourceHash,offset=0} = {}) {
+  if(typeof rel!=='string'||!rel.startsWith('.nubi/skill/'))fail('skill_catalog_required');
   const entry = catalog.skills.find(s=>s.path===rel);
   if (!entry || entry.hash !== expectedHash) fail('skill_catalog_required');
   if (!Number.isInteger(offset) || offset < 0) fail('tool_arguments_invalid');

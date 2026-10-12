@@ -5,6 +5,7 @@ const path=require('node:path');
 const {randomUUID,createHash}=require('node:crypto');
 const {pathToFileURL}=require('node:url');
 const {ElectronHost}=require('./native-host.cjs');
+const {browseLocalDirectory,readLocalFile}=require('./local-file-view.cjs');
 const {startWebHost}=require('./web-host.cjs');
 const {BrowserHost}=require('./browser-host.cjs');
 const {importProjectZip}=require('../runtime/project-zip.mjs');
@@ -56,12 +57,12 @@ const keyStore={
  async setPassword(service,key,value){secretScope(service,key);return vault.set(key,value);},
  async deletePassword(service,key){secretScope(service,key);return vault.delete(key);}
 };
-async function openProject(root,kind='project',{initializeWiki=true}={}){
+async function openProject(root,kind='project',{initializeWiki=true,exactRoot=false}={}){
  if(openingProject)throw Error('project_busy');openingProject=true;
  try{
  // A predecessor that is still exiting (quit or crash) holds the project store for a moment; the single-instance lock
  // rules out a live second instance, so a short retry is safe.
- let overview;for(let attempt=0;;attempt++){try{overview=await invoke('open',{root,kind,initializeWiki});break;}catch(error){if(error.message!=='project_locked'||attempt>=4)throw error;await new Promise(resolve=>setTimeout(resolve,600));}}currentRoot=overview.root;currentKind=kind;
+ let overview;for(let attempt=0;;attempt++){try{overview=await invoke('open',{root,kind,initializeWiki,exactRoot});break;}catch(error){if(error.message!=='project_locked'||attempt>=4)throw error;await new Promise(resolve=>setTimeout(resolve,600));}}currentRoot=overview.root;currentKind=kind;
  try{await mkdir(storage,{recursive:true});await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root:currentRoot,kind}),{mode:0o600});await projectCatalog.remember(overview);}catch{overview.projectCatalogWarning=true;}
  return overview;
  }finally{openingProject=false;}
@@ -147,6 +148,7 @@ app.whenReady().then(async()=>{
   }
   if(method==='switchProject'){const saved=await projectCatalog.get(args.id);return await openProject(saved.root);}
   if(method==='chooseFolder'){const root=await choose(['openDirectory'],'프로젝트 폴더 열기');return root?await openProject(root):{cancelled:true};}
+  if(['browseLocalDirectory','readLocalFile'].includes(method)){const owner=await invoke('projectPath',{projectId:args.projectId});const value=await (method==='browseLocalDirectory'?browseLocalDirectory:readLocalFile)(args.path);if(currentRoot!==owner.path)throw Error('project_changed');return value;}
   if(method==='copyProjectPath'){const result=await invoke('projectPath',args);clipboard.writeText(result.path);return result;}
   if(method==='downloadMail'){
    const packet=await invoke('mail',{action:'download',id:args.id,kind:args.kind,attachmentId:args.attachmentId,expectedSourceHash:args.expectedSourceHash});
@@ -163,7 +165,7 @@ app.whenReady().then(async()=>{
    clipboard.writeText(storagePath);return {path:storagePath};
   }
   if(method==='importProject'){const file=await choose(['openFile'],'프로젝트 ZIP 업로드',[{name:'ZIP',extensions:['zip']}]);if(!file)return {cancelled:true};const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return await openProject((await importProjectZip(file,parent)).root);}
-  if(method==='cloneRepository'){const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return await openProject((await host.clone({...args,parent})).root);}
+  if(method==='cloneRepository'){const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return await openProject((await host.clone({...args,parent})).root,'project',{exactRoot:true});}
   if(method==='ghesAccount'){const state=await host.accountAction(args.operation);if(args.operation==='copy'&&state.device?.code)clipboard.writeText(state.device.code);return state;}
   if(method==='ghesRepositories')return host.listRepositories();
   if(method==='connectMarketplace')return host.connectMarketplace();
