@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 namespace OfficeX.Core {
  public sealed class OfficeStep {public string Id {get;set;} public string Target {get;set;}="document";public string Action {get;set;}="get";public string Member {get;set;} public JArray Args {get;set;}=new JArray();public JToken Value {get;set;}}
@@ -22,10 +23,11 @@ namespace OfficeX.Core {
    if(a is JArray aa&&b is JArray ba)return aa.Count==ba.Count&&aa.Zip(ba,Equivalent).All(v=>v);
    return JToken.DeepEquals(a,b);
   }
-  public OfficeExecutionReceipt Apply(string id,bool approved,CancellationToken token){if(stopped||id==null||!plans.TryGetValue(id,out var plan))throw new OfficeFault("invalid_plan");plans.Remove(id);var r=new OfficeExecutionReceipt{PlanId=id,Status="rejected"};if(!approved){stopped=true;return r;}
+  public OfficeExecutionReceipt Apply(string id,bool approved,CancellationToken token)=>ApplyAsync(id,approved,token).GetAwaiter().GetResult();
+  public async Task<OfficeExecutionReceipt> ApplyAsync(string id,bool approved,CancellationToken token){if(stopped||id==null||!plans.TryGetValue(id,out var plan))throw new OfficeFault("invalid_plan");plans.Remove(id);var r=new OfficeExecutionReceipt{PlanId=id,Status="rejected"};if(!approved){stopped=true;return r;}
    try{token.ThrowIfCancellationRequested();port.CheckSource();var live=plan.Before.Steps.Select(s=>port.Execute(s,true)).ToList();if(Wire.Hash(live)!=Wire.Hash(plan.Before.Results))throw new OfficeFault("source_changed");
-    foreach(var step in plan.Steps){token.ThrowIfCancellationRequested();if(step.Action!="get")r.Mutated=true;r.Results.Add(port.Execute(step,false));r.Count++;}
-    foreach(var check in plan.Checks){token.ThrowIfCancellationRequested();var actual=port.Execute(check.Read,true);bool matches=Equivalent(actual==null?JValue.CreateNull():JToken.FromObject(actual),check.Equals);r.Checks.Add(new{read=check.Read,actual,expected=check.Equals,passed=matches});if(!matches)throw new OfficeFault("readback_mismatch");}
+    foreach(var step in plan.Steps){await Task.Yield();token.ThrowIfCancellationRequested();if(step.Action!="get")r.Mutated=true;r.Results.Add(port.Execute(step,false));r.Count++;}
+    foreach(var check in plan.Checks){await Task.Yield();token.ThrowIfCancellationRequested();var actual=port.Execute(check.Read,true);bool matches=Equivalent(actual==null?JValue.CreateNull():JToken.FromObject(actual),check.Equals);r.Checks.Add(new{read=check.Read,actual,expected=check.Equals,passed=matches});if(!matches)throw new OfficeFault("readback_mismatch");}
     r.Status="verified";observations.Clear();plans.Clear();
    }catch(OperationCanceledException){r.Status=r.Mutated?"partial":"cancelled";r.Error="cancelled";stopped=true;}
    catch(OfficeFault e){r.Status=r.Mutated?"partial":"conflict";r.Error=e.Message;stopped=true;}

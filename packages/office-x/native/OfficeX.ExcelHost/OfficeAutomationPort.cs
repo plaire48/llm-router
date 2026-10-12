@@ -12,6 +12,7 @@ using OfficeX.Core;
 namespace OfficeX.ExcelHost {
  // Structured Office Object Model calls, never eval, C#, VBA or a shell.
  sealed class OfficeAutomationPort:IOfficeAutomationPort,IDisposable {
+  readonly int threadId=Thread.CurrentThread.ManagedThreadId;
   readonly dynamic application;readonly string app;readonly int hwnd;readonly string sourceId;
   readonly Dictionary<string,object> objects=new Dictionary<string,object>();readonly List<object> acquired=new List<object>();
   static readonly HashSet<string> ReadCalls=new HashSet<string>(new[]{"Item","Range","Cell","Characters","Paragraphs","Words","Sentences","Rows","Columns","Cells","Runs","FindBySlideID","get_Address","Address","Information","ComputeStatistics","Evaluate"},StringComparer.OrdinalIgnoreCase);
@@ -24,9 +25,14 @@ namespace OfficeX.ExcelHost {
   static void Release(object o){if(o!=null&&Marshal.IsComObject(o))Marshal.ReleaseComObject(o);}
   object Arg(JToken value){if(value==null||value.Type==JTokenType.Null)return null;if(value is JObject obj){if(obj.Count==1&&obj["ref"]?.Type==JTokenType.String&&objects.TryGetValue((string)obj["ref"],out var reference))return reference;if(obj.Count==1&&(bool?)obj["missing"]==true)return Type.Missing;throw new OfficeFault("office_argument_invalid");}if(value is JArray a){if(a.Count>0&&a.All(x=>x is JArray)){int cols=((JArray)a[0]).Count;if(a.Any(r=>((JArray)r).Count!=cols))throw new OfficeFault("office_argument_invalid");var matrix=new object[a.Count,cols];for(int r=0;r<a.Count;r++)for(int c=0;c<cols;c++)matrix[r,c]=Arg(a[r][c]);return matrix;}return a.Select(Arg).ToArray();}if(value.Type==JTokenType.Integer)return checked((int)value.Value<long>());if(value.Type==JTokenType.Float)return value.Value<double>();if(value.Type==JTokenType.Boolean)return value.Value<bool>();if(value.Type==JTokenType.String)return value.Value<string>();throw new OfficeFault("office_argument_invalid");}
   public object Execute(OfficeStep step,bool readOnly){
+   if(Thread.CurrentThread.ManagedThreadId!=threadId)throw new OfficeFault("office_thread_required");
    if(Denied.Contains(step.Member)||!System.Text.RegularExpressions.Regex.IsMatch(step.Member,@"^[A-Za-z_][A-Za-z0-9_]*$"))throw new OfficeFault("office_member_unavailable");
    if(readOnly&&(step.Action=="set"||step.Action=="call"&&(!ReadCalls.Contains(step.Member)||step.Member.Equals("Evaluate",StringComparison.OrdinalIgnoreCase))))throw new OfficeFault("office_read_requires_get");
    if(!objects.TryGetValue(step.Target??"document",out var target))throw new OfficeFault("office_target_unknown");
+   if(app=="excel"&&new[]{"Value","Value2","Formula","FormulaLocal","FormulaArray","Text"}.Contains(step.Member,StringComparer.OrdinalIgnoreCase)){
+    double size=0;try{size=Convert.ToDouble(((dynamic)target).CountLarge);}catch{}
+    if(size>20000)throw new OfficeFault("context_limit");
+   }
    var args=(step.Args??new JArray()).Select(Arg).ToList();var flags=BindingFlags.Public|BindingFlags.Instance|BindingFlags.OptionalParamBinding;
    if(step.Action=="set"){args.Add(Arg(step.Value));flags|=BindingFlags.SetProperty;}
    else flags|=step.Action=="call"?BindingFlags.InvokeMethod:BindingFlags.GetProperty;

@@ -168,7 +168,7 @@ namespace OfficeX.ExcelHost
             if(name=="execute_office_operations"){
                 var plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
                 status.Text="문서 변경안을 확인해 주세요.";
-                var approved=await AwaitReview(plan.Id,plan);var receipt=automation.Apply(plan.Id,approved,cancelToken);
+                var approved=await AwaitReview(plan.Id,plan);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified";surface.Send(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return receipt;
             }
             if(name=="create_document"){
@@ -178,7 +178,7 @@ namespace OfficeX.ExcelHost
                 if(receipt.Status=="verified"){
                     dynamic active=((dynamic)application).ActiveWindow;int newHandle=(int)active.HWND;
                     if(System.Runtime.InteropServices.Marshal.IsComObject(active))System.Runtime.InteropServices.Marshal.ReleaseComObject(active);
-                    createdDuringRun=true;automationPort.Dispose();automationPort=new OfficeAutomationPort(application,app,newHandle);automation=new OfficeAutomationSession(automationPort);
+                    createdDuringRun=true;creationPort.Dispose();creationPort=new DocumentCreationPort(application,app,newHandle);automationPort.Dispose();automationPort=new OfficeAutomationPort(application,app,newHandle);automation=new OfficeAutomationSession(automationPort);
                     fallbackContext=new{app,selectionAvailable=false,documentToolsAvailable=true};target.Text=receipt.Document;
                 }
                 surface.Send(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"새 문서를 만들고 내용을 확인했습니다. 저장 전입니다.":"생성 결과: "+receipt.Status;return receipt;

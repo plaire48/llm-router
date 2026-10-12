@@ -25,7 +25,7 @@ import './office.css';
 import {officeApps} from './office-apps.js';
 import {useGreeting} from './useGreeting.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
-const toolNames={read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
+const toolNames={inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
 function App(){
   const greeting=useGreeting();
   const [host,setHost]=useState('excel');
@@ -34,7 +34,7 @@ function App(){
   const [version,setVersion]=useState('0.5.0');
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
-  const [target,setTarget]=useState('작업할 부분을 선택하세요'),[status,setStatus]=useState(''),[review,setReview]=useState(null),[loading,setLoading]=useState(false);
+  const [target,setTarget]=useState('현재 문서에서 작업합니다'),[status,setStatus]=useState(''),[review,setReview]=useState(null),[loading,setLoading]=useState(false);
   const composerInput=useRef(null),[controlBusy,setControlBusy]=useState(false);
   useLayoutEffect(()=>{const field=composerInput.current;if(!field)return;field.style.height='auto';field.style.height=Math.min(180,field.scrollHeight)+'px';},[draft,provider.connected]);
   const active=conversations[index],current=useRef(active.id),run=useRef(null),started=useRef(0);current.current=active.id;
@@ -46,7 +46,7 @@ function App(){
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);if(m.operation==='ready')setLost(true);if(!m.id&&!run.current){setBusy(false);updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
-      if(m.type==='view'){setTarget(m.target||'작업할 부분을 선택하세요');setStatus(m.status);setBusy(m.running);return;}
+      if(m.type==='view'){setTarget(m.target||'현재 문서에서 작업합니다');setStatus(m.status);setBusy(m.running);return;}
       if(m.type==='started'){run.current=m.runId;updateReply({target:m.target});return;}
       if(m.type==='review_closed'){setReview(null);return;}
       if(m.runId!==run.current)return;
