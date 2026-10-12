@@ -1528,8 +1528,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "09276b5c5b7e58f5efa8505e0a5501ddf0d4abd6e936f7a72e888f9e3debc9d0",
-      "bytes": 3777
+      "sha256": "a40637157a788b49eef55760950f10c5e503672c4c9d75a46f0c478ac2f1765d",
+      "bytes": 4182
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",

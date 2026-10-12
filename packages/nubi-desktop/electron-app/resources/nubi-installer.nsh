@@ -12,6 +12,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH FitControl
 
 !macro customHeader
+  BrandingText "누비 Workspace Beta"
   ShowInstDetails hide
   ShowUninstDetails hide
   SetFont "맑은 고딕" 10
@@ -26,6 +27,9 @@
   Var NubiExtractTotal
   Var NubiExtractPercent
   Var NubiExtractCallback
+  Var NubiLastTitle
+  Var NubiLastDescription
+  Var NubiLastPercent
   Function NubiTick
     Push $0
     Push $1
@@ -55,7 +59,12 @@
     ${ElseIf} $NubiPhase == "설치 완료"
       StrCpy $4 "경과 $NubiElapsed초"
     ${EndIf}
-    !insertmacro MUI_HEADER_TEXT "$NubiPhase" "$4"
+    ${If} $NubiLastTitle != $NubiPhase
+    ${OrIf} $NubiLastDescription != $4
+      !insertmacro MUI_HEADER_TEXT "$NubiPhase" "$4"
+      StrCpy $NubiLastTitle $NubiPhase
+      StrCpy $NubiLastDescription $4
+    ${EndIf}
     Pop $5
     Pop $4
     Pop $3
@@ -75,11 +84,14 @@
       Pop $0
       System::Int64Op $0 / $NubiExtractTotal
       Pop $NubiExtractPercent
-      IntOp $0 $NubiExtracted / 1048576
-      IntOp $1 $NubiExtractTotal / 1048576
-      SetDetailsPrint textonly
-      DetailPrint "파일 풀기 $NubiExtractPercent% ($0 / $1 MB)"
-      SetDetailsPrint both
+      ${If} $NubiLastPercent != $NubiExtractPercent
+        IntOp $0 $NubiExtracted / 1048576
+        IntOp $1 $NubiExtractTotal / 1048576
+        SetDetailsPrint textonly
+        DetailPrint "파일 풀기 $NubiExtractPercent% ($0 / $1 MB)"
+        SetDetailsPrint both
+        StrCpy $NubiLastPercent $NubiExtractPercent
+      ${EndIf}
       Call NubiTick
     ${EndIf}
     Pop $1
