@@ -6,6 +6,8 @@ using OfficeX.Core;
 using Newtonsoft.Json.Linq;
 
 var tests=new (string,Action)[] {
+    ("automatic shape resize preserves other text block checks",()=>{var(p,s,plan)=BatchSetup();p.AutoResize=true;Equal("verified",s.Apply(plan.Id,true,default).Status);}),
+    ("shape geometry drift before approval blocks replacement",()=>{var(p,s,plan)=BatchSetup();p.Data.Blocks[0].SourceLayoutHash="user resized";Equal("conflict",s.Apply(plan.Id,true,default).Status);Equal(0,p.Writes);}),
     ("Office operations continue after verified edits",()=>{var p=new FakeAutomationPort();var s=new OfficeAutomationSession(p);for(int i=1;i<=2;i++){var read=s.Inspect(OfficeReads());var plan=s.Prepare(read.SnapshotId,"본문 변경",OfficeWrites("new "+i),OfficeChecks("new "+i));Equal("verified",s.Apply(plan.Id,true,default).Status);}Equal(2,p.Writes);}),
     ("Office operations detect source drift before mutation",()=>{var p=new FakeAutomationPort();var s=new OfficeAutomationSession(p);var r=s.Inspect(OfficeReads());var plan=s.Prepare(r.SnapshotId,"교정",OfficeWrites("new"),OfficeChecks("new"));p.Text="user edit";Equal("conflict",s.Apply(plan.Id,true,default).Status);Equal(0,p.Writes);}),
     ("Office operations cannot replay rejected writes",()=>{var p=new FakeAutomationPort();var s=new OfficeAutomationSession(p);var r=s.Inspect(OfficeReads());var plan=s.Prepare(r.SnapshotId,"교정",OfficeWrites("new"),OfficeChecks("new"));Equal("rejected",s.Apply(plan.Id,false,default).Status);Fault("invalid_plan",()=>s.Apply(plan.Id,true,default));Equal(0,p.Writes);}),
@@ -116,11 +118,11 @@ sealed class FakeTextPort:ITextPort {
 
 sealed class FakeBatchPort:ITextPort,ITextBatchPort {
  public TextSnapshot Data=new TextSnapshot{App="word",DocumentId="doc",TargetId="selection",Text="one\ntwo\nuntouched",FormatHash="plain",SurroundingHash="outside",Blocks=new List<TextBlock>{new TextBlock{Id="p1",Text="one",FormatHash="a",Editable=true},new TextBlock{Id="p2",Text="two",FormatHash="b",Editable=true},new TextBlock{Id="p3",Text="untouched",FormatHash="c",Editable=true}}};
- public int Writes;public bool ChangeOther,FailSecond;
+ public int Writes;public bool ChangeOther,FailSecond,AutoResize;
  public TextSnapshot Capture()=>Wire.Clone(Data);
  public TextSnapshot Read(TextSnapshot binding){Data.Text=string.Join("\n",Data.Blocks.Select(b=>b.Text));return Wire.Clone(Data);}
  public void Replace(TextSnapshot binding,string text)=>throw new Exception("single write unsupported in fixture");
- public void ReplaceBlocks(TextSnapshot binding,IReadOnlyList<TextOperation> operations){foreach(var op in operations){Writes++;if(FailSecond&&Writes==2)throw new Exception("COM failure");Data.Blocks.Single(b=>b.Id==op.BlockId).Text=op.Text;}if(ChangeOther)Data.Blocks[2].Text="unexpected";}
+ public void ReplaceBlocks(TextSnapshot binding,IReadOnlyList<TextOperation> operations){foreach(var op in operations){Writes++;if(FailSecond&&Writes==2)throw new Exception("COM failure");Data.Blocks.Single(b=>b.Id==op.BlockId).Text=op.Text;}if(ChangeOther)Data.Blocks[2].Text="unexpected";if(AutoResize)foreach(var block in Data.Blocks)block.SourceLayoutHash="Office AutoSize adjusted height";}
  public object ReadOutline()=>new {readOnly=true};
 }
 

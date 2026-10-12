@@ -7,7 +7,7 @@
     "nubiHashes": 88,
     "unitTestsPassed": 45,
     "unitTestsSkipped": 4,
-    "nativeCoreTests": 64,
+    "nativeCoreTests": 66,
     "stdioMockIntegration": "passed",
     "net472HostCrossCompile": "passed",
     "creationOperationBrowserFlows": 6,

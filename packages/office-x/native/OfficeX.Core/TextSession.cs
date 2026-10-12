@@ -3,7 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 namespace OfficeX.Core {
- public sealed class TextBlock {public string Id {get;set;} public string Label {get;set;} public string Text {get;set;} public string FormatHash {get;set;} public bool Editable {get;set;} public string EditReason {get;set;} public string StructureHash {get;set;}}
+ public sealed class TextBlock {public string Id {get;set;} public string Label {get;set;} public string Text {get;set;} public string FormatHash {get;set;} public bool Editable {get;set;} public string EditReason {get;set;} public string StructureHash {get;set;} public string SourceLayoutHash {get;set;}}
  public sealed class TextOperation {public string BlockId {get;set;} public string Text {get;set;}}
  public interface ITextBatchPort {void ReplaceBlocks(TextSnapshot binding,IReadOnlyList<TextOperation> operations);object ReadOutline();}
  public sealed class TextSnapshot {
