@@ -15,11 +15,12 @@ await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root}));
 const env={...process.env,NUBI_STORAGE_ROOT:storage,ELECTRON_RUN_AS_NODE:undefined};
 const launch=()=>electron.launch({executablePath:require('electron'),args:['electron-app'],env});
 const result={};
-// 0. The startup prompt: not on a fresh store; with automatic summaries on and no account it opens (user decision 2026-10-05).
+// Startup connection guidance is shown for disconnected mail on every launch.
+async function dismissStartup(page){await page.locator('.desktop-shell[data-startup-ready="true"]').waitFor({timeout:60000});if(await page.getByText('메일을 연결해 주세요').count())await page.keyboard.press('Escape');}
 {
   const first=await launch();
   try{const page=await first.firstWindow();await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor({timeout:30000});await new Promise(resolve=>setTimeout(resolve,1500));
-    result.promptOnFreshStore=await page.getByText('메일을 연결해 주세요').count();assert.equal(result.promptOnFreshStore,0,'no prompt on a fresh store');}
+    result.promptOnFreshStore=await page.getByText('메일을 연결해 주세요').count();assert.equal(result.promptOnFreshStore,1,'disconnected mail has startup guidance');await page.keyboard.press('Escape');}
   finally{await first.close();}
   const {DatabaseSync}=await import('node:sqlite');await mkdir(path.join(storage,'personal-mail'),{recursive:true});
   const db=new DatabaseSync(path.join(storage,'personal-mail','workspace.db'));
@@ -32,8 +33,10 @@ const app=await launch();
 try{
   const page=await app.firstWindow();page.setDefaultTimeout(15000);
   await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor({timeout:30000});
+  await dismissStartup(page);
   // The renderer opens the last project itself; openCurrent returns that project once it is open.
-  const overview=await page.evaluate(()=>window.nubi.request('openCurrent',{}));assert.equal(overview?.root,root,JSON.stringify(overview));
+  await page.waitForFunction(()=>document.querySelector('button[aria-label="파일"]')?.disabled===false,null,{timeout:60000});
+  const overview=await page.evaluate(()=>window.nubi.request('overview',{}));assert.equal(overview?.root,root,JSON.stringify(overview));
   // 1. The worker is killed: a child of the Electron process this check started.
   const mainPid=app.process().pid;
   const children=execFileSync('pgrep',['-P',String(mainPid)]).toString().trim().split('\n').filter(Boolean);
@@ -71,7 +74,7 @@ try{
 {
   await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root:path.join(temporary,'gone-project')}));
   const app=await launch();
-  try{const page=await app.firstWindow();await page.getByRole('button',{name:'AI Pro',exact:true}).waitFor({timeout:30000});/* without a model the start screen is the provider chooser */result.missingProjectStartScreen=true;
+  try{const page=await app.firstWindow();await dismissStartup(page);await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor();await page.screenshot({path:'verification/lifecycle-missing-project.png'});await writeFile('verification/lifecycle-missing-project.txt',await page.locator('body').innerText());assert.equal(await page.getByRole('button',{name:'파일',exact:true}).isDisabled(),true,'missing project leaves file tools disabled');/* without a model the start screen is the provider chooser */result.missingProjectStartScreen=true;
     await new Promise(resolve=>setTimeout(resolve,500));result.stalePointerCleared=await readFile(path.join(storage,'last-project.json'),'utf8').then(()=>false,()=>true);assert.equal(result.stalePointerCleared,true,'the stale pointer is removed');}
   finally{await app.close();}
 }

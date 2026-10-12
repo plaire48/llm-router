@@ -1,4 +1,4 @@
-import {build} from 'esbuild';
+import {build,stop as stopBuildService} from 'esbuild';
 import {assertDesktopDialog} from './identity-browser.mjs';
 import {mkdir,writeFile,readFile,cp} from 'node:fs/promises';
 import {createServer} from 'node:http';
@@ -487,4 +487,4 @@ try{
  }
  checks.push('queued input, pending admission and consumed message keep metadata in normal flow at 1280, 620 and 440px');
  await writeFile('verification/shared-ui-result.json',JSON.stringify({scope:'synthetic UI provider states; not live authentication or model inference',checks,errors},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
-}catch(error){await p?.screenshot({path:'verification/shared-ui-failure.png'});await writeFile('verification/shared-ui-failure.html',await p.content());throw error;}finally{await browser?.close();server.close();}
+}catch(error){await p?.screenshot({path:'verification/shared-ui-failure.png'});await writeFile('verification/shared-ui-failure.html',await p.content());throw error;}finally{server.closeAllConnections();await browser?.close();await new Promise(r=>server.close(r));stopBuildService();}

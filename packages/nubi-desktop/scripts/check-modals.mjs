@@ -1,4 +1,4 @@
-import {build} from 'esbuild';
+import {build,stop as stopBuildService} from 'esbuild';
 import {assertDesktopDialog,desktopDialogScale} from './identity-browser.mjs';
 import {mkdir,writeFile,readFile,cp} from 'node:fs/promises';
 import {createServer} from 'node:http';
@@ -187,4 +187,4 @@ try{
  }
  assert.deepEqual(errors,[]);await writeFile(path.join(dir,'result.json'),JSON.stringify({checks,errors,scope:'actual Electron Workbench style and layout with synthetic data in Chrome; native pickers and real accounts are separate'},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:path.join(dir,'failure.png')}).catch(()=>{});await writeFile(path.join(dir,'failure.txt'),error.stack+'\n--- page errors ---\n'+JSON.stringify(errors,null,1)+'\n--- body ---\n'+await p?.locator('body').innerText()+'\n--- aria ---\n'+await p?.locator('body').ariaSnapshot());throw error;}
-finally{await browser?.close();server.closeAllConnections();await new Promise(r=>server.close(r));}
+finally{server.closeAllConnections();await browser?.close();await new Promise(r=>server.close(r));stopBuildService();}
