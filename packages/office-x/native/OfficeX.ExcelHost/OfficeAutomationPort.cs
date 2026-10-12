@@ -15,7 +15,7 @@ namespace OfficeX.ExcelHost {
   readonly int threadId=Thread.CurrentThread.ManagedThreadId;
   readonly dynamic application;readonly string app;readonly int hwnd;readonly string sourceId;
   readonly Dictionary<string,object> objects=new Dictionary<string,object>();readonly List<object> acquired=new List<object>();
-  static readonly HashSet<string> ReadCalls=new HashSet<string>(new[]{"Item","Range","Cell","Characters","Paragraphs","Words","Sentences","Rows","Columns","Cells","Runs","FindBySlideID","get_Address","Address","Information","ComputeStatistics","Evaluate"},StringComparer.OrdinalIgnoreCase);
+  static readonly HashSet<string> ReadCalls=new HashSet<string>(new[]{"Item","Range","Cell","Characters","Paragraphs","Words","Sentences","Rows","Columns","Cells","Runs","FindBySlideID","get_Address","Address","Information","ComputeStatistics","PivotCaches","PivotTables","ChartObjects","SeriesCollection","Axes","SpecialCells","Find","Offset","Resize"},StringComparer.OrdinalIgnoreCase);
   // Office object model capability boundary: no macro execution, add-in loading, shell/DDE or parent/application escape.
   static readonly HashSet<string> Denied=new HashSet<string>(new[]{"GetType","Evaluate","Application","Parent","VBProject","VBE","Run","RunAutoMacros","ExecuteExcel4Macro","DDEInitiate","DDEExecute","DDEPoke","DDERequest","OnTime","OnKey","OnAction","OLEObjects","OLEFormat","AddOLEObject","AddOLEControl","AddFromFile","Open","FollowHyperlink","ExportAsFixedFormat","Save","SaveAs","SaveAs2","SaveCopyAs","Close","Quit"},StringComparer.OrdinalIgnoreCase);
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
@@ -35,7 +35,7 @@ namespace OfficeX.ExcelHost {
    }
    var args=(step.Args??new JArray()).Select(Arg).ToList();var flags=BindingFlags.Public|BindingFlags.Instance|BindingFlags.OptionalParamBinding;
    if(step.Action=="set"){args.Add(Arg(step.Value));flags|=BindingFlags.SetProperty;}
-   else flags|=step.Action=="call"?BindingFlags.InvokeMethod:BindingFlags.GetProperty;
+   else flags|=step.Action=="call"?BindingFlags.InvokeMethod:BindingFlags.GetProperty|(ReadCalls.Contains(step.Member)?BindingFlags.InvokeMethod:0);
    object result;
    try{result=target.GetType().InvokeMember(step.Member,flags,null,target,args.ToArray(),System.Globalization.CultureInfo.InvariantCulture);}
    catch(TargetInvocationException e){throw new OfficeFault("office_operation_failed: "+step.Member+": "+(e.InnerException?.Message??e.Message));}
