@@ -5,7 +5,7 @@ import {PersonMark,FolderMark,CompanyMark} from './marks.jsx';
 import {AgentMark} from '../../../extensions/aipro-chat/src/AgentMark.jsx';
 import './ghes-account.css';
 
-import {ghesMessages} from './ghes-account-state.mjs';
+import {ghesMessages,ghesDiagnosticLabel} from './ghes-account-state.mjs';
 const updateLabel={unchecked:'최신 버전 확인',current:'최신 버전',update_available:'업데이트 설치',installing:'설치 중',restart_required:'누비 다시 시작',installed_verified:'설치 확인됨',attention:'다시 확인'};
 const failureText=code=>ghesMessages[code]||'회사 계정을 확인하지 못했어요. 다시 시도해 주세요.';
 function Avatar({profile}){const [failed,setFailed]=useState(false);useEffect(()=>setFailed(false),[profile?.avatar]);
@@ -47,12 +47,14 @@ export function GhesAccount({account,updates,repositories,open,onOpen,onClose,on
   },[loginRequest,busy]);
   async function nativeOperation(fn){if(busy)return;setBusy(true);setError('');try{await fn();}catch(e){if(mounted.current)setError(e.message);}finally{if(mounted.current)setBusy(false);}}
   const label=state.connected?state.profile?.name||state.profile?.login:'회사 계정';
+  const diagnostic=!error&&state.error?ghesDiagnosticLabel(state.diagnostic):'';
   const updateOperation=update.state==='update_available'?'install':update.state==='restart_required'?'restart':'check';
   return <div className="nubi-account-control">
     <CxButton ref={buttonRef} className="nubi-account-button" aria-label={state.connected?`${label} 계정 메뉴`:'회사 계정 메뉴'} title={state.connected?`${label} (@${state.profile.login})`:'회사 계정 연결'} aria-haspopup="dialog" aria-expanded={open} onClick={onOpen}><Avatar profile={state.profile}/><span>회사 계정</span></CxButton>
     {open&&<DetailPanel className="deck-dialog nubi-panel nubi-ghes-modal" title={<span className="nubi-panel-title"><span className="nubi-panel-title-icon" aria-hidden="true"><PersonMark size={18}/></span><span>회사 계정</span></span>} variant="modal" onClose={onClose}>
       {state.connected?<div className="nubi-account-profile"><Avatar profile={state.profile}/><div><h3>{label}</h3><p>@{state.profile.login}</p></div></div>:<header className="nubi-account-login-heading"><AgentMark size={48} mood="idle" lively/><div><h3>AI Workspace</h3>{state.state!=='connecting'&&<p>팀 스킬과 저장소를 연결하세요.</p>}</div></header>}
       {(error||state.error)&&<CxNotice tone="danger">{failureText(error||state.error)}</CxNotice>}
+      {diagnostic&&<p className="nubi-account-diagnostic"><Icon name="infoCircle" size={16}/><span>{diagnostic}</span></p>}
       {state.state==='connecting'?<div className="nubi-account-device" role="status">
         <p>브라우저에서 회사 SSO로 로그인한 뒤 코드를 입력해 주세요.</p>
         {state.device?<><div className="nubi-account-code"><strong>{state.device.code}</strong><ActionButton action="copy" label="로그인 코드 복사" title="로그인 코드 복사" disabled={busy} onClick={()=>action('copy')}/></div><CxButton disabled={busy} onClick={()=>action('browser')}><Icon name="linkExternal" size={16}/>로그인 페이지 열기</CxButton></>:<p>로그인 페이지를 준비하고 있어요.</p>}

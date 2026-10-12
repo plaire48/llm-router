@@ -1,5 +1,5 @@
 const ORIGIN='https://code.sdsdev.co.kr';
-const CLIENT_ID='lv1.8526278f12b92180';
+const CLIENT_ID='Iv1.8526278f12b92180';
 const SECRET_KEY='nubi.ghes.code.sdsdev.co.kr';
 const error=code=>{throw Error(code);};
 const active=signal=>{if(signal?.aborted)error('ghes_cancelled');};
@@ -11,12 +11,23 @@ async function bounded(response,limit){
   try{for await(const chunk of response.body){size+=chunk.length;if(size>limit)error('ghes_response_limit');chunks.push(Buffer.from(chunk));}}catch(e){if(e.message.startsWith('ghes_'))throw e;error('ghes_network');}
   return Buffer.concat(chunks);
 }
-function httpError(response){
+function requestStage(route){
+  if(route==='/login/device/code')return 'device_code';
+  if(route==='/login/oauth/access_token')return 'authorization';
+  if(route==='/api/v3/user')return 'identity';
+  if(route.startsWith('/api/v3/repos/')||route.startsWith('/api/v3/user/installations'))return 'repositories';
+  return 'request';
+}
+const loginErrors={incorrect_client_credentials:'ghes_app_configuration',device_flow_disabled:'ghes_device_disabled',access_denied:'ghes_access_denied',expired_token:'ghes_device_expired',bad_verification_code:'ghes_device_expired'};
+function httpError(response,route=''){
   if(response.status===401)error('ghes_session_expired');
   if(response.status===403&&response.headers.get('x-github-sso'))error('ghes_sso_required');
   if(response.status===429||response.status===403&&response.headers.get('x-ratelimit-remaining')==='0')error('ghes_rate_limited');
   if(response.status===403)error('ghes_permission');
-  if(response.status===404)error('ghes_repository_missing');
+  if(response.status===404){
+    const stage=requestStage(route);
+    error(['device_code','authorization'].includes(stage)?'ghes_login_endpoint_unavailable':stage==='identity'?'ghes_identity_unavailable':stage==='repositories'?'ghes_repository_missing':'ghes_resource_missing');
+  }
   if(!response.ok)error('ghes_network');
 }
 function wait(ms,signal){return new Promise((resolve,reject)=>{
@@ -34,7 +45,7 @@ class GhesAccount {
     this.state='guest';this.generation=0;this.loaded=false;this.writes=Promise.resolve();this.accessController=new AbortController();
     this.copyCode=copyCode;
   }
-  view(){return {host:ORIGIN,state:this.state,connected:this.state==='connected',profile:this.profile||null,device:this.device||null,error:this.failure||null};}
+  view(){return {host:ORIGIN,state:this.state,connected:this.state==='connected',profile:this.profile||null,device:this.device||null,error:this.failure||null,diagnostic:this.failureDiagnostic||null};}
   write(fn){const next=this.writes.then(fn,fn);this.writes=next.catch(()=>{});return next;}
   async request(route,{token,signal,body,limit=1024*1024,accept='application/vnd.github+json',allowRedirect=false}={}){
     let url=safeUrl(ORIGIN+route);if(!url||!route.startsWith('/')||route.startsWith('//'))error('ghes_url_invalid');
@@ -49,7 +60,23 @@ class GhesAccount {
       await response.body?.cancel();
       if(!allowRedirect||body||!next||redirects>=2)error('ghes_redirect_refused');url=next;
     }
-    active(signal);httpError(response);const bytes=await bounded(response,limit);active(signal);
+    active(signal);
+    // Login endpoints may return OAuth errors with HTTP 400. Read only a fixed
+    // error code; never expose the server body, callback values or credentials.
+    const stage=requestStage(route),loginRequest=['device_code','authorization'].includes(stage);
+    let bytes,data;
+    try{
+      if(loginRequest){
+        bytes=await bounded(response,limit);active(signal);
+        try{data=JSON.parse(bytes.toString('utf8'));}catch{}
+        const code=typeof data?.error==='string'&&Object.hasOwn(loginErrors,data.error)?loginErrors[data.error]:null;
+        if(code)error(code);
+      }
+      httpError(response,route);
+    }catch(e){
+      e.diagnostic={stage,status:response.status};throw e;
+    }
+    bytes??=await bounded(response,limit);active(signal);
     if(accept==='application/octet-stream')return bytes;
     try{return JSON.parse(bytes.toString('utf8'));}catch{error('ghes_response_invalid');}
   }
@@ -73,7 +100,7 @@ class GhesAccount {
     }catch{return null;}
   }
   async invalidate(code='ghes_session_expired'){
-    ++this.generation;this.controller?.abort();this.accessController.abort();this.record=null;this.profile=null;this.device=null;this.failure=code;this.state='guest';
+    ++this.generation;this.controller?.abort();this.accessController.abort();this.record=null;this.profile=null;this.device=null;this.failure=code;this.failureDiagnostic=null;this.state='guest';
     await this.write(()=>this.secrets.delete(SECRET_KEY));await this.onInvalidated();
   }
   async restore(){
@@ -84,11 +111,11 @@ class GhesAccount {
       const record=JSON.parse(stored);
       if(record.host!==ORIGIN||record.clientId!==this.clientId||!validToken(record.token)||record.expiresAt&&(!Number.isFinite(record.expiresAt)||record.expiresAt<=this.now()))error('ghes_session_expired');
       const profile=await this.identity(record);if(generation!==this.generation)return;
-      this.accessController=new AbortController();this.record=record;this.profile=profile;this.state='connected';
+      this.accessController=new AbortController();this.record=record;this.profile=profile;this.state='connected';this.failure=null;this.failureDiagnostic=null;
     }catch(e){
       if(generation!==this.generation)return;
       if(e.message==='ghes_session_expired'){await this.invalidate();return;}
-      this.state='attention';this.failure=e.message.startsWith('ghes_')?e.message:'ghes_storage';
+      this.state='attention';this.failure=e.message.startsWith('ghes_')?e.message:'ghes_storage';this.failureDiagnostic=e.diagnostic||null;
     }
   }
   async status(){this.restoring??=this.restore().finally(()=>{this.restoring=null;});await this.restoring;
@@ -101,7 +128,7 @@ class GhesAccount {
     const generation=++this.generation,controller=this.controller=new AbortController();this.state='connecting';this.failure=null;
     this.authorization=this.authorize(generation,controller.signal).catch(async e=>{
       if(generation!==this.generation)return;
-      this.device=null;this.state='guest';this.failure=e.message.startsWith('ghes_')?e.message:'ghes_login_failed';
+      this.device=null;this.state='guest';this.failure=e.message.startsWith('ghes_')?e.message:'ghes_login_failed';this.failureDiagnostic=e.diagnostic||null;
     });
     return this.view();
   }

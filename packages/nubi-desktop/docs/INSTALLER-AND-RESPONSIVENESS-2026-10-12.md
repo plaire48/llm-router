@@ -23,3 +23,11 @@ Official references: [Electron ASAR](https://www.electronjs.org/docs/latest/tuto
 Local synthetic UI checks cover slow/failing catalog refresh, selection preservation, slow chat admission with usable navigation, company-only mail, narrow confirmation and Wiki progress. Plan/connection tests cover fenced JSON without bypassing validation and SID ACL failure ordering. Real corporate POP3 authentication is not verified from this Mac. The reported Windows authentication denial cannot be attributed to the ACL or trust fixes without the failing PC's sanitized diagnostic or a retry there.
 
 Final Windows package timings and visible captures are stored in windows-installer.json, windows-package.json and windows-installer-experience.json, with native app reports kept separately. A source change or macOS pass is not installed-Windows evidence.
+
+## 회사 SSO 로그인 오류
+
+사용자는 Windows 설치판에서 사내 SSO 버튼을 누르자마자 저장소 접근 오류가 발생한다고 확인했다. 공유 GHES 구현은 모든 HTTP 404를 저장소 오류로 매핑했고, 로그인 시작은 `/login/device/code`를 호출하므로 이 단계에는 저장소 조회가 없다. 또한 기존 기본 Client ID `lv1.8526278f12b92180`의 첫 글자가 사용자 확인 값 `Iv1.8526278f12b92180`과 달랐다. 사용자 확인 값으로 소스/설정/문서를 고쳤다.
+
+로그인 경로 404, 계정 확인 404, 저장소 404를 구분하고 OAuth JSON 오류의 `incorrect_client_credentials`와 `device_flow_disabled`를 HTTP 400에서도 분류한다. 화면에는 고정된 단계 이름과 상태 코드만 전달한다. 로그인 성공 뒤 저장소 접근 실패는 연결된 계정을 해제하지 않는다. 서버 본문, 토큰, 브라우저 응답 원문은 표시하지 않는다. 새 의존성 없이 기존 Device Flow를 유지했다.
+
+25개 GHES 계정/호스트 회귀 검사가 통과했다. Client ID의 대문자 I를 리터럴로 고정하는 검사와 단계별 404/설정 오류/재연결 복구를 포함한다. 현재 개발 환경에서 회사 서버 DNS가 해석되지 않아 실제 회사 SSO 성공은 미검증이다. 관리자 Device Flow 설정은 [GitHub GHES 공식 문서](https://docs.github.com/en/enterprise-server%403.18/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app)를 기준으로 하며 아직 실제 활성화 여부를 확인하지 못했다.

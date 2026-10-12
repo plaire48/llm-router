@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "7146901d7599039d44f8feb36598b7f677dff76302946c5f3ce7c0bdd1283d3f",
-      "bytes": 5369
+      "sha256": "fcc3866a410aacc13283cdd63a70cd9063a2567bf19b22f4aad9b253575923ba",
+      "bytes": 5492
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1383,8 +1383,8 @@
     },
     {
       "path": "packages/nubi-desktop/AGENTS.md",
-      "sha256": "1b3d602f802f547ddd5eb83cf8ad89de37fd18a5cf0bbd0957040e44f1ef0930",
-      "bytes": 83715
+      "sha256": "ce31cc5ee87c6c5e36b75e06b983f807c0b3009cd1d69adfb11f4432df4f18b7",
+      "bytes": 84073
     },
     {
       "path": "packages/nubi-desktop/THIRD-PARTY-NOTICES.md",
@@ -1423,8 +1423,8 @@
     },
     {
       "path": "packages/nubi-desktop/docs/INSTALLER-AND-RESPONSIVENESS-2026-10-12.md",
-      "sha256": "bf4258ee7de63ad538392ba789873947fda046271d850d0fdc0328b2ead502db",
-      "bytes": 5658
+      "sha256": "7bee47d9b8600921a5c2f56f7994473c44246ea6ce7015a820907c99ddab794f",
+      "bytes": 7275
     },
     {
       "path": "packages/nubi-desktop/electron-app/BrowserPane.jsx",
@@ -1473,8 +1473,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/electron-builder.yml",
-      "sha256": "cc835ae5d5dc640a04b2651098f0937ad76c4480c1a62f51aea6fa9a64d10462",
-      "bytes": 1024
+      "sha256": "bc414c29a01b1ea5b900f8b404344272dd777b0b4918c90b6aae13e04a11a772",
+      "bytes": 1195
     },
     {
       "path": "packages/nubi-desktop/electron-app/esbuild.mjs",
@@ -1528,8 +1528,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "9ab25d6ee81c09bb628d3f67a2b411009fc03e55d35d33aba8f4b218d9721dad",
-      "bytes": 2063
+      "sha256": "f54ec295ad4a066851dd05cc649660d58a2c8783d9c04eaa2f753493c76bceb2",
+      "bytes": 3249
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/InstallerWindow.cs",
-      "sha256": "d2b1d29dc646077b4e87a55bdef4e0a075bf0830843be3b91e4e915b705af8d3",
-      "bytes": 2432
+      "sha256": "cfc9dd9379bf3b539049da0cc346b30dcc7e7d043c53fe29ea4ef8d786b1c846",
+      "bytes": 2592
     },
     {
       "path": "packages/nubi-desktop/scripts/Read-ShellLink.cs",
@@ -2078,8 +2078,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
-      "sha256": "9b98bd5366ce34f7cde3260534ddc63eb7859f457f9e45ed6e9d7be0a3cc87b5",
-      "bytes": 2991
+      "sha256": "21ffda7b027dac8cb8226a2139d975c15a46b50becc41e6057d28bd1b6fbdacf",
+      "bytes": 3439
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
@@ -2168,8 +2168,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-modals.mjs",
-      "sha256": "4cbd0a4e4e376008d0f971b8c2a8bbfcde2acf24ba3f8cd56c43c5f58358372c",
-      "bytes": 20548
+      "sha256": "581166aec64cc74fd08172bab1e855a87a8e4bc373eb68995090789e646a3f6d",
+      "bytes": 21543
     },
     {
       "path": "packages/nubi-desktop/scripts/check-shared-ui.mjs",
@@ -2218,13 +2218,18 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/package-windows.mjs",
-      "sha256": "df2fc9cecead72eb65eada254ad55e1ebfd2fbba771a2de69ce839e9944ee7a4",
-      "bytes": 1009
+      "sha256": "7971e90a2eb41b976f36d94b09fd2fffb3c7b7ccf634d75c28bf7adebede92d4",
+      "bytes": 1078
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-app-icon.mjs",
       "sha256": "1b063b36947af56039302ac8728f5f4636245028a1f599bfce27b3fc3f8d7092",
       "bytes": 743
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/prepare-installer-brand.mjs",
+      "sha256": "04beddbdd91cd6faf657d38b40d16b448c9ae80100e849576db1ab0303dd5e99",
+      "bytes": 3092
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-installer-ui.mjs",
@@ -2803,8 +2808,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/shared-ui-fixture.jsx",
-      "sha256": "e2808b977b459bcff9f7c45df2875d9e70c4fc7fd8457760197d4d13027a6349",
-      "bytes": 28292
+      "sha256": "a9bfee92c27de4c1f5be0ccee44b8eedfaa640ef7334bee8da62706e7a132d8a",
+      "bytes": 28485
     },
     {
       "path": "packages/nubi-desktop/tests/shell-encoding.test.mjs",
@@ -3023,8 +3028,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/GhesAccount.jsx",
-      "sha256": "0778a6cb06e660c573f41c99070af54b913e736bfe3a9dbf658eaa385aca401f",
-      "bytes": 8636
+      "sha256": "2db48a4b7e192b91ce265e339dfab151b7e80c2c5fb43acd1fe88a21c8618458",
+      "bytes": 8861
     },
     {
       "path": "packages/nubi-desktop/ui/KnowledgeMap.jsx",
@@ -3293,13 +3298,13 @@
     },
     {
       "path": "packages/nubi-desktop/ui/ghes-account-state.mjs",
-      "sha256": "634dd482230e7e7f7b97f4b55bf23f3af0dd4712c6b4e9f04931d73599e633f5",
-      "bytes": 2466
+      "sha256": "55c4f62df74075fc1929263790d852ce2c4b1b29d969140d015eaeedd5e5654e",
+      "bytes": 3375
     },
     {
       "path": "packages/nubi-desktop/ui/ghes-account.css",
-      "sha256": "9512d25760826c90fdbb5580d8fad9d550824710d501428690c704c0f6966b7c",
-      "bytes": 7080
+      "sha256": "4333a545804a08550aac3a0676ea9bc464117a606e7894aabe63708dfd59b625",
+      "bytes": 7299
     },
     {
       "path": "packages/nubi-desktop/ui/mail-search-draft.mjs",
@@ -3977,14 +3982,29 @@
       "bytes": 5728
     },
     {
+      "path": "packages/nubi-vscode/docs/GHES-ACCOUNT-AND-UPDATES.md",
+      "sha256": "1dfeaab61526e7b8995b07df2c89699ab8292336a10a9d8d0513780d9b2e0e6a",
+      "bytes": 7346
+    },
+    {
+      "path": "packages/nubi-vscode/package.json",
+      "sha256": "d4c7b8121de32e3567874c0d02f10cf589fdd55d051c7abcf300740fc6f0a1b9",
+      "bytes": 4419
+    },
+    {
       "path": "packages/nubi-vscode/src/ghes-git.cjs",
       "sha256": "50595a17f0eafb173501c01e29305d8af3793dc6145ca1e9f3db269213d8307b",
       "bytes": 3107
     },
     {
       "path": "packages/nubi-vscode/src/ghes.cjs",
-      "sha256": "2990b36e81f9a1a875e4a78957d8babe3c3241b0ab8324a5543a4f342cca74ea",
-      "bytes": 12913
+      "sha256": "9085df3f698481c9c7d961b5e4aefa5b24bde3cddd0cf04b0c913d4f129d0ef9",
+      "bytes": 14590
+    },
+    {
+      "path": "packages/nubi-vscode/tests/ghes-account.test.cjs",
+      "sha256": "a19e02e7891173275dca8a20767c9542ed4e75e710d2faf299f032cc183ca64c",
+      "bytes": 12514
     },
     {
       "path": "packages/openwiki/.gitignore",

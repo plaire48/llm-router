@@ -71,7 +71,7 @@ const modalMail={connected:false,autoWiki:true,serverProfile:'company',counts:{r
 if(new URLSearchParams(location.search).has('modals')){project.wikiFiles=['openwiki/업무-지침.md'];project.defaultShell='bash';}
 let ghes=new URLSearchParams(location.search).has('company-connected')?{state:'connected',connected:true,profile:{name:'긴 이름의 회사 계정 화면 검토 사용자',login:'fixture-user'}}:{state:'guest',connected:false,profile:null};
 const ghesAccount=async operation=>{// the company account dialog of the Electron rail: guest, a device code while connecting, and back (2026-10-07)
-  if(operation==='login')ghes={state:'connecting',connected:false,profile:null,device:{code:'NUBI-1234'}};
+  if(operation==='login')ghes=new URLSearchParams(location.search).has('company-login-error')?{state:'guest',connected:false,profile:null,error:'ghes_login_endpoint_unavailable',diagnostic:{stage:'device_code',status:404}}:{state:'connecting',connected:false,profile:null,device:{code:'NUBI-1234'}};
   else if(operation==='cancel'||operation==='logout')ghes={state:'guest',connected:false,profile:null};
   return structuredClone(ghes);
 };

@@ -43,6 +43,8 @@ jobs:
         run: |
           node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs tests/connection-readiness.test.mjs tests/model-catalog-refresh.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --test ../nubi-vscode/tests/ghes-account.test.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify Unicode shortcut inspection
         shell: pwsh
         run: |

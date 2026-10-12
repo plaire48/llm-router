@@ -114,6 +114,13 @@ try{
   await p.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});assert(await account.evaluate(e=>e===document.activeElement),'Escape returns to the titlebar account button');
   checks.push(`company titlebar entry and login dialog: ${variant.width}x${variant.height}, ${variant.connected?'connected':variant.noProject?'no project':'guest'}`);
  }
+ await p.setViewportSize({width:440,height:700});await p.goto(origin+'/?context&modals&integrated&toolbar&company-login-error');
+ await p.locator('.nubi-toolbar-account button').click();
+ const loginError=p.getByRole('dialog',{name:'회사 계정',exact:true});await loginError.getByRole('button',{name:'사내 SSO로 로그인',exact:true}).click();
+ await loginError.getByText('로그인 코드 발급 / HTTP 404',{exact:true}).waitFor();
+ assert.match(await loginError.innerText(),/회사 로그인 경로를 찾지 못했어요/);assert.doesNotMatch(await loginError.innerText(),/저장소를 읽을 수 없어요|code\.sdsdev\.co\.kr/);
+ assert(await loginError.locator('.nubi-account-diagnostic').evaluate(e=>e.scrollWidth<=e.clientWidth),'safe diagnostic stays on one line');
+ await p.screenshot({path:path.join(dir,'company-login-error-440.png'),animations:'disabled'});checks.push('login endpoint failure is distinct from repository access and shows a safe, single-line stage/status');
  assert.deepEqual(errors,[]);await writeFile(path.join(dir,'result.json'),JSON.stringify({checks,errors,scope:'actual Electron Workbench style and layout with synthetic data in Chrome; native pickers and real accounts are separate'},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:path.join(dir,'failure.png')}).catch(()=>{});await writeFile(path.join(dir,'failure.txt'),error.stack+'\n--- page errors ---\n'+JSON.stringify(errors,null,1)+'\n--- body ---\n'+await p?.locator('body').innerText()+'\n--- aria ---\n'+await p?.locator('body').ariaSnapshot());throw error;}
 finally{await browser?.close();await new Promise(r=>server.close(r));}

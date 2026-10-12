@@ -30,6 +30,9 @@ win:
       arch: [x64]
 nsis:
   include: nubi-installer.nsh
+  installerHeader: nsis-generated/installer-header.bmp
+  installerSidebar: nsis-generated/installer-sidebar.bmp
+  uninstallerSidebar: nsis-generated/installer-sidebar.bmp
   installerLanguages: [ko_KR]
   language: "1042"
   oneClick: false

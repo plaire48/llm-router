@@ -15,6 +15,7 @@ public static class InstallerWindow {
   [DllImport("user32.dll")] static extern bool PostMessage(IntPtr hwnd,int message,IntPtr w,IntPtr l);
   [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hwnd,out Rect rect);
   [DllImport("user32.dll")] static extern bool PrintWindow(IntPtr hwnd,IntPtr dc,uint flags);
+  [DllImport("user32.dll")] static extern bool RedrawWindow(IntPtr hwnd,IntPtr rect,IntPtr region,uint flags);
   [StructLayout(LayoutKind.Sequential)] struct Rect {public int Left,Top,Right,Bottom;}
   public static InstallerControl[] Controls(IntPtr parent) {
     var list=new List<InstallerControl>();
@@ -24,5 +25,5 @@ public static class InstallerWindow {
   public static void Click(long handle){PostMessage(new IntPtr(handle),0xF5,IntPtr.Zero,IntPtr.Zero);}
   public static bool Checked(long handle){return SendMessage(new IntPtr(handle),0xF0,IntPtr.Zero,IntPtr.Zero).ToInt32()==1;}
   public static int[] Bounds(IntPtr hwnd){Rect r;if(!GetWindowRect(hwnd,out r))throw new Exception("Installer bounds unavailable");return new[]{r.Right-r.Left,r.Bottom-r.Top};}
-  public static void Paint(IntPtr hwnd,IntPtr dc){if(!PrintWindow(hwnd,dc,0))throw new Exception("Installer capture failed");}
+  public static void Paint(IntPtr hwnd,IntPtr dc){RedrawWindow(hwnd,IntPtr.Zero,IntPtr.Zero,0x185);if(!PrintWindow(hwnd,dc,0))throw new Exception("Installer capture failed");}
 }

@@ -1,0 +1,149 @@
+{
+  "name": "nubi-workspace",
+  "displayName": "누비 Workspace",
+  "description": "VS Code에 내장된 누비 Workspace: 소스와 OpenWiki-SDS를 이해하고, Git과 함께 변경을 확인하고, Windows 앱을 다룹니다.",
+  "version": "2.0.0",
+  "publisher": "nubi-internal",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.139.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "main": "./src/extension.cjs",
+  "icon": "media/icons/agent-128.png",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "소스 변경과 로컬 실행에는 신뢰한 작업 공간이 필요합니다."
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "현재는 로컬 파일 작업 공간만 지원합니다."
+    }
+  },
+  "activationEvents": [
+    "onStartupFinished",
+    "onWebviewPanel:nubi.workspace"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "nubi.open",
+        "title": "누비 열기",
+        "category": "Nubi",
+        "icon": "media/icons/agent-32.png"
+      },
+      {
+        "command": "nubi.cloneRepository",
+        "title": "저장소 복제",
+        "category": "Nubi",
+        "icon": "$(repo-clone)"
+      }
+    ],
+    "menus": {},
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "nubi",
+          "title": "에이전트",
+          "icon": "media/icons/agent-32.png"
+        }
+      ]
+    },
+    "views": {
+      "nubi": [
+        {
+          "id": "nubi.workspace",
+          "name": "에이전트",
+          "type": "webview",
+          "visibility": "visible"
+        }
+      ]
+    },
+    "configurationDefaults": {
+      "git.openRepositoryInParentFolders": "always",
+      "git.openAfterClone": "always",
+      "workbench.startupEditor": "none",
+      "workbench.secondarySideBar.defaultVisibility": "hidden",
+      "chat.commandCenter.enabled": false,
+      "chat.disableAIFeatures": true,
+      "workbench.colorTheme": "Nubi Light",
+      "workbench.preferredLightColorTheme": "Nubi Light",
+      "window.title": "${dirty}${activeEditorShort}${separator}${rootName}${separator}누비 Workspace",
+      "workbench.editor.empty.hint": "hidden",
+      "workbench.panel.defaultLocation": "left",
+      "workbench.panel.opensMaximized": "always",
+      "workbench.panel.showLabels": false,
+      "workbench.activityBar.location": "hidden",
+      "workbench.statusBar.visible": false,
+      "workbench.sideBar.location": "right",
+      "window.commandCenter": false,
+      "workbench.layoutControl.enabled": false,
+      "window.menuBarVisibility": "toggle",
+      "workbench.navigationControl.enabled": false,
+      "workbench.tips.enabled": false,
+      "terminal.integrated.defaultLocation": "editor"
+    },
+    "themes": [
+      {
+        "id": "Nubi Light",
+        "label": "누비 Workspace",
+        "uiTheme": "vs",
+        "path": "./themes/nubi-light.json"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "nubi.open",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n"
+      }
+    ],
+    "configuration": {
+      "title": "누비 회사 계정",
+      "properties": {
+        "nubi.ghes.clientId": {
+          "type": "string",
+          "scope": "machine",
+          "default": "Iv1.8526278f12b92180",
+          "description": "code.sdsdev.co.kr GitHub App의 공개 Client ID입니다. 사용자 설정에서만 바꿀 수 있고 적용하려면 창을 다시 시작합니다. Client Secret과 비밀번호는 입력하지 마세요."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "runtime:prepare": "node scripts/prepare-runtime.mjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:vscode": "node scripts/test-vscode.mjs",
+    "package": "node scripts/package.mjs"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "0.86.1",
+    "@earendil-works/pi-ai": "0.86.1",
+    "@vscode/ripgrep": "1.18.0",
+    "jsonc-parser": "3.3.1",
+    "knex": "3.3.0",
+    "knex-schema-inspector": "3.1.0",
+    "minisearch": "7.2.0",
+    "mysql2": "3.24.4",
+    "oracledb": "7.0.1",
+    "pg": "8.23.0",
+    "pixelmatch": "7.1.0",
+    "playwright": "1.58.2",
+    "pngjs": "7.0.0",
+    "tedious": "20.0.0",
+    "typescript": "5.9.3",
+    "yauzl": "3.4.0"
+  },
+  "devDependencies": {
+    "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "4.0.0"
+  }
+}
