@@ -2,12 +2,56 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {protectMailDirectory} from '../runtime/mail-directory.mjs';
 import {prepareWorkPlan,parseWorkPlan} from '../runtime/work-plan.mjs';
+import {createProviders} from '../../nubi-office/worker/providers.mjs';
+import {modelTransport} from '../runtime/recovery.mjs';
 
 test('company folder ACL uses process SID and never removes inheritance after a failed grant',async()=>{
  const calls=[];const execute=async(command,args)=>{calls.push([command,args]);return {stdout:'"CORP\\user","S-1-5-21-123-456-789-1001"'};};
  await protectMailDirectory('C:\\mail',{platform:'win32',execute});
  assert.equal(calls[1][1][2],'*S-1-5-21-123-456-789-1001:(OI)(CI)F');assert.equal(calls[2][1][1],'/inheritance:r');
  let count=0;await assert.rejects(protectMailDirectory('C:\\mail',{platform:'win32',execute:async(...args)=>{if(++count===2)throw Error('denied');return execute(...args);}}),/mail_storage_permission/);assert.equal(count,2);
+});
+
+for(const modelId of ['QWEN-fixture','SOL-fixture'])test(`AI Pro ${modelId}: planning uses a data-only tool, repairs the format, then restores actor defaults`,async()=>{
+ const sent=[],progress=[];let planning=0;
+ const plan={intent:{goal:'위키 확인',constraints:['수정 금지'],outcomes:['근거와 읽은 범위'],workflowIds:[],skillPaths:[]},steps:[{text:'위키 확인',expected_outcome:'원문과 근거 확인',status:'in_progress'}]};
+ const token='e30.'+Buffer.from(JSON.stringify({sub:'fixture'})).toString('base64url')+'.signature';
+ const providers=createProviders({startLogin:async()=>({result:Promise.resolve({token,models:[{id:modelId,contextLength:32000}]}),cancel(){}}),fetchImpl:async(_url,options)=>{
+   const body=JSON.parse(options.body);sent.push(body);
+   const isPlan=body.tools?.[0]?.function.name==='update_plan';
+   const message=isPlan&&++planning===1?{content:'not a plan'}:isPlan?{tool_calls:[{id:'plan-data',type:'function',function:{name:'update_plan',arguments:JSON.stringify(plan)}}]}:{content:'확인 완료'};
+   return Response.json({choices:[{message,finish_reason:message.tool_calls?'tool_calls':'stop'}]});
+ }});
+ try{
+  await providers.login('aipro');await new Promise(r=>setImmediate(r));
+  const signal=new AbortController().signal,invoke=modelTransport({providers},{signal});
+  const result=await prepareWorkPlan({task:{request:'위키를 확인해줘. 수정 금지'},history:[],model:{contextLength:32000},signal,capabilities:{workflows:[],skills:[]},invoke:(wire,tools,options)=>invoke(wire,tools,signal,'planner',options),onProgress:event=>progress.push(event)});
+  assert.equal(result.intent.constraints[0],'수정 금지');assert.equal(planning,2);
+  assert.deepEqual(sent[0].tools.map(tool=>tool.function.name),['update_plan']);assert(sent[0].tools[0].function.parameters.required.includes('intent'));
+  assert.equal(sent[0].tool_choice,'auto');assert.equal(sent[1].tool_choice,'required');assert.equal(sent[1].max_tokens,4096);
+  assert.match(sent[1].messages[0].content,/plan_json_invalid/);assert(!JSON.stringify(sent[1]).includes('not a plan'));
+  await invoke([{role:'user',content:'결과'}],[]);
+  assert.equal(sent[2].tool_choice,undefined);assert.equal(sent[2].tools,undefined);
+  assert.deepEqual(progress.map(event=>event.state),['running','error','running','done']);
+ }finally{providers.dispose();}
+});
+
+test('mixed plan/action calls are rejected without execution and retain only fixed diagnostic codes',async()=>{
+ const signal=new AbortController().signal;
+ await assert.rejects(prepareWorkPlan({task:{request:'원문 보기'},history:[],model:{contextLength:32000},signal,capabilities:{workflows:[],skills:[]},invoke:async()=>({calls:[{function:{name:'update_plan',arguments:'{}'}},{function:{name:'run_command',arguments:'PRIVATE'}}]})}),error=>error.message==='work_plan_invalid'&&JSON.stringify(error.planningDiagnostic.reasons)===JSON.stringify(['plan_tool_calls','plan_tool_calls'])&&!JSON.stringify(error.planningDiagnostic).includes('PRIVATE'));
+});
+
+test('AI Pro reasoning deltas keep an active stream alive without displaying private reasoning',async()=>{
+ const providers=createProviders({startLogin:async()=>({result:Promise.resolve({token:'synthetic',models:[{id:'reasoning-fixture'}]}),cancel(){}}),fetchImpl:async()=>new Response(new ReadableStream({async start(controller){
+   const send=value=>controller.enqueue(new TextEncoder().encode('data: '+JSON.stringify(value)+'\n\n'));
+   for(let i=0;i<8;i++){await new Promise(resolve=>setTimeout(resolve,50));send({choices:[{index:0,delta:{reasoning_content:'PRIVATE'},finish_reason:null}]});}
+   send({choices:[{index:0,delta:{content:'결과'},finish_reason:'stop'}]});controller.close();
+ }}),{headers:{'content-type':'text/event-stream'}})});
+ try{
+  await providers.login('aipro');await new Promise(resolve=>setImmediate(resolve));
+  const invoke=modelTransport({providers,recoveryOptions:{model:{idleMs:200,attemptMs:3000,retries:0}}},{signal:new AbortController().signal});
+  const result=await invoke([{role:'user',content:'확인'}],[]);assert.equal(result.content,'결과');assert(!JSON.stringify(result).includes('PRIVATE'));
+ }finally{providers.dispose();}
 });
 test('a single JSON fence is accepted as data while surrounding text, tools and invalid constraints remain refused',async()=>{
  assert.deepEqual(parseWorkPlan('```json\n{"steps":[]}\n```'),{steps:[]});

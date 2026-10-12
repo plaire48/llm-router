@@ -17,11 +17,11 @@ export function modelTransport(service,{signal,onRetry,metrics}){
   // Telemetry reads the model name defensively: it must not add a failure path.
   const modelName=()=>{try{return service.providers.status().model;}catch{return null;}};
   // retries may lower the retries of one call (a large request), never raise them.
-  return (messages,tools,childSignal=signal,purpose='actor',{retries,visionModel,maxTokens}={})=>{
+  return (messages,tools,childSignal=signal,purpose='actor',{retries,visionModel,maxTokens,toolChoice}={})=>{
     const options={retries:2,...service.recoveryOptions?.model};
     return recoverModel(async ({signal:attemptSignal,activity,attempt})=>{
       const measured=metrics?.beginModel({purpose,attempt,messages,tools,model:visionModel||modelName()});
-      try{const result=await service.providers.complete(messages,tools,attemptSignal,activity,activity,undefined,{...(visionModel?{visionModel}:{}),...(Number.isSafeInteger(maxTokens)&&maxTokens>0?{maxTokens}:{})});measured?.end(result);return result;}
+      try{const result=await service.providers.complete(messages,tools,attemptSignal,activity,activity,activity,{...(visionModel?{visionModel}:{}),...(Number.isSafeInteger(maxTokens)&&maxTokens>0?{maxTokens}:{}),...(toolChoice==='required'?{toolChoice}:{})});measured?.end(result);return result;}
       catch(error){const code=safeError(error);measured?.fail(code);throw Object.assign(new Error(({network_error:'network',network_timeout:'model_timeout'})[code]||code),{status:error.status,retryAfterMs:error.retryAfterMs,...(error.apiDiagnostic?{apiDiagnostic:error.apiDiagnostic}:{})});}
     },{signal:childSignal,cooldown,...options,...(Number.isSafeInteger(retries)?{retries:Math.min(retries,options.retries)}:{}),onRetry});
   };

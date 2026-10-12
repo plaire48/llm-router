@@ -1,4 +1,4 @@
-import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {readFile,mkdir,writeFile,cp} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {createRequire} from 'node:module';
 import path from 'node:path';
@@ -11,6 +11,9 @@ const sources={
 };
 if(JSON.parse(await readFile(path.join(root,'package.json'),'utf8')).version!=='26.15.3')throw Error('installer_template_version_changed');
 await mkdir(output,{recursive:true});
+// Preserve the upstream working-directory lookup, especially multiUser.nsh:
+// NSIS ships a different case-insensitive MultiUser.nsh in its own includes.
+await cp(path.join(root,'templates/nsis'),output,{recursive:true});
 for(const [file,expected] of Object.entries(sources)){
   const source=await readFile(path.join(root,'templates/nsis',file));
   if(createHash('sha256').update(source).digest('hex')!==expected)throw Error('installer_template_changed:'+file);

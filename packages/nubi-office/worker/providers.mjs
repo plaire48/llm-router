@@ -248,6 +248,7 @@ export function createProviders(deps = {}) {
       session={...authenticated,model:wanted.id};
     }
     let result, httpFailure, inferenceDiagnostic, usageRequest, reportedUsage;
+    const toolChoice=tools.length&&options.toolChoice==='required'&&provider!=='fabrix'?'required':'auto';
     if(provider==='chatgpt'&&!reasoningOptions(provider,session).includes(session.reasoningEffort))session={...session,reasoningEffort:startReasoning(provider,session)};
     const inferenceFetch=async(...args)=>{
       const response=await api.fetchImpl(...args);
@@ -259,7 +260,7 @@ export function createProviders(deps = {}) {
     try {
     if (provider === 'chatgpt') {
       session.credential = await prepareChatGPT(authenticated,signal);
-      result = await api.completeChatGPT({fetchImpl:api.fetchImpl,onDiagnostic:detail=>{inferenceDiagnostic={...detail,model:session.model};},messages, tools, modelId: session.model,modelMetadata:api.accountCatalog===true?authenticated.models.find(m=>m.id===session.model):undefined, reasoningEffort: session.reasoningEffort, credential: session.credential, signal, onText, onPhase, onActivity});
+      result = await api.completeChatGPT({fetchImpl:api.fetchImpl,onDiagnostic:detail=>{inferenceDiagnostic={...detail,model:session.model};},messages, tools, toolChoice, modelId: session.model,modelMetadata:api.accountCatalog===true?authenticated.models.find(m=>m.id===session.model):undefined, reasoningEffort: session.reasoningEffort, credential: session.credential, signal, onText, onPhase, onActivity});
     } else {
       // The model server counts the tokens of every request (user, 2026-09-30). An OpenAI-compatible stream (vLLM behind
       // AI Pro) reports them in a last chunk only when asked: stream_options.include_usage, as the browser runtime asks
@@ -269,7 +270,7 @@ export function createProviders(deps = {}) {
       const format = options.responseFormat && provider !== 'fabrix' ? options.responseFormat : undefined;
       const send = maxTokens => {
         const reasoning = provider === 'aipro' && session.reasoningEffort && session.reasoningEffort !== 'xhigh' ? {reasoning_effort: session.reasoningEffort} : {};
-        const body = {model: session.model, messages, stream: true, max_tokens: maxTokens, ...reasoning, ...(session.usageRefused ? {} : {stream_options: {include_usage: true}}), ...(format && !session.formatRefused ? {response_format: format} : {}), ...(tools.length ? {tools, tool_choice: 'auto'} : {})};
+        const body = {model: session.model, messages, stream: true, max_tokens: maxTokens, ...reasoning, ...(session.usageRefused ? {} : {stream_options: {include_usage: true}}), ...(format && !session.formatRefused ? {response_format: format} : {}), ...(tools.length ? {tools, tool_choice: toolChoice} : {})};
         return provider === 'fabrix'
           ? api.fabrixCompletion(body, {...session.credential, modelId: session.model}, {signal, fetchImpl: inferenceFetch})
           : inferenceFetch(provider === 'aipro' ? endpoint('browser') : session.credential.endpoint, {method: 'POST', redirect: 'error', signal,

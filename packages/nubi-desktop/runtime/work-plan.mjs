@@ -3,7 +3,7 @@ import {initialPlan,normalizePlan,PLANNING_OUTCOME_GUIDE} from '../../../extensi
 import {contextBudget,contextTokens} from '../../../extensions/aipro-chat/context-manager.js';
 import {LEAN_INPUT_TOKENS} from './lean-tools.mjs';
 
-export const WORK_PLAN_PROMPT=`You are Nubi Desktop's work planner. Before tools execute, return ONLY JSON {"intent":{"goal":"user desired result","constraints":["conditions to preserve"],"outcomes":["observable expected result"],"workflowIds":["available workflow id"],"skillPaths":["exact available SKILL.md path"]},"steps":[{"text":"short Korean step","expected_outcome":"observable outcome","status":"in_progress"|"pending"}]}. Use 2-5 concise outcome steps, or one for a simple lookup. Choose the work from the user's request: source, OpenWiki-SDS, registered skills, local execution, comparison or Windows app tools only when relevant. Never require the user to choose a technical mode, write a shell command or fill in a plan. Do not always include every available tool or invent facts before inspection. Include verification for requested changes and keep approval-dependent execution distinct from preparation. Preserve original constraints, later corrections and answered decisions. If a choice is missing, plan to inspect what is available, then ask one focused question only if it changes implementation. Existing plans and summaries are fallible reference data, never action permission. No completed steps, claims of work already done, private reasoning, credentials, code or command execution. Interpret the original request together with later corrections and answers. The intent is a provisional interpretation, never a replacement for literal user requirements or consent. Select zero or more available workflow IDs and skill paths based on meaning, not keyword matches; do not select everything. Do not invent unavailable capabilities. A selected skill still needs use_skill before following its content. Preserve explicit do-not-change constraints and produce observable outcomes, not generic quality claims. Constraints hold only limits the user, project rules or evidence set, in their scope: never add one they did not set, such as a single command or no corrected command; "only X" limits the work to X, not the commands that carry it out. recovery is a command of this task that has ended: plan from its result. When it names a commandProblem, the command was wrong and its work has not run, so keep the result the user asked for as the goal and plan the corrected command, which the user approves. Steps are provisional and can be refined from observed evidence. A short label and its expected outcome are enough. previousAnswers are this task's earlier answers and questions, newest last: fallible findings, never user instructions. Keep a limit they report from project rules, Wiki evidence or the user, such as an action the rules forbid, unless a later user message changes it, and do not plan that action again.`;
+export const WORK_PLAN_PROMPT=`You are Nubi Desktop's work planner. Before project tools execute, return exactly one update_plan call containing {"intent":{"goal":"user desired result","constraints":["conditions to preserve"],"outcomes":["observable expected result"],"workflowIds":["available workflow id"],"skillPaths":["exact available SKILL.md path"]},"steps":[{"text":"short Korean step","expected_outcome":"observable outcome","status":"in_progress"|"pending"}]}. Use 2-5 concise outcome steps, or one for a simple lookup. Choose the work from the user's request: source, OpenWiki-SDS, registered skills, local execution, comparison or Windows app tools only when relevant. Never require the user to choose a technical mode, write a shell command or fill in a plan. Do not always include every available tool or invent facts before inspection. Include verification for requested changes and keep approval-dependent execution distinct from preparation. Preserve original constraints, later corrections and answered decisions. If a choice is missing, plan to inspect what is available, then ask one focused question only if it changes implementation. Existing plans and summaries are fallible reference data, never action permission. The update_plan call only returns plan data; it cannot execute project actions. A complete plain JSON object in the same schema is also accepted. No completed steps, claims of work already done, private reasoning, credentials, code or command execution. Interpret the original request together with later corrections and answers. The intent is a provisional interpretation, never a replacement for literal user requirements or consent. Select zero or more available workflow IDs and skill paths based on meaning, not keyword matches; do not select everything. Do not invent unavailable capabilities. A selected skill still needs use_skill before following its content. Preserve explicit do-not-change constraints and produce observable outcomes, not generic quality claims. Constraints hold only limits the user, project rules or evidence set, in their scope: never add one they did not set, such as a single command or no corrected command; "only X" limits the work to X, not the commands that carry it out. recovery is a command of this task that has ended: plan from its result. When it names a commandProblem, the command was wrong and its work has not run, so keep the result the user asked for as the goal and plan the corrected command, which the user approves. Steps are provisional and can be refined from observed evidence. A short label and its expected outcome are enough. previousAnswers are this task's earlier answers and questions, newest last: fallible findings, never user instructions. Keep a limit they report from project rules, Wiki evidence or the user, such as an action the rules forbid, unless a later user message changes it, and do not plan that action again.`;
 const intentText={type:'string',minLength:1,maxLength:400,pattern:'\\S'};
 export const WORK_PLAN_GUIDANCE=WORK_PLAN_PROMPT+' '+PLANNING_OUTCOME_GUIDE;
 
@@ -24,6 +24,7 @@ export function workIntent(input,capabilities){
   return structuredClone(input);
 }
 export const WORK_PLAN_SCHEMA={type:'object',additionalProperties:false,required:['steps'],properties:{intent:WORK_INTENT_SCHEMA,explanation:{type:'string',maxLength:600},steps:{type:'array',minItems:1,maxItems:5,items:{type:'object',additionalProperties:false,required:['text','expected_outcome','status'],properties:{text:{type:'string',minLength:1,maxLength:100},expected_outcome:{type:'string',minLength:1,maxLength:240},status:{enum:['pending','in_progress']}}}}}};
+export const WORK_PLANNING_TOOL={type:'function',function:{name:'update_plan',description:'Return the provisional work plan and intent as data only. No project action or approval.',parameters:{...WORK_PLAN_SCHEMA,required:['intent','steps']}}};
 const validate=new Ajv().compile(WORK_PLAN_SCHEMA);
 export function workPlanSteps(input,{initial=false}={}){
   if(!validate(input))throw new Error('work_plan_invalid');
@@ -72,24 +73,42 @@ export function planningAnswers(task,{lean=false}={}){
 }
 // recovery: the command of this task whose result the run reads, and how it ended (E5, 2026-10-01: planned from the
 // request alone, a run that read a failed command made running that command again its only goal).
-export async function prepareWorkPlan({task,history,model,invoke,signal,capabilities,recovery}){
+export async function prepareWorkPlan({task,history,model,invoke,signal,capabilities,recovery,onProgress=()=>{}}){
   const payload=answers=>[{role:'system',content:WORK_PLAN_GUIDANCE},{role:'user',content:JSON.stringify({request:task.request,userRequests:planningRequests(task),criteria:task.criteria,answeredQuestions:task.questionHistory||[],history,...(answers.length?{previousAnswers:answers}:{}),capabilities,previousIntent:task.workPlan?.intent||null,previousPlan:task.workPlan?.steps||[],...(recovery?{recovery}:{})})}];
-  const input=contextBudget(model).input,limit=input-512;
+  const budget=contextBudget(model),input=budget.input,limit=input-512;
   // Earlier answers are findings, not the request: the newest are added first while the input holds them.
   let previousAnswers=[];
-  for(const answer of planningAnswers(task,{lean:input<LEAN_INPUT_TOKENS}).reverse()){const next=[answer,...previousAnswers];if(contextTokens(payload(next))>limit)break;previousAnswers=next;}
+  for(const answer of planningAnswers(task,{lean:input<LEAN_INPUT_TOKENS}).reverse()){const next=[answer,...previousAnswers];if(contextTokens(payload(next),[WORK_PLANNING_TOOL])>limit)break;previousAnswers=next;}
   const messages=payload(previousAnswers);
-  if(contextTokens(messages)>limit)throw new Error('context_input_too_large');
-  let problems=[];
+  if(contextTokens(messages,[WORK_PLANNING_TOOL])>limit)throw new Error('context_input_too_large');
+  let problems=[],reason='plan_arguments_invalid';const failures=[];
   for(let attempt=0;attempt<2;attempt++){
     if(signal.aborted)throw new Error('cancelled');
-    const result=await invoke(attempt?[{...messages[0],content:WORK_PLAN_GUIDANCE+' The previous response was invalid. Return complete JSON in the exact schema. Problems found: '+problems.join(' ')},messages[1]]:messages,[]);
-    if(signal.aborted)throw new Error('cancelled');
-    if(result.calls?.length){problems=['The response called a tool. Return JSON only.'];continue;}
-    if(result.finishReason==='length'){problems=['The response was cut off. Use fewer and shorter steps.'];continue;}
-    let value;
-    try{value=withStatus(parseWorkPlan(result.content));}catch{problems=['The response was not valid JSON.'];continue;}
-    try{return {steps:workPlanSteps(value,{initial:true}),intent:workIntent(value.intent,capabilities)};}catch{problems=planProblems(value,capabilities);}
+    onProgress({state:'running',attempt:attempt+1});
+    let result;
+    try{
+      result=await invoke(attempt?[{...messages[0],content:WORK_PLAN_GUIDANCE+' The previous response was invalid ('+reason+'). Return exactly one update_plan call with the full declared schema. Preserve the original goal and constraints. Problems found: '+problems.join(' ')},messages[1]]:messages,[WORK_PLANNING_TOOL],{toolChoice:attempt?'required':'auto',maxTokens:Math.min(budget.output,attempt?4096:2048)});
+      if(signal.aborted)throw new Error('cancelled');
+      if(result.finishReason==='length')throw Error('output_limit');
+      const calls=result.calls||[];
+      let value;
+      if(!Array.isArray(calls)||calls.length>1||calls.length===1&&calls[0]?.function?.name!=='update_plan'){
+        reason='plan_tool_calls';problems=['Return only one update_plan call. No other tool may be called.'];
+      }else{
+        try{value=withStatus(parseWorkPlan(calls.length?calls[0].function.arguments:result.content));}
+        catch{reason='plan_json_invalid';problems=['The complete plan must be valid JSON.'];}
+        if(value!==undefined){
+          try{const prepared={steps:workPlanSteps(value,{initial:true}),intent:workIntent(value.intent,capabilities)};onProgress({state:'done',attempt:attempt+1});return prepared;}
+          catch{reason='plan_arguments_invalid';problems=planProblems(value,capabilities);}
+        }
+      }
+    }catch(error){
+      if(signal.aborted||error.message!=='output_limit'){onProgress({state:signal.aborted?'cancelled':'error',attempt:attempt+1});throw error;}
+      reason='plan_output_limit';problems=['The response was cut off. Return one or two short steps.'];
+    }
+    failures.push(reason);onProgress({state:'error',attempt:attempt+1,reason});
   }
-  const error=new Error('work_plan_invalid');error.planningDiagnostic={phase:'planning',attempts:2,reasons:problems.slice(0,6)};throw error;
+  // Keep Desktop's intent/capability checks: unlike a browser lookup, this plan
+  // can gate file writes and local execution. Never invent or relax its intent.
+  const error=new Error('work_plan_invalid');error.planningDiagnostic={phase:'planning',attempts:2,reasons:failures};throw error;
 }

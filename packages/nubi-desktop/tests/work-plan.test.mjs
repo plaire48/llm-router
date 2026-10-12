@@ -15,14 +15,15 @@ test('Pi obtains and persists a task-specific plan before the first source tool;
   const {service,root}=await fixture(t,{scriptedPlanning:true});let plans=0,round=0,reads=0,task;
   const read=service.read.bind(service);service.read=async args=>{reads++;assert.equal(service.task(task.id).workPlan.steps[0].text,steps[0].text);return read(args);};
   service.providers={status,dispose(){},complete:async(messages,tools)=>{
-    if(messages[0].content.startsWith(WORK_PLAN_PROMPT)){plans++;assert.equal(reads,0);assert.deepEqual(tools,[]);assert.match(JSON.stringify(messages),/변경 금지/);return reply(JSON.stringify({intent:{goal:'첫 줄 확인',constraints:['변경 금지'],outcomes:['현재 첫 줄 설명'],workflowIds:['source-change'],skillPaths:[]},steps}));}
+    if(messages[0].content.startsWith(WORK_PLAN_PROMPT)){plans++;assert.equal(reads,0);assert.deepEqual(tools.map(tool=>tool.function.name),['update_plan']);assert.match(JSON.stringify(messages),/변경 금지/);return reply(JSON.stringify({intent:{goal:'첫 줄 확인',constraints:['변경 금지'],outcomes:['현재 첫 줄 설명'],workflowIds:['source-change'],skillPaths:[]},steps}));}
     round++;if(round===1)return call('read_source',{path:'app.txt'});
     if(round===2)return call('update_plan',{steps:steps.map((s,i)=>({...s,status:i===1?'in_progress':'pending'}))});
     return reply('첫 줄은 first입니다. 파일을 변경하지 않았습니다.');
   }};
   task=await service.createTask({request:'app.txt 첫 줄 확인',criteria:['변경 금지']});await service.startAgent({taskId:task.id});await service.agent.promise;
   const saved=service.task(task.id);assert.equal(saved.state,'review');assert.equal(plans,1);assert.equal(reads,1);assert.equal(saved.workPlan.revision,2);assert.equal(saved.workPlan.steps[1].status,'in_progress');assert.equal(saved.criteria[0].state,'unknown');
-  assert.equal(saved.trace.find(e=>e.status==='done').tool,'update_plan');
+  assert.equal(saved.trace.find(e=>e.status==='done'&&e.tool!=='recover_model').tool,'update_plan');
+  assert.equal(saved.trace.find(e=>e.tool==='recover_model').label,'작업 계획 준비');
   service.store.close();await service.open(root);assert.equal(service.task(task.id).workPlan.revision,2);
 });
 

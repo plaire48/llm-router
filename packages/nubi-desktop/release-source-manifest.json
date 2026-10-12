@@ -1423,8 +1423,8 @@
     },
     {
       "path": "packages/nubi-desktop/docs/INSTALLER-AND-RESPONSIVENESS-2026-10-12.md",
-      "sha256": "1d0d9879331f42183951f9657f0e17dc8bf55e361583a4033f62cd40389d8c01",
-      "bytes": 4189
+      "sha256": "0bc5f0f60f3bf846f9f08a7b95a3a49ef9401b675d1a259388599fae164054bd",
+      "bytes": 5162
     },
     {
       "path": "packages/nubi-desktop/electron-app/BrowserPane.jsx",
@@ -1598,8 +1598,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/agent.mjs",
-      "sha256": "f3badb7e1b76d3855043c26fa1080ea8cc50506cce61fd05d1d859df8c63b294",
-      "bytes": 104984
+      "sha256": "c05d8283bdab9276c807d2a62657372ca420c3f7c8d9a9e2529e5d37711c5f0c",
+      "bytes": 105452
     },
     {
       "path": "packages/nubi-desktop/runtime/analysis-history.mjs",
@@ -1918,8 +1918,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/recovery.mjs",
-      "sha256": "2f1e6274e0af7d736c1abb6f6ad36a0b7dc9296eb4b77b645a74fc3365349046",
-      "bytes": 9838
+      "sha256": "ed0a43951916061bd15f6be7d2a6b074b2cb774dbe4cfe67c524a821022d1b20",
+      "bytes": 9893
     },
     {
       "path": "packages/nubi-desktop/runtime/regenerate-answer.mjs",
@@ -2043,8 +2043,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/work-plan.mjs",
-      "sha256": "ed8d8fa919e1dbbbe0a57271545d8dbd992a55938e8bb7a2fa59290b2ab5ec24",
-      "bytes": 10991
+      "sha256": "5921511404e0a06687f07c1f11056ac9d719c24db3fcb5caec4d0c5b438d8886",
+      "bytes": 12681
     },
     {
       "path": "packages/nubi-desktop/runtime/worker-environment.mjs",
@@ -2088,8 +2088,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-WindowsInstaller.ps1",
-      "sha256": "1eb8d73cd69cc5d121505e5608c51be1269e59ae7addabc1bb5622bf87348e0f",
-      "bytes": 6304
+      "sha256": "9dc631c5a5ad2a0400c07bec40cf5ffdb70d9341c322d1c8284d19882591b923",
+      "bytes": 6301
     },
     {
       "path": "packages/nubi-desktop/scripts/build-electron.mjs",
@@ -2228,8 +2228,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-installer-ui.mjs",
-      "sha256": "a80dfdc9ee4e825a79183a56e2c57efc8a98fd68616f30f76b36a1fd9f853efc",
-      "bytes": 2571
+      "sha256": "a2175dedeee5996eee43e47837367300b030655ac7b65a55f3393ad09ed36778",
+      "bytes": 2797
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-winapp.ps1",
@@ -2433,8 +2433,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/connection-readiness.test.mjs",
-      "sha256": "1ff3ffe5a69e7606c0cdc0070ff1739c9feb1f5c7aa17dda19e2b6a0c8fa252a",
-      "bytes": 1919
+      "sha256": "394346b47ba9cec139f7d850d4109e1869b63d1362f6a434d751796c8ce0adbf",
+      "bytes": 6255
     },
     {
       "path": "packages/nubi-desktop/tests/connection-vault.test.mjs",
@@ -2903,8 +2903,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/work-plan.test.mjs",
-      "sha256": "3a6933b8cfc6cd2230c29380e1bfb9516dc65bc0abfb45e4e4b9772ed2ac56d4",
-      "bytes": 8499
+      "sha256": "2802570abdc57ed5070f85684be6217b1e7e491732144c2c584f2fa71609608a",
+      "bytes": 8660
     },
     {
       "path": "packages/nubi-desktop/tests/workspace-changes.test.mjs",
@@ -3748,8 +3748,8 @@
     },
     {
       "path": "packages/nubi-office/worker/providers.mjs",
-      "sha256": "ea88d33cb54f70e43e864f1b2200ac01ff6b3d9c73dc160499b35c69a8e9dfa7",
-      "bytes": 30117
+      "sha256": "969b21b00d60bf36aa3c07cfab4c8e8bf177cc7dacb6c6ebf19f4c5d9cd6c2d4",
+      "bytes": 30240
     },
     {
       "path": "packages/nubi-office/worker/python-runtime.mjs",

@@ -23,7 +23,7 @@ function Get-AppShortcuts {
 Stage 'install'
 $installer = Get-ChildItem release/windows/*-Setup.exe | Select-Object -First 1
 if (!$installer) { throw 'Installer missing' }
-$target = Join-Path $env:RUNNER_TEMP '@nubielectron-app'
+$target = Join-Path $env:RUNNER_TEMP 'Nubi Workspace'
 $upgradeVerified = $false
 $durations=@{}
 $stopwatch=[Diagnostics.Stopwatch]::StartNew()

@@ -277,7 +277,10 @@ export function installAgent(ProjectService) {
       lastWire=structuredClone(wire);spent=0;context.record(result.usage,wire,definitions);noteUsage(result,wire,definitions);
       if(result.calls?.length&&!result.calls.some(c=>['ask_user','update_plan'].includes(c.function.name))&&task.workPlan?.runId!==runId){
         task.checkpoint={runId,inputChain:this.agent.inputChain,phase:'planning',at:new Date().toISOString()};persistTask();
-        const plan=await prepareWorkPlan({task,history:planningHistory,recovery:recoveredCommand(),model:conversationModel(model),invoke:(wire,definitions)=>invokeModel(wire,definitions,undefined,'planner'),signal:controller.signal,capabilities:capabilityContext()});
+        const plan=await prepareWorkPlan({task,history:planningHistory,recovery:recoveredCommand(),model:conversationModel(model),invoke:(wire,definitions,options)=>invokeModel(wire,definitions,undefined,'planner',options),signal:controller.signal,capabilities:capabilityContext(),onProgress:event=>{
+          const id=runId+':0:planning',entry={id,runId,index:'planning',tool:'recover_model',status:event.state,label:event.attempt>1?'계획 형식 수정':'작업 계획 준비',...(event.reason?{reason:event.reason}:{}),at:new Date().toISOString()};
+          const found=task.trace.some(item=>item.id===id);task.trace=found?task.trace.map(item=>item.id===id?entry:item):[...task.trace.slice(-79),entry];persistTask();
+        }});
         result={...result,calls:[{id:randomUUID(),type:'function',function:{name:'update_plan',arguments:JSON.stringify(plan)}},...result.calls]};
       }
       if(task.recovery?.state==='retrying'){task.recovery={state:'resumed',at:new Date().toISOString()};persistTask();}
