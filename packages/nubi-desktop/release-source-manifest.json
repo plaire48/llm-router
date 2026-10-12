@@ -1578,8 +1578,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "3624cf990a152868ba22bb26f2fba71c465284d1f0664e00aa56f0e4559c04f1",
-      "bytes": 4086
+      "sha256": "c9c12bb72dd1a838712ef929380af44d2257223f8e62960ab05ca80ed7f8b265",
+      "bytes": 4286
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -1988,8 +1988,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/response-timing.mjs",
-      "sha256": "914883e11e1e513195992f0e21f543f2ecf1ff395e96521d39a8cb2f560088da",
-      "bytes": 924
+      "sha256": "f04b0763d4c950a02cc1fd69f665e5b08785940b075565952d7f61e345ba6a86",
+      "bytes": 961
     },
     {
       "path": "packages/nubi-desktop/runtime/result-review.mjs",
@@ -2148,8 +2148,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
-      "sha256": "74a7c2f8f47d6060d834ccd052ddf8e3837e203795bd655529fc517df73bc5b5",
-      "bytes": 3594
+      "sha256": "8bd52689f0ab09c5d17ebb2702f42c928938f8e39524f8a82363d2d3fcd24cd4",
+      "bytes": 3781
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",

@@ -30,7 +30,7 @@ try {
       if (!$captured -and $text -match '파일 풀기.*\d+%') {
         Save-InstallerCapture $window (Join-Path (Get-Location) 'verification/windows-installer-progress.png');$captured=$true
       }
-      if (!$etaCaptured -and $text -match '파일 풀기 약 \d+분 \d+초 남음') {
+      if (!$etaCaptured -and $text -match '파일 풀기 약 (?:[1-9]\d*분(?: [1-9]\d*초)?|[1-9]\d*초) 남음') {
         Save-InstallerCapture $window (Join-Path (Get-Location) 'verification/windows-installer-progress.png');$etaCaptured=$true
       }
       foreach ($control in $controls | Where-Object {$_.Class -eq 'Button' -and $_.Text -match '누비 Workspace 실행'}) {
@@ -50,7 +50,8 @@ try {
   if ($p.ExitCode -ne 0) {throw "Visible installer exit: $($p.ExitCode)"}
   if (!$captured) {throw 'Native extraction percentage was not observed'}
   if (!$etaCaptured) {throw 'Measured extraction remaining time was not observed'}
-  if (!(($observations.text -join ' ') -match '진행 \d+분 \d+초')) {throw 'Native elapsed time was not observed'}
+  if (!(($observations.text -join ' ') -match '진행 (?:[1-9]\d*분(?: [1-9]\d*초)?|\d+초)')) {throw 'Native elapsed time was not observed'}
+  if (($observations.text -join ' ') -match '(?<!\d)0분') {throw 'Zero minutes must be omitted from elapsed and remaining time'}
   if (($observations.text -join ' ') -match '남은 시간 계산 중') {throw 'Unknown remaining time must not stay as a calculating placeholder'}
   if (!(Test-Path (Join-Path $Target 'Nubi Workspace.exe'))) {throw 'Visible installer used unexpected destination'}
   @{elapsedSeconds=[Math]::Round($clock.Elapsed.TotalSeconds,2);nativeVisibleProgress=$true;estimatedRemainingObserved=$etaCaptured;observations=$observations.ToArray()} | ConvertTo-Json -Depth 5 | Set-Content verification/windows-installer-experience.json

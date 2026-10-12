@@ -11,5 +11,5 @@ export function durationLabel(milliseconds){
   const seconds=Math.floor(milliseconds/1000);
   if(seconds<60)return `${seconds}초`;
   const minutes=Math.floor(seconds/60),rest=seconds%60;
-  return minutes<60?`${minutes}분 ${rest}초`:`${Math.floor(minutes/60)}시간 ${minutes%60}분 ${rest}초`;
+  return [minutes>=60?`${Math.floor(minutes/60)}시간`:null,minutes%60?`${minutes%60}분`:null,rest?`${rest}초`:null].filter(Boolean).join(' ');
 }

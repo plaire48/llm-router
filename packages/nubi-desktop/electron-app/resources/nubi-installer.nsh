@@ -11,6 +11,18 @@
 !define MUI_HEADERIMAGE_BITMAP_STRETCH FitControl
 !define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH FitControl
 
+!macro NubiDurationLabel Output Seconds
+  IntOp $0 ${Seconds} / 60
+  IntOp $1 ${Seconds} % 60
+  ${If} $0 == 0
+    StrCpy ${Output} "$1초"
+  ${ElseIf} $1 == 0
+    StrCpy ${Output} "$0분"
+  ${Else}
+    StrCpy ${Output} "$0분 $1초"
+  ${EndIf}
+!macroend
+
 !macro customHeader
   BrandingText "누비 Workspace Beta"
   ShowInstDetails hide
@@ -42,9 +54,7 @@
     IntOp $5 $5 / 1000
     IntOp $0 $0 - $NubiStarted
     IntOp $NubiElapsed $0 / 1000
-    IntOp $0 $NubiElapsed / 60
-    IntOp $1 $NubiElapsed % 60
-    StrCpy $NubiElapsedLabel "$0분 $1초"
+    !insertmacro NubiDurationLabel $NubiElapsedLabel $NubiElapsed
     StrCpy $4 "진행 $NubiElapsedLabel"
     ${If} $NubiPhase == "앱 파일 풀기"
     ${AndIf} $5 >= 1
@@ -57,9 +67,8 @@
           IntOp $3 $3 / 5
           IntOp $3 $3 + 1
           IntOp $3 $3 * 5
-          IntOp $0 $3 / 60
-          IntOp $1 $3 % 60
-          StrCpy $4 "진행 $NubiElapsedLabel / 파일 풀기 약 $0분 $1초 남음"
+          !insertmacro NubiDurationLabel $3 $3
+          StrCpy $4 "진행 $NubiElapsedLabel / 파일 풀기 약 $3 남음"
         ${EndIf}
     ${ElseIf} $NubiPhase == "설치 완료"
       StrCpy $4 "소요 $NubiElapsedLabel"
