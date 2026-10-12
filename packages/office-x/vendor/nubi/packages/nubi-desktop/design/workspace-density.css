@@ -1,0 +1,913 @@
+/* One native title/toolbar row and tighter vertical padding for Electron. */
+.desktop-shell[data-toolbar=true] { flex-direction:column; position:relative; padding-top:var(--nubi-toolbar-height); box-sizing:border-box; }
+.desktop-titlebar { position:absolute; top:0; left:env(titlebar-area-x,0px); width:env(titlebar-area-width,100%); height:var(--nubi-toolbar-height); z-index:30; }
+.desktop-workspace-body { display:flex; flex:1; min-width:0; min-height:0; position:relative; overflow:hidden; }
+.nubi-window-toolbar { display:flex; align-items:center; gap:var(--cx-space-4); height:100%; padding-inline:var(--cx-space-3); box-sizing:border-box; background:var(--deck-section-surface); border-bottom:1px solid var(--deck-line); -webkit-app-region:drag; user-select:none; }
+.desktop-shell[data-platform=darwin] .nubi-window-toolbar { padding-left:var(--nubi-toolbar-mac-inset); }
+.nubi-toolbar-navigation,.nubi-toolbar-actions { display:flex; align-items:center; gap:var(--cx-space-1); flex:none; }
+.nubi-toolbar-navigation { padding-right:var(--cx-space-4); border-right:1px solid var(--deck-line); }
+.nubi-toolbar-context { display:flex; align-items:center; gap:var(--cx-space-2); flex:1; min-width:0; color:var(--deck-ink); font:var(--deck-font-label); }
+.nubi-toolbar-context>svg { flex:none; color:var(--deck-sub); }
+.nubi-toolbar-context>span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nubi-window-toolbar .nubi-logo { gap:var(--cx-space-2); }
+.nubi-window-toolbar .nubi-logo-product { font:var(--deck-font-label); color:var(--bird-ink); }
+.nubi-window-toolbar :is(button,a,input) { -webkit-app-region:no-drag; }
+.nubi-window-toolbar .nubi-icon-button.cx-kit-button { width:var(--nubi-compact-control); height:var(--nubi-compact-control); min-width:var(--nubi-compact-control); min-height:var(--nubi-compact-control); padding:var(--cx-space-2); border:0; border-radius:var(--deck-control-radius); box-shadow:none; background:transparent; color:var(--deck-sub); }
+.nubi-window-toolbar .nubi-icon-button:hover:not(:disabled) { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
+.desktop-shell[data-toolbar=true] .nubi-sidebar[data-open=false] { display:none; }
+.desktop-shell[data-toolbar=true] .nubi-workbench[data-host-layout=integrated] .nubi-sidebar { padding-top:var(--cx-space-2); }
+.desktop-shell[data-toolbar=true] .nubi-workbench[data-host-layout=integrated] .nubi-mail-history { padding-top:var(--cx-space-4); }
+.desktop-shell[data-toolbar=true] .nubi-sidebar-scrim { min-height:0; height:100%; }
+.desktop-shell[data-toolbar=true]:has(>.desktop-mail-progress) .nubi-sidebar[data-open=true],
+.desktop-shell[data-toolbar=true]:has(>.desktop-mail-progress) .nubi-sidebar-resize { height:100%; }
+.desktop-shell[data-toolbar=true] .desktop-pane[data-expanded=true],
+.desktop-shell[data-toolbar=true][data-layout=overlay] .desktop-pane { top:0; bottom:0; height:100%; }
+.desktop-shell .nubi-workbench .nubi-main { padding-top:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-task { padding-top:0; }
+.desktop-shell .nubi-workbench .composer { padding:var(--nubi-box-block) var(--cx-space-3); border-radius:var(--nubi-box-radius); }
+.desktop-shell .nubi-workbench .composer textarea.aipro-message-input { min-height:36px; padding-block:var(--cx-space-1); }
+.desktop-shell .nubi-workbench :is(.composer-bottom,.composer-tools) { min-height:36px; }
+.desktop-shell .nubi-workbench .composer-bottom { margin-top:0; }
+.desktop-shell .nubi-workbench :is(.context-trigger.cx-kit-button,.composer-send,.nubi-composer-stop) { width:36px; min-width:36px; height:36px; min-height:36px; padding:var(--cx-space-1); }
+.desktop-shell .nubi-workbench .nubi-followup { margin-top:var(--cx-space-3); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .task-plan { padding:var(--nubi-box-block) var(--cx-space-3); border-radius:var(--nubi-box-radius); }
+.desktop-shell .nubi-workbench .task-plan ol { margin-top:var(--cx-space-2); gap:var(--cx-space-1); }
+.desktop-shell .nubi-workbench .task-plan li { padding-block:var(--cx-space-1); }
+.desktop-shell .nubi-workbench .question-card { padding-block:var(--nubi-box-block); }
+.desktop-shell .nubi-workbench .nubi-start-card {
+ display:grid; grid-template-columns:44px minmax(0,1fr) var(--nubi-compact-control);
+ grid-template-rows:auto auto; align-items:center; column-gap:var(--cx-space-3); row-gap:var(--cx-space-1);
+ padding:var(--cx-space-3) var(--cx-space-4); min-height:80px; border-radius:var(--nubi-box-radius);
+}
+.desktop-shell .nubi-start-card .nubi-start-tile { grid-column:1; grid-row:1 / span 2; margin:0; }
+.desktop-shell .nubi-start-card strong { grid-column:2; grid-row:1; align-self:end; }
+.desktop-shell .nubi-start-card .nubi-start-text { grid-column:2; grid-row:2; align-self:start; margin:0; }
+.desktop-shell .nubi-start-card .nubi-start-go { grid-column:3; grid-row:1 / span 2; width:var(--nubi-compact-control); height:var(--nubi-compact-control); margin:0; background:transparent; }
+.desktop-shell .nubi-workbench .aipro-login-card { padding-block:var(--cx-space-4); }
+.desktop-shell .aipro-login .provider-button[data-provider] { min-height:44px; }
+.desktop-shell .desktop-pane header { padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) .cx-panel-backdrop.is-modal > .model-dialog { height:auto; }
+:root:has(.desktop-shell) .model-dialog .model-options { max-height:min(var(--nubi-model-list-height),40dvh); }
+:root:has(.desktop-shell) .model-dialog .provider-toolbar { margin-bottom:var(--cx-space-3); }
+:root:has(.desktop-shell) .model-dialog .model-option.cx-kit-button { min-height:40px; padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-settings-row.cx-kit-button { padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-approval-mode-item { padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.nubi-marketplace-card,.nubi-custom-skill-row,.nubi-history-item.cx-kit-button,.nubi-file-link.cx-kit-button,.nubi-search-result.cx-kit-button) { padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-description {
+ display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+ white-space:normal; margin-block:var(--cx-space-1); font-size:var(--deck-type-caption);
+ line-height:var(--deck-line-caption); color:var(--deck-sub);
+}
+:root:has(.desktop-shell) .nubi-skill-dropzone { padding-block:var(--cx-space-4); }
+:root:has(.desktop-shell) :is(.usage-account,.usage-statistics,.context-statistics) { margin-block:0; padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.usage-window,.usage-provider,.context-stats,.usage-stats) { padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.nubi-skill-menu-row,.nubi-skill-menu-marketplace) { padding-block:var(--cx-space-2); height:auto; min-height:44px; }
+:root:has(.desktop-shell) :is(.nubi-document-progress,.nubi-role-worker,.nubi-review-progress,.nubi-recovery-card,.nubi-file-card) { padding-block:var(--cx-space-3); }
+.desktop-shell .nubi-mail-history-bar { padding-block:var(--cx-space-2); }
+.desktop-shell .nubi-mail-history-row { padding-block:var(--cx-space-2); }
+.desktop-shell :is(.nubi-mail-history-detail,.nubi-skill-page-body) { padding-block:var(--cx-space-3); }
+.desktop-shell .desktop-pane :is(.desktop-git-summary,.desktop-git-commit,.desktop-list>.cx-kit-button) { padding-block:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.deck-dialog,.nubi-skill-menu) :is(code,pre) { overflow-wrap:anywhere; }
+@media(max-width:900px) {
+ .nubi-toolbar-navigation { gap:0; padding-right:var(--cx-space-2); }
+ .nubi-window-toolbar { gap:var(--cx-space-2); }
+}
+@media(pointer:coarse) {
+ .nubi-window-toolbar .nubi-icon-button.cx-kit-button { width:44px; min-width:44px; height:44px; min-height:44px; }
+ .desktop-shell .nubi-workbench :is(.context-trigger.cx-kit-button,.composer-send,.nubi-composer-stop) { width:44px; min-width:44px; height:44px; min-height:44px; }
+}
+@media(forced-colors:active) { .nubi-window-toolbar { background:Canvas; border-color:CanvasText; } }
+
+/* Named actions and comfortable spacing: shared by every Desktop surface. */
+:root:has(.desktop-shell) { --nubi-rail-width:72px; }
+:root:has(.desktop-shell) :is(.nubi-labelled-action,.nubi-modal-close) {
+ display:inline-flex; align-items:center; justify-content:center; gap:var(--cx-space-2);
+ width:auto; min-width:0; height:auto; min-height:36px; padding:var(--cx-space-2) var(--cx-space-3);
+ font-size:var(--deck-type-body); white-space:nowrap; flex:none;
+}
+.desktop-shell .nubi-workspace-navigation.nubi-workspace-rail { width:var(--nubi-rail-width); padding-inline:var(--cx-space-2); gap:var(--cx-space-2); overflow-y:auto; overflow-x:hidden; }
+.desktop-shell .nubi-workspace-rail .cx-kit-button { display:flex; flex-direction:column; gap:var(--cx-space-1); width:100%; height:auto; min-height:56px; padding:var(--cx-space-2) var(--cx-space-1); }
+.desktop-shell .nubi-workspace-rail .cx-kit-button > span:not(.nubi-account-avatar) { position:static; display:block; width:auto; height:auto; overflow:visible; clip:auto; clip-path:none; font-size:var(--deck-type-caption); word-break:keep-all; text-align:center; }
+.nubi-window-toolbar { gap:var(--cx-space-3); }
+.nubi-window-toolbar :is(.nubi-icon-button.cx-kit-button,.cx-action-button) { width:auto; min-width:0; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
+.nubi-toolbar-actions { gap:var(--cx-space-2); }
+.nubi-toolbar-account { flex:none; }
+.nubi-toolbar-account .nubi-account-button { display:inline-flex; align-items:center; gap:var(--cx-space-2); min-height:36px; padding:var(--cx-space-1) var(--cx-space-2); border:0; background:transparent; white-space:nowrap; }
+.nubi-toolbar-account .nubi-account-button:hover { background:var(--deck-blue-soft); }
+.desktop-shell .nubi-workbench :is(.composer-bottom,.composer-leading,.composer-tools) { flex-wrap:nowrap; gap:var(--nubi-action-gap); }
+.desktop-shell .nubi-workbench .composer-bottom { margin-top:var(--cx-space-2); }
+.desktop-shell .nubi-workbench :is(.composer-send,.nubi-composer-stop,.context-trigger.cx-kit-button,.nubi-approval-mode,.nubi-composer-skill-trigger,.nubi-reasoning-trigger,.composer-tools>.cx-kit-button) { width:auto; min-width:0; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-approval-mode span { display:inline; }
+.desktop-shell .nubi-workbench .model-trigger { width:auto; max-width:240px; }
+.desktop-shell .nubi-workbench .model-trigger .model-trigger-label { display:flex; max-width:180px; }
+.desktop-shell .nubi-workbench .context-trigger.cx-kit-button { width:44px; min-width:44px; height:44px; padding:calc(var(--cx-space-1) / 2); }
+.desktop-shell .nubi-workbench .context-ring { width:40px; height:40px; stroke:var(--deck-blue-deep); stroke-width:3; }
+.desktop-shell .nubi-workbench .context-ring text { fill:var(--deck-ink); font-size:var(--deck-type-caption); font-weight:800; font-variant-numeric:tabular-nums; }
+:root:has(.desktop-shell) :is(.nubi-marketplace-card,.nubi-custom-skill-row,.nubi-history-item.cx-kit-button,.nubi-file-link.cx-kit-button,.nubi-search-result.cx-kit-button,.model-option) { padding-block:var(--nubi-row-block); }
+:root:has(.desktop-shell) :is(.nubi-marketplace-card,.nubi-custom-skill-row) { grid-template-columns:24px minmax(0,1fr); row-gap:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.nubi-marketplace-actions,.nubi-custom-skill-actions) { grid-column:2; grid-row:auto; justify-content:flex-start; gap:var(--nubi-action-gap); margin-top:var(--cx-space-2); flex-wrap:wrap; }
+:root:has(.desktop-shell) :is(.nubi-library-toolbar,.nubi-custom-skill-toolbar,.nubi-provider-footer,.nubi-approval-actions,.nubi-skill-header-actions) { gap:var(--nubi-action-gap); flex-wrap:wrap; }
+:root:has(.desktop-shell) .nubi-skill-tabs { gap:var(--nubi-action-gap); margin-bottom:var(--cx-space-4); }
+:root:has(.desktop-shell) .nubi-skill-header-actions { flex-basis:100%; margin-left:0; }
+.nubi-actions-disclosure { min-width:0; }
+.nubi-actions-disclosure > summary { display:inline-flex; align-items:center; gap:var(--cx-space-2); min-height:36px; padding:var(--cx-space-2); list-style:none; cursor:pointer; font-size:var(--deck-type-body); border-radius:var(--nubi-box-radius); }
+.nubi-actions-disclosure > summary::-webkit-details-marker { display:none; }
+.nubi-actions-disclosure > summary:hover { background:var(--deck-soft); }
+.nubi-actions-disclosure > summary:focus-visible { outline:2px solid var(--deck-blue); outline-offset:2px; }
+.nubi-actions-disclosure-body { display:flex; flex-wrap:wrap; gap:var(--nubi-action-gap); margin-top:var(--cx-space-2); padding:var(--cx-space-3); background:var(--deck-soft); border-radius:var(--nubi-box-radius); }
+.nubi-actions-disclosure:not([open]) > .nubi-actions-disclosure-body { display:none; }
+.desktop-shell .nubi-session-row { grid-template-columns:minmax(0,1fr) auto; gap:var(--cx-space-2); }
+.desktop-shell .nubi-session-actions { width:auto; }
+.desktop-shell .nubi-session-actions .cx-kit-button { width:auto; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
+.desktop-shell .nubi-sidebar-quick-actions { flex-wrap:wrap; gap:var(--nubi-action-gap); justify-content:flex-start; }
+.desktop-shell .nubi-sidebar-quick-actions .cx-kit-button { width:auto; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.nubi-mail-pin,.nubi-mail-tag,.nubi-reasoning-reset,.nubi-reasoning-close,.question-submit,.question-send) { width:auto; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2) var(--cx-space-3); }
+.desktop-shell :is(.desktop-dock-tabs .cx-kit-button,.desktop-pane-controls .cx-kit-button,.desktop-file-actions .cx-kit-button) { width:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
+.desktop-shell .desktop-dock-header { flex-wrap:nowrap; }
+.desktop-shell .desktop-file-tabs { flex:1 1 0; min-width:0; }
+.desktop-shell .desktop-dock-header .desktop-pane-controls { flex:none; }
+.desktop-shell .desktop-file-tabs > .cx-kit-button > span { display:none; }
+.desktop-shell .desktop-pane-controls { margin-left:auto; gap:var(--cx-space-2); }
+.desktop-shell .desktop-git-heading { display:flex; align-items:center; gap:var(--cx-space-2); font-size:var(--deck-type-body); }
+.desktop-shell .desktop-list>.cx-kit-button { display:flex; flex-wrap:wrap; gap:var(--cx-space-2); }
+@media(max-width:700px) {
+ :root:has(.desktop-shell) { --nubi-toolbar-height:48px; }
+ .nubi-window-toolbar { grid-template-columns:minmax(0,1fr) auto; gap:var(--cx-space-1) var(--cx-space-2); padding-block:var(--cx-space-1); }
+ .nubi-window-toolbar .nubi-logo { gap:var(--cx-space-1); }
+ .nubi-toolbar-account .nubi-account-button > span:not(.nubi-account-avatar) { display:none; }
+ .nubi-toolbar-navigation { grid-column:1; grid-row:1; border:0; }
+ .nubi-toolbar-account { grid-column:2; grid-row:1; justify-self:end; }
+ .nubi-toolbar-actions { grid-column:2; grid-row:2; justify-self:end; }
+ .nubi-toolbar-context { grid-column:1; grid-row:2; }
+ .nubi-toolbar-state { display:none; }
+}
+@media(pointer:coarse) {
+ :root:has(.desktop-shell) :is(.nubi-labelled-action,.nubi-modal-close,.nubi-actions-disclosure>summary,.composer-tools>.cx-kit-button,.context-trigger.cx-kit-button,.nubi-approval-mode,.nubi-composer-skill-trigger,.nubi-reasoning-trigger) { min-height:44px; }
+}
+
+.desktop-shell .nubi-workbench .nubi-approval-mode-button.cx-kit-button { width:auto; min-width:0; padding-inline:var(--cx-space-2); gap:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-approval-mode-button > span { display:inline; }
+.desktop-shell :is(.desktop-browser-toolbar,.desktop-browser-find,.desktop-terminal-heading,.desktop-terminal-input,.desktop-git-branch) .cx-kit-button { display:inline-flex; align-items:center; width:auto; min-width:0; height:auto; min-height:36px; gap:var(--cx-space-2); padding:var(--cx-space-2); }
+.desktop-shell .desktop-browser-toolbar { flex-wrap:wrap; gap:var(--nubi-action-gap); }
+.desktop-shell .desktop-browser-address { flex-basis:100%; order:-1; }
+.desktop-shell .agent-input-actions { display:flex; flex-wrap:nowrap; gap:var(--nubi-action-gap); }
+.desktop-shell .agent-input-actions .composer-icon { width:36px; min-width:36px; height:36px; min-height:36px; padding:var(--cx-space-2); gap:0; }
+@media(pointer:coarse) { .desktop-shell .agent-input-actions .composer-icon { width:44px; min-width:44px; height:44px; min-height:44px; } }
+
+:root:has(.desktop-shell) :is(.nubi-window-toolbar .cx-kit-button,.nubi-action-label,.nubi-actions-disclosure>summary) { font-size:var(--deck-type-body); }
+.desktop-shell :is(.nubi-mail-local-action,.nubi-tools-shell-trigger,.desktop-dock-action,.desktop-explorer-toggle) { width:auto; min-width:0; height:auto; min-height:36px; padding:var(--cx-space-2); gap:var(--cx-space-2); }
+:root:has(.desktop-shell) :is(.nubi-mail-quick-filters,.nubi-marketplace-toolbar,.nubi-account-footer,.nubi-dialog-actions,.nubi-mail-dialog-actions) { gap:var(--nubi-action-gap); flex-wrap:wrap; }
+
+.desktop-shell .nubi-workbench .nubi-compose-card .model-trigger.cx-kit-button { width:auto; min-width:0; padding-inline:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button.cx-kit-button { width:auto; min-width:0; padding-inline:var(--cx-space-2); }
+.desktop-shell .message-actions .cx-action-button { width:auto; height:auto; min-height:36px; padding:var(--cx-space-2); gap:var(--cx-space-2); font-size:var(--deck-type-caption); }
+.desktop-shell .nubi-file-actions { flex-wrap:wrap; gap:var(--nubi-action-gap); }
+.desktop-shell .nubi-file-actions .cx-kit-button { width:auto; height:auto; min-height:36px; padding:var(--cx-space-2); gap:var(--cx-space-2); }
+@media(max-width:700px) {
+ .nubi-window-toolbar { display:grid; }
+ .desktop-shell[data-layout="split"] .nubi-workbench .nubi-workbench-content { min-width:0; }
+ .nubi-window-toolbar .nubi-toolbar-navigation { margin:0; padding-right:0; }
+ .nubi-window-toolbar .nubi-toolbar-context { min-width:0; }
+}
+
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .cx-action-button.nubi-labelled-action { width:auto; min-width:0; height:auto; min-height:36px; padding:var(--cx-space-2) var(--cx-space-3); gap:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-task .message-actions .cx-action-button { width:auto; min-width:0; height:auto; min-height:36px; padding:var(--cx-space-2); gap:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-task .message-actions { gap:var(--cx-space-1); flex-wrap:nowrap; }
+@media(pointer:coarse) {
+ :root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) :is(.cx-action-button.nubi-labelled-action,.nubi-modal-close,.nubi-approval-mode-button,.model-trigger,.desktop-pane-controls .cx-kit-button,.message-actions .cx-action-button) { min-height:44px; }
+}
+
+
+
+:root:has(.desktop-shell) .nubi-skill-tabs [role=tab] { display:inline-flex; align-items:center; justify-content:center; gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .model-option .model-option-text { flex:1; min-width:0; text-align:left; }
+.desktop-shell .desktop-tools-shell-trigger.cx-kit-button { width:auto; min-width:0; min-height:36px; padding:var(--cx-space-2); gap:var(--cx-space-2); }
+/* Auxiliary controls previously inherited their icon-only 12px style. */
+:root:has(.desktop-shell) .desktop-pane .cx-kit-button { font-size:var(--deck-type-body); line-height:var(--deck-line-body); }
+:root:has(.desktop-shell) .desktop-pane :is(.desktop-pane-controls,.desktop-dock-tabs,.desktop-browser-toolbar,.desktop-browser-find,.desktop-terminal-heading,.desktop-terminal-input,.desktop-git-branch) .cx-kit-button,
+:root:has(.desktop-shell) .desktop-pane :is(.desktop-dock-action,.desktop-tools-shell-trigger,.desktop-explorer-toggle).cx-kit-button {
+ width:auto; min-width:0; height:auto; min-height:36px; padding:var(--cx-space-2); gap:var(--cx-space-2);
+}
+@media(pointer:coarse) {
+ :root:has(.desktop-shell) .desktop-pane .cx-kit-button { min-height:44px; }
+}
+
+/* Familiar utility controls use icons; decisions and selected values keep names. */
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog,.nubi-skill-menu) :is([data-icon-only],.nubi-modal-close,.cx-panel-header-actions .cx-action-button),
+.desktop-shell :is(.desktop-pane-controls,.desktop-browser-toolbar,.desktop-browser-find) .cx-kit-button {
+ display:inline-flex; align-items:center; justify-content:center; flex:none;
+ width:36px; min-width:36px; height:36px; min-height:36px; padding:var(--cx-space-2); gap:0;
+}
+.desktop-shell .nubi-workspace-rail .cx-kit-button:not(:has(>span)) { min-height:44px; height:44px; }
+:root:has(.desktop-shell) .nubi-actions-disclosure > summary { justify-content:center; min-width:36px; min-height:36px; padding:var(--cx-space-2); }
+@media(pointer:coarse) {
+ :root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog,.nubi-skill-menu) :is([data-icon-only],.nubi-modal-close,.cx-panel-header-actions .cx-action-button),
+ .desktop-shell :is(.desktop-pane-controls,.desktop-browser-toolbar,.desktop-browser-find) .cx-kit-button { width:44px; min-width:44px; height:44px; min-height:44px; }
+}
+
+/* Chat-first layout: a quiet reading column and one compact composer surface. */
+.desktop-shell .nubi-workbench[data-workspace-screen="conversation"] .nubi-workbench-content { background:var(--deck-card); }
+.desktop-shell .nubi-workbench .nubi-followup-stack::before { display:none; }
+/* Bubble and metadata share normal flow, including inputs consumed from the queue. */
+.desktop-shell .nubi-workbench .nubi-task .message-user { background:transparent; border:0; border-radius:0; padding:0; max-width:85%; box-shadow:none; margin-bottom:16px; flex-shrink:0; }
+.desktop-shell .nubi-user-bubble { background:color-mix(in srgb,var(--deck-ink) 5%,var(--deck-card)); border-radius:16px; padding:10px 16px; }
+.desktop-shell .nubi-workbench .nubi-task .message-user > .message-actions { position:static; justify-content:flex-end; padding:0; margin-top:4px; flex-wrap:nowrap; }
+.desktop-shell .nubi-workbench .nubi-task .message-actions .cx-action-button { min-width:28px; width:28px; min-height:28px; height:28px; padding:4px; }
+.desktop-shell .nubi-pending-footer { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:4px; }
+.desktop-shell .nubi-pending-footer .agent-input-actions { flex-wrap:nowrap; }
+.desktop-shell .nubi-pending-footer .agent-input-actions .composer-icon { width:28px; min-width:28px; min-height:28px; height:28px; padding:4px; }
+.desktop-shell .nubi-pending-footer .agent-input-actions .composer-icon > span { display:none; }
+@media(pointer:coarse) {
+ .desktop-shell .nubi-workbench .nubi-task .message-actions .cx-action-button,
+ .desktop-shell .nubi-pending-footer .agent-input-actions .composer-icon { min-width:44px; width:44px; min-height:44px; height:44px; }
+}
+.desktop-shell .nubi-workbench .nubi-task .message-assistant { background:transparent; border:0; padding:0; margin-block:24px; box-shadow:none; }
+.desktop-shell .nubi-workbench .message-assistant .message-body > p:first-child strong { color:var(--deck-ink); }
+.desktop-shell .nubi-workbench .answer-model { color:var(--deck-sub); gap:8px; margin-bottom:12px; }
+.desktop-shell .nubi-workbench .answer-model .nubi-answer-mark { width:20px; height:20px; }
+.desktop-shell .nubi-workbench .message-actions { color:var(--deck-sub); margin-top:4px; }
+.desktop-shell .nubi-workbench .composer.nubi-compose-card { padding:0; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.desktop-shell .nubi-workbench .nubi-composer-surface { padding:var(--nubi-composer-block) var(--cx-space-3); border:1px solid var(--deck-line); border-radius:18px; background:var(--deck-card); }
+.desktop-shell .nubi-workbench .nubi-composer-surface:hover { border-color:var(--deck-line); }
+.desktop-shell .nubi-workbench .nubi-composer-surface:focus-within { border-color:color-mix(in srgb,var(--deck-blue) 48%,var(--deck-line)); box-shadow:0 0 0 3px var(--deck-blue-soft); }
+.desktop-shell .nubi-workbench .composer textarea.aipro-message-input { display:block; min-height:var(--nubi-composer-input-min); padding:var(--cx-space-1); line-height:var(--nubi-reading-leading); }
+.desktop-shell .nubi-workbench .nubi-followup-stack .nubi-followup { margin-top:0; }
+.desktop-shell .nubi-workbench .composer-bottom { display:flex; align-items:center; flex-wrap:nowrap; gap:var(--nubi-control-gap); margin-top:var(--cx-space-1); }
+.desktop-shell .nubi-workbench .composer-leading { flex:1 1 auto; min-width:0; gap:var(--nubi-control-gap); align-items:center; }
+.desktop-shell .nubi-workbench .composer-tools { flex:none; margin-left:auto; gap:var(--nubi-control-gap); align-self:flex-end; }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-trigger.cx-kit-button { background:transparent; color:var(--nubi-reasoning-ink,var(--deck-sub)); border:0; box-shadow:none; }
+.desktop-shell .nubi-workbench .model-trigger[data-provider="aipro"] { --nubi-model-surface:linear-gradient(120deg,var(--provider-aipro-start),var(--provider-aipro-end)); --nubi-model-ink:var(--deck-blue-deep); }
+.desktop-shell .nubi-workbench .model-trigger[data-provider="chatgpt"] { --nubi-model-surface:linear-gradient(120deg,var(--deck-card),var(--provider-chatgpt)); --nubi-model-ink:var(--deck-ink); }
+.desktop-shell .nubi-workbench .model-trigger[data-provider="fabrix"] { --nubi-model-surface:linear-gradient(120deg,var(--provider-fabrix-start),var(--provider-fabrix-end)); --nubi-model-ink:var(--provider-fabrix-ink); }
+.desktop-shell .nubi-workbench .model-trigger.cx-kit-button { background:var(--nubi-model-surface,var(--deck-blue-soft)); color:var(--nubi-model-ink,var(--deck-ink)); border:0; box-shadow:none; }
+.desktop-shell .nubi-workbench .model-trigger-label strong { color:inherit; }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-trigger.cx-kit-button:hover { background:var(--nubi-reasoning-soft,var(--deck-blue-soft)); }
+.desktop-shell .nubi-workbench .model-trigger.cx-kit-button:is(:hover,[aria-expanded="true"]) { background:var(--nubi-model-surface,var(--deck-blue-soft)); color:var(--nubi-model-ink,var(--deck-ink)); box-shadow:inset 0 0 0 1px var(--deck-line); }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button.cx-kit-button { color:var(--deck-sub); background:transparent; border:0; }
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-tools > [type="submit"] { border-radius:50%; }
+@media(forced-colors:active) { .desktop-shell .nubi-workbench .nubi-composer-surface { border-color:CanvasText; } }
+
+.nubi-toolbar-actions .nubi-icon-button { position:relative; }
+.nubi-toolbar-actions .nubi-icon-button .status-spinner { position:absolute; right:2px; bottom:2px; width:10px; height:10px; }
+
+/* Mail: a scanning list, a focused reader and a stable top navigation. */
+.desktop-shell .nubi-mail-history { padding:var(--cx-space-4) var(--nubi-group-gap); background:var(--deck-card); container-type:inline-size; container-name:nubi-mail-view; }
+.desktop-shell .nubi-mail-history-bar { padding-bottom:var(--cx-space-3); flex-wrap:wrap; }
+.desktop-shell .nubi-mail-history-body { margin-top:var(--cx-space-4); gap:var(--nubi-section-gap); grid-template-columns:minmax(300px,38%) minmax(0,1fr); overflow:hidden; }
+.desktop-shell .nubi-mail-history:not([data-layout=table])[data-selected=false] .nubi-mail-history-body { grid-template-columns:minmax(0,1fr); }
+.desktop-shell .nubi-mail-history:not([data-layout=table])[data-selected=false] .nubi-mail-history-detail { display:none; }
+.desktop-shell .nubi-mail-history-list { max-height:none; container-type:inline-size; container-name:mail-list; }
+.desktop-shell .nubi-mail-search { gap:var(--nubi-action-gap); }
+.desktop-shell .nubi-mail-results { padding:0; }
+.desktop-shell .nubi-mail-result-toolbar { flex-wrap:wrap; justify-content:flex-start; gap:var(--nubi-control-gap); min-height:40px; }
+.desktop-shell .nubi-mail-pagination { margin-left:auto; padding:0; gap:var(--cx-space-1); flex-wrap:nowrap; }
+.nubi-mail-page-options { position:relative; }
+.nubi-mail-page-options>summary { display:flex; align-items:center; gap:calc(var(--cx-space-1) * 1.5); padding:var(--cx-space-2); list-style:none; cursor:pointer; border-radius:var(--cx-space-2); font-variant-numeric:tabular-nums; }
+.nubi-mail-page-options>summary:hover { background:var(--deck-blue-soft); }
+.nubi-mail-page-popover { position:absolute; right:0; top:100%; z-index:12; width:230px; max-width:calc(100vw - 40px); padding:var(--cx-space-4); display:grid; gap:var(--nubi-mail-row-block); background:var(--deck-card); border:1px solid var(--deck-line); border-radius:var(--deck-control-radius); box-shadow:var(--deck-shadow); }
+.nubi-mail-page-popover>label { display:flex; align-items:center; justify-content:space-between; gap:var(--nubi-action-gap); }
+.nubi-mail-select { width:var(--nubi-mail-selection-size); min-width:var(--nubi-mail-selection-size); min-height:var(--nubi-mail-selection-size); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.nubi-mail-select input { width:17px; height:17px; accent-color:var(--deck-blue); cursor:pointer; }
+.nubi-mail-select:has(input:focus-visible) { outline:2px solid var(--deck-blue-deep); outline-offset:-3px; border-radius:var(--cx-space-2); }
+.nubi-mail-row { display:flex; align-items:center; border-bottom:1px solid var(--deck-line); border-radius:var(--cx-space-2); }
+.nubi-mail-row[data-selected=true] { background:var(--deck-blue-soft); }
+.desktop-shell .nubi-mail-row .nubi-mail-result { flex:1; min-width:0; display:grid; grid-template-columns:180px minmax(0,1fr) auto; column-gap:var(--nubi-group-gap); row-gap:var(--cx-space-1); padding:var(--nubi-mail-row-block) var(--cx-space-3); margin:0; border-radius:var(--cx-space-2); background:transparent; }
+.desktop-shell .nubi-mail-row .nubi-mail-result[aria-pressed=true] { background:var(--deck-blue-soft); }
+.desktop-shell .nubi-mail-result-meta { display:contents; }
+.desktop-shell .nubi-mail-result-meta>span { grid-column:1; grid-row:1 / span 2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; align-self:center; }
+.desktop-shell .nubi-mail-result-meta>time { grid-column:3; grid-row:1; justify-self:end; white-space:nowrap; }
+.desktop-shell .nubi-mail-result strong { grid-column:2; grid-row:1; color:var(--deck-ink); font-weight:600; }
+.desktop-shell .nubi-mail-result p { grid-column:2; grid-row:2; display:block; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+.desktop-shell .nubi-mail-result-location { grid-column:3; grid-row:2; justify-content:flex-end; flex-wrap:wrap; font-size:var(--deck-type-caption); }
+.desktop-shell .nubi-mail-result-location:empty { display:none; }
+.desktop-shell .nubi-mail-search[data-density=compact] .nubi-mail-result { padding-block:var(--cx-space-2); }
+.desktop-shell .nubi-mail-search[data-density=compact] .nubi-mail-result p { display:none; }
+.nubi-mail-reader-navigation { display:flex; align-items:center; gap:var(--nubi-control-gap); position:sticky; top:0; z-index:2; background:var(--deck-card); padding:0 0 var(--cx-space-3); }
+.nubi-mail-reader-navigation>span { margin-left:auto; font:var(--deck-font-caption); color:var(--deck-sub); font-variant-numeric:tabular-nums; }
+.nubi-mail-reader-content { min-width:0; }
+.nubi-mail-reader-envelope { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--cx-space-1) var(--cx-space-3); margin-block:var(--cx-space-3); font:var(--deck-font-caption); color:var(--deck-sub); overflow-wrap:anywhere; }
+.nubi-mail-sender { display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--cx-space-1) var(--cx-space-2); min-width:0; }
+.nubi-mail-sender strong { color:var(--deck-ink); font:var(--deck-font-label); font-weight:700; }
+.nubi-mail-sent-at { margin-left:auto; color:var(--deck-sub); }
+.nubi-mail-addresses { flex-basis:100%; display:grid; gap:var(--cx-space-1); margin:0; font:var(--deck-font-caption); color:var(--deck-sub); }
+.nubi-mail-addresses>div { display:grid; grid-template-columns:5em minmax(0,1fr); gap:var(--cx-space-2); }
+.nubi-mail-addresses dt { font-weight:500; }
+.nubi-mail-addresses dd { min-width:0; margin:0; overflow-wrap:anywhere; }
+.desktop-shell .nubi-mail-reader-actions { display:flex; align-items:center; flex-wrap:wrap; gap:var(--cx-space-2); padding-block:var(--cx-space-2); margin-bottom:var(--cx-space-4); border-bottom:1px solid var(--deck-line); }
+.nubi-mail-reader-utilities { display:flex; flex-wrap:wrap; align-items:center; gap:var(--cx-space-2); margin-left:auto; }
+.desktop-shell .nubi-mail-reader-actions .nubi-mail-ask { margin:0; min-height:44px; padding:var(--cx-space-2) var(--cx-space-3); border:0; border-radius:var(--deck-control-radius); background:transparent; color:var(--deck-blue-deep); font:var(--deck-font-label); font-weight:600; }
+.desktop-shell .nubi-mail-reader-actions .nubi-mail-ask:hover:not(:disabled) { background:var(--deck-blue-soft); }
+.desktop-shell .nubi-mail-reader-utilities .nubi-mail-local-action { min-width:44px; min-height:44px; justify-content:center; }
+.desktop-shell .nubi-mail-reader-utilities .nubi-mail-local-action>span { display:none; }
+.desktop-shell .nubi-mail-reader-heading h2 { font-size:var(--deck-type-heading); line-height:var(--deck-line-heading); }
+.desktop-shell .nubi-mail-history-detail { padding:0 var(--cx-space-1) var(--cx-space-4); }
+.desktop-shell .nubi-mail-reader-text { line-height:var(--nubi-reading-leading); }
+.desktop-mail-source { overflow:auto; padding:var(--nubi-group-gap); min-height:0; }
+.desktop-mail-source-switch { display:flex; gap:var(--nubi-control-gap); align-items:center; padding-bottom:var(--cx-space-4); }
+.desktop-mail-source-switch select { min-width:0; flex:1; padding:var(--cx-space-2); border:1px solid var(--deck-line); background:var(--deck-card); border-radius:var(--cx-space-2); color:var(--deck-ink); font:var(--deck-font-label); }
+@container mail-list (max-width:680px) {
+ .desktop-shell .nubi-mail-row .nubi-mail-result { grid-template-columns:minmax(0,1fr) auto; column-gap:var(--nubi-action-gap); }
+ .desktop-shell .nubi-mail-result-meta>span { grid-column:1; grid-row:1; }
+ .desktop-shell .nubi-mail-result-meta>time { grid-column:2; grid-row:1; }
+ .desktop-shell .nubi-mail-result strong { grid-column:1 / -1; grid-row:2; }
+ .desktop-shell .nubi-mail-result p { grid-column:1 / -1; grid-row:3; }
+ .desktop-shell .nubi-mail-result-location { grid-column:1 / -1; grid-row:4; justify-content:flex-start; }
+}
+@container nubi-mail-view (max-width:760px) {
+ .desktop-shell .nubi-mail-history:not([data-layout=table])[data-selected=true] .nubi-mail-history-body { grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr); }
+ .desktop-shell .nubi-mail-history:not([data-layout=table])[data-selected=true] .nubi-mail-history-list { display:none; }
+}
+@media(pointer:coarse) { .nubi-mail-select { min-width:44px; min-height:44px; } }
+.nubi-mail-evidence-group>summary { display:flex; align-items:center; gap:var(--nubi-control-gap); width:fit-content; padding:calc(var(--cx-space-1) * 1.5) var(--cx-space-2); margin-bottom:var(--cx-space-2); border-radius:var(--cx-space-2); color:var(--deck-blue-deep); background:var(--deck-blue-soft); font:var(--deck-font-caption); cursor:pointer; list-style:none; }
+.nubi-mail-evidence-group .nubi-mail-evidence-chips { max-height:180px; overflow:auto; }
+.desktop-shell .nubi-mail-results .nubi-mail-row { padding:0; gap:0; }
+.desktop-shell .desktop-mail-source .nubi-mail-reader-text { font:var(--deck-font-body); font-size:var(--nubi-reading-size); line-height:var(--nubi-reading-leading); color:var(--deck-ink); white-space:pre-wrap; overflow-wrap:anywhere; margin:var(--nubi-group-gap) 0; padding:0; }
+.desktop-shell .desktop-mail-source .nubi-mail-reader-heading { padding:0; background:transparent; border:0; flex-wrap:wrap; }
+.desktop-shell .desktop-mail-source .nubi-mail-reader-heading h2 { flex-basis:100%; font-size:var(--deck-type-heading); line-height:var(--deck-line-heading); }
+
+.nubi-mail-login-context { margin-top:var(--nubi-section-gap); text-align:left; min-width:0; }
+.nubi-mail-login-context>p { font:var(--deck-font-caption); color:var(--deck-sub); margin:0 0 var(--nubi-control-gap); }
+
+.desktop-shell .nubi-mail-reader-text { white-space:pre-wrap; overflow-wrap:anywhere; font-size:var(--nubi-reading-size); }
+.desktop-shell .nubi-mail-reader-text a { display:inline; color:var(--deck-blue-deep); text-decoration:underline; text-underline-offset:.2em; }
+.desktop-shell .nubi-mail-reader-text a>svg { vertical-align:middle; margin-inline:var(--cx-space-1); }
+.desktop-shell .nubi-mail-reader-text a:focus-visible { outline:2px solid var(--deck-blue); outline-offset:2px; }
+.desktop-shell .nubi-mail-raw-text { max-height:24rem; overflow:auto; }
+
+.nubi-mail-image-preview { display: block; max-width: 100%; height: auto; object-fit: contain; margin: var(--cx-space-4, 1rem) auto; }
+
+/* The welcome bird flies on one gentle path. Its greeting adds only a
+   small roll, so the old stacked translation/bounce does not return. */
+.desktop-shell .nubi-start .welcome { width:100%; min-width:0; container-type:inline-size; }
+.desktop-shell .nubi-workbench .nubi-start .welcome .welcome-title { font-size:clamp(1.125rem,6cqi,1.75rem); }
+:root:has(.desktop-shell) { --nubi-bird-flight:8s; --nubi-bird-greeting:1.2s; --nubi-bird-blink:8s; }
+:root:has(.desktop-shell) .welcome-emblem,
+:root:has(.desktop-shell) .welcome-emblem::before,
+:root:has(.desktop-shell) .agent-mark[data-mood],
+:root:has(.desktop-shell) .agent-mark[data-mood] > img { animation:none; transform:none; }
+:root:has(.desktop-shell) .agent-mark[data-mood] > img { transition:opacity 120ms ease-out; }
+:root:has(.desktop-shell) .agent-mark:is([data-mood="idle"],[data-mood="working"]) .bird-base { opacity:1; }
+:root:has(.desktop-shell) .agent-mark:is([data-mood="idle"],[data-mood="working"]) :is(.bird-wing,.bird-smile) { opacity:0; }
+.desktop-shell .nubi-workbench[data-host-layout="integrated"][data-workspace-screen="welcome"] .deck-blob { animation:none; }
+/* The outer art is a stable hover target, even while the bird is moving. */
+:root:has(.desktop-shell) .welcome-art:hover .agent-mark:is([data-mood="idle"],[data-mood="sleep"],[data-mood="celebrate"]) :is(.bird-base,.bird-blink,.bird-wing,.bird-dream) { opacity:0; animation:none; }
+:root:has(.desktop-shell) .welcome-art:hover .agent-mark:is([data-mood="idle"],[data-mood="sleep"],[data-mood="celebrate"]) .bird-smile { opacity:1; animation:none; }
+@media(prefers-reduced-motion:no-preference) {
+ :root:has(.desktop-shell) .welcome-emblem:has(> .agent-mark:is([data-mood="idle"],[data-mood="working"],[data-mood="celebrate"])) { animation:nubi-bird-flight var(--nubi-bird-flight) ease-in-out infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="idle"] .bird-base { animation:bird-idle-base var(--nubi-bird-flight) linear infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="idle"] .bird-wing { animation:bird-idle-wing var(--nubi-bird-flight) linear infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="idle"] .bird-smile { animation:bird-idle-smile var(--nubi-bird-flight) linear infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="idle"] .bird-blink { animation:bird-blink var(--nubi-bird-flight) linear infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="working"] .bird-base { animation:bird-wing-base 2.8s linear infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="working"] .bird-wing { animation:bird-wing 2.8s linear infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="celebrate"],
+ :root:has(.desktop-shell) .welcome-art:hover .agent-mark:is([data-mood="idle"],[data-mood="sleep"],[data-mood="celebrate"]) { animation:nubi-bird-dance var(--nubi-bird-greeting) ease-in-out infinite; transform-origin:50% 65%; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="sleep"] { animation:bird-breathe 3.6s ease-in-out infinite; }
+ :root:has(.desktop-shell) .welcome-emblem > .agent-mark[data-mood="sad"] { animation:bird-sigh 2.8s ease-in-out 1; }
+}
+@keyframes nubi-bird-flight { 0%,100% { transform:translate(0,0); } 20% { transform:translate(4px,-8px); } 50% { transform:translate(0,-4px); } 75% { transform:translate(-4px,-6px); } }
+@keyframes nubi-bird-dance { 0%,100% { transform:rotate(0); } 25% { transform:rotate(-4deg); } 75% { transform:rotate(4deg); } }
+:root:has(.desktop-shell):is([data-motion="paused"],[data-motion-visibility="hidden"]) .desktop-shell :is(.welcome-emblem,.agent-mark[data-mood],.agent-mark[data-mood] *),
+:root:has(.desktop-shell):has(.cx-panel-backdrop) .desktop-shell :is(.welcome-emblem,.agent-mark[data-mood],.agent-mark[data-mood] *) { animation-play-state:paused; }
+@media(prefers-reduced-motion:reduce) { :root:has(.desktop-shell) .agent-mark[data-mood] > img { transition:none; } }
+
+/* Secondary actions float above the list. Opening them never changes row geometry. */
+.nubi-actions-disclosure-body[popover] { position:fixed; inset:auto; margin:0; width:max-content; min-width:156px; max-width:calc(100vw - 16px); max-height:calc(100dvh - 16px); overflow:auto; padding:6px; border:1px solid var(--deck-line); border-radius:var(--deck-control-radius); background:var(--deck-card); color:var(--deck-ink); box-shadow:var(--deck-shadow); }
+.nubi-actions-disclosure-body[popover]:not(:popover-open) { display:none; }
+.nubi-actions-disclosure-body[popover]:popover-open { display:flex; flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:2px; }
+.nubi-actions-disclosure-body[popover] :is(.cx-button,.cx-kit-button) { width:100%; min-width:0; min-height:36px; height:auto; justify-content:flex-start; gap:10px; padding:8px 10px; white-space:nowrap; }
+.desktop-shell .nubi-session-actions .nubi-actions-disclosure[open] { opacity:1; pointer-events:auto; }
+.nubi-review-evidence { margin:4px 0; color:var(--deck-muted); font-size:var(--deck-type-body); }
+.nubi-review-evidence summary { display:flex; align-items:center; gap:8px; width:fit-content; cursor:pointer; list-style:none; padding:6px 0; }
+.nubi-review-evidence summary::-webkit-details-marker { display:none; }
+.nubi-review-evidence ol { margin:8px 0; padding-left:24px; }
+.nubi-review-evidence li { margin:8px 0; line-height:1.6; }
+.nubi-agent-activity .agent-trace > ol { max-height:320px; overflow:auto; overscroll-behavior:contain; }
+@media (pointer:coarse) { .nubi-actions-disclosure-body[popover] :is(.cx-button,.cx-kit-button) { min-height:44px; } }
+
+/* Source rows share fixed icon/number tracks; the heading never offsets row one. */
+.desktop-shell .nubi-answer-sources { margin-top:16px; }
+.desktop-shell :is(.nubi-cited-sources,.nubi-consulted-sources) { display:grid; grid-template-columns:minmax(0,1fr); gap:6px; align-items:stretch; }
+.desktop-shell .nubi-source-label { margin:0 0 2px; color:var(--deck-sub); font-weight:600; }
+.desktop-shell .nubi-workbench .nubi-answer-sources .nubi-answer-source { display:grid; grid-template-columns:16px 2ch minmax(0,1fr) auto 14px; align-items:center; justify-content:stretch; gap:10px; width:100%; min-width:0; min-height:38px; padding:8px 12px; text-align:left; background:transparent; color:var(--deck-blue-deep); }
+.desktop-shell .nubi-workbench .nubi-answer-sources .nubi-answer-source:hover { background:var(--deck-blue-soft); }
+.desktop-shell .nubi-answer-source .nubi-source-number { text-align:center; font-variant-numeric:tabular-nums; color:var(--deck-blue-deep); }
+.desktop-shell .nubi-answer-source .nubi-source-title { font-weight:500; }
+.desktop-shell .nubi-answer-source .nubi-source-meta { display:flex; align-items:center; gap:8px; max-width:160px; }
+.desktop-shell .nubi-answer-source .nubi-source-meta small { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.desktop-shell .nubi-answer-source .nubi-source-attention { display:flex; align-items:center; gap:4px; color:var(--deck-sub); }
+@container (max-width:480px) {
+ .desktop-shell .nubi-workbench .nubi-answer-sources .nubi-answer-source { gap:6px; padding:8px; }
+ .desktop-shell .nubi-answer-source .nubi-source-meta { max-width:110px; }
+}
+
+.nubi-document-worker-heading :is(strong,span) { display:inline-flex; align-items:center; gap:8px; }
+.nubi-document-worker-heading strong { color:var(--deck-blue-deep); }
+.nubi-analysis-history .nubi-document-question { font-weight:600; color:var(--deck-ink); }
+
+.nubi-role-progress > details > ol > li { background:transparent; border-radius:0; padding:12px 0; border-top:1px solid var(--deck-line); }
+.nubi-role-progress > details > ol { gap:8px; }
+.nubi-role-progress summary { padding-block:6px; }
+.nubi-role-progress .nubi-document-question { margin:6px 0 8px; }
+.nubi-role-progress .nubi-document-worker-heading { margin-bottom:4px; }
+
+/* Controls stay on one row. Less essential names yield to their named icons. */
+:root:has(.desktop-shell) { --nubi-control-icon:20px; --nubi-navigation-icon:24px; --nubi-warning-ink:color-mix(in srgb,var(--deck-orange) 42%,var(--deck-ink)); --nubi-ai-ink:color-mix(in srgb,var(--deck-violet) 75%,var(--deck-ink)); }
+.desktop-shell .nubi-workspace-navigation.nubi-workspace-rail { --nubi-icon-size:24px; align-items:center; padding:16px 8px; gap:20px; }
+.desktop-shell .nubi-workspace-navigation.nubi-workspace-rail .cx-kit-button { flex:none; width:48px; min-width:48px; height:48px; min-height:48px; padding:12px; gap:0; border-radius:14px; }
+.desktop-shell .nubi-workspace-rail :is(svg,.nubi-team-mark) { width:var(--nubi-navigation-icon); height:var(--nubi-navigation-icon); flex:none; }
+.desktop-shell .nubi-workspace-rail .nubi-rail-team { color:var(--nubi-ai-ink); margin-top:auto; }
+.desktop-shell .desktop-team-heading { display:flex; align-items:center; }
+.desktop-shell .desktop-team-heading img { width:24px; height:24px; object-fit:contain; }
+.desktop-shell .nubi-workbench .nubi-compose-card { --nubi-composer-icon-size:36px; }
+.desktop-shell .nubi-workbench .nubi-compose-card :is(.composer-bottom,.composer-leading,.composer-tools) { flex-wrap:nowrap; gap:6px; align-items:center; }
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-tools { align-self:center; }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode { display:inline-flex; align-items:center; padding:0; }
+.desktop-shell .nubi-workbench .nubi-compose-card .model-trigger-label { display:flex; min-width:0; overflow:hidden; white-space:nowrap; }
+.desktop-shell .nubi-workbench .nubi-compose-card .model-trigger-label > * { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button[data-mode=commands] { color:var(--nubi-warning-ink); background:var(--deck-orange-soft); }
+.desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-trigger > svg { color:var(--nubi-reasoning-ink,var(--nubi-ai-ink)); }
+@container workspace-composer (max-width:640px) {
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button.cx-kit-button { width:36px; min-width:36px; padding-inline:8px; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button > :is(span,svg:last-child) { display:none; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .model-trigger.cx-kit-button { max-width:170px; }
+}
+@container workspace-composer (max-width:460px) {
+ .desktop-shell .nubi-workbench .nubi-compose-card .model-trigger.cx-kit-button { width:36px; min-width:36px; padding-inline:8px; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .model-trigger :is(.model-trigger-label,svg:last-child) { display:none; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-trigger.cx-kit-button { width:36px; min-width:36px; padding-inline:8px; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-label { display:none; }
+}
+/* Dialog titles and action labels never turn into stacked syllables. */
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog,.nubi-skill-menu,.nubi-reasoning-menu,.nubi-approval-mode-menu,.nubi-applied-menu) :is(button,[role=tab],summary) { white-space:nowrap; overflow-wrap:normal; }
+:root:has(.desktop-shell) :is(.deck-dialog,.nubi-skill-menu,.nubi-reasoning-menu,.nubi-approval-mode-menu,.nubi-applied-menu) :is(h2,.nubi-panel-title,.nubi-panel-title>span:last-child,.model-option-text,.nubi-skill-menu-name,.nubi-action-label) { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+:root:has(.desktop-shell) :is(.deck-dialog,.nubi-skill-menu,.nubi-reasoning-menu,.nubi-approval-mode-menu) :is(button,[role=tab]) > svg { flex-shrink:0; }
+:root:has(.desktop-shell) :is(.nubi-library-toolbar,.nubi-custom-skill-toolbar,.nubi-provider-footer,.nubi-approval-actions,.nubi-skill-header-actions,.nubi-marketplace-actions,.nubi-custom-skill-actions,.nubi-account-footer,.nubi-dialog-actions,.nubi-mail-dialog-actions,.provider-account-actions,.nubi-reasoning-heading,.nubi-skill-tabs .agent-tabs) { flex-wrap:nowrap; min-width:0; gap:8px; }
+:root:has(.desktop-shell) .deck-dialog :is(.model-option,.nubi-history-item,.nubi-custom-skill-row,.nubi-marketplace-card) strong { color:var(--deck-ink); font-weight:600; }
+:root:has(.desktop-shell) .deck-dialog .model-option[aria-pressed=true] { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
+:root:has(.desktop-shell) .deck-dialog .model-option-text { font-weight:500; }
+:root:has(.desktop-shell) .deck-dialog .model-option[aria-pressed=true] .model-option-text { font-weight:650; }
+:root:has(.desktop-shell) .nubi-approval-mode-item { align-items:center; }
+:root:has(.desktop-shell) .nubi-approval-mode-item > span { display:block; min-width:0; }
+:root:has(.desktop-shell) .nubi-approval-mode-item strong { white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-approval-mode-item[aria-checked=true] { background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-approval-mode-description { padding:8px 12px; color:var(--deck-sub); font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-approval-mode-note { color:var(--nubi-warning-ink); background:var(--deck-orange-soft); border-radius:10px; padding:10px 12px; }
+@media(max-width:700px) {
+ .nubi-window-toolbar { display:flex; flex-wrap:nowrap; gap:4px; padding-block:0; }
+ .nubi-toolbar-navigation { padding:0; border:0; }
+ .nubi-window-toolbar .nubi-toolbar-context { flex:1; }
+ .nubi-window-toolbar .nubi-logo :is(.nubi-logo-product,.nubi-logo-version) { display:none; }
+ .nubi-window-toolbar .nubi-toolbar-actions { gap:2px; }
+ .nubi-window-toolbar .nubi-toolbar-actions .cx-kit-button > span:not(.status-spinner) { display:none; }
+}
+@media(max-width:520px) {
+ :root:has(.desktop-shell) .deck-dialog .nubi-action-label { display:none; }
+ :root:has(.desktop-shell) .deck-dialog .nubi-skill-tabs [role=tab] { padding-inline:8px; gap:6px; }
+ :root:has(.desktop-shell) .deck-dialog .nubi-skill-tabs [role=tab] svg { display:none; }
+}
+
+:root:has(.desktop-shell) .deck-dialog { container-type:inline-size; container-name:workspace-dialog; }
+:root:has(.desktop-shell) .deck-dialog .nubi-skill-description { display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+:root:has(.desktop-shell) .deck-dialog .provider-tab-icon { min-width:0; }
+:root:has(.desktop-shell) .deck-dialog .provider-tab-name { white-space:nowrap; }
+@container workspace-dialog (max-width:26rem) {
+ .provider-tab-icon.with-name { gap:0; }
+ .provider-tab-icon .provider-tab-name { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+ .provider-tab-icon .connection-logo { width:24px; height:24px; }
+ .provider-account-actions .cx-action-label { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+}
+
+/* A conversation hit has a fixed title row and one matching excerpt, never a wrapping toolbar. */
+:root:has(.desktop-shell) .nubi-history-row .nubi-history-item { display:flex; flex-direction:column; align-items:stretch; gap:6px; padding:12px; width:100%; text-align:left; }
+:root:has(.desktop-shell) .nubi-history-heading { display:flex; align-items:center; gap:10px; min-width:0; }
+:root:has(.desktop-shell) .nubi-history-heading > svg { flex:none; color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-history-heading > strong { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-history-excerpt { display:flex; align-items:center; gap:8px; min-width:0; font:var(--deck-font-caption); color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-history-excerpt > span:last-child { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-history-speaker { flex:none; color:var(--deck-blue-deep); font-weight:600; }
+:root:has(.desktop-shell) .nubi-history-item mark { background:var(--deck-orange-soft); color:var(--nubi-warning-ink); font-weight:700; border-radius:3px; }
+:root:has(.desktop-shell) .nubi-history-search-status { display:flex; justify-content:space-between; gap:12px; font:var(--deck-font-caption); color:var(--deck-sub); margin-bottom:12px; }
+:root:has(.desktop-shell) .nubi-history-search-status > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+
+/* Compact action trays: one horizontal row, with names retained as tooltips. */
+.nubi-actions-disclosure-body[popover][data-inline] { min-width:0; width:max-content; padding:6px; }
+.nubi-actions-disclosure-body[popover][data-inline]:popover-open { flex-direction:row; align-items:center; gap:6px; }
+.desktop-shell .nubi-session-actions .nubi-actions-disclosure-body[popover][data-inline] :is(.cx-kit-button,.cx-action-button) { display:inline-flex; flex:none; align-items:center; justify-content:center; width:44px; min-width:44px; height:44px; min-height:44px; padding:0; }
+.desktop-shell .nubi-session-actions .nubi-actions-disclosure-body[popover][data-inline] button > svg { width:18px; height:18px; flex:none; }
+.desktop-shell .nubi-session-actions .nubi-actions-disclosure-body button[aria-pressed=true] { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
+.desktop-shell .nubi-session-actions .nubi-actions-disclosure-body button[data-action=delete] { color:var(--deck-red); }
+
+/* Skills: one navigation/action row and concise, aligned entries. */
+:root:has(.desktop-shell) .nubi-composer-skill-menu { padding:8px; border:1px solid var(--deck-line); }
+:root:has(.desktop-shell) .nubi-composer-skill-menu .nubi-skill-menu-header { padding:0 8px 4px; }
+:root:has(.desktop-shell) .nubi-composer-skill-menu :is(.nubi-skill-menu-row,.nubi-skill-menu-marketplace) { min-height:44px; padding:8px; gap:10px; flex-wrap:nowrap; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-composer-skill-menu .nubi-skill-menu-add { background:transparent; border-top:1px solid var(--deck-line); border-radius:0; padding:6px 0 0; margin-top:6px; }
+:root:has(.desktop-shell) .nubi-composer-skill-menu .nubi-skill-menu-empty { padding:12px 8px; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-composer-skill-menu .nubi-skill-menu-copy { flex-direction:row; }
+:root:has(.desktop-shell) .nubi-composer-skill-menu .nubi-skill-menu-copy strong { font-weight:500; }
+:root:has(.desktop-shell) .nubi-skill-library-layout { container-type:inline-size; container-name:skill-library; }
+:root:has(.desktop-shell) .nubi-skill-tabs { flex-wrap:nowrap; align-items:center; gap:12px; margin-bottom:16px; }
+:root:has(.desktop-shell) .nubi-skill-header-actions { flex:none; margin-left:auto; }
+:root:has(.desktop-shell) .nubi-custom-skill-toolbar { gap:6px; }
+:root:has(.desktop-shell) .nubi-custom-skill-empty { margin:16px 0 8px; }
+:root:has(.desktop-shell) .nubi-custom-skill-list:empty { display:none; }
+:root:has(.desktop-shell) .nubi-custom-skill-row { min-width:0; padding:10px 0; gap:12px; flex-wrap:nowrap; border-radius:0; }
+:root:has(.desktop-shell) .nubi-custom-skill-row + .nubi-custom-skill-row { border-top:1px solid var(--deck-line); }
+:root:has(.desktop-shell) .nubi-custom-skill-copy { display:flex; flex-wrap:nowrap; align-items:center; gap:12px; }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > strong { min-width:0; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > p { display:none; }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > small { flex:none; margin:0; white-space:nowrap; color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > .nubi-skill-needs-attention { display:inline-flex; align-items:center; gap:var(--cx-space-2); color:var(--nubi-warning-ink); }
+:root:has(.desktop-shell) .nubi-custom-skill-actions { gap:6px; }
+:root:has(.desktop-shell) .nubi-custom-skill-actions .cx-action-button > svg { width:18px; height:18px; }
+:root:has(.desktop-shell) .nubi-skill-tabs .nubi-skill-tab-label { display:inline-flex; align-items:center; justify-content:center; gap:6px; white-space:nowrap; min-height:36px; }
+@container skill-library (max-width:28em) {
+ :root:has(.desktop-shell) .nubi-skill-tabs { gap:8px; }
+ :root:has(.desktop-shell) .nubi-skill-tabs .agent-tabs { flex:none; }
+ :root:has(.desktop-shell) .deck-dialog .nubi-skill-tabs [role=tab] { width:44px; min-width:44px; padding:0; gap:0; }
+ :root:has(.desktop-shell) .deck-dialog .nubi-skill-tabs [role=tab] svg { display:block; width:20px; height:20px; }
+ :root:has(.desktop-shell) .nubi-skill-tabs .nubi-skill-tab-name { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); }
+ :root:has(.desktop-shell) .nubi-custom-skill-copy > small { max-width:120px; overflow:hidden; text-overflow:ellipsis; }
+}
+
+/* Composer pickers share the same readable size, also in body portals. */
+:root:has(.desktop-shell) { --nubi-picker-width:24rem; --nubi-picker-row:2.75rem; --nubi-picker-inset:.75rem; }
+:root:has(.desktop-shell) :is(.nubi-composer-skill-menu,.nubi-approval-mode-menu,.nubi-reasoning-menu,.nubi-applied-menu,.nubi-command-menu) {
+ box-sizing:border-box; max-width:calc(100vw - 24px); padding:var(--nubi-picker-inset); border:1px solid var(--deck-line); border-radius:var(--deck-panel-radius); background:var(--deck-card); color:var(--deck-ink); font:var(--deck-font-body); box-shadow:var(--deck-shadow);
+}
+:root:has(.desktop-shell) :is(.nubi-skill-menu-header,.nubi-approval-mode-header,.nubi-reasoning-heading,.nubi-applied-menu>header,.nubi-command-menu-header) { min-height:2.5rem; padding:0 .5rem .5rem; gap:.75rem; }
+:root:has(.desktop-shell) :is(.nubi-skill-menu-header,.nubi-approval-mode-header,.nubi-reasoning-heading,.nubi-applied-menu>header,.nubi-command-menu-header)>strong { font-size:var(--deck-type-body); font-weight:600; color:var(--deck-ink); }
+:root:has(.desktop-shell) :is(.nubi-skill-menu-row,.nubi-skill-menu-marketplace,.nubi-approval-mode-item,.nubi-applied-row,.nubi-command-options>.cx-kit-button) { min-height:var(--nubi-picker-row); padding:.625rem .75rem; gap:.75rem; font-size:var(--deck-type-body); white-space:nowrap; }
+:root:has(.desktop-shell) :is(.nubi-skill-menu-row,.nubi-skill-menu-marketplace,.nubi-approval-mode-item,.nubi-applied-row)>svg { width:1.125rem; height:1.125rem; flex-shrink:0; }
+:root:has(.desktop-shell) .nubi-approval-mode-item strong { font-size:var(--deck-type-body); font-weight:600; }
+:root:has(.desktop-shell) :is(.nubi-skill-menu-list,.nubi-approval-mode-menu>[role=menu],.nubi-applied-list) { display:flex; flex-direction:column; gap:.25rem; }
+:root:has(.desktop-shell) .nubi-reasoning-menu { max-width:calc(100vw - 32px); }
+:root:has(.desktop-shell) .nubi-reasoning-slider-wrap { margin:.75rem .5rem .5rem; }
+:root:has(.desktop-shell) .nubi-reasoning-heading { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:.5rem; }
+:root:has(.desktop-shell) .nubi-reasoning-heading>strong { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+:root:has(.desktop-shell) .nubi-reasoning-heading :is(.nubi-reasoning-reset,.nubi-reasoning-close) { display:inline-flex; align-items:center; justify-content:center; width:2.25rem; min-width:2.25rem; height:2.25rem; min-height:2.25rem; padding:0; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-approval-mode-description { margin:.5rem 0; padding:.25rem .75rem; }
+:root:has(.desktop-shell) .nubi-approval-mode-note { margin:.5rem 0; }
+
+/* Composer controls form one row at every density, including queue/stop/recovery. */
+.desktop-shell .nubi-workbench[data-host-layout=integrated] .nubi-sidebar[data-open=true] { padding-inline:12px; }
+.desktop-shell .desktop-pane>header { padding-inline:12px; }
+.desktop-shell .desktop-pane .desktop-list { padding-inline:8px; }
+.nubi-toolbar-navigation[data-aligned=true] { box-sizing:border-box; width:var(--nubi-brand-column); min-width:0; border-right:1px solid var(--deck-line); }
+.nubi-toolbar-navigation .nubi-logo { min-width:0; white-space:nowrap; }
+.nubi-toolbar-navigation > .nubi-icon-button { margin-left:auto; flex-shrink:0; }
+.nubi-window-toolbar { container:workspace-toolbar / inline-size; }
+@container workspace-toolbar (max-width:52rem) {
+ .nubi-toolbar-account .nubi-account-button>span:not(.nubi-account-avatar),
+ .nubi-logo :is(.nubi-logo-product,.nubi-logo-version) { display:none; }
+}
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-bottom { display:flex; flex-flow:row nowrap; align-items:center; gap:6px; }
+.desktop-shell .nubi-workbench .nubi-compose-card :is(.composer-leading,.composer-tools,.model-picker) { display:flex; flex-flow:row nowrap; align-items:center; gap:6px; }
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-leading> :not(.model-picker) { flex:none; }
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-bottom button { display:inline-flex; flex-flow:row nowrap; align-items:center; justify-content:center; flex-shrink:0; white-space:nowrap; min-width:var(--nubi-composer-icon-size); min-height:var(--nubi-composer-icon-size); }
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-bottom button>svg { flex:none; }
+.desktop-shell .nubi-workbench .nubi-compose-card .model-picker { min-width:var(--nubi-composer-icon-size); }
+.desktop-shell .nubi-workbench .nubi-compose-card .model-trigger.cx-kit-button { flex-shrink:1; min-width:var(--nubi-composer-icon-size); max-width:200px; }
+.desktop-shell .nubi-workbench .nubi-compose-card .composer-tools>button:not(.context-trigger) { width:var(--nubi-composer-icon-size); height:var(--nubi-composer-icon-size); padding:0; }
+@container workspace-composer (max-width:40rem) {
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button { width:var(--nubi-composer-icon-size); padding:0; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-approval-mode-button>:is(span,svg:last-child) { display:none; }
+}
+@container workspace-composer (max-width:36rem) {
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-trigger { width:var(--nubi-composer-icon-size); padding:0; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .nubi-reasoning-label { display:none; }
+}
+@container workspace-composer (max-width:34rem) {
+ .desktop-shell .nubi-workbench .nubi-compose-card .model-trigger.cx-kit-button { width:var(--nubi-composer-icon-size); padding:0; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .model-trigger :is(.model-trigger-label,svg:last-child) { display:none; }
+}
+@container workspace-agent (max-width:26rem) {
+ .desktop-shell .nubi-workbench .nubi-compose-card { --nubi-composer-icon-size:32px; }
+ .desktop-shell .nubi-workbench .nubi-compose-card :is(.composer-bottom,.composer-leading,.composer-tools,.model-picker) { gap:4px; }
+ .desktop-shell .nubi-workbench .nubi-compose-card :is(.nubi-composer-skill-trigger,.nubi-approval-mode-button,.nubi-reasoning-trigger,.model-trigger).cx-kit-button,
+ .desktop-shell .nubi-workbench .nubi-compose-card .composer-tools>button.cx-kit-button:not(.context-trigger) { width:var(--nubi-composer-icon-size); min-width:var(--nubi-composer-icon-size); height:var(--nubi-composer-icon-size); min-height:var(--nubi-composer-icon-size); padding:0; }
+}
+@media(pointer:coarse) {
+ .desktop-shell .nubi-workbench .nubi-compose-card { --nubi-composer-icon-size:44px; }
+ .desktop-shell .nubi-workbench .nubi-compose-card .composer-bottom button { min-width:44px; min-height:44px; }
+}
+
+/* A wide conversation sidebar takes space even when the right pane uses an
+   overlay. Its layout must not depend on that unrelated pane's mode. */
+.desktop-shell .nubi-workbench[data-host-layout=integrated][data-compact=false] .nubi-sidebar[data-open=true] { position:relative; left:auto; flex:none; }
+.desktop-shell .nubi-workbench[data-host-layout=integrated][data-compact=false] .nubi-sidebar-resize { position:relative; left:auto; top:auto; flex:none; }
+/* A compact project drawer must sit above the auxiliary editor. Its original
+   isolation context trapped the drawer beneath the editor's overlay. */
+.desktop-shell[data-layout="overlay"]:has(.nubi-sidebar[data-open="true"]) .nubi-workbench { isolation:auto; }
+.desktop-shell[data-layout="overlay"]:has(.nubi-sidebar[data-open="true"]) .nubi-workbench-layout { z-index:auto; }
+.desktop-shell[data-layout="overlay"] .nubi-sidebar[data-open="true"] { z-index:41; }
+.desktop-shell[data-layout="overlay"] .nubi-sidebar-scrim { z-index:40; }
+
+/* Nubi's company skill catalog: direct project download, shared tokens, no web shell. */
+:root:has(.desktop-shell) .nubi-marketplace-search { display:flex; align-items:center; gap:12px; min-height:44px; margin:12px 0 16px; padding:0 14px; border:1px solid var(--deck-line); border-radius:12px; background:var(--deck-card); color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-marketplace-search:focus-within { border-color:var(--deck-blue); box-shadow:0 0 0 3px var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-marketplace-search input { flex:1; min-width:0; border:0; outline:0; background:transparent; color:var(--deck-ink); font:inherit; padding:10px 0; }
+:root:has(.desktop-shell) .nubi-marketplace-search > span { font:var(--deck-font-caption); font-variant-numeric:tabular-nums; }
+:root:has(.desktop-shell) .nubi-marketplace-compact .nubi-marketplace-card { display:grid; grid-template-columns:36px minmax(0,1fr) auto; column-gap:14px; row-gap:4px; padding:16px 0; border:0; border-bottom:1px solid var(--deck-line); border-radius:0; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-card-icon { width:36px; height:36px; grid-row:1 / 3; border-radius:10px; background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-name { flex-wrap:nowrap; gap:10px; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-name strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-description { display:block; grid-column:2; margin:0; line-height:1.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-actions { grid-column:3; grid-row:1 / 3; align-self:center; flex-wrap:nowrap; gap:12px; margin:0; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-version { flex-wrap:nowrap; gap:8px; white-space:nowrap; overflow:hidden; }
+:root:has(.desktop-shell) .nubi-marketplace-installed { display:inline-flex; align-items:center; gap:5px; color:var(--deck-blue-deep); }
+:root:has(.desktop-shell) .nubi-marketplace-status { display:flex; align-items:center; gap:8px; color:var(--deck-sub); margin:12px 0; font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-marketplace-download { color:var(--deck-blue-deep); background:var(--deck-blue-soft); border-color:transparent; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-expanded { grid-column:2 / -1; min-width:0; }
+@container skill-library (max-width:28em) {
+ :root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-version { display:none; }
+ :root:has(.desktop-shell) .nubi-marketplace-download-label { display:none; }
+ :root:has(.desktop-shell) .nubi-marketplace-download { min-width:44px; width:44px; padding:0; }
+}
+
+.desktop-shell .desktop-readonly-label { flex:none; white-space:nowrap; color:var(--deck-sub); font:var(--deck-font-caption); }
+.desktop-shell .desktop-tools-anchor > .desktop-dock-action { width:36px; min-width:36px; padding:0; }
+
+/* Skill navigation uses intrinsic label widths. The provider switcher's equal
+   segments squeezed the longer AI Workspace label against its selection edge. */
+:root:has(.desktop-shell) .nubi-skill-library-layout { --nubi-skill-gap:var(--cx-space-4); }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tabs { flex:0 1 auto; padding:0; background:transparent; border-radius:0; }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-highlight { display:none; }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls { gap:var(--cx-space-2); }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls [role=tab] { flex:none; width:auto; min-height:44px; padding:8px 16px; border-radius:var(--deck-control-radius); font:var(--deck-font-body); font-weight:500; color:var(--deck-sub); }
+:root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls [role=tab][aria-selected=true] { color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-skill-tabs .nubi-skill-tab-label { min-height:0; gap:8px; }
+:root:has(.desktop-shell) .nubi-skill-page { --nubi-skill-page-width:920px; }
+:root:has(.desktop-shell) .nubi-skill-page-header { max-width:var(--nubi-skill-page-width); margin:auto; padding:20px var(--nubi-page-inset) 8px; border:0; }
+:root:has(.desktop-shell) .nubi-skill-page-body { max-width:var(--nubi-skill-page-width); padding:16px var(--nubi-page-inset) 32px; }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-name strong { font-weight:500; line-height:var(--deck-line-body); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-skill-description { font:var(--deck-font-caption); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-installed { width:28px; height:28px; justify-content:center; flex:none; color:var(--deck-green); }
+:root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-installed:not([data-state="installed"]) { color:var(--nubi-warning-ink); }
+:root:has(.desktop-shell) .nubi-marketplace-download { min-height:40px; padding:8px 12px; font-weight:500; }
+:root:has(.desktop-shell) .nubi-custom-skill-toolbar .nubi-custom-skill-register { min-width:104px; padding-inline:var(--cx-space-4); font-weight:500; }
+:root:has(.desktop-shell) .nubi-custom-skill-copy > strong { font-weight:500; }
+.nubi-skill-pagination { display:flex; align-items:center; justify-content:flex-end; gap:var(--cx-space-2); padding-block:var(--cx-space-2); color:var(--deck-sub); font:var(--deck-font-caption); font-variant-numeric:tabular-nums; white-space:nowrap; }
+.nubi-skill-pagination > span { margin-right:var(--cx-space-2); }
+.nubi-skill-pagination .cx-action-button { width:var(--nubi-work-control-height); min-width:var(--nubi-work-control-height); height:var(--nubi-work-control-height); padding:0; border:0; border-radius:var(--nubi-work-control-radius); background:transparent; color:var(--deck-sub); box-shadow:none; }
+.nubi-skill-pagination .cx-action-button:hover:not(:disabled) { color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-list { max-height:none; gap:0; padding:0; overflow:visible; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-row { padding:16px 0; gap:14px; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-mark { width:36px; height:36px; align-items:center; justify-content:center; border-radius:10px; color:var(--deck-blue-deep); background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-copy { flex-direction:column; align-items:stretch; gap:4px; }
+:root:has(.desktop-shell) .nubi-skill-page .nubi-custom-skill-copy > p { display:block; margin:0; font:var(--deck-font-caption); color:var(--deck-sub); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@container skill-library (max-width:28em) {
+ :root:has(.desktop-shell) .nubi-skill-tabs .agent-tab-controls [role=tab] { width:44px; min-width:44px; padding:0; }
+ :root:has(.desktop-shell) .nubi-custom-skill-toolbar .nubi-custom-skill-register { min-width:88px; width:auto; }
+ :root:has(.desktop-shell) .nubi-marketplace-card .nubi-marketplace-actions { gap:6px; }
+}
+
+/* Work controls share one geometry. Login/provider surfaces keep their identity. */
+:root:has(.desktop-shell) :is(.desktop-dock-header,.desktop-file-actions,.desktop-path-bar,.desktop-browser-toolbar,.desktop-terminal-heading,.nubi-skill-header-actions,.nubi-custom-skill-actions,.nubi-marketplace-actions,.nubi-custom-skill-toolbar) :is(.cx-kit-button,.cx-action-button):not(.nubi-page-chip,[role=tab],[role=switch],.model-option,.nubi-history-item,.nubi-marketplace-card) {
+ min-height:var(--nubi-work-control-height); border-radius:var(--nubi-work-control-radius);
+ font-weight:500; gap:var(--nubi-work-control-gap); box-shadow:none;
+}
+:root:has(.desktop-shell) :is(.desktop-dock-header,.desktop-file-actions,.desktop-path-bar,.desktop-browser-toolbar,.desktop-terminal-heading,.nubi-skill-header-actions,.nubi-custom-skill-actions,.nubi-marketplace-actions,.nubi-custom-skill-toolbar) :is(.cx-kit-button,.cx-action-button) > svg {
+ flex:none; width:var(--nubi-work-control-icon); height:var(--nubi-work-control-icon);
+}
+:root:has(.desktop-shell) :is(.desktop-dock-header,.desktop-file-actions,.desktop-path-bar,.desktop-browser-toolbar,.desktop-terminal-heading,.nubi-custom-skill-actions,.nubi-custom-skill-toolbar) :is(.cx-kit-button,.cx-action-button) {
+ background:transparent; color:var(--deck-sub); border-color:transparent; background-image:none;
+}
+:root:has(.desktop-shell) :is(.desktop-dock-header,.desktop-file-actions,.desktop-path-bar,.desktop-browser-toolbar,.desktop-terminal-heading,.nubi-custom-skill-actions,.nubi-custom-skill-toolbar) :is(.cx-kit-button,.cx-action-button):is(:hover,:focus-visible,[aria-pressed=true],[aria-selected=true],[aria-expanded=true]):not(:disabled),
+:root:has(.desktop-shell) :is(.nubi-custom-skill-toolbar .nubi-custom-skill-register,.nubi-custom-skill-actions [data-action=undo],.desktop-file-actions [data-action=save]) {
+ background:var(--deck-blue-soft); color:var(--deck-blue-deep); background-image:none;
+}
+:root:has(.desktop-shell) .desktop-file-tabs .desktop-workspace-tab { border-radius:var(--nubi-work-control-radius); }
+:root:has(.desktop-shell) .desktop-file-tabs .desktop-workspace-tab:has([aria-selected=true]) { background:var(--deck-blue-soft); }
+:root:has(.desktop-shell) .desktop-file-tabs > .cx-kit-button,
+:root:has(.desktop-shell) :is(.nubi-custom-skill-toolbar) [data-icon-only] {
+ width:var(--nubi-work-control-height); min-width:var(--nubi-work-control-height); height:var(--nubi-work-control-height); min-height:var(--nubi-work-control-height); padding:var(--cx-space-2); border-radius:var(--nubi-work-control-radius);
+}
+:root:has(.desktop-shell) .nubi-custom-skill-actions [data-action=delete]:hover:not(:disabled) { color:var(--deck-red); background:var(--deck-red-soft); }
+
+@media(pointer:coarse) {
+ :root:has(.desktop-shell) { --nubi-work-control-height:44px; }
+}
+
+/* Time and copy are one compact row for sent messages and model answers. */
+.desktop-shell .nubi-workbench .nubi-task .message-actions { display:flex; flex-direction:row; align-items:center; flex-wrap:nowrap; }
+.desktop-shell .nubi-workbench .nubi-task .message-actions > :is(.nubi-message-timestamp,.copy-control,.cx-action-button) { flex:none; }
+.desktop-shell .nubi-workbench .nubi-task .message-actions .copy-control { display:inline-flex; align-items:center; flex-wrap:nowrap; }
+.desktop-shell .nubi-workbench .nubi-task .message-actions .nubi-message-timestamp { margin-right:0; }
+.desktop-shell .nubi-workbench .nubi-task .message-actions .nubi-response-time { min-width:0; margin-right:0; white-space:nowrap; overflow:hidden; }
+.desktop-shell .nubi-workbench .nubi-task .message-actions .nubi-response-time > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+/* Copy failure is already announced by the shared toast; retain its accessible description. */
+.desktop-shell .nubi-workbench .nubi-task .message-actions .copy-error { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+
+/* Conversation activity: one aligned heading, quiet history, visible exceptions. */
+.desktop-shell .nubi-workbench { --nubi-activity-icon:18px; --nubi-activity-line:calc(1em * var(--deck-line-body)); --nubi-activity-gap:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-agent-activity { gap:4px; margin-block:16px; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .task-plan { padding:0; background:transparent; }
+.desktop-shell .nubi-workbench :is(.nubi-agent-activity,.nubi-analysis-history) summary { min-height:32px; font:var(--deck-font-body); font-weight:400; white-space:nowrap; }
+.desktop-shell .nubi-workbench .nubi-agent-activity :is(.agent-trace>summary,[data-plan-overview]>summary) { display:flex; flex-wrap:nowrap; align-items:center; width:100%; gap:var(--nubi-activity-gap); padding:4px 0; color:var(--deck-sub); }
+.desktop-shell .nubi-workbench .nubi-agent-activity summary>svg { flex:none; width:var(--nubi-activity-icon); height:var(--nubi-activity-icon); }
+.desktop-shell .nubi-workbench .agent-trace-title { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-trace[data-state=running]>summary { color:var(--deck-blue-deep); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-trace[data-state=attention]>summary { color:var(--deck-red); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-trace[data-state=waiting]>summary { color:var(--nubi-warning-ink); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .nubi-response-time { flex:none; margin:0; color:var(--deck-sub); }
+.desktop-shell .nubi-workbench .agent-trace>summary>.nubi-response-time>svg { display:none; }
+.desktop-shell .nubi-workbench .task-plan-inline-current { min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; color:var(--deck-ink); }
+.desktop-shell .nubi-workbench .nubi-work-plan .task-plan-count { flex:none; margin-left:auto; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-trace>ol { padding:4px 0; margin:4px 0 0; gap:8px; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-trace>ol>li { gap:var(--nubi-activity-gap); font:var(--deck-font-body); }
+.desktop-shell .nubi-workbench .nubi-agent-activity :is(.agent-step-status,.task-plan-marker) { display:inline-flex; flex:none; align-items:center; justify-content:center; width:var(--nubi-activity-icon); height:var(--nubi-activity-line); min-height:var(--nubi-activity-line); margin:0; }
+.desktop-shell .nubi-workbench .nubi-agent-activity :is(.agent-step-status,.task-plan-marker)>svg { width:16px; height:16px; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-progress-note>svg { width:var(--nubi-activity-icon); height:var(--nubi-activity-icon); margin-top:calc((var(--nubi-activity-line) - var(--nubi-activity-icon)) / 2); color:var(--deck-sub); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-next-step>.status-spinner { margin-inline:2px; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .agent-tool-label { color:var(--deck-sub); font:var(--deck-font-body); }
+.desktop-shell .nubi-workbench .nubi-agent-activity li[data-status=running] .agent-tool-label { color:var(--deck-ink); }
+.desktop-shell .nubi-workbench .nubi-agent-activity li[data-status=error] .agent-tool-label { color:var(--deck-red); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .task-plan-label { font:var(--deck-font-body); }
+.desktop-shell .nubi-workbench .nubi-agent-activity .task-plan-tool { display:none; }
+.desktop-shell .nubi-workbench .nubi-agent-activity .task-plan-context .task-plan-tool { display:block; }
+.desktop-shell .nubi-workbench .nubi-document-progress { padding-block:12px; }
+.desktop-shell .nubi-workbench :is(.nubi-document-progress-heading,.nubi-document-worker-heading) { flex-flow:row nowrap; align-items:center; gap:var(--nubi-activity-gap); min-height:var(--nubi-activity-line); color:var(--deck-ink); }
+.desktop-shell .nubi-workbench .nubi-document-progress-heading>svg { flex:none; width:var(--nubi-activity-icon); height:var(--nubi-activity-icon); color:var(--deck-sub); }
+.desktop-shell .nubi-workbench :is(.nubi-document-progress-heading,.nubi-document-worker-heading)>strong { display:flex; flex:1; align-items:center; gap:var(--nubi-activity-gap); min-width:0; font:var(--deck-font-body); font-weight:500; color:var(--deck-ink); }
+.desktop-shell .nubi-workbench .nubi-document-worker-heading strong>svg { flex:none; width:var(--nubi-activity-icon); height:var(--nubi-activity-icon); color:var(--deck-sub); }
+.desktop-shell .nubi-workbench :is(.nubi-document-progress-heading,.nubi-document-worker-heading)>span { display:inline-flex; align-items:center; flex:none; gap:6px; white-space:nowrap; margin-left:auto; }
+.desktop-shell .nubi-workbench .nubi-document-progress :is(summary,p) { font:var(--deck-font-body); }
+.desktop-shell .nubi-workbench .nubi-document-progress summary { gap:var(--nubi-activity-gap); padding-block:4px; }
+.desktop-shell .nubi-workbench .nubi-document-progress ol>li { background:transparent; border-radius:0; padding:12px 0; border-top:1px solid var(--deck-line); }
+.desktop-shell .nubi-workbench .nubi-document-progress ol { gap:4px; }
+.desktop-shell .nubi-workbench .nubi-analysis-history .nubi-document-question { color:var(--deck-sub); font-weight:400; margin:4px 0; }
+.desktop-shell .nubi-workbench .nubi-worker-detail { margin-left:26px; }
+.desktop-shell .nubi-workbench .nubi-document-progress .nubi-document-attention { color:var(--nubi-warning-ink); }
+.desktop-shell .nubi-workbench .nubi-process .nubi-terminal,
+.desktop-shell .nubi-workbench .nubi-setup-card .nubi-terminal { box-shadow:none; border:1px solid var(--nubi-terminal-line); background:var(--nubi-terminal-surface); }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-bar { background:var(--nubi-terminal-bar); border-bottom:1px solid var(--nubi-terminal-line); color:var(--nubi-terminal-muted); gap:8px; padding:8px 12px; }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-dots { display:none; }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-shell { color:var(--nubi-terminal-ink); }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-body { padding:12px; color:var(--nubi-terminal-ink); font-size:var(--deck-type-body); font-weight:400; line-height:var(--deck-line-body); }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) :is(.nubi-terminal-output,.nubi-terminal-exit) { color:var(--nubi-terminal-muted); }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-prompt { color:var(--nubi-terminal-accent); font-weight:500; }
+@container workspace-agent (max-width:26rem) {
+ .desktop-shell .nubi-workbench .task-plan-inline-current { display:none; }
+}
+@media(pointer:coarse) {
+ .desktop-shell .nubi-workbench :is(.nubi-agent-activity,.nubi-analysis-history) summary { min-height:44px; }
+}
+
+.desktop-shell .nubi-workbench .nubi-document-progress summary.nubi-document-progress-heading>svg { margin-left:0; transform:none; }
+.desktop-shell .nubi-workbench .nubi-document-progress details[open]>summary.nubi-document-progress-heading>svg:last-child { transform:rotate(180deg); }
+.desktop-shell .nubi-workbench .nubi-document-progress-heading>strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.desktop-shell .nubi-workbench .nubi-review-evidence>summary { display:flex; align-items:center; gap:var(--nubi-activity-gap); }
+.desktop-shell .nubi-workbench .nubi-review-evidence>summary>svg:first-child { flex:none; width:var(--nubi-activity-icon); height:var(--nubi-activity-icon); }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-state { padding:0; background:transparent; color:var(--nubi-terminal-muted); font-weight:400; white-space:nowrap; }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-state[data-state=running] { color:var(--nubi-terminal-accent); }
+.desktop-shell .nubi-workbench :is(.nubi-process,.nubi-setup-card) .nubi-terminal-state:is([data-state=failed],[data-state=timed_out],[data-state=interrupted]) { color:var(--nubi-terminal-danger); }
+
+/* Shared emphasis for Electron screens, portal dialogs and their primitives.
+   Provider buttons keep their own brand colors; state never relies on color alone. */
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-status {
+  gap:var(--cx-space-2); font-weight:var(--nubi-weight-label);
+  color:var(--nubi-text-meta); background:var(--nubi-surface-inset);
+}
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-status[data-tone=active] { color:var(--nubi-text-action); background:var(--nubi-surface-selected); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-status[data-tone=success] { color:var(--nubi-text-success); background:var(--nubi-surface-success); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-status[data-tone=warning] { color:var(--nubi-text-warning); background:var(--nubi-surface-warning); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-status[data-tone=danger] { color:var(--nubi-text-danger); background:var(--nubi-surface-danger); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-guidance-lead { font-weight:var(--nubi-weight-label); color:var(--nubi-text-primary); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) :is(.deck-guidance-detail,.deck-disclosure-body,.deck-empty>p,.nubi-muted) { color:var(--nubi-text-secondary); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-guidance strong { color:var(--nubi-text-primary); font-weight:var(--nubi-weight-emphasis); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) :is(.deck-guidance-icon,.deck-field-label>span:first-child) { color:var(--nubi-text-secondary); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-guidance-icon { margin-top:0; height:calc(1em * var(--deck-line-body)); align-items:center; }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-disclosure>summary { color:var(--nubi-text-primary); font-weight:var(--nubi-weight-label); }
+:root:has(.desktop-shell) :is(.desktop-shell,.deck-dialog) .deck-disclosure>summary>svg { color:var(--nubi-text-secondary); }
+.desktop-shell .nubi-workbench .nubi-work-plan li[data-status=in_progress] .task-plan-label { color:var(--nubi-text-action); font-weight:var(--nubi-weight-emphasis); }
+.desktop-shell .nubi-workbench .nubi-work-plan li[data-status=completed] .task-plan-label { color:var(--nubi-text-secondary); }
+.desktop-shell .nubi-workbench .nubi-review-check-heading { display:flex; align-items:center; gap:var(--cx-space-2); font-weight:var(--nubi-weight-label); }
+.desktop-shell .nubi-workbench .nubi-review-check-heading>svg { flex:none; width:var(--nubi-icon-small); height:var(--nubi-icon-small); }
+.desktop-shell .nubi-workbench .nubi-review-check[data-check=supported] .nubi-review-check-heading { color:var(--nubi-text-success); }
+.desktop-shell .nubi-workbench .nubi-review-check[data-check=pending] .nubi-review-check-heading { color:var(--nubi-text-action); }
+.desktop-shell .nubi-workbench .nubi-review-check[data-check=unknown] .nubi-review-check-heading { color:var(--nubi-text-warning); }
+.desktop-shell .nubi-workbench .nubi-review-open-items { list-style:none; padding:0; margin:var(--cx-space-2) 0; }
+.desktop-shell .nubi-workbench .nubi-review-open-items>li { padding:var(--cx-space-2) 0; }
+.desktop-shell .nubi-workbench .nubi-review-open-items p { margin:var(--cx-space-1) 0 0; color:var(--nubi-text-primary); }
+.desktop-shell .nubi-workbench .nubi-review-next { display:flex; align-items:baseline; gap:var(--cx-space-2); }
+.desktop-shell .nubi-workbench .nubi-review-next>strong { flex:none; font-weight:var(--nubi-weight-label); color:var(--nubi-text-action); }
+.desktop-shell .nubi-workbench .nubi-result-review[data-tone=warning]>.nubi-document-progress-heading { color:var(--nubi-text-warning); }
+.desktop-shell .nubi-workbench .nubi-result-review[data-tone=danger]>.nubi-document-progress-heading { color:var(--nubi-text-danger); }
+.desktop-shell .nubi-workbench .nubi-result-review>.nubi-document-progress-heading>strong { color:inherit; }
+
+/* Copy actions occupy reserved space and appear without moving terminal text. */
+:is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal-section { position:relative; min-height:calc(1em * var(--deck-line-body)); padding-right:calc(var(--nubi-compact-control) + var(--cx-space-2)); }
+:is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal-section + .nubi-terminal-section { margin-top:var(--cx-space-3); }
+:is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal-section>pre { margin:0; font:inherit; white-space:pre-wrap; overflow-wrap:anywhere; }
+:is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal-section .nubi-terminal-output { margin:0; }
+:is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal-copy { position:absolute; top:0; right:0; }
+:is(.desktop-shell,.nubi-decision-dialog) :is(.nubi-terminal-copy,.desktop-terminal-copy-actions) .cx-action-button { width:var(--nubi-compact-control); min-width:var(--nubi-compact-control); height:var(--nubi-compact-control); min-height:var(--nubi-compact-control); padding:0; color:var(--nubi-text-secondary); background:var(--nubi-surface-base); border:1px solid var(--deck-line); border-radius:var(--nubi-work-control-radius); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal-copy-actions { display:flex; flex:none; gap:var(--cx-space-1); }
+@media(hover:hover) and (pointer:fine) {
+ :is(.desktop-shell,.nubi-decision-dialog) :is(.nubi-terminal-copy,.desktop-terminal-copy-actions) { opacity:0; pointer-events:none; }
+ :is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal:is(:hover,:focus-within) .nubi-terminal-copy,
+ :is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal:is(:hover,:focus-within) .desktop-terminal-copy-actions { opacity:1; pointer-events:auto; }
+}
+
+@media(pointer:coarse) {
+ :is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal-section { min-height:44px; padding-right:calc(44px + var(--cx-space-2)); }
+ :is(.desktop-shell,.nubi-decision-dialog) :is(.nubi-terminal-copy,.desktop-terminal-copy-actions) .cx-action-button { width:44px; min-width:44px; height:44px; min-height:44px; }
+}
+
+/* The terminal is a plain dark work surface, without decorative window controls. */
+:is(.desktop-shell,.nubi-decision-dialog) .nubi-terminal { border-radius:var(--nubi-work-control-radius); box-shadow:none; }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal { background:var(--nubi-terminal-surface); color:var(--nubi-terminal-ink); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal-heading { color:var(--nubi-terminal-ink); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal-heading>span,:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal-recovery { color:var(--nubi-terminal-muted); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal .cx-kit-button,
+:is(.desktop-shell,.nubi-decision-dialog) :is(.nubi-terminal-copy,.desktop-terminal-copy-actions) .cx-action-button { color:var(--nubi-terminal-ink); background:var(--nubi-terminal-bar); border-color:var(--nubi-terminal-line); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal .desktop-terminal-input>input { color:var(--nubi-terminal-ink); caret-color:var(--nubi-terminal-accent); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal .desktop-terminal-input>input::placeholder { color:var(--nubi-terminal-muted); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal-input>span { color:var(--nubi-terminal-accent); }
+:is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal .cx-kit-button:hover,
+:is(.desktop-shell,.nubi-decision-dialog) :is(.nubi-terminal-copy,.desktop-terminal-copy-actions) .cx-action-button:hover { color:var(--nubi-terminal-ink); background:var(--nubi-terminal-selection); }
+:root:has(.desktop-shell) :is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal :is(.desktop-terminal-heading,.desktop-terminal-input) :is(.cx-kit-button,.cx-action-button) { color:var(--nubi-terminal-ink); background:var(--nubi-terminal-bar); border-color:var(--nubi-terminal-line); }
+:root:has(.desktop-shell) :is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal :is(.desktop-terminal-heading,.desktop-terminal-input) :is(.cx-kit-button,.cx-action-button):hover { color:var(--nubi-terminal-ink); background:var(--nubi-terminal-selection); }
+:root:has(.desktop-shell) :is(.desktop-shell,.nubi-decision-dialog) .desktop-terminal .desktop-terminal-input>input { color:var(--nubi-terminal-ink); background:var(--nubi-terminal-bar); border:1px solid var(--nubi-terminal-line); border-radius:var(--nubi-work-control-radius); }
+/* Sending is an immediate UI state, not a claim that model work has started. */
+.desktop-shell .nubi-submit-scene { display:flex; flex-direction:column; min-height:0; flex:1; }
+.desktop-shell .nubi-submit-scene>.nubi-compose-card { flex:none; }
+.desktop-shell .nubi-delivery-status { display:flex; align-items:center; gap:8px; color:var(--nubi-text-secondary); font-size:var(--deck-type-body); line-height:var(--deck-line-body); margin:16px 0; }
+.desktop-shell .nubi-delivery-status>svg,.desktop-shell .nubi-delivery-status>.status-spinner { flex:none; width:18px; height:18px; }
+.desktop-shell [data-delivery=unconfirmed] .nubi-delivery-status { color:var(--nubi-text-warning); }
+@media(prefers-reduced-motion:no-preference) {
+ .desktop-shell .nubi-outgoing { animation:nubi-delivery-in 140ms ease-out; }
+ @keyframes nubi-delivery-in { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:none; } }
+}
+
+/* A select and its list use the same field edges throughout Desktop. */
+:root:has(.desktop-shell) .deck-dialog .nubi-settings-field > select { width:100%; min-width:0; box-sizing:border-box; }
+:root:has(.desktop-shell) .nubi-command-menu { padding:6px; }
+:root:has(.desktop-shell) .nubi-command-options>.cx-kit-button { min-height:38px; padding:8px 10px; gap:10px; }
+:root:has(.desktop-shell) .nubi-command-copy { flex-direction:row; align-items:center; gap:10px; overflow:hidden; }
+:root:has(.desktop-shell) .nubi-command-copy strong { flex:none; font-size:var(--deck-type-body); font-weight:600; white-space:nowrap; }
+:root:has(.desktop-shell) .nubi-command-copy small { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--nubi-text-secondary); }
+:root:has(.desktop-shell) .nubi-command-options code { flex:none; color:var(--nubi-text-meta); }
+@media(max-width:400px) { :root:has(.desktop-shell) .nubi-command-copy { gap:6px; } }
+
+/* Decisions interrupt only when needed; the transcript keeps one quiet row. */
+.nubi-decision-prompt,.nubi-command-receipt { display:flex; align-items:center; flex-wrap:nowrap; gap:var(--cx-space-3); min-width:0; padding-block:var(--cx-space-2); }
+.nubi-decision-summary { display:flex; align-items:center; gap:var(--cx-space-2); min-width:0; flex:1; color:var(--nubi-text-primary); }
+.nubi-decision-summary>span,.nubi-command-receipt>strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.nubi-decision-summary>svg,.nubi-command-receipt>svg { flex:none; color:var(--deck-blue); }
+.nubi-decision-prompt>.cx-kit-button,.nubi-command-receipt>.cx-kit-button { flex:none; }
+.nubi-command-receipt>strong { flex:1; font-weight:var(--nubi-weight-label); }
+.nubi-command-receipt>span { white-space:nowrap; color:var(--deck-sub); font-size:var(--deck-type-caption); }
+:root:has(.desktop-shell) .nubi-decision-dialog { width:min(580px,calc(100vw - 24px)); max-height:calc(100dvh - 24px); }
+.nubi-decision-dialog .cx-panel-body { display:flex; flex-direction:column; gap:var(--cx-space-3); min-height:0; overflow:auto; }
+.nubi-decision-dialog .nubi-decision-reason,.nubi-decision-dialog .nubi-action-effect { margin:0; }
+.nubi-decision-scope { margin:0; font:var(--deck-font-caption); color:var(--deck-sub); }
+.nubi-decision-dialog .question-card { border:0; box-shadow:none; background:transparent; padding:0; margin:0; }
+.nubi-setup-summary>.deck-disclosure { margin-top:0; }
+@media(max-width:480px) {
+ .nubi-command-receipt { gap:var(--cx-space-2); }
+ .nubi-command-receipt>.cx-kit-button { font-size:var(--deck-type-caption); padding-inline:var(--cx-space-1); }
+}
+
+/* Claude Code: provider identity only, using the shared spacing and type scale. */
+:root:has(.desktop-shell) { --provider-claude: #D97757; --provider-claude-ink: #8E422C; --provider-claude-soft: #F9EDE7; }
+.desktop-shell .model-trigger[data-provider="claude"] { --nubi-model-surface:var(--provider-claude-soft); --nubi-model-ink:var(--provider-claude-ink); }
+:root:has(.desktop-shell) :is(.provider-button,.provider-connect-button)[data-provider="claude"] { --provider-surface:var(--provider-claude-soft); --provider-ink:var(--provider-claude-ink); }
+:root:has(.desktop-shell) .agent-tab-highlight [data-provider="claude"] { background:var(--provider-claude-soft); }
+:root:has(.desktop-shell) .provider-switcher[data-provider="claude"] [data-provider="claude"] { opacity:1; color:var(--provider-claude-ink); }
+:root:has(.desktop-shell) .claude-account h3 { display:flex; align-items:center; gap:var(--cx-space-2); white-space:nowrap; }
+:root:has(.desktop-shell) .claude-account .context-bar > span { background:var(--provider-claude); }
+:root:has(.desktop-shell) .claude-login-command { display:flex; align-items:center; justify-content:space-between; gap:var(--cx-space-3); padding:var(--cx-space-3) var(--cx-space-4); border-radius:var(--cx-radius-control); background:var(--deck-surface); }
+:root:has(.desktop-shell) .claude-login-command code { min-width:0; overflow:auto; white-space:nowrap; font-size:var(--cx-type-body); }
+:root:has(.desktop-shell) .claude-connection-error { color:var(--cx-danger); }
+:root:has(.desktop-shell) .claude-setup-steps { display:grid; gap:var(--cx-space-4); padding:0; margin:0; list-style:none; }
+:root:has(.desktop-shell) .claude-setup-steps > li { display:grid; gap:var(--cx-space-2); min-width:0; }
+:root:has(.desktop-shell) .claude-setup-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--cx-space-3); }
+:root:has(.desktop-shell) .claude-setup-heading > strong { display:inline-flex; align-items:center; gap:var(--cx-space-2); white-space:nowrap; font-weight:var(--nubi-weight-label); }
+:root:has(.desktop-shell) .claude-setup-heading > strong > svg { color:var(--provider-claude-ink); flex:none; }
+:root:has(.desktop-shell) .claude-setup-heading > :is(button,span) { flex:none; white-space:nowrap; }
+.desktop-shell .provider-switcher .agent-tab { min-width:0; white-space:nowrap; }
+
+:root:has(.desktop-shell) .model-dialog .provider-switcher[data-provider="claude"] .provider-tabs [aria-selected="true"] { color:var(--provider-claude-ink); }
+
+:root:has(.desktop-shell) .usage-account h3 { display:flex; align-items:center; gap:var(--cx-space-2); }
+
+/* Shared reasoning controls keep their geometry; only provider color changes. */
+/* AI Pro accents come from the bundled aipro.svg gradient. */
+:root:has(.desktop-shell) { --provider-aipro-accent:#5500FF; --provider-aipro-track:linear-gradient(90deg,#2D4BF5,#5500FF); }
+:root:has(.desktop-shell) :is(.nubi-reasoning-anchor,.nubi-reasoning-menu)[data-provider="aipro"] { --nubi-reasoning-ink:var(--provider-aipro-accent); --nubi-reasoning-fill:var(--provider-aipro-track); --nubi-reasoning-soft:var(--provider-aipro-end); }
+:root:has(.desktop-shell) :is(.nubi-reasoning-anchor,.nubi-reasoning-menu)[data-provider="chatgpt"] { --nubi-reasoning-ink:var(--deck-ink); --nubi-reasoning-fill:linear-gradient(var(--deck-ink),var(--deck-ink)); --nubi-reasoning-soft:var(--provider-chatgpt); }
+:root:has(.desktop-shell) :is(.nubi-reasoning-anchor,.nubi-reasoning-menu)[data-provider="claude"] { --nubi-reasoning-ink:var(--provider-claude-ink); --nubi-reasoning-fill:linear-gradient(var(--provider-claude),var(--provider-claude)); --nubi-reasoning-soft:var(--provider-claude-soft); }
+:root:has(.desktop-shell) .nubi-reasoning-menu .nubi-reasoning-heading > strong { color:var(--nubi-reasoning-ink,var(--deck-ink)); }
+
+/* Continue the existing login entrance sequence for the fourth provider. */
+.desktop-shell .provider-options > .provider-button:nth-child(4) { animation-delay:calc(var(--deck-step) * 3 + var(--deck-stagger) * 3); }
+@media (prefers-reduced-motion:no-preference) {
+  :root:has(.desktop-shell) .cx-panel-backdrop.is-modal > .deck-dialog.claude-connection { animation:deck-surface-enter var(--deck-pop) var(--deck-ease) !important; }
+}
+
+:root:has(.desktop-shell) .claude-setup-steps > li[hidden] { display:none; }

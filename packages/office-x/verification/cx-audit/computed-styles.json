@@ -1,0 +1,116 @@
+{
+  "scope": "Same chat markup rendered with current upstream Workspace CSS vs Office CSS. Reference geometry is a fixture; not live Electron.",
+  "actual": {
+    "tokens": {
+      "--brand-action": "#1B64DA",
+      "--brand-ink": "#1B64DA",
+      "--brand-soft": "#E8F1FE",
+      "--layout-text": "#191F28",
+      "--layout-muted": "#4E5968",
+      "--layout-border": "#E5E8EB",
+      "--cx-font-family": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "--deck-type-body": ".9375rem",
+      "--deck-type-caption": ".875rem",
+      "--nubi-reading-size": "1rem",
+      "--nubi-control-gap": "8px"
+    },
+    "canvas": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none"
+    },
+    "bubble": {
+      "backgroundColor": "color(srgb 0.954902 0.956078 0.957843)",
+      "borderRadius": "16px",
+      "padding": "10px 16px",
+      "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "fontSize": "16px",
+      "lineHeight": "28px"
+    },
+    "answer": {
+      "color": "rgb(25, 31, 40)",
+      "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "fontSize": "16px",
+      "lineHeight": "28px",
+      "fontWeight": "400"
+    },
+    "composer": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderColor": "rgb(229, 232, 235)",
+      "borderRadius": "18px",
+      "padding": "8px 12px",
+      "boxShadow": "none"
+    },
+    "model": {
+      "backgroundColor": "rgb(249, 237, 231)",
+      "backgroundImage": "none",
+      "color": "rgb(142, 66, 44)"
+    },
+    "reasoning": {
+      "color": "rgb(142, 66, 44)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "send": {
+      "backgroundColor": "rgb(27, 100, 218)",
+      "borderRadius": "50%",
+      "width": "32px",
+      "height": "32px"
+    }
+  },
+  "expected": {
+    "tokens": {
+      "--brand-action": "#1B64DA",
+      "--brand-ink": "#1B64DA",
+      "--brand-soft": "#E8F1FE",
+      "--layout-text": "#191F28",
+      "--layout-muted": "#4E5968",
+      "--layout-border": "#E5E8EB",
+      "--cx-font-family": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "--deck-type-body": ".9375rem",
+      "--deck-type-caption": ".875rem",
+      "--nubi-reading-size": "1rem",
+      "--nubi-control-gap": "8px"
+    },
+    "canvas": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundImage": "none"
+    },
+    "bubble": {
+      "backgroundColor": "color(srgb 0.954902 0.956078 0.957843)",
+      "borderRadius": "16px",
+      "padding": "10px 16px",
+      "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "fontSize": "16px",
+      "lineHeight": "28px"
+    },
+    "answer": {
+      "color": "rgb(25, 31, 40)",
+      "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+      "fontSize": "16px",
+      "lineHeight": "28px",
+      "fontWeight": "400"
+    },
+    "composer": {
+      "backgroundColor": "rgb(255, 255, 255)",
+      "borderColor": "rgb(229, 232, 235)",
+      "borderRadius": "18px",
+      "padding": "8px 12px",
+      "boxShadow": "none"
+    },
+    "model": {
+      "backgroundColor": "rgb(249, 237, 231)",
+      "backgroundImage": "none",
+      "color": "rgb(142, 66, 44)"
+    },
+    "reasoning": {
+      "color": "rgb(142, 66, 44)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "send": {
+      "backgroundColor": "rgb(27, 100, 218)",
+      "borderRadius": "50%",
+      "width": "32px",
+      "height": "32px"
+    }
+  },
+  "differences": []
+}

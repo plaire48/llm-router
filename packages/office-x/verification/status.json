@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-13",
+  "host": "macOS arm64",
+  "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
+  "sourceChecks": {
+    "vendorHashes": 85,
+    "agentCoreTests": 183,
+    "providerTests": 426,
+    "integrationUnitTests": 11,
+    "nativeCoreTests": 25,
+    "stdioMockIntegration": "passed",
+    "net472HostCrossCompile": "passed",
+    "nubiVendorHashes": 88,
+    "nubiAuthFixture": "passed",
+    "nubiStdioFixture": "passed",
+    "claudeCliFixture": "passed",
+    "browserFixtureFlows": 14,
+    "browserPageErrors": 0,
+    "agentEngineBoundary": "passed",
+    "workspaceVisualStyle": "38 computed properties/tokens match current Workspace CSS; 14 mock UI flows passed; source CSS fixture only",
+    "cxStaticIssues": 0,
+    "readability": "Removed repeated help, middle-dot UI separators; font weights 400/500/600; 14 UI flows and 11 unit tests passed"
+  },
+  "windowsVstoBuildVerified": false,
+  "officeRuntimeVerified": false,
+  "nascaVerified": false,
+  "liveModelVerified": false,
+  "workspaceA2AVerified": false,
+  "version": "0.2.0",
+  "windowsDpapiVerified": false,
+  "windowsWebView2Verified": false,
+  "liveClaudeVerified": false
+}

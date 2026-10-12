@@ -1,0 +1,15 @@
+{
+  "source": "/Users/ganadi/Documents/llm_router",
+  "files": [
+    "/Users/ganadi/Documents/office_x/node_modules/@e2e/cx-design-system/dist/styles.css",
+    "/Users/ganadi/Documents/office_x/node_modules/@e2e/cx-design-system/fonts/font.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/electron-app/workbench.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-identity.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/electron-app/shell.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/electron-app/ios-tokens.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-typography.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-density.css",
+    "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-dialogs.css"
+  ],
+  "scope": "CSS source fixture, not live Electron or real authentication"
+}

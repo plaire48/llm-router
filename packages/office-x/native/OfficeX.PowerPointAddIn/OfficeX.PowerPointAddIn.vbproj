@@ -1,0 +1,52 @@
+<Project ToolsVersion="17.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" />
+  <PropertyGroup>
+    <ProjectTypeGuids>{BAA0C2D2-18E2-41B9-852F-F413020CAA33};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <ProjectGuid>{3CEDAC55-64AE-496A-A60E-0DB6EA502CC9}</ProjectGuid>
+    <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
+    <Platform Condition="'$(Platform)' == ''">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>OfficeXPowerPoint</RootNamespace>
+    <AssemblyName>OfficeX.PowerPointAddIn</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <DefineConstants>VSTO40,UseOfficeInterop</DefineConstants>
+    <OfficeApplication>PowerPoint</OfficeApplication>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <OptionExplicit>On</OptionExplicit><OptionInfer>On</OptionInfer><OptionStrict>Off</OptionStrict>
+    <Optimize>true</Optimize><DebugType>pdbonly</DebugType>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <GenerateManifests>true</GenerateManifests><SignManifests>true</SignManifests>
+    <ApplicationVersion>0.3.0.0</ApplicationVersion>
+    <AutoIncrementApplicationRevision>false</AutoIncrementApplicationRevision>
+    <ProductName>Office X</ProductName><FriendlyName>Office X</FriendlyName>
+    <OfficeApplicationDescription>Office X PowerPoint 2016 Agent</OfficeApplicationDescription>
+    <LoadBehavior>3</LoadBehavior><TargetCulture>ko-KR</TargetCulture>
+    <BootstrapperEnabled>false</BootstrapperEnabled><UpdateEnabled>false</UpdateEnabled>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">17.0</VisualStudioVersion>
+    <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/><Reference Include="System.Drawing"/>
+    <Reference Include="System.Windows.Forms"/><Reference Include="System.Xml"/><Reference Include="System.Data"/>
+    <Reference Include="Microsoft.Office.Tools.v4.0.Framework"><Private>false</Private></Reference>
+    <Reference Include="Microsoft.VisualStudio.Tools.Applications.Runtime"><Private>false</Private></Reference>
+    <Reference Include="Microsoft.Office.Tools"><Private>false</Private></Reference>
+    <Reference Include="Microsoft.Office.Tools.Common"><Private>false</Private></Reference>
+    <Reference Include="Microsoft.Office.Tools.Common.v4.0.Utilities"><Private>true</Private></Reference>
+    <Reference Include="office"><HintPath>$(OfficeCorePath)</HintPath><EmbedInteropTypes>true</EmbedInteropTypes></Reference>
+    <Reference Include="Microsoft.Office.Interop.PowerPoint"><HintPath>$(PowerPointInteropPath)</HintPath><EmbedInteropTypes>true</EmbedInteropTypes></Reference>
+    <Reference Include="OfficeX.ExcelHost"><HintPath>..\OfficeX.ExcelHost\bin\Release\net472\OfficeX.ExcelHost.dll</HintPath><Private>true</Private></Reference>
+    <Import Include="System"/><Import Include="Microsoft.VisualBasic"/>
+    <Compile Include="ThisAddIn.vb"/>
+    <Compile Include="ThisAddIn.Designer.vb"><DependentUpon>ThisAddIn.Designer.xml</DependentUpon></Compile>
+    <Compile Include="AssemblyInfo.vb"/>
+    <Reference Include="OfficeX.Core"><HintPath>..\OfficeX.Core\bin\Release\net472\OfficeX.Core.dll</HintPath><Private>true</Private></Reference>
+    <None Include="ThisAddIn.Designer.xml"><DependentUpon>ThisAddIn.vb</DependentUpon></None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="$(VSToolsPath)\OfficeTools\Microsoft.VisualStudio.Tools.Office.targets" />
+  <ProjectExtensions><VisualStudio><FlavorProperties GUID="{BAA0C2D2-18E2-41B9-852F-F413020CAA33}">
+    <ProjectProperties HostName="PowerPoint" OfficeVersion="15.0" VstxVersion="4.0" ApplicationType="PowerPoint" Language="vb" />
+    <Host Name="PowerPoint" IconIndex="0"><HostItem Name="ThisAddIn" Code="ThisAddIn.vb" CanonicalName="AddIn" CanActivate="false" IconIndex="1" Blueprint="ThisAddIn.Designer.xml" GeneratedCode="ThisAddIn.Designer.vb" /></Host>
+  </FlavorProperties></VisualStudio></ProjectExtensions>
+</Project>

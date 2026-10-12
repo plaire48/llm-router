@@ -1,0 +1,157 @@
+/* User-approved visual standard: agentfactorysdkdeck.html (2026-09-21).
+   Shared service tokens, mapped onto CX's public semantic tokens.
+   See docs/VISUAL-STANDARD.md for provenance and accessibility adaptations. */
+:root {
+  --deck-blue: #3182F6;
+  --deck-blue-deep: #1B64DA;
+  --deck-blue-lite: #64A8F8;
+  --deck-blue-soft: #E8F1FE;
+  --deck-ink: #191F28;
+  --deck-sub: #4E5968;
+  --deck-card: #FFFFFF;
+  --deck-tint: #F1F7FE;
+  --deck-line: #E5E8EB;
+  --deck-violet: #7B61E6;
+  --deck-violet-soft: #EFECFD;
+  --deck-teal: #189BB0;
+  --deck-teal-soft: #E6F6F9;
+  --bird-mint: #A6F3DF;
+  --bird-aqua: #50D8DC;
+  --bird-ink: #126678;
+  --bird-shadow: color-mix(in srgb, var(--deck-teal) 20%, transparent);
+  --bird-aura: radial-gradient(ellipse at 68% 26%, color-mix(in srgb, var(--bird-mint) 65%, transparent), transparent 65%), radial-gradient(ellipse at 30% 70%, color-mix(in srgb, var(--deck-blue-lite) 28%, transparent), transparent 65%);
+  --deck-green: var(--deck-blue-deep);
+  --deck-green-soft: var(--deck-blue-soft);
+  --deck-orange: #F08A3C;
+  --deck-orange-soft: #FEF1E6;
+  --deck-red: #D22030;
+  --deck-red-soft: #FDEBEC;
+  --provider-aipro-start: var(--deck-blue-soft);
+  --provider-aipro-end: var(--deck-violet-soft);
+  --provider-chatgpt: color-mix(in srgb, var(--deck-ink) 5%, var(--deck-card));
+  --provider-fabrix-start: var(--deck-teal-soft);
+  --provider-fabrix-end: color-mix(in srgb, var(--deck-teal-soft) 60%, var(--deck-card));
+  --provider-fabrix-ink: var(--deck-blue-deep);
+  --provider-tab-shadow: 0 3px 12px color-mix(in srgb, var(--deck-blue-deep) 10%, transparent);
+  --deck-background: linear-gradient(155deg, #EAF3FE 0%, #E9F2FD 42%, #ECEFFD 72%, #E9F6F2 100%);
+  --conversation-user-surface: color-mix(in srgb, var(--deck-blue) 16%, var(--deck-card));
+  --deck-shadow: 0 14px 44px rgba(25, 31, 40, .09);
+  --deck-shadow-file: 0 10px 26px color-mix(in srgb, var(--deck-blue) 14%, transparent);
+  --deck-shadow-field: none;
+  --deck-shadow-tile: 0 4px 16px color-mix(in srgb, var(--deck-ink) 4%, transparent);
+  --deck-section-surface: color-mix(in srgb, var(--deck-tint) 60%, var(--deck-card));
+  --deck-surface-border: color-mix(in srgb, var(--deck-blue) 10%, var(--deck-card));
+  --deck-violet-ink: color-mix(in srgb, var(--deck-violet) 75%, var(--deck-ink));
+  --deck-section-icon: 32px;
+  --deck-overlay: color-mix(in srgb, var(--deck-ink) 20%, transparent);
+  --deck-action-hover: color-mix(in srgb, var(--deck-blue-deep) 88%, var(--deck-ink));
+  --deck-action-disabled: color-mix(in srgb, var(--deck-blue) 28%, var(--deck-card));
+  --deck-type-body: 14px;
+  --deck-type-caption: 12px;
+  --deck-type-heading: 16px;
+  --deck-type-title: 24px;
+  --deck-type-code: 13px;
+  --deck-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --deck-line-body: 22px;
+  --deck-line-heading: 24px;
+  --deck-line-caption: 16px;
+  --deck-font-body: 400 var(--cx-type-body)/var(--deck-line-body) var(--cx-font-family);
+  --deck-font-label: 500 var(--cx-type-body)/var(--deck-line-body) var(--cx-font-family);
+  --deck-font-caption: 400 var(--cx-type-caption)/var(--cx-line-caption) var(--cx-font-family);
+  --deck-field-height: 36px;
+  --deck-control-radius: 12px;
+  --deck-inset-radius: 16px;
+  --deck-panel-radius: 20px;
+  --deck-connect-size: 64px;
+  --deck-connect-icon: 32px;
+  --deck-tile-radius: 28%;
+  --deck-pill-radius: 100px;
+  --deck-rise: 550ms;
+  --deck-pop: 400ms;
+  --deck-step: 140ms;
+  --deck-stagger: 110ms;
+  --deck-feedback: 240ms;
+  --deck-pointer-travel: 160ms;
+  --deck-pointer-pulse: 180ms;
+  --deck-disclosure: 240ms;
+  --deck-float: 6s;
+  --deck-press: .97;
+  --deck-ease: cubic-bezier(.22, .61, .36, 1);
+}
+:root, .app-shell, .cx-detail-panel, .cx-inline-editor, .table-filter-popover, .cx-toast {
+  --brand-action: var(--deck-blue-deep);
+  --brand-ink: var(--deck-blue-deep);
+  --brand-mid: var(--deck-blue);
+  --brand-soft: var(--deck-blue-soft);
+  --brand-surface: var(--deck-tint);
+  --brand-selected: var(--deck-blue-soft);
+  --brand-border: color-mix(in srgb, var(--deck-blue) 36%, var(--deck-card));
+  --brand-canvas: var(--deck-tint);
+  --layout-surface: var(--deck-card);
+  --layout-soft: var(--deck-tint);
+  --layout-text: var(--deck-ink);
+  --layout-muted: var(--deck-sub);
+  --layout-border: var(--deck-line);
+  --layout-row-border: var(--deck-line);
+  --layout-table-head: var(--deck-tint);
+  --layout-accent: var(--deck-blue-deep);
+  --layout-selected: var(--deck-blue-soft);
+  /* CX's solid and icon controls consume different semantic aliases. Map
+     both here so the package's default indigo cannot leak into a portal. */
+  --cx-button-primary: var(--deck-blue-deep);
+  --color-bg-primary: var(--deck-blue-deep);
+  --color-bg-primary-hover: var(--deck-action-hover);
+  --color-bg-primary-disabled: var(--deck-action-disabled);
+  --color-bg-primary-accent: var(--deck-blue);
+  --color-bg-primary-tint: var(--deck-blue-soft);
+  --color-fg-primary: var(--deck-blue-deep);
+  --color-fg-primary-hover: var(--deck-action-hover);
+  --color-fg-primary-disabled: var(--deck-action-disabled);
+  --color-fg-primary-accent: var(--deck-blue);
+  --color-border-primary: var(--brand-border);
+  --color-effect-focus-primary: var(--deck-blue-soft);
+  --cx-input-border: color-mix(in srgb, var(--deck-sub) 36%, var(--deck-card));
+  --cx-success: var(--deck-blue-deep);
+  --cx-warning: color-mix(in srgb, var(--deck-orange) 55%, var(--deck-ink));
+  --cx-danger: var(--deck-red);
+  --cx-error-surface: var(--deck-red-soft);
+  --cx-radius-control: var(--deck-control-radius);
+  --cx-radius-card: var(--deck-inset-radius);
+  --cx-popup-radius: var(--deck-inset-radius);
+  --cx-shadow-card: var(--deck-shadow);
+  --cx-shadow-overlay: var(--deck-shadow);
+  --cx-overlay: var(--deck-overlay);
+  --cx-motion: 180ms;
+  --cx-type-body: var(--deck-type-body);
+  --cx-type-caption: var(--deck-type-caption);
+  --cx-type-section: var(--deck-type-heading);
+  --cx-type-title: var(--deck-type-title);
+  --cx-line-body: var(--deck-line-body);
+  --cx-line-caption: var(--deck-line-caption);
+}
+
+/* Desktop side panels are narrow windows, not touch-phone layouts. */
+:root, .app-shell, .cx-detail-panel, .cx-inline-editor {
+  --cx-field-font: var(--cx-type-body);
+  --cx-field-line: var(--deck-line-body);
+  --cx-field-height: var(--deck-field-height);
+  --cx-panel-inset: var(--cx-space-4);
+  --cx-tab-height: 40px;
+}
+@media (pointer: coarse) {
+  :root, .app-shell, .cx-detail-panel, .cx-inline-editor {
+    --cx-field-font: var(--cx-type-section);
+    --cx-field-line: var(--deck-line-heading);
+    --cx-field-height: 44px;
+    --cx-tab-height: 44px;
+  }
+}
+
+/* One title and rhythm across settings, tools, usage and confirmations. */
+.deck-dialog {
+  --cx-type-panel-title: var(--cx-type-section);
+  --cx-line-panel-title: var(--deck-line-heading);
+  --cx-weight-bold: 600;
+  --cx-panel-block: var(--cx-space-3);
+  --cx-line-body: var(--deck-line-body);
+}
