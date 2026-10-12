@@ -29,3 +29,9 @@ Approved command completion already starts an analysis run with host receipts. T
 The earlier admission race fix queues a follow-up exactly once when automatic analysis starts ahead of the renderer snapshot. Windows PowerShell uses UTF-8 console output plus a child-only UTF-8 Get-Content default; explicit encodings still win. No profile, system codepage setting or existing file is rewritten.
 
 A paused result-analysis run now retains its process ID across resume. The host verifies task ownership and a settled process before reconnecting analysis; it does not rerun the command. Local recovery regression covers a plan that remains invalid, pause, explicit resume, source read and answer for the same process.
+
+## Native Windows caption scrim
+
+The native Window Controls Overlay previously kept `#F1F7FE` while a CX modal dimmed the renderer. `useNativeTitlebar` now composites the visible full-window CX backdrop colors over the actual toolbar background and symbol token. It sends only validated opaque colors to the trusted desktop host. Stacked dialogs retain their combined shade; the last close restores the current theme. Renderer navigation resets the native surface. Caption height and native minimize/maximize/close behavior remain unchanged.
+
+This uses Electron's existing [`setTitleBarOverlay`](https://www.electronjs.org/docs/latest/api/base-window#winsettitlebaroverlayoptions-windows-linux) API without a new dependency or replacement window controls. Mutation updates are filtered and coalesced into one animation frame, and unchanged colors do not cross IPC. Unit checks cover compositing, restoration and payload bounds. The Windows installed-app smoke check asserts the real native API colors when settings opens and closes. macOS checks do not establish Windows 11 visual acceptance.

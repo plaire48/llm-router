@@ -8,6 +8,7 @@ const {ElectronHost}=require('./native-host.cjs');
 const {browseLocalDirectory,readLocalFile}=require('./local-file-view.cjs');
 const {startWebHost}=require('./web-host.cjs');
 const {BrowserHost}=require('./browser-host.cjs');
+const {DEFAULT_TITLEBAR,applyCaptionColors}=require('./titlebar-colors.cjs');
 const {importProjectZip}=require('../runtime/project-zip.mjs');
 const {configureSystemTrust,disableHostedTracing}=require('../runtime/worker-environment.mjs');
 const {DESKTOP_FEATURES}=require('../runtime/beta-features.mjs');
@@ -106,7 +107,8 @@ app.whenReady().then(async()=>{
   const result=await dialog.showMessageBox(window,{type:'question',title:'AI Workspace에 저장',message:`${change.repository}에 변경을 저장할까요?`,detail:`브랜치: ${change.branch}\n${change.message}\n\n${change.files.slice(0,24).join('\n')}${change.files.length>24?`\n외 ${change.files.length-24}개 파일`:''}`,buttons:['저장','취소'],defaultId:1,cancelId:1,noLink:true});return result.response===0;
  }});
  const {screen}=require('electron'),windowState=restoreWindowState(await loadWindowState(),screen.getAllDisplays());
- window=new BrowserWindow({icon:appIcon,width:windowState.width,height:windowState.height,...(windowState.x!==undefined?{x:windowState.x,y:windowState.y}:{}),minWidth:620,minHeight:540,title:'누비 Workspace Beta',backgroundColor:'#F1F7FE',titleBarStyle:process.platform==='darwin'?'hiddenInset':'hidden',...(process.platform==='darwin'?{trafficLightPosition:{x:14,y:17}}:{titleBarOverlay:{color:'#F1F7FE',symbolColor:'#4E5968',height:48}}),webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+ window=new BrowserWindow({icon:appIcon,width:windowState.width,height:windowState.height,...(windowState.x!==undefined?{x:windowState.x,y:windowState.y}:{}),minWidth:620,minHeight:540,title:'누비 Workspace Beta',backgroundColor:'#F1F7FE',titleBarStyle:process.platform==='darwin'?'hiddenInset':'hidden',...(process.platform==='darwin'?{trafficLightPosition:{x:14,y:17}}:{titleBarOverlay:DEFAULT_TITLEBAR}),webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,sandbox:true,nodeIntegration:false}});
+ window.webContents.on('did-start-navigation',(_event,_url,_inPlace,isMainFrame)=>{if(isMainFrame)applyCaptionColors(window,DEFAULT_TITLEBAR);});
  if(windowState.maximized)window.maximize();
  for(const name of ['resize','move','maximize','unmaximize'])window.on(name,saveWindowState);
  window.on('close',()=>{clearTimeout(windowStateTimer);try{require('node:fs').mkdirSync(storage,{recursive:true});require('node:fs').writeFileSync(windowStateFile,JSON.stringify(windowStateOf(window)),{mode:0o600});}catch{}});
@@ -127,6 +129,7 @@ app.whenReady().then(async()=>{
   return {action:'deny'};
  });
  const dispatch=async(method,args={},source='electron')=>{try{
+  if(method==='titlebarAppearance'){if(source!=='electron')throw Error('titlebar_desktop_only');applyCaptionColors(window,args);return {updated:true};}
   if(method==='startupConnections'){let mail=null;try{mail=await invoke('mail',{action:'status'});}catch{}return {launchId,mailPrompt:startupMailPrompt(mail)};}
   if(method==='browser'){if(source!=='electron')throw Error('browser_desktop_only');return await browserHost.request(args);}
   if(method==='openWorkspacePage')return openWorkspacePage(args.url);

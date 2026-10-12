@@ -6,6 +6,7 @@ import {WorkspaceToast,notifyWorkspaceToast} from '../ui/WorkspaceToast.jsx';
 import {Workbench} from '../ui/Workbench.jsx';
 import {useSidebarResize} from '../ui/useSidebarResize.js';
 import {useModalDismissalPolicy} from '../ui/useModalDismissalPolicy.js';
+import {useNativeTitlebar} from './useNativeTitlebar.js';
 import {useWorkspacePageLinks} from '../ui/useWorkspacePageLinks.js';
 import {WORKSPACE_LAYOUT,workspaceSlots} from './workspace-layout.cjs';
 import {teamWorkspaceErrors} from '../ui/teamWorkspaceErrors.js';
@@ -37,6 +38,7 @@ const projectRelative=(root,value)=>{if(!root)return null;const canonical=text=>
 const digest=async text=>'sha256:'+Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');
 function App(){
  useModalDismissalPolicy();
+ useNativeTitlebar(request);
  useWorkspacePageLinks(url=>request('openWorkspacePage',{url}),()=>showError('페이지를 열지 못했어요. 다시 시도해 주세요.'));
  const [teamWorkspace,setTeamWorkspace]=useState(null);
  const [projects,setProjects]=useState([]),catalogRevision=useRef(0);

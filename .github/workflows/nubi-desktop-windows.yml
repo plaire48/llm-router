@@ -41,7 +41,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check Windows lifecycle and secure connection storage
         run: |
-          node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs tests/connection-readiness.test.mjs tests/model-catalog-refresh.test.mjs tests/project-catalog.test.mjs
+          node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs tests/connection-readiness.test.mjs tests/model-catalog-refresh.test.mjs tests/project-catalog.test.mjs tests/titlebar-colors.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --test ../nubi-vscode/tests/ghes-account.test.cjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

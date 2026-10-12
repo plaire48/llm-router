@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "e1892f9d5c1beb2969d025efd590bb3fc614efcd3d0d5d4ad034712a4f025a15",
-      "bytes": 6950
+      "sha256": "e91975eeef8d90bafa026186a14dea2f6491c00dee62390238e0770f279d2ee9",
+      "bytes": 6981
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1438,8 +1438,8 @@
     },
     {
       "path": "packages/nubi-desktop/docs/MODAL-CONTRACT-2026-10-12.md",
-      "bytes": 4921,
-      "sha256": "53cdb4540de76ca1f3a883c9f579357b5ace50ae3c351e1b4337a54393786943"
+      "sha256": "20a4ed21a1ca37bb05aab68d3f2eb2815930884ecd596e7a8166b2a1669d5d39",
+      "bytes": 6015
     },
     {
       "path": "packages/nubi-desktop/docs/NUBI-SKILLS-AND-TABS-2026-10-12.md",
@@ -1548,8 +1548,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/main.cjs",
-      "sha256": "9b7555ab4261fd6f3955f1c4c5a81adb8ede2c9b7ed8161dd341cdf70acb9d4c",
-      "bytes": 20702
+      "sha256": "04c8ef444124b1461d5f2851adde5dcf6f3291aaa958a74d394e560234392f69",
+      "bytes": 21045
     },
     {
       "path": "packages/nubi-desktop/electron-app/native-host.cjs",
@@ -1573,8 +1573,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/renderer.jsx",
-      "sha256": "02e3f156ba4b55ad7c85c7c98fa897c985c32d88395a59e61c402054888e7dbd",
-      "bytes": 44138
+      "sha256": "ea30ca11b2c4acaa3e688d7b6c7f1d0cf2006444c564c4989495e3e3049a5c38",
+      "bytes": 44225
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
@@ -1595,6 +1595,16 @@
       "path": "packages/nubi-desktop/electron-app/team-workspace.cjs",
       "sha256": "52c522718fd2637a8d0bf4294383924d013e4c21d7f995a121d802866d50c99a",
       "bytes": 15741
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/titlebar-colors.cjs",
+      "sha256": "bdb9d20cd63203d9e52102380ecbb2e453842220b780e69f55daf23c9a56d0a6",
+      "bytes": 1609
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/useNativeTitlebar.js",
+      "sha256": "07ede9debef5e845247e6a06c592b927e5c0161267ff08ef2d61c180d88d9791",
+      "bytes": 1978
     },
     {
       "path": "packages/nubi-desktop/electron-app/web-host.cjs",
@@ -2193,8 +2203,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
-      "sha256": "7b68c1503b82b13d91cfc78ab46e4631792d41128e38a783297fa01d87bf412a",
-      "bytes": 18551
+      "sha256": "cdb0f303b2d64c90bb8f503eac14c3a2985ffd55a9fe788b747d60f71731a5ed",
+      "bytes": 20868
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-skills.mjs",
@@ -2940,6 +2950,11 @@
       "path": "packages/nubi-desktop/tests/task-delete.test.mjs",
       "sha256": "067f1b66407c6fbb61d12b1224879db0678adbd4b3ac9affbd1ce9c04b7f7088",
       "bytes": 3758
+    },
+    {
+      "path": "packages/nubi-desktop/tests/titlebar-colors.test.mjs",
+      "sha256": "8d63af9cb821d88e8f779545d62f1138ddec21c38a70776724c0b55d45aa28bc",
+      "bytes": 1780
     },
     {
       "path": "packages/nubi-desktop/tests/voc.test.mjs",
