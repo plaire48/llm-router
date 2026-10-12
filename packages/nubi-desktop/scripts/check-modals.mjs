@@ -59,6 +59,44 @@ try{
   await openSidebar();await p.locator('.nubi-session-row').filter({hasText:'문맥 사용량 화면 검증'}).locator('.nubi-actions-disclosure>summary').click();await p.getByRole('button',{name:'문맥 사용량 화면 검증 삭제',exact:true}).click();await inspect('대화를 삭제할까요?','delete-'+suffix);assert.match(await p.getByRole('alertdialog').innerText(),/프로젝트에 반영한 파일은 그대로/);await p.keyboard.press('Escape');assert.equal(await p.getByRole('button',{name:'문맥 사용량 화면 검증 삭제',exact:true}).count(),0);assert.equal(await p.locator('.nubi-session-row').filter({hasText:'문맥 사용량 화면 검증'}).count(),1);
   checks.push('nested navigation restores the invoking screen and control; FabriX returns to model selection; Escape cancels deletion');
  }
+ // A changing fetchedAt previously triggered an endless refresh and locked the Workbench.
+ await p.goto(origin+'/?context&modals&integrated&catalog');await closeSidebar();
+ await p.getByRole('button',{name:'모델 변경',exact:true}).click();
+ const catalogDialog=p.getByRole('dialog',{name:'모델 선택',exact:true});await catalogDialog.waitFor();
+ await p.waitForTimeout(500);assert.equal(await p.evaluate(()=>window.catalogCalls),0,'opening a connected catalog reuses the loaded models');
+ await p.evaluate(()=>{window.catalogDelay=1500;});
+ await catalogDialog.getByRole('button',{name:'모델 목록 새로고침',exact:true}).click();
+ assert(await catalogDialog.getByRole('button',{name:'Second fixture',exact:true}).isEnabled(),'cached choices remain interactive during refresh');
+ await catalogDialog.getByRole('textbox',{name:'모델 검색'}).fill('Second');
+ await catalogDialog.getByRole('button',{name:'Second fixture',exact:true}).click();await catalogDialog.waitFor({state:'hidden'});
+ await p.waitForTimeout(1800);assert.equal(await p.evaluate(()=>window.catalogCalls),1,'catalog update does not retrigger itself');
+ await p.getByRole('button',{name:'모델 변경',exact:true}).click();
+ assert.equal(await catalogDialog.getByRole('button',{name:'Second fixture',exact:true}).getAttribute('aria-pressed'),'true','late refresh preserves the selected model');
+ await p.evaluate(()=>{window.catalogDelay=50;window.catalogFailure=true;});
+ await catalogDialog.getByRole('button',{name:'모델 목록 새로고침',exact:true}).click();
+ await p.waitForTimeout(600);assert.equal(await p.evaluate(()=>window.catalogCalls),2,'failed refresh stops until explicitly retried');
+ assert(await catalogDialog.getByRole('button',{name:'Second fixture',exact:true}).isEnabled(),'failed refresh preserves cached choices');
+ await p.evaluate(()=>{window.catalogFailure=false;});
+ await catalogDialog.getByRole('button',{name:'모델 목록 새로고침',exact:true}).click();await p.waitForTimeout(300);
+ assert.equal(await p.evaluate(()=>window.catalogCalls),3,'manual retry recovers');
+ await p.screenshot({path:path.join(dir,'model-catalog-recovered.png'),animations:'disabled'});
+ await p.keyboard.press('Escape');checks.push('catalog cache, nonblocking refresh, no repeated success/failure fetches, selected model preserved and explicit retry');
+ for(const width of [1280,440]){
+  await p.setViewportSize({width,height:800});await p.goto(origin+'/?context&modals&integrated&wiki-progress');
+  const wiki=p.getByRole('dialog',{name:'위키 준비',exact:true});await wiki.waitFor();
+  assert.equal(await wiki.getByRole('progressbar').getAttribute('aria-valuenow'),'30');
+  assert.match(await wiki.innerText(),/현재 단계 약/);assert.match(await wiki.innerText(),/경과/);
+  assert(await wiki.evaluate(e=>e.scrollWidth<=e.clientWidth+1),'wiki progress fits the modal');
+  await p.screenshot({path:path.join(dir,`wiki-progress-${width}.png`),animations:'disabled'});
+  await wiki.getByRole('button',{name:'백그라운드로',exact:true}).click();await wiki.waitFor({state:'hidden'});
+  await p.waitForTimeout(300);assert.equal(await wiki.count(),0,'background progress does not reopen its modal');
+ }
+ checks.push('wiki progress uses actual stage percentage, elapsed and stage-only ETA; modal can stay in background');
+ await p.goto(origin+'/?context&modals&integrated&catalog');await closeSidebar();
+ await selectTask();await closeSidebar();await p.evaluate(()=>{window.slowStart=true;});await p.getByRole('textbox',{name:'추가 요청',exact:true}).fill('느린 시작 검사');
+ await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('button',{name:'요청 접수 중',exact:true}).waitFor();
+ await p.getByRole('button',{name:'설정',exact:true}).click();await p.getByRole('dialog',{name:'설정',exact:true}).waitFor();
+ await p.keyboard.press('Escape');await p.waitForTimeout(1800);checks.push('slow agent start leaves navigation usable and shows immediate pending feedback');
  // Company sign-in must be discoverable in the titlebar, including before a project/model is connected.
  for(const variant of [{width:1280,height:720},{width:800,height:600},{width:440,height:500},{width:440,height:500,noProject:true},{width:1280,height:720,connected:true}]){
   await p.setViewportSize({width:variant.width,height:variant.height});

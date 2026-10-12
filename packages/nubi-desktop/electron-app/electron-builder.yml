@@ -3,7 +3,10 @@ productName: 누비 Workspace
 executableName: Nubi Workspace
 artifactName: Nubi-Workspace-beta-${version}-${arch}-Setup.${ext}
 electronVersion: 42.11.10
-asar: false
+asar: true
+asarUnpack:
+  - node_modules/@vscode/ripgrep-*/**/*
+  - "**/*.node"
 npmRebuild: false
 nodeGypRebuild: false
 directories:
@@ -26,11 +29,14 @@ win:
     - target: nsis
       arch: [x64]
 nsis:
+  include: nubi-installer.nsh
+  installerLanguages: [ko_KR]
+  language: "1042"
   oneClick: false
   perMachine: false
   allowElevation: false
   allowToChangeInstallationDirectory: true
-  runAfterFinish: false
+  runAfterFinish: true
   createDesktopShortcut: true
   shortcutName: 누비 Workspace
   uninstallDisplayName: 누비 Workspace Beta ${version}

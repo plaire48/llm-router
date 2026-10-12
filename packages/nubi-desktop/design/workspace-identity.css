@@ -1496,3 +1496,21 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .desktop-shell .nubi-mail-attachment > .desktop-file-icon { flex:0 0 24px; min-width:24px; }
 .desktop-shell .nubi-mail-attachment > .nubi-mail-attachment-label { flex:1; min-width:0; overflow:hidden; }
 .desktop-shell .nubi-mail-attachment-label strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* Destructive confirmation: concise scope, preserved-file note, clear action. */
+.nubi-delete-conversation { width:min(440px,calc(100vw - 32px)); }
+.nubi-delete-conversation .deck-symbol { background:#FEF0F0;color:#D92D20; }
+.nubi-delete-conversation .deck-confirmation-content { align-items:flex-start;gap:16px; }
+.nubi-delete-conversation .deck-confirmation-content p { min-width:0;margin:0; }
+.nubi-delete-title { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--deck-ink,#191F28); }
+.nubi-delete-scope { display:block;margin-top:8px; }
+.nubi-delete-conversation .nubi-deletion-note { margin-top:16px;color:#4E5968; }
+.nubi-delete-conversation .cx-panel-footer button.cx-button--primary { background:#D92D20; }
+
+.nubi-wiki-progress-dialog { width:min(480px,calc(100vw - 32px)); }
+.nubi-wiki-progress-dialog .nubi-wiki-initialization-line { flex-wrap:nowrap;gap:12px; }
+.nubi-wiki-progress-dialog .nubi-wiki-percent { margin-left:auto; }
+.nubi-wiki-eta { display:block;margin-top:8px;color:#4E5968; }
+.nubi-progress.is-indeterminate span { width:30%;animation:nubi-wiki-scan 1.8s ease-in-out infinite alternate; }
+@keyframes nubi-wiki-scan { to { transform:translateX(230%); } }
+@media(prefers-reduced-motion:reduce){.nubi-progress.is-indeterminate span{animation:none;}}

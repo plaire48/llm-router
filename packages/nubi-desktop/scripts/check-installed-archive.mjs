@@ -1,0 +1,10 @@
+import {listPackage} from '@electron/asar';
+import {readdir,stat,writeFile} from 'node:fs/promises';
+import path from 'node:path';
+const root=process.argv[2],archive=path.join(root,'resources/app.asar');
+const files=listPackage(archive).map(file=>file.replaceAll('\\','/'));
+for(const file of ['document-extract.mjs','mail-attachment-worker.mjs','pdf.worker.mjs','office-document.ps1'])if(files.some(item=>item.endsWith('/'+file)))throw Error('deferred_attachment_packaged:'+file);
+let count=0,bytes=0;async function walk(directory){for(const item of await readdir(directory,{withFileTypes:true})){const file=path.join(directory,item.name);if(item.isDirectory())await walk(file);else{count++;bytes+=(await stat(file)).size;}}}await walk(root);
+if(!files.some(file=>file.endsWith('/ripgrep-win32-x64/bin/rg.exe')))throw Error('native_search_missing');
+await stat(path.join(root,'resources/app.asar.unpacked/node_modules/@vscode/ripgrep-win32-x64/bin/rg.exe'));
+await writeFile('verification/windows-package.json',JSON.stringify({asar:true,archiveEntries:files.length,physicalFiles:count,bytes,deferredAttachmentsAbsent:true,nativeSearchUnpacked:true},null,2));

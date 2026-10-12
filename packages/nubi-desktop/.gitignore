@@ -12,3 +12,7 @@ verification/
 generated/
 
 **/gen-esbuild.*.mjs
+
+release/
+
+electron-app/resources/nsis-generated/

@@ -84,6 +84,8 @@ export async function chatGPTLogin({openBrowser = openLoginBrowser, fetchImpl = 
 
 export function createProviders(deps = {}) {
   const api = {fetchImpl: fetch, startLogin, chatGPTLogin, chatGPTModels, completeChatGPT, refreshChatGPTToken, fabrixModels, fabrixCompletion, ...deps};
+  const connectionIds = new WeakMap(); let connectionSequence = 0;
+  const connectionId = session => {if(!session)return null;if(!connectionIds.has(session))connectionIds.set(session,++connectionSequence);return connectionIds.get(session);};
   const sessions = new Map(); let active = 'aipro', pending = null, loginError = null, generation = 0;
   let loginPhase=null,loginDiagnostics=[];
   // The model the user chose for each provider. A new login or connection keeps it while the account still lists it,
@@ -110,7 +112,7 @@ export function createProviders(deps = {}) {
     const fallback=session?.models.find(item=>item.id===session.model)?.defaultReasoning;
     return allowed.includes(preferred)?preferred:allowed.includes(fallback)?fallback:allowed.includes('medium')?'medium':allowed[0]||null;
   };
-  const status = () => ({providers: Object.entries(PROVIDERS).map(([id, label]) => ({id, label, connected: sessions.has(id)})), provider: active,
+  const status = () => ({providers: Object.entries(PROVIDERS).map(([id, label]) => ({id, label, connected: sessions.has(id), connectionId: connectionId(sessions.get(id))})), provider: active,
     connected: sessions.has(active), vision:active!=='fabrix'&&sessions.get(active)?.models.find(m=>m.id===sessions.get(active)?.model)?.supportsImages===true, models: sessions.get(active)?.models || [], model: sessions.get(active)?.model || '', verified: !!sessions.get(active)?.verified,
     reasoningEffort: sessions.get(active)?.reasoningEffort || startReasoning(active), reasoningOptions: reasoningOptions(active),
     modelCatalog: sessions.get(active)?.modelCatalog || null,completionDiagnostic:sessions.get(active)?.completionDiagnostic||null, pending: pending?.provider || null, loginError,
@@ -189,6 +191,8 @@ export function createProviders(deps = {}) {
   async function refreshModels({provider=active}={}) {
     const session = sessions.get(provider);
     if (!session) throw new Error('no_credential');
+    if(session.catalogLoading){await session.catalogLoading;return status();}
+    session.catalogLoading=(async()=>{
     const signal = AbortSignal.timeout(20000);
     const received = provider === 'aipro' ? await fetchModelCatalog(session.credential.token, api.fetchImpl, signal) : provider==='chatgpt'?await api.chatGPTModels({credential:session.credential,fetchImpl:api.fetchImpl,signal}):null;
     const models = provider === 'aipro' ? received.models
@@ -197,6 +201,8 @@ export function createProviders(deps = {}) {
       : session.models;
     if (!models.length) throw new Error('models_invalid');
     if (sessions.get(provider) === session) { session.models = models; if (received?.source==='account') session.modelCatalog={source:'account',fetchedAt:received.fetchedAt}; else if(received?.diagnostics)session.modelCatalog = {diagnostics: received.diagnostics, fetchedAt: received.fetchedAt}; if (!models.some(item => item.id === session.model)) session.model = defaultOfficeModel(models); session.reasoningEffort=startReasoning(provider,session); }
+    })();
+    try{await session.catalogLoading;}finally{session.catalogLoading=null;}
     return status();
   }
   // Opt-in only: Desktop supplies an OS-protected store. Office remains memory-only.

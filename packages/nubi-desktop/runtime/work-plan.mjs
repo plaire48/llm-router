@@ -34,6 +34,11 @@ export function workPlanSteps(input,{initial=false}={}){
 // A planner that leaves out every status meant the first plan of a run: the
 // first step is in progress and the others wait. A plan that names some
 // statuses is left as it is and judged by the rules.
+export function parseWorkPlan(content){
+  if(typeof content!=='string'||content.length>32000)throw Error('work_plan_invalid');
+  const trimmed=content.trim(),fence=/^```(?:json)?\s*\n([\s\S]*?)\n```$/i.exec(trimmed);
+  return JSON.parse(fence?fence[1]:trimmed);
+}
 function withStatus(value){
   if(!Array.isArray(value?.steps)||!value.steps.length||value.steps.some(step=>!step||typeof step!=='object'||'status' in step))return value;
   return {...value,steps:value.steps.map((step,index)=>({...step,status:index?'pending':'in_progress'}))};
@@ -49,9 +54,9 @@ export function planProblems(value,capabilities){
     if(running!==1)problems.push('Exactly one step must be in_progress; found '+running+'.');
     if(new Set(value.steps.map(step=>step?.text)).size!==value.steps.length)problems.push('Step texts must differ.');
   }
-  const unknown=(value.intent?.workflowIds||[]).filter(id=>!capabilities.workflows.some(item=>item.id===id));
+  const unknown=(Array.isArray(value.intent?.workflowIds)?value.intent.workflowIds:[]).filter(id=>!capabilities.workflows.some(item=>item.id===id));
   if(unknown.length)problems.push('Unknown workflowIds: '+unknown.map(id=>JSON.stringify(id)).join(', ')+'. Available: '+(capabilities.workflows.map(item=>item.id).join(', ')||'none')+'.');
-  const paths=(value.intent?.skillPaths||[]).filter(path=>!capabilities.skills.some(item=>item.path===path));
+  const paths=(Array.isArray(value.intent?.skillPaths)?value.intent.skillPaths:[]).filter(path=>!capabilities.skills.some(item=>item.path===path));
   if(paths.length)problems.push('Unknown skillPaths: '+paths.map(path=>JSON.stringify(path)).join(', ')+'. Use [] when no skill applies.');
   return problems.length?problems:['The plan did not pass validation.'];
 }
@@ -83,8 +88,8 @@ export async function prepareWorkPlan({task,history,model,invoke,signal,capabili
     if(result.calls?.length){problems=['The response called a tool. Return JSON only.'];continue;}
     if(result.finishReason==='length'){problems=['The response was cut off. Use fewer and shorter steps.'];continue;}
     let value;
-    try{value=withStatus(JSON.parse(result.content));}catch{problems=['The response was not valid JSON.'];continue;}
+    try{value=withStatus(parseWorkPlan(result.content));}catch{problems=['The response was not valid JSON.'];continue;}
     try{return {steps:workPlanSteps(value,{initial:true}),intent:workIntent(value.intent,capabilities)};}catch{problems=planProblems(value,capabilities);}
   }
-  throw new Error('work_plan_invalid');
+  const error=new Error('work_plan_invalid');error.planningDiagnostic={phase:'planning',attempts:2,reasons:problems.slice(0,6)};throw error;
 }

@@ -41,7 +41,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check Windows lifecycle and secure connection storage
         run: |
-          node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs
+          node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs tests/connection-readiness.test.mjs tests/model-catalog-refresh.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify Unicode shortcut inspection
         shell: pwsh
@@ -75,7 +75,7 @@ jobs:
         run: |
           $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
           $tag = "nubi-desktop-v$version-run-$env:GITHUB_RUN_ID"
-          $reports = 'electron-shell.json','electron-first-install.json','windows-installer.json','windows-branding.json','installed-icon.png' | ForEach-Object { (Resolve-Path (Join-Path 'verification' $_)).Path }
+          $reports = 'electron-shell.json','electron-first-install.json','windows-installer.json','windows-branding.json','installed-icon.png','windows-package.json','windows-installer-experience.json','windows-installer-progress.png','windows-installer-finish.png' | ForEach-Object { (Resolve-Path (Join-Path 'verification' $_)).Path }
           $files = @((Get-ChildItem release/windows/*-Setup.exe).FullName) + @((Get-ChildItem release/windows/*.sha256).FullName) + $reports
           gh release create $tag --repo $env:GITHUB_REPOSITORY --draft --prerelease --target $env:GITHUB_SHA --title "누비 Workspace Beta Windows x64 ($env:GITHUB_RUN_ID)" --notes "Standalone Electron installer and native Windows installation reports. Build $env:GITHUB_RUN_ID, commit $env:GITHUB_SHA. Unsigned Beta; corporate SSO, Office 2016/NASCA and Windows 11 end-user behavior are separate checks." @files
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

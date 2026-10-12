@@ -18,6 +18,8 @@ export async function searchSource({query,kind='all',mode='content',within,taskI
     return {results:matches.slice(0,100).map(path=>({path,kind:'path'})),scanned:files.length,skipped:0,total:files.length,truncated:listed.truncated||matches.length>100,engine:'git-paths',instruction:'Path candidates only. Read current source before planning or editing.'};
   }
   let rgPath;try{({rgPath}=await import('@vscode/ripgrep'));}catch{fail('search_unavailable');}
+  // Native search runs outside Electron's virtual archive, including promisified execFile.
+  if(process.versions.electron)rgPath=rgPath.replace(/([\\/])app\.asar([\\/])/,'$1app.asar.unpacked$2');
   // Excerpts are capped per file so a few files cannot crowd out the rest;
   // `matched` still counts every file, which keeps the breadth visible.
   // When one file holds every match, the search is a search within it and shows its matches up to the whole limit.

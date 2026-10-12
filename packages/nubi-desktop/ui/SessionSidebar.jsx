@@ -53,6 +53,6 @@ export function SessionSidebar({brand = false, compactAt = 900, compact, project
         </div>})}
       </section>)}{hiddenTaskCount > 0 && <CxButton className="nubi-sidebar-more" onClick={() => setShowAll(true)}><Icon name="chevronDown" size={16}/>대화 {hiddenTaskCount}개 더보기</CxButton>}{showAll&&orderedTasks.length > 5 && <CxButton className="nubi-sidebar-more" onClick={() => setShowAll(false)}><Icon name="chevronUp" size={16}/>접기</CxButton>}</nav>}</>}</div>
     </aside>
-    {removing && <DeckConfirmation title="대화를 삭제할까요?" message={<>‘{removing.request.replace(/\\r\\n|\\n/g, '\n')}’ 대화와 작업 기록이 삭제됩니다.<br/><span className="nubi-deletion-note"><Icon name="infoCircle" size={14} aria-hidden="true"/><span>프로젝트에 반영한 파일은 그대로 남아요.</span></span></>} confirmLabel="확인" confirmIcon="check" showActionLabels busy={deleting} onCancel={() => { if (!deleting) setRemoving(null); }} onConfirm={remove}/>}
+    {removing && <DeckConfirmation className="nubi-delete-conversation" title="대화를 삭제할까요?" message={<><strong className="nubi-delete-title" title={removing.request}>{removing.request.replace(/\\r\\n|\\n/g, ' ')}</strong><span className="nubi-delete-scope">대화와 작업 기록이 삭제돼요.</span><span className="nubi-deletion-note"><Icon name="infoCircle" size={16} aria-hidden="true"/><span>프로젝트에 반영한 파일은 그대로 남아요.</span></span></>} confirmLabel="삭제" confirmIcon="trash" showActionLabels busy={deleting} onCancel={() => { if (!deleting) setRemoving(null); }} onConfirm={remove}/>}
   </>;
 }

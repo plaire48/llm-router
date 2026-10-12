@@ -6,9 +6,10 @@ import {BrowserMark,PersonMark,FolderMark} from './marks.jsx';
 import {ModelSelection,ProviderIcon} from '../../../extensions/aipro-chat/src/ChatControls.jsx';
 import {mailPassword} from '../runtime/mail-credentials.mjs';
 const labels={aipro:'AI Pro',chatgpt:'ChatGPT',fabrix:'FabriX'};
-const errors={mail_input_invalid:'아이디와 비밀번호를 확인해 주세요.',mail_auth_failed:'로그인에 실패했어요. 계정과 POP3 사용 권한을 확인해 주세요.',mail_tls_error:'메일 서버 인증서를 확인하지 못했어요.',mail_connection_failed:'메일 서버에 연결하지 못했어요. 네트워크 연결을 확인해 주세요.',mail_timeout:'메일 서버가 응답하지 않아요. 다시 연결해 주세요.',mail_model_missing:'정리할 모델을 먼저 선택해 주세요.',mail_model_changed:'선택한 모델의 연결을 확인해 주세요.',mail_check_wait:'다음 확인 시간이 되면 새 메일을 가져와요.',mail_busy:'진행 중인 작업이 끝난 뒤 다시 눌러 주세요.',mail_not_connected:'메일 계정을 먼저 연결해 주세요.',mail_source_changed:'보관한 원문이 바뀌었어요. 원문을 확인해 주세요.',mail_summary_failed:'메일을 정리하는 중 모델 응답을 받지 못했어요. 다시 시도해 주세요.',mail_storage_failed:'정리한 내용을 저장하지 못했어요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',mail_file_conflict:'정리한 메일 파일이 바뀌어 저장하지 않았어요. 다시 정리해 주세요.',mail_size_limit:'메일이 너무 커요. 11 MB까지 처리할 수 있어요.',mail_missing:'메일을 찾을 수 없어요. 목록을 새로고침해 주세요.'};
+const errors={mail_input_invalid:'아이디와 비밀번호를 확인해 주세요.',mail_auth_failed:'회사 메일 서버가 인증을 거절했어요. 메일 아이디와 비밀번호, POP3 사용 권한을 확인해 주세요.',mail_tls_error:'Windows에서 메일 서버 인증서를 신뢰하지 못했어요. 사내 인증서 설치 상태를 확인해 주세요.',mail_connection_failed:'메일 서버에 연결하지 못했어요. 네트워크 연결을 확인해 주세요.',mail_timeout:'메일 서버가 응답하지 않아요. 다시 연결해 주세요.',mail_model_missing:'정리할 모델을 먼저 선택해 주세요.',mail_model_changed:'선택한 모델의 연결을 확인해 주세요.',mail_check_wait:'다음 확인 시간이 되면 새 메일을 가져와요.',mail_busy:'진행 중인 작업이 끝난 뒤 다시 눌러 주세요.',mail_not_connected:'메일 계정을 먼저 연결해 주세요.',mail_source_changed:'보관한 원문이 바뀌었어요. 원문을 확인해 주세요.',mail_summary_failed:'메일을 정리하는 중 모델 응답을 받지 못했어요. 다시 시도해 주세요.',mail_storage_failed:'정리한 내용을 저장하지 못했어요. 저장 공간을 확인한 뒤 다시 시도해 주세요.',mail_file_conflict:'정리한 메일 파일이 바뀌어 저장하지 않았어요. 다시 정리해 주세요.',mail_size_limit:'메일이 너무 커요. 11 MB까지 처리할 수 있어요.',mail_missing:'메일을 찾을 수 없어요. 목록을 새로고침해 주세요.'};
 Object.assign(errors,{mail_gmail_app_password_required:'Google이 앱 비밀번호를 요구했어요. 계정 비밀번호 대신 앱 비밀번호를 입력해 주세요.',mail_gmail_web_login_required:'Google에서 웹 로그인을 확인해야 해요. Gmail에 로그인한 뒤 다시 연결해 주세요.',mail_gmail_pop_disabled:'Google이 POP 사용이 꺼져 있다고 응답했어요. Gmail의 POP 설정을 확인해 주세요.',mail_gmail_credentials_invalid:'Google이 주소 또는 앱 비밀번호를 거절했어요. 앱 비밀번호를 발급한 계정과 Gmail 주소가 같은지 확인해 주세요.'});
 const modelKey=value=>value?`${value.provider}:${value.model}`:'';
+Object.assign(errors,{mail_storage_permission:'로그인은 확인했지만 개인 메일 폴더 권한을 설정하지 못했어요. PC 보안 정책이나 저장 위치 권한을 확인해 주세요.',mail_protocol:'메일 서버의 POP3 응답을 처리하지 못했어요. 사내 메일의 POP3 사용 설정을 확인해 주세요.',mail_uidl_invalid:'메일 서버에서 유효한 메일 목록을 받지 못했어요. POP3 사용 설정을 확인해 주세요.'});
 errors.mail_gmail_app_password_format='Google에서 생성한 16자리 앱 비밀번호를 입력해 주세요. 일반 계정 비밀번호로는 연결할 수 없어요.';
 const pickerError=message=>notifyWorkspaceToast(message,{error:true});
 const sectionTitle=(icon,text)=><span className="nubi-mail-section-title"><span className="nubi-mail-section-icon" aria-hidden="true"><Icon name={icon} size={18}/></span><strong>{text}</strong></span>;
@@ -33,7 +34,7 @@ function MailStorage({api,status}){
 }
 export function MailLibrary({api,openWebPage,provider,onProviderLogin,onProviderAction,providerBusy=false}){
   const [status,setStatus]=useState(null),[user,setUser]=useState(''),[password,setPassword]=useState(''),[busy,setBusy]=useState(false),[chosen,setChosen]=useState('');
-  const [serverProfile,setServerProfile]=useState(null),[modelOpen,setModelOpen]=useState(false);
+  const [modelOpen,setModelOpen]=useState(false);
   const [formStage,setFormStage]=useState(0),[settingsRevealed,setSettingsRevealed]=useState(false);
   const passwordInput=useRef(null);
   const modelSummary=useRef(null);
@@ -46,7 +47,7 @@ export function MailLibrary({api,openWebPage,provider,onProviderLogin,onProvider
   },[api]);
   const models=(status?.catalogs||[]).flatMap(catalog=>catalog.models.map(item=>({provider:catalog.provider,model:item.id,displayName:item.label||item.id,label:`${labels[catalog.provider]||catalog.provider} / ${item.label||item.id}`})));
   const destination=models.find(item=>modelKey(item)===chosen),autoWiki=status?.autoWiki===true;
-  const selectedServer=serverProfile||status?.serverProfile||'gmail_test',gmailTest=selectedServer==='gmail_test';
+  const selectedServer='company',gmailTest=false;
   const connectionBusy=busy||status?.connecting===true;
   const userReady=!!user.trim()&&user.length<=320&&!/[\r\n\0]/.test(user)&&(!gmailTest||/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.trim()));
   let passwordReady=false;
@@ -57,7 +58,7 @@ export function MailLibrary({api,openWebPage,provider,onProviderLogin,onProvider
   async function act(operation){
     if(lock.current)return;lock.current=true;setBusy(true);
     try{const value=await operation();if(alive.current)setStatus(value);return value;}
-    catch(error){if(alive.current&&!(error.message==='mail_cancelled'&&cancelledConnect.current))notifyWorkspaceToast(error.message==='mail_auth_failed'&&gmailTest?'Gmail 인증에 실패했어요. 입력한 주소와 앱 비밀번호를 확인해 주세요.':errors[error.message]||'메일 설정을 변경하지 못했어요. 연결 상태를 확인해 주세요.',{error:true});}
+    catch(error){if(alive.current&&!(error.message==='mail_cancelled'&&cancelledConnect.current))notifyWorkspaceToast(error.message==='mail_auth_failed'&&gmailTest?'Gmail 인증에 실패했어요. 입력한 주소와 앱 비밀번호를 확인해 주세요.':errors[error.message]||('메일 설정을 완료하지 못했어요.'+(/^mail_[a-z_]+$/.test(error.message)?` (${error.message})`:'')),{error:true});}
     finally{lock.current=false;if(alive.current)setBusy(false);}
   }
   async function connect(event){
@@ -96,7 +97,7 @@ export function MailLibrary({api,openWebPage,provider,onProviderLogin,onProvider
       {status?.connected&&<header className="nubi-mail-section-heading">{sectionTitle('mail',status.serverProfile==='gmail_test'?'Gmail 연결됨':'회사 메일 연결됨')}<ActionButton action="logout" iconOnly label="메일 로그아웃" title="메일 로그아웃" disabled={busy} onClick={()=>act(()=>api('mail',{action:'disconnect'}))}/></header>}
       {!status?.connected?<form className="nubi-mail-form" aria-label="메일 계정" onSubmit={connect}>
         <div className="nubi-mail-account-fields">
-          <label htmlFor="nubi-mail-server"><span className="nubi-mail-field-title"><BrowserMark size={16}/>메일 서비스</span><CxSelect id="nubi-mail-server" value={selectedServer} disabled={connectionBusy} onChange={event=>{setServerProfile(event.target.value);setPassword('');setFormStage(0);}}><option value="company">회사 메일</option><option value="gmail_test">Gmail 테스트</option></CxSelect></label>
+
           <label htmlFor="nubi-mail-user"><span className="nubi-mail-field-title"><PersonMark size={16}/>{gmailTest?'Gmail 주소':'아이디'}</span><CxInput id="nubi-mail-user" type={gmailTest?'email':'text'} value={user} onChange={event=>setUser(event.target.value)} onKeyDown={event=>{if(event.key==='Enter'&&!event.nativeEvent.isComposing&&!passwordReady){event.preventDefault();if(userReady)passwordInput.current?.focus();}}} autoFocus autoComplete="off" required maxLength={320} disabled={connectionBusy}/></label>
           {formStage>=1&&<label htmlFor="nubi-mail-password"><span id="nubi-mail-password-title" className="nubi-mail-field-title"><Icon name="logIn" size={16}/>{gmailTest?'앱 비밀번호':'비밀번호'}</span><CxInput ref={passwordInput} id="nubi-mail-password" type="password" value={password} onChange={event=>setPassword(event.target.value)} autoComplete="off" required maxLength={2048} disabled={connectionBusy} aria-labelledby="nubi-mail-password-title" aria-describedby={gmailTest?'nubi-mail-password-help':undefined}/>{gmailTest&&<small id="nubi-mail-password-help" className="nubi-muted">Google에서 생성한 16자리 코드</small>}</label>}
         </div>

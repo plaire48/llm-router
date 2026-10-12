@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "1163d2bddff358d41bd6e910976ee3b28c64226ae187147f86346629323c4638",
-      "bytes": 5109
+      "sha256": "523bc823fb8225997fad5046d658db792af332798ec97667598c4080d642c0d8",
+      "bytes": 5305
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1028,8 +1028,8 @@
     },
     {
       "path": "extensions/aipro-chat/src/ChatControls.jsx",
-      "sha256": "3d688d10f6f7491112f208bb065603a023162f3218df1c0faa5a376f325d42ec",
-      "bytes": 18165
+      "sha256": "527eea4a72c666365c792954d0b1c1ad272a6ddb0fe01596b0b16802d80da195",
+      "bytes": 18233
     },
     {
       "path": "extensions/aipro-chat/src/CodeBlock.jsx",
@@ -1053,8 +1053,8 @@
     },
     {
       "path": "extensions/aipro-chat/src/DeckSurfaces.jsx",
-      "sha256": "1d51b68093f473c013a8feeb4fedae6586aa1f2225af687e217b2b442a432f1f",
-      "bytes": 4013
+      "sha256": "61186c59373a43da9b2c92d96c3003495293c41f99ee3436813483a07a80c273",
+      "bytes": 4041
     },
     {
       "path": "extensions/aipro-chat/src/FabrixConnection.jsx",
@@ -1078,8 +1078,8 @@
     },
     {
       "path": "extensions/aipro-chat/src/MessageBody.jsx",
-      "sha256": "01d2ee672cea6b7a542afa949490fd9c81d5777920e819af6164d0268d0f69a1",
-      "bytes": 3409
+      "sha256": "4b27004e88266e970a8c402a0145448fbc5f977046f1a0ac115489f80b557354",
+      "bytes": 3548
     },
     {
       "path": "extensions/aipro-chat/src/NativeDialogQuestion.jsx",
@@ -1378,13 +1378,13 @@
     },
     {
       "path": "packages/nubi-desktop/.gitignore",
-      "sha256": "dbf879b04ecc289c384ea6cb398173e546d0168f58dfe1a4d7a77e452c78258a",
-      "bytes": 203
+      "sha256": "73ca31c42dfae33f0763a7d1984ece656ad718673597922ca87d71c2fb0b15db",
+      "bytes": 253
     },
     {
       "path": "packages/nubi-desktop/AGENTS.md",
-      "sha256": "b76df69bb4e4da4861c494493d568c74666cc75629e5a6e29590fe7b7cc8d067",
-      "bytes": 82814
+      "sha256": "1b3d602f802f547ddd5eb83cf8ad89de37fd18a5cf0bbd0957040e44f1ef0930",
+      "bytes": 83715
     },
     {
       "path": "packages/nubi-desktop/THIRD-PARTY-NOTICES.md",
@@ -1413,13 +1413,18 @@
     },
     {
       "path": "packages/nubi-desktop/design/workspace-identity.css",
-      "sha256": "6accce6ba60d5733bd2acdade67570136f40e9d17726eb5e87645a0bbbaa9975",
-      "bytes": 169971
+      "sha256": "f3a210e550692c81fe498ec33f17c452d05fcec67ad14f31b40c67ef0a559615",
+      "bytes": 171282
     },
     {
       "path": "packages/nubi-desktop/design/workspace-typography.css",
       "sha256": "65de05301ca1d1ca7021b415512d047a26b7552d8158060f56dcb496fa50d481",
       "bytes": 9816
+    },
+    {
+      "path": "packages/nubi-desktop/docs/INSTALLER-AND-RESPONSIVENESS-2026-10-12.md",
+      "sha256": "1d0d9879331f42183951f9657f0e17dc8bf55e361583a4033f62cd40389d8c01",
+      "bytes": 4189
     },
     {
       "path": "packages/nubi-desktop/electron-app/BrowserPane.jsx",
@@ -1468,8 +1473,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/electron-builder.yml",
-      "sha256": "ddf091701286b704d4736c60af8e81514e09f76ee773143e16536b9c69efc643",
-      "bytes": 879
+      "sha256": "cc835ae5d5dc640a04b2651098f0937ad76c4480c1a62f51aea6fa9a64d10462",
+      "bytes": 1024
     },
     {
       "path": "packages/nubi-desktop/electron-app/esbuild.mjs",
@@ -1518,8 +1523,13 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/renderer.jsx",
-      "sha256": "46e4a54a069d8ba911f4527f52b083583c0784d0536ad9dafb5c6c5eae1e1869",
-      "bytes": 39632
+      "sha256": "801c4df5e9ee91b15bfd722b018b31a2eb4f92c085dbc4be270ea6cb1b4c217f",
+      "bytes": 39765
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
+      "sha256": "9ab25d6ee81c09bb628d3f67a2b411009fc03e55d35d33aba8f4b218d9721dad",
+      "bytes": 2063
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -1588,8 +1598,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/agent.mjs",
-      "sha256": "23e6b4a425623a6826f55ae88696c496df7172dcfe470524172a3363dd1ceb11",
-      "bytes": 104598
+      "sha256": "f3badb7e1b76d3855043c26fa1080ea8cc50506cce61fd05d1d859df8c63b294",
+      "bytes": 104984
     },
     {
       "path": "packages/nubi-desktop/runtime/analysis-history.mjs",
@@ -1723,8 +1733,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/desktop-features.mjs",
-      "sha256": "978c47291b71ab4ab71aaf7c3d49e54183cd4b0e6b0d8e6bbc0647f644a390ac",
-      "bytes": 12383
+      "sha256": "7f4efa8033d0708d0374fd264687805ca67bd9499d6c27436f84cc47541bd76f",
+      "bytes": 12841
     },
     {
       "path": "packages/nubi-desktop/runtime/document-extract.mjs",
@@ -1782,6 +1792,11 @@
       "bytes": 457
     },
     {
+      "path": "packages/nubi-desktop/runtime/mail-directory.mjs",
+      "sha256": "8b6adad5cee9ae3094ef0c79c1f037f5b0c50dcbb5c63f9ef5e8a0ff84367f4b",
+      "bytes": 935
+    },
+    {
       "path": "packages/nubi-desktop/runtime/mail-evidence.mjs",
       "sha256": "3eaff4a71bad9d1eb73638162a81bc7146e96c170466ed31b0e1ae6e6d2f3a77",
       "bytes": 1520
@@ -1808,13 +1823,13 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/mail-worker.mjs",
-      "sha256": "ee48bba588929d0d23545476903b48dc73dffa0ad55e33a468c6c7fa27dd78fe",
-      "bytes": 321
+      "sha256": "93d1e4bdee5958a596240ef9370d088168438c033a0cbce25abe1d11f31dd2bb",
+      "bytes": 484
     },
     {
       "path": "packages/nubi-desktop/runtime/mail.mjs",
-      "sha256": "e68bfa3774a83498bb53f5ed7fcb35e466dc9cf937af8f35772060da3a75b1ae",
-      "bytes": 47504
+      "sha256": "e056fe6e20040def771687d828cfef97882bd16e28cc114c2f6f1c0c78ae0eeb",
+      "bytes": 47458
     },
     {
       "path": "packages/nubi-desktop/runtime/metadata-contract.mjs",
@@ -1973,8 +1988,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/source-search.mjs",
-      "sha256": "06cf673926419e768282aa77f7ff3803a1e2f826d712e92df9d53bdbf6f11787",
-      "bytes": 5970
+      "sha256": "99d1a8c03388cc90946d1b06b8da5da2f96daff88af4012e0f5ff89d70c7a975",
+      "bytes": 6167
     },
     {
       "path": "packages/nubi-desktop/runtime/sqlite-schema.mjs",
@@ -2028,8 +2043,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/work-plan.mjs",
-      "sha256": "aebc7ee82ce6893dd422479b0d0a27e22ab1a9ec420f5c2ad8664ada931a069e",
-      "bytes": 10546
+      "sha256": "ed8d8fa919e1dbbbe0a57271545d8dbd992a55938e8bb7a2fa59290b2ab5ec24",
+      "bytes": 10991
     },
     {
       "path": "packages/nubi-desktop/runtime/worker-environment.mjs",
@@ -2052,9 +2067,19 @@
       "bytes": 9803
     },
     {
+      "path": "packages/nubi-desktop/scripts/InstallerWindow.cs",
+      "sha256": "1f2539f1f139fb875508b5ac56f5bb2448d8cf0f642815086c5983833fa065a5",
+      "bytes": 2582
+    },
+    {
       "path": "packages/nubi-desktop/scripts/Read-ShellLink.cs",
       "sha256": "7391037152f07b14a3b47c125a04ebb70b0c39730eeae906358389eea801b224",
       "bytes": 2152
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
+      "sha256": "b910546b338c6626923c6e54e2a6e824ebb6083be956393cd856045f5bb3a7ac",
+      "bytes": 2635
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
@@ -2063,8 +2088,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-WindowsInstaller.ps1",
-      "sha256": "688a9d593854ad339988d45661f19a2a0b2b8f0eb6758aeada0462d5d320c293",
-      "bytes": 6110
+      "sha256": "1eb8d73cd69cc5d121505e5608c51be1269e59ae7addabc1bb5622bf87348e0f",
+      "bytes": 6304
     },
     {
       "path": "packages/nubi-desktop/scripts/build-electron.mjs",
@@ -2103,8 +2128,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
-      "sha256": "170f4f25a77bd6f648edb855257af3ee1168f1115a3a2ad4584905c3894b8d21",
-      "bytes": 15931
+      "sha256": "77141069c49de20bebe821c4d5f2f129e553cecfea5ef3acddd325fad5eef6f4",
+      "bytes": 16104
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-skills.mjs",
@@ -2127,19 +2152,24 @@
       "bytes": 3218
     },
     {
+      "path": "packages/nubi-desktop/scripts/check-installed-archive.mjs",
+      "sha256": "e4738c6be124137ef593c9f5651ab6fd65472236a63c6690f9d21969760d0f00",
+      "bytes": 1160
+    },
+    {
       "path": "packages/nubi-desktop/scripts/check-live-web.mjs",
       "sha256": "b81015173aa059fb4d3d5913c812cc2383cd55aea3cdaee053001f6e594ea75d",
       "bytes": 7058
     },
     {
       "path": "packages/nubi-desktop/scripts/check-mail-ui.mjs",
-      "sha256": "46463c3b22a1515aebcf2033926887e8b5daf6b0d939a61fe06b7726bfe0e2e9",
-      "bytes": 5993
+      "sha256": "1188149f35c2fced2296eb5bdceea11a96c405096f2da05545fab50452a9fc6d",
+      "bytes": 6000
     },
     {
       "path": "packages/nubi-desktop/scripts/check-modals.mjs",
-      "sha256": "1cb716ece7b757eaf1d5c02b2d38b51b337b50a74c11c8be1114fb32f511e0b3",
-      "bytes": 16524
+      "sha256": "4cbd0a4e4e376008d0f971b8c2a8bbfcde2acf24ba3f8cd56c43c5f58358372c",
+      "bytes": 20548
     },
     {
       "path": "packages/nubi-desktop/scripts/check-shared-ui.mjs",
@@ -2188,13 +2218,18 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/package-windows.mjs",
-      "sha256": "6017bbc3584cd644399659da2cb6aa45984bf19283fa7f3ff9164d997d690e06",
-      "bytes": 943
+      "sha256": "df2fc9cecead72eb65eada254ad55e1ebfd2fbba771a2de69ce839e9944ee7a4",
+      "bytes": 1009
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-app-icon.mjs",
       "sha256": "1b063b36947af56039302ac8728f5f4636245028a1f599bfce27b3fc3f8d7092",
       "bytes": 743
+    },
+    {
+      "path": "packages/nubi-desktop/scripts/prepare-installer-ui.mjs",
+      "sha256": "a80dfdc9ee4e825a79183a56e2c57efc8a98fd68616f30f76b36a1fd9f853efc",
+      "bytes": 2571
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-winapp.ps1",
@@ -2395,6 +2430,11 @@
       "path": "packages/nubi-desktop/tests/computer-use.test.mjs",
       "sha256": "27cf2e11ae825b16bce6e7c17ef6af2c17bcfa243b10e707897531fa443195f3",
       "bytes": 51105
+    },
+    {
+      "path": "packages/nubi-desktop/tests/connection-readiness.test.mjs",
+      "sha256": "1ff3ffe5a69e7606c0cdc0070ff1739c9feb1f5c7aa17dda19e2b6a0c8fa252a",
+      "bytes": 1919
     },
     {
       "path": "packages/nubi-desktop/tests/connection-vault.test.mjs",
@@ -2612,6 +2652,11 @@
       "bytes": 19793
     },
     {
+      "path": "packages/nubi-desktop/tests/model-catalog-refresh.test.mjs",
+      "sha256": "77d8dfea9818d809fe0de2baba7496776144c96059bfcf1d1022ab1f15c0e22b",
+      "bytes": 1600
+    },
+    {
       "path": "packages/nubi-desktop/tests/peer-facts.test.mjs",
       "sha256": "a2b6e65065c56adaab530392bb425421e52483cf6ddae2fc68b7418fb050136f",
       "bytes": 6118
@@ -2758,8 +2803,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/shared-ui-fixture.jsx",
-      "sha256": "41f9d66daa8dc963b6d2554093d7b3d6c59e171e8418dc9ab676e591bf785bc6",
-      "bytes": 27506
+      "sha256": "e2808b977b459bcff9f7c45df2875d9e70c4fc7fd8457760197d4d13027a6349",
+      "bytes": 28292
     },
     {
       "path": "packages/nubi-desktop/tests/shell-encoding.test.mjs",
@@ -3008,8 +3053,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/MailLibrary.jsx",
-      "sha256": "023e656a47bca7f7952b5c5a0e2bcebb09b38f0dbd94a1d9b75bc5a70663614c",
-      "bytes": 17175
+      "sha256": "5a2956ac5a1353a31f0a041c181e9ec921b931aaf58d07764ae62e6d0befd43c",
+      "bytes": 17258
     },
     {
       "path": "packages/nubi-desktop/ui/MailLocalControls.jsx",
@@ -3078,8 +3123,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/SessionSidebar.jsx",
-      "sha256": "6bfbcf8a30c39f02c225dd1643e43b0390bb7a35342a5db95f8f1c4f9bd08b4e",
-      "bytes": 8945
+      "sha256": "4a64814077199b40b43d059794d5350d01d196fb2ba15f99f2dc83b980c50dd8",
+      "bytes": 9081
     },
     {
       "path": "packages/nubi-desktop/ui/SessionTabs.jsx",
@@ -3138,8 +3183,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/WikiInitializationProgress.jsx",
-      "sha256": "14c4e6650e9c8d7c5da03a88801e0dd0e678ef0b4695777c34be4102478bc1f3",
-      "bytes": 2721
+      "sha256": "f52129a4b54a8972fb84e6b7d11fd2a1e0ab957069ac1b70d28cdd2fabfaca54",
+      "bytes": 3313
     },
     {
       "path": "packages/nubi-desktop/ui/WikiUpdate.jsx",
@@ -3148,8 +3193,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",
-      "sha256": "ebfe4a79d0c48d3b70be056b536ece5bd9031c58dbec96ab843f785a456723fb",
-      "bytes": 90423
+      "sha256": "91d030269271eb49d4bbdef845c1327fa62f0d7ba901e58149029fd8f4274704",
+      "bytes": 93176
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",
@@ -3168,8 +3213,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceComposer.jsx",
-      "sha256": "84a144161a41958f33ec2f0050bb3541c12074212ebb6731fd0cdeb74b8f16f4",
-      "bytes": 6337
+      "sha256": "3dad613dd21b9cad3f2164ad96d6fbd160cf5aa3dffea410dd2462f2a7bbc1e8",
+      "bytes": 6476
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceIconAction.jsx",
@@ -3703,8 +3748,8 @@
     },
     {
       "path": "packages/nubi-office/worker/providers.mjs",
-      "sha256": "e26694189b8499a8956a98a1d478bf59854253b04f244d7f39927a94ff9d6a85",
-      "bytes": 29626
+      "sha256": "ea88d33cb54f70e43e864f1b2200ac01ff6b3d9c73dc160499b35c69a8e9dfa7",
+      "bytes": 30117
     },
     {
       "path": "packages/nubi-office/worker/python-runtime.mjs",

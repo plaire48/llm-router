@@ -1,4 +1,4 @@
-import React,{useMemo,useRef} from 'react';
+import React,{memo,useMemo,useRef} from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -26,7 +26,7 @@ const htmlSchema = {...defaultSchema,
   strip: ['script', 'style', 'iframe', 'object', 'embed', 'noscript', 'template', 'form', 'select', 'textarea', 'button'],
   clobberPrefix: 'user-content-', clobber: ['name', 'id']};
 const htmlPlugins = [rehypeRaw, [rehypeSanitize, htmlSchema]];
-export function MessageBody({content, role, compact = false, sourceReferences = [], onSource}) {
+export const MessageBody=memo(function MessageBody({content, role, compact = false, sourceReferences = [], onSource}) {
   const sources=useRef(null),open=useRef(onSource);sources.current=new Map(sourceReferences.map(source=>[source.href,source]));open.current=onSource;
   const interactive=!!onSource;
   const components=useMemo(()=>interactive?{...markdownComponents,a:({href,children})=>{
@@ -36,8 +36,9 @@ export function MessageBody({content, role, compact = false, sourceReferences = 
     }
     return markdownComponents.a({href,children});
   }}:markdownComponents,[interactive]);
-  return role === 'user' ? <div className="message-body user-text">{content}</div> : <div className={`message-body${compact ? ' progress-markdown' : ''}`}><Markdown remarkPlugins={[remarkGfm]} rehypePlugins={htmlPlugins} components={components}>{content}</Markdown></div>;
-}
+  const sourceKey=JSON.stringify(sourceReferences);
+  return useMemo(()=>role === 'user' ? <div className="message-body user-text">{content}</div> : <div className={`message-body${compact ? ' progress-markdown' : ''}`}><Markdown remarkPlugins={[remarkGfm]} rehypePlugins={htmlPlugins} components={components}>{content}</Markdown></div>,[content,role,compact,components,sourceKey]);
+});
 export function InlineMarkdown({content}) {
   return <span className="message-body progress-inline"><Markdown remarkPlugins={[remarkGfm]} skipHtml unwrapDisallowed allowedElements={['strong', 'em', 'del', 'code', 'a', 'br']} components={markdownComponents}>{content}</Markdown></span>;
 }

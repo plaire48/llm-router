@@ -22,7 +22,7 @@ export function ModelPicker({data, loading, disabled, open, onOpen, onRefresh, s
   </div>;
 }
 
-export function ModelSelection({title='모델 선택', data, initialProvider, loading, disabled, onProviderSelect, onSelect, onRefresh, onLogin, onLogout, onCancelLogin, onClose, showProviderNames = false, providerLabels = PROVIDER_LABELS, embedded = false, autoRefresh = true, onError, showActionLabels = false}) {
+export function ModelSelection({title='모델 선택', data, initialProvider, loading, disabled, onProviderSelect, onSelect, onRefresh, onLogin, onLogout, onCancelLogin, onClose, showProviderNames = false, providerLabels = PROVIDER_LABELS, embedded = false, autoRefresh = true, selectWhileLoading = false, onError, showActionLabels = false}) {
   const [provider, setProvider] = useState(initialProvider || data.activeProvider);
   const [query, setQuery] = useState(''), [saving, setSaving] = useState(false), [error, setError] = useState('');
   const rows = useRef(null), providerTabs = useRef(null), restoreTabFocus = useRef(false);
@@ -116,7 +116,7 @@ export function ModelSelection({title='모델 선택', data, initialProvider, lo
       {problem && !onError && <CxNotice tone="danger">{problem}</CxNotice>}
       {pending ? <div className="provider-connect-state" role="status"><span className="status-spinner" aria-hidden="true"/><span>{data.pending.phase === 'exchanging' ? '인증 확인 중' : '로그인 대기 중'}</span><ActionButton action="cancel" label="로그인 취소" onClick={onCancelLogin}/></div> : !connected ? <div className="provider-connect-state">{(connection.expired || connection.rejected) && <p>다시 연결해 주세요.</p>}<ActionButton action="login" className="provider-connect-button" data-provider={provider} label="연결" title={`${providerLabels[provider]} 연결`} disabled={blocked} onClick={connect}/></div> : <>
         {searchable && <div className="model-search-row"><SearchInput><CxInput id="model-search" aria-label="모델 검색" placeholder="모델 검색" value={query} onChange={e => setQuery(e.target.value)} onKeyDown={e => {if (e.key === 'ArrowDown') {e.preventDefault(); rows.current?.querySelector('button:not(:disabled)')?.focus();}}}/></SearchInput></div>}
-        {loading && <div className="model-catalog-status" role="status">목록 불러오는 중</div>}
+        {loading && !searchable && <div className="model-catalog-status" role="status">목록 불러오는 중</div>}
         <div className="model-options" ref={rows} role="group" aria-label="사용 가능한 모델" onKeyDown={e => {
           if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
           const buttons = [...rows.current.querySelectorAll('button:not(:disabled)')], index = buttons.indexOf(document.activeElement);
@@ -124,7 +124,7 @@ export function ModelSelection({title='모델 선택', data, initialProvider, lo
           e.preventDefault();
           buttons[e.key === 'Home' ? 0 : e.key === 'End' ? buttons.length - 1 : (index + (e.key === 'ArrowDown' ? 1 : -1) + buttons.length) % buttons.length]?.focus();
         }}>
-          {visible.map(model => <CxButton key={model.name} className="model-option" aria-pressed={model.name === selectedModel} aria-label={model.displayName} title={`${model.displayName}${provider === 'fabrix' ? '' : `\n${model.name}`}\n컨텍스트 ${formatTokens(model.contextLength)} 토큰\n최대 입력 ${formatTokens(model.maxInputTokens)} 토큰`} disabled={blocked || loading} onClick={() => select(model.name)}>
+          {visible.map(model => <CxButton key={model.name} className="model-option" aria-pressed={model.name === selectedModel} aria-label={model.displayName} title={`${model.displayName}${provider === 'fabrix' ? '' : `\n${model.name}`}\n컨텍스트 ${formatTokens(model.contextLength)} 토큰\n최대 입력 ${formatTokens(model.maxInputTokens)} 토큰`} disabled={blocked || (loading && !selectWhileLoading)} onClick={() => select(model.name)}>
             {showActionLabels&&<Icon name="layers" size={18}/>}<span className="model-option-text">{model.displayName}</span>
             {model.name === selectedModel && <Icon name="check" size={18}/>}
           </CxButton>)}

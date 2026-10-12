@@ -1,0 +1,23 @@
+# Installer and responsive Workspace follow-up
+
+The Windows EXE installation stage is the performance target. The prior verified run was 38184228058 (519c1c8c): upgrade approximately 215.31 seconds, reinstall 176.07 seconds on a GitHub Windows Server 2025 runner. These are runner measurements, not a Windows 11 or company PC promise.
+
+## Adopted implementation
+
+- Electron's ASAR merges small JS/assets while native modules and ripgrep remain unpacked. Promisified native search uses the physical unpacked path. A local archive exercised all 14 native shell checks before the follow-up UI changes.
+- Reuse electron-builder 26.15.3 and its bundled NSIS/7z plugin. Two exact-hash-guarded includes change only progress text/details. Preserve upstream upgrade, atomic copy, recovery and uninstall behavior. No custom full installer or new runtime dependency.
+- Native installation shows phase, elapsed seconds, extractor percentage and bytes. The percentage describes extraction, not total completion. The finish page offers launch. A native visible-window test captures progress and completion, then the existing installed app checks run before and after reinstall.
+- Model catalog fetchedAt was passed as a connection identity, causing the shared auto-refresh effect to repeatedly fetch and set the global busy state. Use a stable session identity, cached selection, explicit nonblocking refresh and shared in-flight requests. Keep the current selection after a late response or failure.
+- Chat submission has a separate pending indicator instead of locking all navigation. It refreshes task state without repeating repository and Git enumeration. Markdown with unchanged content is memoized. Routine provider status no longer starts repeated Wiki filesystem scans.
+- A complete JSON code fence is accepted as plan data and still passes the same schema, intent/capability, no-completed-step and single-active-step checks. Surrounding prose and malformed constraints remain rejected. A bounded planning diagnostic records the actual failing phase. This fixes a reproduced formatting case, not a confirmed diagnosis of the user's Windows response.
+- Wiki initialization has a closable progress modal: observed stage counts and elapsed time, an indeterminate bar without a denominator, and stage-only ETA after sufficient observed progress. No fake whole-job percentage or total duration.
+- Company mail is the sole deployment form and new-profile default. Original test connector code and stored mail remain. The mail worker applies Windows system trust; directory ACLs use the process SID rather than an ambiguous short domain username. Authentication refusal, TLS trust, protocol and storage permissions are separate messages. No relaxed TLS or corporate policy bypass.
+- Conversation deletion identifies the selected title, exact deletion scope, preserved project files and a red explicit Delete action. The initial focus remains Cancel.
+
+## Method and evidence boundaries
+
+Official references: [Electron ASAR](https://www.electronjs.org/docs/latest/tutorial/asar-archives), [electron-builder NSIS](https://www.electron.build/nsis/), [NSIS 7z plugin](https://nsis.sourceforge.io/Nsis7z_plug-in), [React Effect lifecycle](https://react.dev/reference/react/useEffect). The existing MIT electron-builder and bundled plugin are reused; no new licensing surface or dependency was added. Source hashes guard future template drift.
+
+Local synthetic UI checks cover slow/failing catalog refresh, selection preservation, slow chat admission with usable navigation, company-only mail, narrow confirmation and Wiki progress. Plan/connection tests cover fenced JSON without bypassing validation and SID ACL failure ordering. Real corporate POP3 authentication is not verified from this Mac. The reported Windows authentication denial cannot be attributed to the ACL or trust fixes without the failing PC's sanitized diagnostic or a retry there.
+
+Final Windows package timings and visible captures are stored in windows-installer.json, windows-package.json and windows-installer-experience.json, with native app reports kept separately. A source change or macOS pass is not installed-Windows evidence.

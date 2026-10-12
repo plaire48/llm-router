@@ -6,7 +6,7 @@ import {useComposerCommands} from './ComposerCommands.jsx';
 
 // Shared Nubi composer: model, approval and context stay inside the input surface.
 // While running, a draft goes to the inbox and Stop remains available.
-export function WorkspaceComposer({className = '', inputRef, id = 'message-input', value, onSubmit, sendDisabled, modelControl, actionControl, contextControl, evidenceControl, onStop, onMinimumWidth, commandApi, taskId, onCommand, ...inputProps}) {
+export function WorkspaceComposer({className = '', inputRef, id = 'message-input', value, onSubmit, sendDisabled, sending=false, modelControl, actionControl, contextControl, evidenceControl, onStop, onMinimumWidth, commandApi, taskId, onCommand, ...inputProps}) {
   const commands=useComposerCommands({api:commandApi,taskId,value,inputRef,onChange:inputProps.onChange,onCommand});
   const form = useRef(null);
   const [expanded, setExpanded] = useState(false);
@@ -83,7 +83,7 @@ export function WorkspaceComposer({className = '', inputRef, id = 'message-input
     <NubiComposerBar leading={modelControl} tools={<>{actionControl}{contextControl}{hasMore && <CxButton type="button" className="nubi-composer-more" data-icon-only aria-expanded={expanded} aria-controls={id} onClick={() => {
       setExpanded(current => !current);
       requestAnimationFrame(() => inputRef.current?.focus());
-    }} aria-label={expanded?'접기':'더 보기'} title={expanded?'입력 접기':'입력 펼치기'}><Icon name={expanded?'chevronUp':'chevronDown'} size={16}/></CxButton>}{onStop ? <>{value.trim()&&<CxButton type="submit" variant="primary" data-icon-only aria-label="대기열에 추가" title="대기열에 추가" disabled={sendDisabled}><Icon name="arrowUp" size={20}/></CxButton>}<CxButton type="button" className="nubi-composer-stop" data-icon-only aria-label="중지" title="작업 중지" onClick={onStop}><span className="stop-symbol" aria-hidden="true"/></CxButton></> : <CxButton type="submit" variant="primary" data-icon-only aria-label="전송" title="전송" disabled={sendDisabled}><Icon name="arrowUp" size={20}/></CxButton>}</>}/>
+    }} aria-label={expanded?'접기':'더 보기'} title={expanded?'입력 접기':'입력 펼치기'}><Icon name={expanded?'chevronUp':'chevronDown'} size={16}/></CxButton>}{onStop ? <>{value.trim()&&<CxButton type="submit" variant="primary" data-icon-only aria-label="대기열에 추가" title="대기열에 추가" disabled={sendDisabled}><Icon name="arrowUp" size={20}/></CxButton>}<CxButton type="button" className="nubi-composer-stop" data-icon-only aria-label="중지" title="작업 중지" onClick={onStop}><span className="stop-symbol" aria-hidden="true"/></CxButton></> : <CxButton type="submit" variant="primary" data-icon-only aria-label={sending?"요청 접수 중":"전송"} title={sending?"요청 접수 중":"전송"} disabled={sendDisabled}>{sending?<span className="status-spinner" aria-hidden="true"/>:<Icon name="arrowUp" size={20}/>}</CxButton>}</>}/>
     </div>
     {commands.popup}
   </form>;

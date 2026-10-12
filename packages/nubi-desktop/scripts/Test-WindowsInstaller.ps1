@@ -23,23 +23,26 @@ function Get-AppShortcuts {
 Stage 'install'
 $installer = Get-ChildItem release/windows/*-Setup.exe | Select-Object -First 1
 if (!$installer) { throw 'Installer missing' }
-$target = Join-Path $env:RUNNER_TEMP 'NubiInstalled'
+$target = Join-Path $env:RUNNER_TEMP '@nubielectron-app'
 $upgradeVerified = $false
+$durations=@{}
+$stopwatch=[Diagnostics.Stopwatch]::StartNew()
 if ($env:NUBI_BASELINE_INSTALLER) {
   Stage 'baseline-install'
   $baseline = Start-Process $env:NUBI_BASELINE_INSTALLER -ArgumentList @('/S', "/D=$target") -Wait -PassThru
   if ($baseline.ExitCode -ne 0 -or !(Test-Path (Join-Path $target 'Nubi Workspace.exe'))) { throw 'Baseline install failed' }
   @(Get-AppShortcuts) | ConvertTo-Json -Depth 4 | Set-Content verification/windows-baseline-shortcuts.json
+  $durations.baselineSeconds=$stopwatch.Elapsed.TotalSeconds
   $upgradeVerified = $true
   Stage 'upgrade'
 }
-$p = Start-Process $installer.FullName -ArgumentList @('/S', "/D=$target") -Wait -PassThru
-if ($p.ExitCode -ne 0) { throw "Installer failed: $($p.ExitCode)" }
+$stopwatch.Restart()
+& (Join-Path $PSScriptRoot 'Test-InstallerExperience.ps1') -Installer $installer.FullName -Target $target
+$durations.upgradeSeconds=$stopwatch.Elapsed.TotalSeconds
 $exe = Join-Path $target 'Nubi Workspace.exe'
 if (!(Test-Path $exe)) { throw 'Installed executable missing' }
-foreach ($deferred in @('document-extract.mjs','mail-attachment-worker.mjs','pdf.worker.mjs','office-document.ps1')) {
-  if (Test-Path (Join-Path $target "resources/app/lib/backend/$deferred")) { throw "Deferred attachment reader was packaged: $deferred" }
-}
+node scripts/check-installed-archive.mjs $target
+if ($LASTEXITCODE -ne 0) {throw 'Installed archive checks failed'}
 Stage 'branding'
 $expectedName = '누비 Workspace'
 $expectedVersion = (Get-Content package.json -Raw | ConvertFrom-Json).version
@@ -74,19 +77,23 @@ node scripts/check-electron-shell.mjs
 if ($LASTEXITCODE -ne 0) { throw 'Installed app smoke failed' }
 Copy-Item verification/electron-shell.json verification/electron-first-install.json
 Stage 'reinstall'
+$stopwatch.Restart()
 $p = Start-Process $installer.FullName -ArgumentList @('/S', "/D=$target") -Wait -PassThru
 if ($p.ExitCode -ne 0) { throw 'Reinstall failed' }
+$durations.reinstallSeconds=$stopwatch.Elapsed.TotalSeconds
 Stage 'second-launch'
 node scripts/check-electron-shell.mjs
 if ($LASTEXITCODE -ne 0) { throw 'Reinstalled app smoke failed' }
 Stage 'uninstall'
+$stopwatch.Restart()
 $uninstall = Get-ChildItem $target/*Uninstall*.exe | Select-Object -First 1
 if (!$uninstall) { throw 'Uninstaller missing' }
 $p = Start-Process $uninstall.FullName -ArgumentList '/S' -Wait -PassThru
 if ($p.ExitCode -ne 0) { throw "Uninstall failed: $($p.ExitCode)" }
 for ($i = 0; $i -lt 20 -and (Test-Path $exe); $i++) { Start-Sleep -Seconds 1 }
 if (Test-Path $exe) { throw 'Uninstall did not remove application' }
-@{ upgradeFromPrevious=$upgradeVerified; install=$true; launch=$true; reinstall=$true; reinstallLaunch=$true; uninstall=$true; authenticode=(Get-AuthenticodeSignature $installer.FullName).Status.ToString(); windows=(Get-CimInstance Win32_OperatingSystem).Caption } | ConvertTo-Json | Set-Content verification/windows-installer.json
+$durations.uninstallSeconds=$stopwatch.Elapsed.TotalSeconds
+@{ durations=$durations; upgradeFromPrevious=$upgradeVerified; install=$true; launch=$true; reinstall=$true; reinstallLaunch=$true; uninstall=$true; authenticode=(Get-AuthenticodeSignature $installer.FullName).Status.ToString(); windows=(Get-CimInstance Win32_OperatingSystem).Caption } | ConvertTo-Json | Set-Content verification/windows-installer.json
 (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLower() + '  ' + $installer.Name | Set-Content ($installer.FullName + '.sha256')
 
 Stage 'complete'

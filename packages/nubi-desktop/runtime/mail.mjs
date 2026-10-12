@@ -6,16 +6,17 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {constants} from 'node:fs';
 import {Store} from './store.mjs';
+import {protectMailDirectory} from './mail-directory.mjs';
 import {mailPassword} from './mail-credentials.mjs';
 import {officeDocumentFormat,readOfficeDocument} from './office-document.mjs';
 import {MailSearch,mailFilters} from './mail-search.mjs';
 import {simpleParser} from 'mailparser';
 import {modelTransport} from './recovery.mjs';
-import {synthesizePersonalMail,retrieveWikiEvidence,resolveOpenWikiHomeDir,restrictDirToCurrentUser} from '../generated/openwiki.mjs';
+import {synthesizePersonalMail,retrieveWikiEvidence,resolveOpenWikiHomeDir} from '../generated/openwiki.mjs';
 
 const sha=value=>createHash('sha256').update(value).digest('hex'),now=()=>new Date().toISOString();
 const servers=Object.freeze({company:Object.freeze({host:'pop3.samsung.net',port:995,tls:true}),gmail_test:Object.freeze({host:'pop.gmail.com',port:995,tls:true})});
-const errors=new Set(['mail_input_invalid','mail_auth_failed','mail_gmail_app_password_format','mail_gmail_app_password_required','mail_gmail_web_login_required','mail_gmail_pop_disabled','mail_gmail_credentials_invalid','mail_tls_error','mail_timeout','mail_connection_failed','mail_uidl_invalid','mail_protocol','mail_size_limit','mail_cancelled','mail_parse_failed','mail_summary_invalid','mail_source_changed','mail_model_changed','mail_model_missing','mail_file_conflict','mail_storage_failed','mail_summary_failed']);
+const errors=new Set(['mail_input_invalid','mail_auth_failed','mail_gmail_app_password_format','mail_gmail_app_password_required','mail_gmail_web_login_required','mail_gmail_pop_disabled','mail_gmail_credentials_invalid','mail_tls_error','mail_timeout','mail_connection_failed','mail_uidl_invalid','mail_protocol','mail_size_limit','mail_cancelled','mail_parse_failed','mail_summary_invalid','mail_source_changed','mail_model_changed','mail_model_missing','mail_file_conflict','mail_storage_failed','mail_storage_permission','mail_summary_failed']);
 const code=error=>errors.has(error?.message)?error.message:'mail_storage_failed';
 export const MAIL_SUMMARY_RETRIES=3;
 const model=host=>{const value=host.providers?.status();return value?.connected&&value.model?{provider:value.provider,model:value.model}:null;};
@@ -27,7 +28,7 @@ async function readFile(file,encoding){
     const after=await handle.stat();if(before.size!==after.size||before.mtimeMs!==after.mtimeMs||before.ctimeMs!==after.ctimeMs)throw new Error('mail_source_changed');const bytes=Buffer.concat(parts);return encoding?bytes.toString(encoding):bytes;
   }finally{await handle.close();}
 }
-async function privateDir(directory){await mkdir(directory,{recursive:true,mode:0o700});if((await lstat(directory)).isSymbolicLink())throw new Error('mail_file_conflict');await chmod(directory,0o700);const restricted=await restrictDirToCurrentUser(directory);if(process.platform==='win32'&&!restricted)throw new Error('mail_storage_failed');}
+async function privateDir(directory){await mkdir(directory,{recursive:true,mode:0o700});if((await lstat(directory)).isSymbolicLink())throw new Error('mail_file_conflict');await chmod(directory,0o700);await protectMailDirectory(directory);}
 async function exclusive(file,data){
   try{const handle=await open(file,'wx',0o600);try{await handle.writeFile(data);await handle.sync();}finally{await handle.close();}}
   catch(error){if(error.code!=='EEXIST')throw error;if(!(await lstat(file)).isFile()||(await lstat(file)).isSymbolicLink()||sha(await readFile(file))!==sha(data))throw new Error('mail_file_conflict');}
@@ -36,7 +37,7 @@ export class PersonalMail {
   constructor(host,{personalRoot,wikiRoot,workerFile=new URL('./mail-worker.mjs',import.meta.url),pull}={}){
     this.host=host;this.root=personalRoot||path.join(resolveOpenWikiHomeDir(),'connectors','pop3');this.wikiRoot=wikiRoot||(personalRoot?path.join(personalRoot,'wiki'):path.join(resolveOpenWikiHomeDir(),'wiki','sources','pop3'));this.workerFile=workerFile;this.pullOverride=pull;this.generation=0;this.paused=true;this.watchPaused=false;
     this.store=new Store(path.join(host.storageRoot,'personal-mail'));
-    this.serverProfile=Object.hasOwn(servers,this.store.get('setting:server-profile'))?this.store.get('setting:server-profile'):'gmail_test';
+    this.serverProfile=Object.hasOwn(servers,this.store.get('setting:server-profile'))?this.store.get('setting:server-profile'):'company';
     this.autoWiki=this.store.get('setting:auto-wiki')??(this.serverProfile==='company');this.watchPaused=this.store.get('setting:watch-paused')===true;
     for(const row of this.rows().filter(row=>row.state==='summarizing'))this.store.set('mail:'+row.id,{...row,state:'attention',error:'mail_summary_interrupted'});
     for(const row of this.rows().filter(row=>row.attachmentState==='reading'))this.store.set('mail:'+row.id,{...row,attachmentState:'queued'});
