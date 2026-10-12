@@ -1438,8 +1438,8 @@
     },
     {
       "path": "packages/nubi-desktop/docs/MODAL-CONTRACT-2026-10-12.md",
-      "bytes": 4602,
-      "sha256": "c15d0a386dfd6f21146b23828adf97dc01433639d9d6e0d3c2d461b757c9397b"
+      "bytes": 4921,
+      "sha256": "53cdb4540de76ca1f3a883c9f579357b5ace50ae3c351e1b4337a54393786943"
     },
     {
       "path": "packages/nubi-desktop/docs/NUBI-SKILLS-AND-TABS-2026-10-12.md",
@@ -1648,8 +1648,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/agent.mjs",
-      "sha256": "28185b346e01e9738b4b1da40deab545e8106c1d32dfb2dee9fe7bc7a1477c58",
-      "bytes": 105429
+      "sha256": "a89e08f835c44eaec736036b329b74975f23044e6a7bec8dbb83098b0e747f6f",
+      "bytes": 105655
     },
     {
       "path": "packages/nubi-desktop/runtime/analysis-history.mjs",
@@ -1968,8 +1968,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/recovery.mjs",
-      "sha256": "e8a3500812ef51ef7225b96541587073d9c1e62d7b9de5a8075dd43d52626891",
-      "bytes": 10431
+      "sha256": "6360ed05bf084c865d6fc26b760c546391ee5ed9e6a2e093290bdeeea6f4d607",
+      "bytes": 10751
     },
     {
       "path": "packages/nubi-desktop/runtime/regenerate-answer.mjs",
@@ -2233,8 +2233,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-modals.mjs",
-      "sha256": "7417f244610d1325906335e5a7193b993d5f82d8d302b87d789fb8c9478a68a5",
-      "bytes": 27505
+      "sha256": "03ef86bf32c002f01076d1916ae13f37a77588ca4eb2c6a6f2b4ea7efb5d394e",
+      "bytes": 28674
     },
     {
       "path": "packages/nubi-desktop/scripts/check-shared-ui.mjs",
@@ -2888,8 +2888,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/shared-ui-fixture.jsx",
-      "sha256": "a42c4108692e5537adc0cd93eb4eea470aa262c3ddcab3d11337dc2880b444a4",
-      "bytes": 29477
+      "sha256": "90f95015b03c18acc3b29e1ed5830fe781ff92ecb6176ebb28dd2fa965dbf79a",
+      "bytes": 30643
     },
     {
       "path": "packages/nubi-desktop/tests/shell-encoding.test.mjs",
@@ -2928,8 +2928,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/submit-task-message.test.mjs",
-      "sha256": "7b47f6f9312bfd846bbcf0a2b1b31a7ca181770dd2f4ab27c00ed15b87e80e52",
-      "bytes": 5070
+      "sha256": "1e3c7536d27a427513e9a2aa5f43b2347240e1b3ec3693fa038d8555ccf1fa5c",
+      "bytes": 7053
     },
     {
       "path": "packages/nubi-desktop/tests/surface-audit-fixture.jsx",

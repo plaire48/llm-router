@@ -65,10 +65,12 @@ export function installRecovery(ProjectService){
   ProjectService.prototype.resumeAgent=async function({taskId}){
     const task=this.task(taskId);if(this.computerBusy||this.agent?.running||this.reconciling)fail('agent_busy');if(task.question)fail('question_pending');
     if(!['paused','failed','interrupted'].includes(task.state))fail('recovery_changed');
+    const recoveryProcessId=task.recovery?.processId;
+    if(recoveryProcessId){const record=this.store.get('process:'+recoveryProcessId);if(!record||record.taskId!==taskId||!['completed','failed','timed_out','interrupted'].includes(record.state))fail('recovery_changed');}
     this.reconciling=true;
     try{const snapshot=await recoverySnapshot.call(this,{taskId});this.store.set('reconciliation:'+taskId,{...snapshot,at:now()});}
     finally{this.reconciling=false;}
-    return this.startAgent({taskId});
+    return this.startAgent({taskId,...(recoveryProcessId?{recoveryProcessId}:{})});
   };
   ProjectService.prototype.processFinished=function(record){
     if(!record.autoDiagnose||!(['failed','timed_out'].includes(record.state)||record.state==='completed'&&(record.repairOf||record.setupActionId))||this.disposed)return;

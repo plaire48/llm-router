@@ -40,6 +40,14 @@ if(new URLSearchParams(location.search).has('compaction')){connected=true;projec
 if(new URLSearchParams(location.search).has('elevation')){connected=true;project.tasks=[{id:'elevation-task',request:'관리자 승인 화면 검증',criteria:[],state:'review',messages:[],trace:[]}];project.setupActions=['approve','reject'].map(id=>({id,taskId:'elevation-task',title:id==='approve'?'관리자 실행 검증':'관리자 실행 거절',reason:'합성 승인 흐름 검사',privilege:'administrator',privilegeReason:'시스템 범위 변경 필요',script:'Write-Output "fixture"',profile:'powershell',workspace:'C:\\fixture',effects:'검증용 합성 요청',verification:'실제 결과 확인',references:[],fingerprint:id,state:'proposed'}));}
 // A check proposed with its fix (2026-09-30): the run button waits for the fix; always allow sits beside it.
 if(new URLSearchParams(location.search).has('command')){connected=true;project.tasks=[{id:'command-task',request:'무료 배송 기준을 고치고 테스트로 확인해 주세요.',criteria:[],state:'review',messages:[],trace:[]}];project.proposals=[{id:'fix',taskId:'command-task',path:'src/shipping.mjs',reason:'무료 배송 기준을 정책 값 50,000원으로 되돌립니다.',state:'proposed'}];project.setupActions=[{id:'check',taskId:'command-task',title:'테스트 실행',kind:'verify',reason:'수정한 배송 기준을 테스트로 확인합니다.',privilege:'user',script:'npm test',profile:'bash',workspace:'/fixture/order-service',effects:'파일을 바꾸지 않습니다.',verification:'종료 코드 0과 실패 0건을 확인합니다.',references:[{path:'package.json',hash:'fixture'}],fingerprint:'check',state:'proposed',afterProposals:['fix']}];}
+if(new URLSearchParams(location.search).has('command-analysis')){
+ const paused=new URLSearchParams(location.search).get('command-analysis')==='paused',runId='11111111-1111-4111-8111-111111111111',task=project.tasks[0];
+ task.state=paused?'paused':'running';task.checkpoint={runId,phase:paused?'planning':'model'};
+ task.error=paused?'work_plan_invalid':null;task.recovery={state:paused?'attention':'checking',processId:'command-result'};
+ task.trace=[{id:runId+':0:planning',runId,tool:paused?'recover_model':'read_process_output',label:paused?'작업 계획 확인':'실행 기록 확인',status:paused?'error':'running',reason:paused?'plan_json_invalid':undefined}];
+ project.proposals=[];project.setupActions[0]={...project.setupActions[0],state:'started',resultProcessId:'command-result',afterProposals:[]};
+ project.processes=[{id:'command-result',taskId:task.id,profile:'bash',script:'npm test',state:'completed',exitCode:0,output:'결과 확인용 출력',recoveryState:paused?'paused':'diagnosing'}];
+}
 // The composer gauge (2026-09-30): the tokens AI Pro reported for the latest answer, against the model window.
 if(new URLSearchParams(location.search).has('progress')){
  connected=true;const runId='progress-run';
@@ -162,6 +170,7 @@ async function api(method,args={}){
     return {cancelled:true};
   }
   if(method==='decideSetupAction'){const action=project.setupActions.find(a=>a.id===args.id);if(args.decision==='approve'&&action.privilege==='administrator'&&args.elevationConsent!==true)throw Error('elevation_approval_required');action.state=args.decision==='approve'?'started':'rejected';if(action.state==='started')project.tasks[0].messages.push({role:'assistant',content:'합성 관리자 승인 전달을 확인했습니다. 실제 UAC 실행은 하지 않았습니다.'});return action;}
+  if(method==='poll'&&new URLSearchParams(location.search).has('command-analysis'))return structuredClone(project.processes.find(row=>row.id===args.id));
   if(method==='stopAgent'){project.tasks[0].state='cancelled';if(project.tasks[0].context)project.tasks[0].context.phase='ready';if(project.tasks[0].documentAnalysis)project.tasks[0].documentAnalysis.state='cancelled';return project.tasks[0];}
   // Automatic approval (2026-09-30): the mode is kept; nothing is waiting, so nothing is approved automatically.
   if(method==='allowCommand'){const action=project.setupActions.find(a=>a.id===args.id);const policy=window.approvalPolicy||={mode:'ask',allowedCommands:[]};if(!policy.allowedCommands.some(item=>item.profile===action.profile&&item.script===action.script))policy.allowedCommands.push({profile:action.profile,script:action.script});return structuredClone(window.approvalPolicy);}

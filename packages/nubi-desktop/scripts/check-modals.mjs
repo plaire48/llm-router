@@ -155,6 +155,15 @@ try{
  await p.mouse.move(1,1);await input.blur();const surface=p.locator('.nubi-composer-surface').first();const calm=await surface.evaluate(el=>getComputedStyle(el).borderColor);await surface.hover();assert.equal(await surface.evaluate(el=>getComputedStyle(el).borderColor),calm);
  await input.focus();const focus=await surface.evaluate(el=>({border:getComputedStyle(el).borderColor,shadow:getComputedStyle(el).boxShadow}));assert.notEqual(focus.border,calm);assert.notEqual(focus.shadow,'none');assert(!focus.border.includes('78, 89, 104'),'focus does not use the dark text token');await p.screenshot({path:path.join(dir,'composer-soft-focus.png'),animations:'disabled'});
  checks.push('Nubi-only skill catalog, search during direct download, installed state, no embedded website, draft preservation and quiet composer hover/focus');
+ for(const phase of ['running','paused']){
+  await p.setViewportSize({width:1280,height:900});await p.goto(origin+'/?command&command-analysis='+phase+'&modals&integrated');
+  await openSidebar();await p.getByRole('button',{name:'대화 검색',exact:true}).click();await p.getByRole('dialog',{name:'대화 검색'}).locator('.nubi-history-item').first().click();
+  const card=p.getByRole('region',{name:'실행 준비 승인'});await card.getByText(phase==='running'?'결과 분석 중':'결과 분석 중단',{exact:true}).waitFor();
+  const output=card.getByRole('button',{name:'실행 결과 보기',exact:true});assert(await output.isEnabled());await output.click();await p.getByText('결과 확인용 출력',{exact:true}).waitFor();
+  if(phase==='paused'){await p.getByText('응답 형식 확인 필요',{exact:false}).first().waitFor();assert.equal(await p.getByText('실행 실패',{exact:true}).count(),0);}
+  await p.screenshot({path:path.join(dir,'command-analysis-'+phase+'.png'),animations:'disabled'});
+  checks.push('command analysis '+phase+': actual state label, readable output during analysis, planning failure distinguished from shell failure');
+ }
  assert.deepEqual(errors,[]);await writeFile(path.join(dir,'result.json'),JSON.stringify({checks,errors,scope:'actual Electron Workbench style and layout with synthetic data in Chrome; native pickers and real accounts are separate'},null,2));console.log(JSON.stringify({passed:checks.length,checks},null,2));
 }catch(error){await p?.screenshot({path:path.join(dir,'failure.png')}).catch(()=>{});await writeFile(path.join(dir,'failure.txt'),error.stack+'\n--- page errors ---\n'+JSON.stringify(errors,null,1)+'\n--- body ---\n'+await p?.locator('body').innerText()+'\n--- aria ---\n'+await p?.locator('body').ariaSnapshot());throw error;}
 finally{await browser?.close();await new Promise(r=>server.close(r));}

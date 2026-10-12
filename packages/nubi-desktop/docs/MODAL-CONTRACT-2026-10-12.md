@@ -27,3 +27,5 @@ This uses the existing Ajv and shared OpenAI-compatible provider rather than add
 Approved command completion already starts an analysis run with host receipts. The UI now distinguishes queued analysis, active analysis, interrupted analysis and returned analysis, and keeps execution output readable during analysis. A real local shell regression covers command end → saved output read → malformed plan → JSON repair → actual source read → answer, with one process only. Execution exit zero is never equated to satisfying the user's goal.
 
 The earlier admission race fix queues a follow-up exactly once when automatic analysis starts ahead of the renderer snapshot. Windows PowerShell uses UTF-8 console output plus a child-only UTF-8 Get-Content default; explicit encodings still win. No profile, system codepage setting or existing file is rewritten.
+
+A paused result-analysis run now retains its process ID across resume. The host verifies task ownership and a settled process before reconnecting analysis; it does not rerun the command. Local recovery regression covers a plan that remains invalid, pause, explicit resume, source read and answer for the same process.

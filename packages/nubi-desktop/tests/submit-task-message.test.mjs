@@ -56,3 +56,24 @@ test('completed command automatically reads its output and source, repairs the p
  assert(service.store.list('operation:').some(row=>row.tool==='read_process_output'&&row.state==='completed'));
  assert(service.task(task.id).messages.some(row=>row.role==='assistant'&&row.content.includes('REVIEW_ME')));
 });
+
+test('resume after a failed analysis plan keeps the finished command as its analysis target',async t=>{
+ const {service,root}=await fixture(t,{scriptedPlanning:true});let repaired=false,read=false;
+ service.providers={status:()=>({connected:true,model:'fixture',models:[{id:'fixture',contextLength:32000}]}),dispose(){},complete:async messages=>{
+  if(messages[0].content.startsWith(WORK_PLAN_PROMPT)){
+   if(!repaired)return {content:'{}',calls:[]};
+   assert.equal(JSON.parse(messages[1].content).recovery.script,'echo RESUME_ANALYSIS');
+   return {content:JSON.stringify({intent:{goal:'실행 후 결과 분석',constraints:['재실행 금지'],outcomes:['출력과 소스 확인'],workflowIds:[],skillPaths:[]},steps:[{text:'결과 확인',expected_outcome:'현재 파일 확인',status:'in_progress'}]}),calls:[]};
+  }
+  if(!messages.some(message=>message.role==='tool'&&message.content.includes('\"path\":\"app.txt\"')))return {content:'',calls:[{id:crypto.randomUUID(),type:'function',function:{name:'read_source',arguments:'{"path":"app.txt"}'}}]};
+  read=true;return {content:'같은 실행의 결과를 확인했습니다.',calls:[]};
+ }};
+ const task=await service.createTask({request:'실행하고 결과 확인'});service.store.set('task:'+task.id,{...task,state:'review'});
+ await service.processes.start({cwd:root,taskId:task.id,profile:process.platform==='win32'?'powershell':'bash',script:'echo RESUME_ANALYSIS',setupActionId:'approved',autoDiagnose:true});
+ await wait(()=>service.task(task.id).state==='paused'&&!service.agent.running);
+ const processId=service.store.list('process:')[0].id;
+ assert.equal(service.task(task.id).recovery.processId,processId);assert.equal(read,false);
+ repaired=true;await service.resumeAgent({taskId:task.id});await service.agent.promise;
+ assert(read);assert.equal(service.task(task.id).state,'review');assert.equal(service.task(task.id).recovery.processId,processId);
+ assert.equal(service.store.list('process:').length,1);
+});
