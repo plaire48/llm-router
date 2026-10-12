@@ -41,7 +41,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check Windows lifecycle and secure connection storage
         run: |
-          node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs tests/connection-readiness.test.mjs tests/model-catalog-refresh.test.mjs tests/project-catalog.test.mjs tests/titlebar-colors.test.mjs tests/git-runtime.test.mjs tests/workspace-updater.test.mjs tests/claude-stream.test.mjs tests/agent-question-placeholder.test.mjs
+          node --test tests/connection-vault.test.mjs tests/electron-lifecycle.test.mjs tests/connection-readiness.test.mjs tests/model-catalog-refresh.test.mjs tests/project-catalog.test.mjs tests/titlebar-colors.test.mjs tests/git-runtime.test.mjs tests/claude-stream.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node --test ../nubi-vscode/tests/ghes-account.test.cjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -57,7 +57,7 @@ jobs:
         run: npm run package:windows
       - name: Verify Nubi skill scope and manual external file browsing
         run: |
-          node --test tests/agent-capabilities.test.mjs tests/skill-import.test.mjs tests/skill-marketplace.test.mjs tests/local-file-view.test.mjs
+          node --test tests/agent-capabilities.test.mjs tests/skill-import.test.mjs tests/skill-marketplace.test.mjs tests/local-file-view.test.mjs tests/workspace-updater.test.mjs tests/agent-question-placeholder.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify PowerShell Korean text and command follow-up admission
         run: |
@@ -121,6 +121,8 @@ jobs:
         shell: pwsh
         run: |
           $tag = "nubi-desktop-diagnostics-$env:GITHUB_RUN_ID"
+          New-Item verification -ItemType Directory -Force | Out-Null
+          "Build $env:GITHUB_RUN_ID failed. See workflow logs for the failed gate." | Set-Content verification/failure.txt
           Compress-Archive -Path verification/* -DestinationPath verification/windows-diagnostics.zip
           gh release create $tag --repo $env:GITHUB_REPOSITORY --draft --prerelease --target $env:GITHUB_SHA --title "Nubi Windows check diagnostics ($env:GITHUB_RUN_ID)" --notes "Isolated fixture diagnostics only. No installer is released from this failed check." verification/windows-diagnostics.zip
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
