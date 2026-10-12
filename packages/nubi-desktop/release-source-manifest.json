@@ -1423,8 +1423,23 @@
     },
     {
       "path": "packages/nubi-desktop/docs/INSTALLER-AND-RESPONSIVENESS-2026-10-12.md",
-      "sha256": "7bee47d9b8600921a5c2f56f7994473c44246ea6ce7015a820907c99ddab794f",
-      "bytes": 7275
+      "sha256": "efbd14688c71ba26d99c2f24703de0238109fd80d1b4ccb70f29c4b4ac57cda9",
+      "bytes": 10160
+    },
+    {
+      "path": "packages/nubi-desktop/docs/WIKI-BRIDGE-RECOVERY-2026-10-12.md",
+      "sha256": "8f033d2d825f719347ad0e0451d8c854b393ba121e51e4b3898f63e7cdb1a4b0",
+      "bytes": 4163
+    },
+    {
+      "path": "packages/nubi-desktop/docs/quality/2026-10-12-scorecard.json",
+      "sha256": "3755a5887feeb953fb6fccec5a99cc32bdd0d6fa00fcb35b650010789e42e3f2",
+      "bytes": 13968
+    },
+    {
+      "path": "packages/nubi-desktop/docs/quality/2026-10-12-scorecard.md",
+      "sha256": "dac272efdb2f7f9475d1b61bd977debd0ef62e846cb6b7c340b333c437dc5b4b",
+      "bytes": 9595
     },
     {
       "path": "packages/nubi-desktop/electron-app/BrowserPane.jsx",

@@ -1,0 +1,381 @@
+{
+  "date": "2026-10-12",
+  "scope": "Current Nubi Workspace standalone Electron Beta readiness, not model accuracy or certification",
+  "scale": {
+    "verified": 5,
+    "partial": 2.5,
+    "unverified_or_failed": 0
+  },
+  "bands": {
+    "high": 80,
+    "medium": 60,
+    "low": "below 60"
+  },
+  "critical_gate": "Windows installer failures prevent release regardless of total",
+  "criteria": [
+    {
+      "id": "F1",
+      "category": "핵심 기능",
+      "criterion": "저장 메일 통합 검색과 목록/본문 이동",
+      "score": 5,
+      "evidence": "실제 저장 메일 검색 및 페이지/본문 UI 검사"
+    },
+    {
+      "id": "F2",
+      "category": "핵심 기능",
+      "criterion": "여러 메일 선택 후 AI 질문과 원문 출처",
+      "score": 5,
+      "evidence": "실계정 대화의 두 메일 답변과 출처, 원자적 연결 검사"
+    },
+    {
+      "id": "F3",
+      "category": "핵심 기능",
+      "criterion": "파일 편집/저장, Git 변경, 검색과 터미널",
+      "score": 5,
+      "evidence": "현재 Electron native shell 14개"
+    },
+    {
+      "id": "F4",
+      "category": "핵심 기능",
+      "criterion": "대상 첨부 형식의 내용 읽기",
+      "score": 0,
+      "evidence": "사용자 결정으로 Beta의 첨부 읽기/미리보기/AI 분석을 보류. 파일명 검색과 원본 다운로드는 유지. 기존 평가 분모와 점수 기준은 유지."
+    },
+    {
+      "id": "U1",
+      "category": "가독성과 흐름",
+      "criterion": "공통 글꼴/크기/대비와 모달 기준",
+      "score": 5,
+      "evidence": "shared 34, modal 29, 전체 화면 검사"
+    },
+    {
+      "id": "U2",
+      "category": "가독성과 흐름",
+      "criterion": "입력 도구와 메뉴 한 줄 유지",
+      "score": 5,
+      "evidence": "440~1280px, 실행/대기/긴 초안에서 도구 줄 확인"
+    },
+    {
+      "id": "U3",
+      "category": "가독성과 흐름",
+      "criterion": "좁은 창과 글자 200% 확대",
+      "score": 5,
+      "evidence": "all-surfaces 105개 및 composer/nav 회귀"
+    },
+    {
+      "id": "U4",
+      "category": "가독성과 흐름",
+      "criterion": "실제 업무 사용자의 편의성",
+      "score": 2.5,
+      "evidence": "사용자 피드백을 반영하고 화면 검토. 별도 업무 사용자 수행률/만족도 실험 없음"
+    },
+    {
+      "id": "R1",
+      "category": "안정성과 보관",
+      "criterion": "로그인과 모델/추론 선택의 재시작 복원",
+      "score": 2.5,
+      "evidence": "macOS 실제 ChatGPT 복원과 Windows OS 보호 저장 계약은 확인. 현재 회사 SSO/AI Pro 실계정 로그인과 재시작 복원은 미검증."
+    },
+    {
+      "id": "R2",
+      "category": "안정성과 보관",
+      "criterion": "실행기 장애와 단일 앱/창 복구",
+      "score": 5,
+      "evidence": "실제 Electron lifecycle 및 단위 검사"
+    },
+    {
+      "id": "R3",
+      "category": "안정성과 보관",
+      "criterion": "초안/승인/중지와 원문 변경 충돌 방지",
+      "score": 5,
+      "evidence": "agent UI 8개, 메일 원자적 연결과 해시 검사"
+    },
+    {
+      "id": "R4",
+      "category": "안정성과 보관",
+      "criterion": "장시간 사용의 메모리/성능/복구",
+      "score": 0,
+      "evidence": "현재 후보의 장시간 반복 사용과 메모리 증가량 미측정"
+    },
+    {
+      "id": "A1",
+      "category": "AI 결과 신뢰성",
+      "criterion": "선택한 원문과 Personal OpenWiki 근거 연결",
+      "score": 5,
+      "evidence": "실제 두 메일의 원문과 위키 비교, 출처 연결"
+    },
+    {
+      "id": "A2",
+      "category": "AI 결과 신뢰성",
+      "criterion": "내부 서브에이전트 분담과 결과 수집",
+      "score": 2.5,
+      "evidence": "실행/수집 표시와 계약 검사. 실제 사례의 부분 결과/검토 불일치 수정 후 반복 평가 미완료"
+    },
+    {
+      "id": "A3",
+      "category": "AI 결과 신뢰성",
+      "criterion": "자동 압축 후 요구사항과 근거 보존",
+      "score": 2.5,
+      "evidence": "실제 카탈로그 예산/압축 회귀. 현재 실모델의 여러 압축 주기 정확도 미측정"
+    },
+    {
+      "id": "A4",
+      "category": "AI 결과 신뢰성",
+      "criterion": "현재 후보의 고정 과제 반복 정확도",
+      "score": 0,
+      "evidence": "현 후보/동일 과제/반복 횟수로 다시 잰 정답률 없음. 이전 후보 성적을 대입하지 않음"
+    },
+    {
+      "id": "W1",
+      "category": "Windows 설치 준비",
+      "criterion": "현재 소스의 새 아이콘 NSIS 설치 파일",
+      "score": 5,
+      "evidence": "a540385b 소스의 원본 새 아이콘 설치 EXE 생성, SHA-256 검증. 설치 진행/완료 실제 화면과 숫자 예상 잔여 시간 확인."
+    },
+    {
+      "id": "W2",
+      "category": "Windows 설치 준비",
+      "criterion": "설치와 시작 메뉴/바탕화면/파일 메타데이터",
+      "score": 5,
+      "evidence": "Windows Server 2025에 실제 설치. Unicode 시작 메뉴/바탕화면 바로가기, EXE 아이콘/제품명과 제거 항목 확인."
+    },
+    {
+      "id": "W3",
+      "category": "Windows 설치 준비",
+      "criterion": "실제 설치 EXE의 화면과 worker/Git/저장",
+      "score": 5,
+      "evidence": "실제 설치 EXE의 격리 프로젝트 화면/worker/Git/편집/저장/터미널/브라우저 검사. 첫 실행과 재설치 후 각각 15개 통과."
+    },
+    {
+      "id": "W4",
+      "category": "Windows 설치 준비",
+      "criterion": "이전 버전 업그레이드/재설치/제거",
+      "score": 5,
+      "evidence": "구버전 설치 후 업그레이드, 재설치, 재실행, 제거 성공. 최종 실행에서 업그레이드 81.42초, 재설치 10.33초, 제거 1.36초."
+    }
+  ],
+  "score": 75.0,
+  "tests": {
+    "total": 829,
+    "passed": 632,
+    "failed": 0,
+    "skipped": 197,
+    "followup_wiki": 26,
+    "followup_modals": 33,
+    "windows_wiki": 26
+  },
+  "beta_scope_verification": {
+    "mail_tests": {
+      "total": 28,
+      "passed": 26,
+      "failed": 0,
+      "skipped_feature_disabled": 2
+    },
+    "electron_surfaces": 105,
+    "attachment_ui": 4,
+    "boundary": "Local fixtures; no claim of current live model accuracy or Windows user-PC success",
+    "mail_flow_screens": 9,
+    "attachment_icon_gap_px": 12,
+    "attachment_type_widths_checked": [
+      820,
+      440
+    ],
+    "attachment_types_implemented": [
+      "pdf",
+      "document",
+      "table",
+      "presentation",
+      "image",
+      "archive",
+      "video",
+      "audio",
+      "code",
+      "file"
+    ],
+    "attachment_types_render_checked": [
+      "pdf",
+      "document",
+      "table",
+      "presentation",
+      "image",
+      "archive"
+    ]
+  },
+  "dependency_audit": {
+    "scope": "npm audit --omit=dev on the final Desktop lockfile",
+    "counts": {
+      "info": 0,
+      "low": 2,
+      "moderate": 2,
+      "high": 0,
+      "critical": 0,
+      "total": 4
+    },
+    "remaining": [
+      "DOMPurify/Monaco low-severity advisories",
+      "sprintf-js/tedious moderate-severity advisories"
+    ],
+    "boundary": "Dependency advisories, not proof of exploitability or absence of other vulnerabilities"
+  },
+  "previous_windows_preparation": {
+    "run": 38184228058,
+    "state": "in_progress",
+    "source_commit": "519c1c8c9af121a30179e79d4bd170064a35aaee",
+    "snapshot_files": 980,
+    "first_attempt": {
+      "run": 38177637888,
+      "failure": "Missing pnpm-workspace.yaml in isolated snapshot",
+      "repaired": "Copied existing locked dependency policy without changing versions"
+    },
+    "attachment_scope": "Mail attachment content reading is deferred; body, metadata, filename search and original download remain supported",
+    "installed_flow_repairs": [
+      "Keep diff models stable during background status updates and clear the diff before disposing models",
+      "Close the previous auxiliary pane when opening the mail page so it cannot cover mail actions",
+      "Wait for fetched commit content before rendering checks; capture fixture diagnostics on failure",
+      "Wait for native project readiness separately from the UI click timeout and record projectReadyMs"
+    ],
+    "superseded_icon_candidate": {
+      "run": 38181034614,
+      "state": "cancelled_after_final_navigation_fix"
+    },
+    "previous_navigation_candidate": {
+      "run": 38181623116,
+      "state": "failed_test_startup_readiness_timeout",
+      "first_installed_launch_checks": 14,
+      "product_error_observed": false
+    },
+    "previous_readiness_candidate": {
+      "run": 38183125365,
+      "state": "failed_during_commit_history_check",
+      "diagnostic_error": "failure screenshot timed out and masked original error",
+      "followup": "Preserve original failure before best-effort screenshot/DOM capture; capture timing logs"
+    }
+  },
+  "windows_build": {
+    "run": 38190791331,
+    "state": "success",
+    "source_commit": "a540385b23d9b7f76191a304b062befe76984b44",
+    "snapshot_files": 995,
+    "installer": "release/windows/1.1.1-38190791331/Nubi-Workspace-beta-1.1.1-x64-Setup.exe",
+    "sha256": "9ae130e37885376387f911204f516006eadf5516ddf9d60a38473f072c672bb1",
+    "bytes": 135364493,
+    "durations": {
+      "reinstallSeconds": 10.3322483,
+      "baselineSeconds": 189.6836663,
+      "upgradeSeconds": 81.4198238,
+      "uninstallSeconds": 1.358077
+    },
+    "platform": "Microsoft Windows Server 2025 Datacenter",
+    "signature": "NotSigned",
+    "visible_eta": true,
+    "boundary": "GitHub Windows runner and isolated fixtures. Company AI Pro, mail, SSO and user Windows 11 behavior remain unverified."
+  },
+  "previous_scope_evidence": [
+    {
+      "path": "verification/all-surfaces/result.json",
+      "sha256": "11267fd4f8941d86c2f6df1042ca121fe09be6e8e1090992197e550e02a9fbda"
+    },
+    {
+      "path": "verification/shared-ui-result.json",
+      "sha256": "625ddeb798fcc8915404ad24470c3f1738c804ed9f6f027de7b4a2c7d17da305"
+    },
+    {
+      "path": "verification/modal-review/result.json",
+      "sha256": "1c0aa1d1b8f3006aac514efb83e5b008bd8c36a5bfe9042d7f9845ccb4a42371"
+    },
+    {
+      "path": "verification/form-clarity/result.json",
+      "sha256": "05dcacb22da5a30f1218227f6c2420c6fb5b6a507cf096d44b0d05463398b09b"
+    },
+    {
+      "path": "verification/mail/result.json",
+      "sha256": "6fa153c320ce4b6c72b064e4597e92b8792502ea82184b75055891f717cf8f0b"
+    },
+    {
+      "path": "verification/electron-shell.json",
+      "sha256": "25b061e0b8d7e0a6f54490437a0afb4430e13de0ffadafdbc529cf2c977886a0"
+    },
+    {
+      "path": "verification/live-web/result.json",
+      "sha256": "f45e751311b703f9929716a9a5c5a753de803140f0ab3c2653313cef96452668"
+    },
+    {
+      "path": "verification/electron-agent.json",
+      "sha256": "d5df507a1d50bbedbe702f7f0fdcc7ce603856975ea9b3a13ebaa8cb43a64c7a"
+    },
+    {
+      "path": "verification/electron-skills.json",
+      "sha256": "21aaf9d4cddf0eefe3c814b9f82b0234eb3d8041105a132ebfba4821c2575b73"
+    },
+    {
+      "path": "verification/mail-beta-download-only.json",
+      "sha256": "6b59743d65b3fa9e39479960659ad117817f684af66b4397b00f768d340666cb"
+    },
+    {
+      "path": "verification/mail-selection-padding.json",
+      "sha256": "46a1cea551b9327eec523706a95646e786d7cee367adacb5aad03d6268e95a92"
+    },
+    {
+      "path": "verification/attachment-types/result.json",
+      "sha256": "fe5ddbc138860d11e1c6f4f53ec672a88d89809200b8bd36226807a5483b0911"
+    },
+    {
+      "path": "verification/attachment-types/mail-flow.json",
+      "sha256": "6b464872861e6188920fac95a7d8fe1af95e18114472c3108ec93dddb18fe73e"
+    }
+  ],
+  "evidence": [
+    {
+      "path": "release/windows/1.1.1-38190791331/electron-first-install.json",
+      "sha256": "eecc5392d3b45514208f499070c35d4a8be8f35573499fa2a3d57de85a4c40d4"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/electron-shell.json",
+      "sha256": "50e89593fb3de7f8221f7b9be6f768b22003517b35938f860a98666f09754625"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/installed-icon.png",
+      "sha256": "1383ed631dbad28d58fbeb004d4efca9a326e833b91d9a8c257dd9722c3e7293"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/windows-branding.json",
+      "sha256": "e5f5cc4c715d18514675030444612cc3872ec849328fbdd48110abdf5a51243c"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/windows-installer-experience.json",
+      "sha256": "bb606dec910f1239e26f4e88cddd92b7b98d54f3c1dda4ef9747e26a1fdd3f65"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/windows-installer-finish.png",
+      "sha256": "515b600a575786d0d49b581aaf7f0bd7345c9bec10c036302337758c36dc3d2f"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/windows-installer-progress.png",
+      "sha256": "a45d297f8b21090fa47823c2a90e160ac6bbb2e9e7d70577d1f5cd1fa36bd68f"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/windows-installer.json",
+      "sha256": "b8d9a31a68e4791a1dc039b3c80f237b2cdd37c6333c5ce288d5fc0593bc2c99"
+    },
+    {
+      "path": "release/windows/1.1.1-38190791331/windows-package.json",
+      "sha256": "1eccd9a0e4aa29e0617c1927a66d0c8f51435e2f26e995149cd0ce90bc0f57e3"
+    },
+    {
+      "path": "verification/modal-review/result.json",
+      "sha256": "6e8f4cdc896703c111254c192c213c40cc1f7e56446da13f5a8a2e38e91b7231"
+    },
+    {
+      "path": "verification/quality-20261012/desktop-tests.log",
+      "sha256": "8a389a60908325a07758ee9844f031479903afec539a6226e260d10be7f7f012"
+    },
+    {
+      "path": "verification/quality-20261012/wiki-crlf.log",
+      "sha256": "4de4837af91a737eb4e3df243109f2dbba0dbca76b81c7db9c0a578b8e84281c"
+    },
+    {
+      "path": "verification/quality-20261012/wiki-focused.log",
+      "sha256": "820df0ac72b6d07ce1e0a8f493343b5a614e4e7b6a849b8ffb700a4a55a616ab"
+    }
+  ]
+}
