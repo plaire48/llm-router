@@ -6,7 +6,7 @@ import {BranchMark, FolderMark} from './marks.jsx';
 import {notifyWorkspaceToast} from './WorkspaceToast.jsx';
 
 // Select the model first. Git clones into a new child of the chosen parent.
-export function ProjectStart({busy, blocked=false, modelControl, onOpenFolder, onClone, onStartConversation, onCancel}) {
+export function ProjectStart({projects=[],onSelectProject,busy, blocked=false, modelControl, onOpenFolder, onClone, onStartConversation, onCancel}) {
   const [remote, setRemote] = useState(''), [gitOpen, setGitOpen] = useState(false);
   const input = useRef(null), gitForm = useId();
   async function clone(event) {
@@ -19,6 +19,7 @@ export function ProjectStart({busy, blocked=false, modelControl, onOpenFolder, o
   }
   return <section className="nubi-project-start" aria-label="프로젝트 열기" aria-busy={busy}>
     {modelControl&&<div className="nubi-start-model">{modelControl}<span>위키 자동 준비</span></div>}
+    {projects.length>0&&onSelectProject&&<nav className="nubi-start-projects" aria-label="추가한 프로젝트">{projects.map(project=><CxButton key={project.id} disabled={busy||blocked} title={project.root} onClick={()=>onSelectProject(project.id)}><FolderMark size={18}/><span>{project.name}</span><Icon name="chevronRight" size={16}/></CxButton>)}</nav>}
     <div className="nubi-start-choices" data-count={1+Number(!!onClone)}>
       <button type="button" className="nubi-start-card" disabled={busy||blocked} onClick={onOpenFolder}>
         <span className="nubi-start-tile" data-tone="blue"><FolderMark/></span>

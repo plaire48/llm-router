@@ -600,3 +600,9 @@
    overlay. Its layout must not depend on that unrelated pane's mode. */
 .desktop-shell .nubi-workbench[data-host-layout=integrated][data-compact=false] .nubi-sidebar[data-open=true] { position:relative; left:auto; flex:none; }
 .desktop-shell .nubi-workbench[data-host-layout=integrated][data-compact=false] .nubi-sidebar-resize { position:relative; left:auto; top:auto; flex:none; }
+/* A compact project drawer must sit above the auxiliary editor. Its original
+   isolation context trapped the drawer beneath the editor's overlay. */
+.desktop-shell[data-layout="overlay"]:has(.nubi-sidebar[data-open="true"]) .nubi-workbench { isolation:auto; }
+.desktop-shell[data-layout="overlay"]:has(.nubi-sidebar[data-open="true"]) .nubi-workbench-layout { z-index:auto; }
+.desktop-shell[data-layout="overlay"] .nubi-sidebar[data-open="true"] { z-index:41; }
+.desktop-shell[data-layout="overlay"] .nubi-sidebar-scrim { z-index:40; }

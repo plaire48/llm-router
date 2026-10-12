@@ -94,7 +94,9 @@ export class ProjectService {
   }
   async overview({taskId}={}) {
     this.ready();
+    const owner=this.store,projectId=this.projectId;
     const [files, branch, status, profiles] = await Promise.all([listFiles(this.root), git(this.root, ['branch', '--show-current']).catch(()=> 'Git 없음'), git(this.root, ['status', '--short']).catch(()=> ''), shellProfiles()]);
+    if(this.store!==owner||this.projectId!==projectId)fail('project_changed');
     return {projectId: this.projectId, root: this.root, kind:this.workspaceKind||'project', name:this.workspaceKind==='conversation'?'개인 대화':path.basename(this.root), branch: branch.trim() || 'detached', dirty: !!status,
       files: files.paths, truncated: files.truncated, wikiInitialization:this.workspaceKind==='conversation'?null:this.store.get('wiki-init'), wikiFiles: files.paths.filter(p => p.startsWith('openwiki/') && p.endsWith('.md')),
       computer:computerState(this),setupActions:this.store.list('setup-action:').slice(0,50), collaborations:collaborationRows(this),peerTasks:peerRows(this),peerLinks:peerLinks(this), tasks: this.displayTasks(taskId), proposals: this.store.list('proposal:').slice(0, 50), processes: this.store.list('process:').slice(0, 20), comparisons: this.store.list('comparison:').slice(0, 20), commandRepairs:this.store.list('command-repair:').slice(0,30), profiles,defaultShell:preferredShell(profiles,process.platform,this.shellPreference())};

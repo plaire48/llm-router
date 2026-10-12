@@ -25,6 +25,9 @@ app.on('second-instance',()=>{if(!window||window.isDestroyed())return;if(window.
 protocol.registerSchemesAsPrivileged([{scheme:'app',privileges:{standard:true,secure:true,supportFetchAPI:true}}]);
 let window,worker,host,webHost,browserHost,currentRoot=null,currentKind='project';const launchId=randomUUID();
 const storage=process.env.NUBI_STORAGE_ROOT||path.join(app.getPath('userData'),'workspace');
+const {ProjectCatalog}=require('./project-catalog.cjs');
+const projectCatalog=new ProjectCatalog(storage);
+let openingProject=false;
 function recordFault(component,details={}){
  const reason=['clean-exit','abnormal-exit','killed','crashed','oom','launch-failed','integrity-failure'].includes(details.reason)?details.reason:'unexpected';
  const record={at:new Date().toISOString(),component,reason,...(Number.isInteger(details.exitCode)?{exitCode:details.exitCode}:{})};
@@ -54,9 +57,15 @@ const keyStore={
  async deletePassword(service,key){secretScope(service,key);return vault.delete(key);}
 };
 async function openProject(root,kind='project',{initializeWiki=true}={}){
+ if(openingProject)throw Error('project_busy');openingProject=true;
+ try{
  // A predecessor that is still exiting (quit or crash) holds the project store for a moment; the single-instance lock
  // rules out a live second instance, so a short retry is safe.
- let overview;for(let attempt=0;;attempt++){try{overview=await invoke('open',{root,kind,initializeWiki});break;}catch(error){if(error.message!=='project_locked'||attempt>=4)throw error;await new Promise(resolve=>setTimeout(resolve,600));}}currentRoot=overview.root;currentKind=kind;await mkdir(storage,{recursive:true});await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root:currentRoot,kind}));return overview;}
+ let overview;for(let attempt=0;;attempt++){try{overview=await invoke('open',{root,kind,initializeWiki});break;}catch(error){if(error.message!=='project_locked'||attempt>=4)throw error;await new Promise(resolve=>setTimeout(resolve,600));}}currentRoot=overview.root;currentKind=kind;
+ try{await mkdir(storage,{recursive:true});await writeFile(path.join(storage,'last-project.json'),JSON.stringify({root:currentRoot,kind}),{mode:0o600});await projectCatalog.remember(overview);}catch{overview.projectCatalogWarning=true;}
+ return overview;
+ }finally{openingProject=false;}
+}
 const forbidden=new Set(['open','importSkill','connectSkillMarketplace','disconnectSkillMarketplace','initializeWiki','collaboration']);
 app.whenReady().then(async()=>{
  if(!primary)return;
@@ -122,15 +131,22 @@ app.whenReady().then(async()=>{
   if(method==='openWorkspacePage')return openWorkspacePage(args.url);
   if(!DESKTOP_FEATURES.computerUse&&method==='chooseComputerApp')throw Error('computer_beta_disabled');
   if(method==='openCurrent'){
-   if(currentRoot)return invoke('overview');
+   if(currentRoot)return await invoke('overview');
    let saved;try{saved=JSON.parse(await readFile(path.join(storage,'last-project.json'),'utf8'));}catch{return null;}
    if(!saved?.root)return null;
    // A last project whose folder is gone opens the start screen once; the stale pointer goes so the next start is clean.
    try{return await openProject(saved.root,saved.kind==='conversation'?'conversation':'project',{initializeWiki:false});}
    catch(error){if(error.message==='project_path_missing')await rm(path.join(storage,'last-project.json'),{force:true}).catch(()=>{});throw error;}
   }
-  if(method==='startConversation'){const root=path.join(storage,'conversations');await mkdir(root,{recursive:true});return openProject(root,'conversation');}
-  if(method==='chooseFolder'){const root=await choose(['openDirectory'],'프로젝트 폴더 열기');return root?openProject(root):{cancelled:true};}
+  if(method==='startConversation'){const root=path.join(storage,'conversations');await mkdir(root,{recursive:true});return await openProject(root,'conversation');}
+  if(method==='projectCatalog'){
+   if(args.action==='rename')return await projectCatalog.rename(args.id,args.name);
+   if(args.action==='remove'){if((await projectCatalog.list()).some(project=>project.id===args.id&&project.root===currentRoot))throw Error('project_active');return await projectCatalog.remove(args.id);}
+   if(args.action&&args.action!=='list')throw Error('method_invalid');
+   return await projectCatalog.list();
+  }
+  if(method==='switchProject'){const saved=await projectCatalog.get(args.id);return await openProject(saved.root);}
+  if(method==='chooseFolder'){const root=await choose(['openDirectory'],'프로젝트 폴더 열기');return root?await openProject(root):{cancelled:true};}
   if(method==='copyProjectPath'){const result=await invoke('projectPath',args);clipboard.writeText(result.path);return result;}
   if(method==='downloadMail'){
    const packet=await invoke('mail',{action:'download',id:args.id,kind:args.kind,attachmentId:args.attachmentId,expectedSourceHash:args.expectedSourceHash});
@@ -146,8 +162,8 @@ app.whenReady().then(async()=>{
    if(typeof storagePath!=='string'||!path.isAbsolute(storagePath))throw Error('mail_storage_unavailable');
    clipboard.writeText(storagePath);return {path:storagePath};
   }
-  if(method==='importProject'){const file=await choose(['openFile'],'프로젝트 ZIP 업로드',[{name:'ZIP',extensions:['zip']}]);if(!file)return {cancelled:true};const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return openProject((await importProjectZip(file,parent)).root);}
-  if(method==='cloneRepository'){const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return openProject((await host.clone({...args,parent})).root);}
+  if(method==='importProject'){const file=await choose(['openFile'],'프로젝트 ZIP 업로드',[{name:'ZIP',extensions:['zip']}]);if(!file)return {cancelled:true};const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return await openProject((await importProjectZip(file,parent)).root);}
+  if(method==='cloneRepository'){const parent=await choose(['openDirectory'],'프로젝트를 저장할 폴더');if(!parent)return {cancelled:true};return await openProject((await host.clone({...args,parent})).root);}
   if(method==='ghesAccount'){const state=await host.accountAction(args.operation);if(args.operation==='copy'&&state.device?.code)clipboard.writeText(state.device.code);return state;}
   if(method==='ghesRepositories')return host.listRepositories();
   if(method==='connectMarketplace')return host.connectMarketplace();

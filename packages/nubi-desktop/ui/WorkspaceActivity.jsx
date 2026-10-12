@@ -23,6 +23,7 @@ export function WorkspaceActivity({task,run,historical=false}) {
   const runId = run?.runId || currentActivityRunId(task);
   if (!runId) return null;
   const live = !historical&&task.state === 'running';
+  const collapsed=historical||['review','completed'].includes(task.state);
   const answered = !!task.question?.id&&questions.some(question=>question.id===task.question.id&&question.answer?.text);
   const waiting = task.state === 'waiting_input'&&!answered;
   // A reviewed answer can still hand off at an approval boundary. It does not
@@ -52,7 +53,7 @@ export function WorkspaceActivity({task,run,historical=false}) {
   return <section className="nubi-agent-activity" data-run-id={runId} data-historical={historical||undefined} aria-label="계획과 진행 상황" aria-busy={live}>
     {currentPlan?.steps?.length > 0 && <WorkspacePlan task={{...task,workPlan:currentPlan}} historical={historical} answered={answered} trace={trace.map(event => ({...event,label:event.label || toolLabels[event.tool]}))}/>}
     {live&&<ResponseTime timing={task.responseTiming} label="진행" live/>}
-    <AgentTrace key={runId} steps={trace} traceOptions={traceOptions} live={live} question={task.question}
-      preserveNotes preserveCompleted defaultExpanded={!historical} completed={verified} verified={verified} awaitingUser={waiting} stopped={['paused','interrupted','cancelled','failed'].includes(task.state)} idleLabel={idleLabel}/>
+    <AgentTrace key={`${runId}:${collapsed?'result':'active'}`} steps={trace} traceOptions={traceOptions} live={live} question={task.question}
+      preserveNotes preserveCompleted defaultExpanded={!collapsed} completed={verified} verified={verified} awaitingUser={waiting} stopped={['paused','interrupted','cancelled','failed'].includes(task.state)} idleLabel={idleLabel}/>
   </section>;
 }

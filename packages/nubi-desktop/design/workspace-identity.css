@@ -543,7 +543,19 @@
 .nubi-sidebar-actions :is(.nubi-sidebar-folder-picker,.nubi-sidebar-search).cx-kit-button:hover:not(:disabled),
 .nubi-sidebar-actions :is(.nubi-sidebar-folder-picker,.nubi-sidebar-search).cx-kit-button:focus-visible { border-color:transparent; outline:0; box-shadow:none; }
 .nubi-sidebar-project[aria-expanded="false"] svg:last-child { transform:rotate(-90deg); }
-.nubi-sidebar-project-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nubi-sidebar-project-name { text-align:left;min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nubi-saved-project+.nubi-saved-project { margin-top:var(--cx-space-3); }
+.nubi-saved-project[data-current="true"]>.nubi-sidebar-project-row>.nubi-sidebar-project { background:var(--deck-blue-soft,#E8F1FE);border-radius:10px; }
+.nubi-saved-project>.nubi-sidebar-project-row { margin-left:0;gap:var(--cx-space-1); }
+.nubi-saved-project>.nubi-sidebar-project-row>.nubi-sidebar-project { width:auto;min-height:40px;white-space:nowrap; }
+.nubi-project-name-dialog { width:min(440px,calc(100vw - 32px)); }
+.nubi-project-name-dialog form { display:grid;gap:var(--cx-space-2); }
+.nubi-project-name-dialog input { width:100%; }
+.nubi-project-remove-note { display:block;margin-top:var(--cx-space-2); }
+.nubi-start-projects { display:grid;gap:var(--cx-space-2);max-height:240px;overflow:auto; }
+.nubi-start-projects>button { display:flex;align-items:center;gap:var(--cx-space-3);text-align:left;min-height:44px; }
+.nubi-start-projects>button>span { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.nubi-start-projects>button>svg { flex:none; }
 .nubi-drift-label { display:block; flex:1 1 0%; width:100%; max-width:100%; min-width:0; overflow:hidden; }
 .nubi-drift-label > .nubi-drift-window { display:block; flex:1; width:100%; min-width:0; overflow:hidden; white-space:nowrap; }
 .nubi-drift-text { display:inline-block; width:max-content; white-space:nowrap; }

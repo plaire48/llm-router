@@ -76,6 +76,9 @@ Stage 'first-launch'
 node scripts/check-electron-shell.mjs
 if ($LASTEXITCODE -ne 0) { throw 'Installed app smoke failed' }
 Copy-Item verification/electron-shell.json verification/electron-first-install.json
+Stage 'project-navigation'
+node scripts/check-electron-projects.mjs
+if ($LASTEXITCODE -ne 0) { throw 'Installed project navigation and source checks failed' }
 Stage 'reinstall'
 $stopwatch.Restart()
 $p = Start-Process $installer.FullName -ArgumentList @('/S', "/D=$target") -Wait -PassThru
