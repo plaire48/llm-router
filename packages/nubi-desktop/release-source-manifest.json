@@ -2158,8 +2158,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-projects.mjs",
-      "sha256": "d3acd40542c5a902826bf6567b5f3edc090d26844c0d2e71381a222d453fcd82",
-      "bytes": 10111
+      "sha256": "a278d7ac980aa116a1f1b5bf79055ad11937df55f93937a4559edef4d949c79a",
+      "bytes": 11138
     },
     {
       "path": "packages/nubi-desktop/scripts/check-electron-shell.mjs",
