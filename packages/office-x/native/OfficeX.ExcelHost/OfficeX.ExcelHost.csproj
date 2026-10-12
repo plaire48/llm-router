@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion><CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies></PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OfficeX.Core/OfficeX.Core.csproj" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Office.Interop.Excel" Version="15.0.4795.1001" ExcludeAssets="runtime" PrivateAssets="all" />
+    <Reference Include="System.Windows.Forms" /><Reference Include="System.Drawing" />
+    <Reference Include="Microsoft.CSharp" /><Reference Include="System.Security" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
+  </ItemGroup>
+  <Target Name="EmbedExcelInterop" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup><ReferencePath Condition="'%(Filename)' == 'Microsoft.Office.Interop.Excel'"><EmbedInteropTypes>true</EmbedInteropTypes></ReferencePath></ItemGroup>
+  </Target>
+</Project>

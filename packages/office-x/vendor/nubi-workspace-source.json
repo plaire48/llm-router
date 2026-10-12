@@ -1,0 +1,368 @@
+{
+  "source": "/Users/ganadi/Documents/llm_router",
+  "observedHead": "7dbaf0f6cdb3ea938e09b743b2d8bc31ce8d953e",
+  "note": "Selected working-tree files; no credentials or user state copied. Nubi local source is not relicensed by Office X.",
+  "files": [
+    {
+      "path": "extensions/aipro-chat/account-usage.js",
+      "sha256": "cd02a73a4d89bd45cd478ee32ad74be48fafc15a1e42d0aeaf9a0ac81c55b318"
+    },
+    {
+      "path": "extensions/aipro-chat/agent-harness.js",
+      "sha256": "c425aad9a3a4f9075613d19dc5f11866a98ff5f3938b2a56f40e700c9f914c10"
+    },
+    {
+      "path": "extensions/aipro-chat/agent-trace.js",
+      "sha256": "944c72120b5bf7cce526ea948671dcc002b00071fe5a7c09bab75f027e8cd6ed"
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-checkpoint.js",
+      "sha256": "7ba9ecbeb3cde4ffe682ae380d823a710ec832a13dad06224bc1910f57829727"
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-handoff.js",
+      "sha256": "074f147093630c6218723906ab3273425bdb9ddac792f2b679e869870fb03423"
+    },
+    {
+      "path": "extensions/aipro-chat/analysis-limits.js",
+      "sha256": "7672e6a75694d05be05ef676f0ad740f689f60ee47836f962a03398893a365c1"
+    },
+    {
+      "path": "extensions/aipro-chat/attachment-limits.js",
+      "sha256": "8e419f720b6a8d81fa05251d198fd79289babaec1365fa5929f7cc3995e930f2"
+    },
+    {
+      "path": "extensions/aipro-chat/attachments.js",
+      "sha256": "3520624d83a90e888828b665590ed023eb81d2203fe989a58ce8e77edccef284"
+    },
+    {
+      "path": "extensions/aipro-chat/browser-editor.js",
+      "sha256": "5f390a418effe60a5eeb4c04c392e32d13f202f022c105426b1898fc5468d749"
+    },
+    {
+      "path": "extensions/aipro-chat/browser-knowledge.js",
+      "sha256": "7eae11a011aeba580c29c79574ec32b7a8b685659d9971a5e575a05785330f04"
+    },
+    {
+      "path": "extensions/aipro-chat/browser-script-api.js",
+      "sha256": "c27b71f5c6e37f9c968bc26ce3a244fb8addf82499a019f2d6b0bc9c6affe319"
+    },
+    {
+      "path": "extensions/aipro-chat/chat-contract.js",
+      "sha256": "e905ee3bb149309569bb7f219ee0be4cdafa916637ce2a870b9d2d96f406fe49"
+    },
+    {
+      "path": "extensions/aipro-chat/chatgpt-api.js",
+      "sha256": "9844501d8dfc4831ab34efcb3d9d2b81bb304ccce2577a1fba7fc4e5ee834f2f"
+    },
+    {
+      "path": "extensions/aipro-chat/chatgpt-auth.js",
+      "sha256": "1979666bc3a7cfced0b17b5498e204dea3cc3c03a4fc3fff694977103524258c"
+    },
+    {
+      "path": "extensions/aipro-chat/completion-errors.js",
+      "sha256": "d1cb21138f8cb44b8ccbcc58ae684a751944b91b8c0a8b385e768a9504d442dc"
+    },
+    {
+      "path": "extensions/aipro-chat/completion-reader.js",
+      "sha256": "70d50090427a5f940bcd9a67a46fed1384978b5624cf0faeb19af1721274e476"
+    },
+    {
+      "path": "extensions/aipro-chat/computer-time.js",
+      "sha256": "9118317292a281b5d1ce2ad8f9923ae4626e538204ee11d02be15b7292d6698a"
+    },
+    {
+      "path": "extensions/aipro-chat/context-state.js",
+      "sha256": "db5f834cc6f8f3dd2354a870d3f5844a75d4df609f197244e0962bd16a0b179c"
+    },
+    {
+      "path": "extensions/aipro-chat/core.js",
+      "sha256": "2d910b931e9aa2400bad7c7686276f44017c9e6865df2f791402355be8244261"
+    },
+    {
+      "path": "extensions/aipro-chat/design/agent-deck.css",
+      "sha256": "79cea93bce49a2bf675a65c971691309906e741c9b5a586ec094b92df02acc65"
+    },
+    {
+      "path": "extensions/aipro-chat/document-contract.js",
+      "sha256": "7cfea57b3db12c04e3699e2e14108cca3259542178545f780e4bc39e73c1a7da"
+    },
+    {
+      "path": "extensions/aipro-chat/evidence-search.js",
+      "sha256": "3704693ec92b7c9d0e6d52e62b1586b938b6a2230982fcc07d3db88e8eb628de"
+    },
+    {
+      "path": "extensions/aipro-chat/exchange.js",
+      "sha256": "63ee5e03283ebad81f808736dd8136c65f7cc955d2e1c499e8b2a9bbc5af092b"
+    },
+    {
+      "path": "extensions/aipro-chat/fabrix.js",
+      "sha256": "e7d8c53708355774428870f621a0b668eb1924d149fbd86eb49f2e5c4d3cf4eb"
+    },
+    {
+      "path": "extensions/aipro-chat/form-workflow.js",
+      "sha256": "5d597e271667ed1fec759f45da38adcfe856775e7c80d308d79ea8e8368c6b6b"
+    },
+    {
+      "path": "extensions/aipro-chat/http-retry.js",
+      "sha256": "12ea328413cf79d1cef5a842afdf7fb153daff4d77b945a826ad2cc7eadc2ea3"
+    },
+    {
+      "path": "extensions/aipro-chat/image-files.js",
+      "sha256": "942d747a1da7cbecacc7296522b4c6bdc054a4e11f8a808c312e0e8ac1038e67"
+    },
+    {
+      "path": "extensions/aipro-chat/mcp-config.js",
+      "sha256": "cd295d85b9c4ef2f10520ec927ed6cb0051509c64f7a8352963acdcad603d235"
+    },
+    {
+      "path": "extensions/aipro-chat/model-routing.js",
+      "sha256": "9c8f5e7267d75ed384b4b1cbc01df9a6b247bc8443a6f3db8d7a5d9e9275fc46"
+    },
+    {
+      "path": "extensions/aipro-chat/plan-mode.js",
+      "sha256": "dba3130dc046102cef38d4a28164d8d55a75cbdbb941e165f8f89100e034d6d7"
+    },
+    {
+      "path": "extensions/aipro-chat/project-tools.js",
+      "sha256": "1e024bc8b159db650ace7cd997bc071005b7fbcbd98d2fa90bd945510a6d8625"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-128.png",
+      "sha256": "489769dbf53146a1b920c6e7299079418b4d6dfcd3237ac4774bcab7daffdd48"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-bird.webp",
+      "sha256": "936aae76c1c1c0dc5ffb514ade83aee607e8870dd084b9e5b9d86df2bda2d499"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-blink.webp",
+      "sha256": "bc2471da06166a0bf71c31122645ba3eeb3f4fb657dc10443caa9fc81d6a68bd"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-sad.webp",
+      "sha256": "d6227e046decbc73a3c12b60cbc6232e840cabf21881b796911f4d058184a1ee"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-smile.webp",
+      "sha256": "5ee20d517a70ce28fb2dd92614fc57d2e9ef2d8207f5605efae63570fb009b9b"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/agent-wing.webp",
+      "sha256": "f6639f3f0eb6ae5d338143416e03d4fa11045fa46091c2860de72a641cc11ef6"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/aipro.svg",
+      "sha256": "e9264bb031803fe94b6af43df237794b2eee2ac81fda968504d1bc07b1416ccc"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/claude.svg",
+      "sha256": "5119ef950a0d648b3fd62865791e73f07f32e18ddab84e4f21160f8c641c0f5f"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/fabrix.svg",
+      "sha256": "444abe43aef64b2ad819c8657ea35d720e4d26b215020ca14d4d999cd4ec0234"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/nubi-wordmark.webp",
+      "sha256": "1c0516d2c01837a01b6191e9f37af4ce2c2df0049fb7351a54cc5c1514c7c070"
+    },
+    {
+      "path": "extensions/aipro-chat/public/icons/openai.svg",
+      "sha256": "52c829a92849177f60c99699b1e27c5ed0f949e5b7415fa56815e2cc1fd78833"
+    },
+    {
+      "path": "extensions/aipro-chat/restart-reconciliation.js",
+      "sha256": "2a7b059cb191297ef07a8e38e666ef787a453c32443e90be5b442fc8496fb05f"
+    },
+    {
+      "path": "extensions/aipro-chat/script-feedback.js",
+      "sha256": "64cf8956667ad7d28bd7b938c2f756850c1ec3b426bfe685b20a0e623f1ca539"
+    },
+    {
+      "path": "extensions/aipro-chat/site-wiki-retrieval.js",
+      "sha256": "2cbd27e010f9ce92232c66a6e1e3e74e81524ee6ac42025fb0a360e56fd8cbe9"
+    },
+    {
+      "path": "extensions/aipro-chat/skill-package.js",
+      "sha256": "e69140800194197c6daf9af561d244a219bf3eafddead796676a700225f03cbd"
+    },
+    {
+      "path": "extensions/aipro-chat/skills.js",
+      "sha256": "b79a097a4972b49931a89812da9c3c9c0976b61b07e5d4a0e6246d4c92ae1313"
+    },
+    {
+      "path": "extensions/aipro-chat/src/AgentMark.jsx",
+      "sha256": "fbcb1bc030000e90f333cfbc1b6f6fb56bc159f68469716264b3bbb349ea5716"
+    },
+    {
+      "path": "extensions/aipro-chat/src/AgentTabs.jsx",
+      "sha256": "5cdcaeeb2017abb3d2911a5107cf0b74a2fe0397775fec6244edaf03a9158e69"
+    },
+    {
+      "path": "extensions/aipro-chat/src/Atmosphere.jsx",
+      "sha256": "15624260c9f87f939f0f77fbddf55ec3ea8da318fbe78f9aa1c7ff35df48682a"
+    },
+    {
+      "path": "extensions/aipro-chat/src/ChatControls.jsx",
+      "sha256": "27b07aa236081df609f0bff2b15b2a3e31b9852acda6a38da5b7ae6328ec783b"
+    },
+    {
+      "path": "extensions/aipro-chat/src/NubiSurfaces.jsx",
+      "sha256": "53a89f441b1d2706280f3fd42b89ed4a43bdb34e2ad5cf2966ea1a032d249f88"
+    },
+    {
+      "path": "extensions/aipro-chat/src/Welcome.jsx",
+      "sha256": "98effeb01ec4671159e0a1ec645a75837b0bd2f4bb65b3525d398ceb89fe159f"
+    },
+    {
+      "path": "extensions/aipro-chat/src/app.css",
+      "sha256": "1e43fb818976e9b90b13a7bd4e4ab6d27c67a3f28a73b36c2f22e831ef4fa8f2"
+    },
+    {
+      "path": "extensions/aipro-chat/task-plan.js",
+      "sha256": "1b4c93b112a73599120bb66b3211943f5ee300e63bff5a6701badc60da879926"
+    },
+    {
+      "path": "extensions/aipro-chat/uncertain-action.js",
+      "sha256": "a7473a7d88cd9bc636f23b5360736d2ff5a337222319642f3c611b782784d3f8"
+    },
+    {
+      "path": "extensions/aipro-chat/usage-stream.js",
+      "sha256": "6be0a48e70348a2741860ea93f85473ff5a84d3af7bc60b1172e4300e198487b"
+    },
+    {
+      "path": "extensions/aipro-chat/usage.js",
+      "sha256": "49310f2d1866aae91cbb5e0ec8812416777a395f83560fad1f8428538fee6006"
+    },
+    {
+      "path": "extensions/aipro-chat/user-question.js",
+      "sha256": "c1a711fd436daddf58c5fa5022e7ef667e807891a9253d716c6fe78e393f31d8"
+    },
+    {
+      "path": "extensions/aipro-chat/vendor/e2e-cx-design-system-0.5.4.tgz",
+      "sha256": "b4201dae1e7633ac25baf405e8f59f940bed62c2636df34d9ea89a745fc7b962"
+    },
+    {
+      "path": "extensions/aipro-chat/voc-tools.js",
+      "sha256": "8c1d4a3e43e633b12ec337350de8604973f021e5f8a740e3930b3fff646638a0"
+    },
+    {
+      "path": "packages/nubi-a2a/contract.mjs",
+      "sha256": "7373aaca7bc3a056b89dc4490366328e21dfe0e5005373cf143d6d1405d58959"
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-density.css",
+      "sha256": "c95649d512f397447842bc072ba5c17087fd22ad97e5aa6fdf837e2cdb523f02"
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-dialogs.css",
+      "sha256": "8fe284bff306fbc41e125929145e1389a6b591c9c5f4d2d60eb4f30526a9c6e2"
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-identity.css",
+      "sha256": "380b41e06a085f131fd04acb27c9350fbe431b9382d5fac1e40d9876bfe35745"
+    },
+    {
+      "path": "packages/nubi-desktop/design/workspace-typography.css",
+      "sha256": "ae4bc737e631aa83c017010ce0682b24d1cef68212ff143708533d26d91e7992"
+    },
+    {
+      "path": "packages/nubi-desktop/electron-app/ios-tokens.css",
+      "sha256": "5b649794adc954c54ef903a9cdf61706c7ee2e0dc9b5354246dc15c139774a5b"
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/chatgpt-catalog.mjs",
+      "sha256": "ed57c6b629505349dde6a851983e31f871b5b0d5e080632f01696511c94affd3"
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/claude-code.mjs",
+      "sha256": "19be2cee15378eede144fb8899f299212e0543e74f51dda8a6a4049d433382a5"
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/claude-login.mjs",
+      "sha256": "9494352dc330d0bb3d6d88dc416121a001d4403e44d6616b9820758abefadd3d"
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/claude-stream.mjs",
+      "sha256": "b87cb96963cebcf8905ab875731b7b5bd0c9151452b3dae094c1b3d0f29fa9a8"
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/desktop-providers.mjs",
+      "sha256": "c381c47d45b10bf122ae51d04ecfb57bbb3da31adc0a81f9c8be0b773899c8b6"
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/response-timing.mjs",
+      "sha256": "f04b0763d4c950a02cc1fd69f665e5b08785940b075565952d7f61e345ba6a86"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ReasoningPicker.jsx",
+      "sha256": "b7c1a919ea72e477cd041ae88c0977a8f7c26984175c65ddf7901512119baf08"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/ResponseTime.jsx",
+      "sha256": "620ce8777cb78f77a1e81ce81e7292bc65ceb96e36e123c31ee09a9db3b76aa1"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/WorkspaceToast.jsx",
+      "sha256": "566bbe9ff467478e369cdccd59703fa44788be1ee804e4eb3e97e03ed01689ff"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/picker-width.mjs",
+      "sha256": "a259dd15080280b98502a21a41234e049d94a94bc1b0b7e1438d687afc87dab9"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/provider-login-state.mjs",
+      "sha256": "fc704e25e9a939b96cbdee485aee49e7aa24181bcc1f3589ba6845e2ff2cba6f"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useAnchoredModal.js",
+      "sha256": "250f69ed335f4e3242b2a48d48c728f5a8c970875e78a90235a53ad9789b0a6f"
+    },
+    {
+      "path": "packages/nubi-desktop/ui/useConversationScroll.js",
+      "sha256": "5b2a513f0ffebf2b33f30818f0c1c94805b8892e5793425b5f2bb49076939f8a"
+    },
+    {
+      "path": "packages/nubi-office/worker/aipro-auth.mjs",
+      "sha256": "0694c7385fbb6e98eda670d8be7881eeb7d8ca013a6ee7e1b6b8763f5bcc5508"
+    },
+    {
+      "path": "packages/nubi-office/worker/connection-errors.mjs",
+      "sha256": "d43aecf699655edf1924f12367efa5a0d63f74fcea9b4fbd3c0abc4da5818b15"
+    },
+    {
+      "path": "packages/nubi-office/worker/context-budget.mjs",
+      "sha256": "638d995da3b44ae3a92bb6da5bae8240887ce56062c91dbd33f414693f0013cf"
+    },
+    {
+      "path": "packages/nubi-office/worker/fault-policy.mjs",
+      "sha256": "6de7388e9f4853686206cdcf18f286176db1b0386586e7d970c7002bfee6b886"
+    },
+    {
+      "path": "packages/nubi-office/worker/model-context.mjs",
+      "sha256": "4623c227367048c1702a5d8fdc3680ff0e0f13d674f9fd08dbf6449f1dc97ba4"
+    },
+    {
+      "path": "packages/nubi-office/worker/nubi-auth-page.mjs",
+      "sha256": "7db81455e51cf8e985c7df5fed61bef0eeb45a63acc990aad3214b5317317937"
+    },
+    {
+      "path": "packages/nubi-office/worker/providers.mjs",
+      "sha256": "b21cc1b68a84174854dcd0f96bcd7ca48fa9049acf879fb11f09a1c76ada573d"
+    },
+    {
+      "path": "packages/openwiki/src/auth/aipro-callback-fonts.css",
+      "sha256": "11e749ababde9f885bcb3d52080ef4396dcb1328ab16ef656f749ba225e059fa"
+    }
+  ],
+  "adaptations": [
+    {
+      "source": "extensions/aipro-chat/agent-runtime.js",
+      "sourceSha256": "665ce3cca1768e7477144122cafae3683a55d7023b63ec13e2ad95fdf18d91b7",
+      "path": "runtime-src/nubi-wire.mjs",
+      "sha256": "248829320a242189b37b9c51c8acee4eadea2e9f92f92241b176ee1319419ee6",
+      "note": "Only emptyUsage, textContent, parseArgs, assistant and toPi wire conversion extracted. Agent engine is excluded by the build alias."
+    }
+  ]
+}

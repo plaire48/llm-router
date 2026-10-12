@@ -1,0 +1,16 @@
+{
+  "source": "user-local-nubi-checkout",
+  "gitHead": "7dbaf0f6cdb3ea938e09b743b2d8bc31ce8d953e",
+  "note": "Hashes describe the inspected working files, not a claim that all files equal HEAD. Only the two generated entry files were copied unchanged. See docs/reuse-audit.md.",
+  "files": {
+    "packages/nubi-office/native/Nubi.Office.AddIn/ThisAddIn.Designer.vb": "aac0fc091dfc24bfad95f4da19d8e2076e732220bbe3ef44d58d5cce97d3f13c",
+    "packages/nubi-office/native/Nubi.Office.AddIn/ThisAddIn.Designer.xml": "5b27f0c92ab52bbba190715cdb8dfc8769ac279bbb6edc352200be4dcc1efd53",
+    "packages/nubi-office/native/Nubi.Office.AddIn/ThisAddIn.vb": "b30d53323a92f6231cf0f97eb016251aaf1f1d2139fc5304e5fcd487ef1d13bd",
+    "packages/nubi-office/native/Nubi.Office.AddIn/Nubi.Office.AddIn.vbproj": "86f844ad40d836384c47a59336a3e92f29949918364716aca8e06816e9eced59",
+    "packages/nubi-office/native/Nubi.Office.Host/ExcelPort.cs": "79827149884ccf3aea86553742fea014dbf003d7887eef64761b2f21497eace9",
+    "packages/nubi-office/native/Nubi.Office.Host/WorkerProcess.cs": "0fe657186db8d2ff7af89f1799d65530f2c1bdf4fa7e6280b966fb42b70bc8da",
+    "packages/nubi-office/worker/office-tasks.mjs": "79fa632a583beb70ac18d44c2c4226e44910ed26f5400e115fb828c2f290301c",
+    "packages/nubi-a2a/package.json": "61e5df7c79b023deddad665c2ea772a8483428387fedfe11315ce80f9a8e1d28",
+    "packages/nubi-a2a/task-agent.mjs": "54054bbdf5a5a2c14137f7c547b3d95ccdfd6551d3d90d88196944962260bc4e"
+  }
+}
