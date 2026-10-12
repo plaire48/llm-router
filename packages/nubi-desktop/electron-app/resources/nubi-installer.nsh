@@ -10,6 +10,13 @@
 !define MUI_FINISHPAGE_RUN_TEXT "누비 Workspace 실행"
 !define MUI_HEADERIMAGE_BITMAP_STRETCH FitControl
 !define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH FitControl
+!define MUI_WELCOMEPAGE_TITLE "설치 전 이용 안내"
+!define MUI_WELCOMEPAGE_TEXT "누비 Workspace Beta를 설치합니다.$\r$\n$\r$\nAI 계정 연결$\r$\n질문과 선택한 자료는 연결한 AI로 전달돼요.$\r$\n$\r$\n사내 서비스$\r$\n사내 Github SSO와 회사 메일은 회사망 또는 VPN에서 이용해 주세요.$\r$\n$\r$\n메일 지원 범위$\r$\n메일 본문을 지원해요. 첨부파일 내용 읽기는 아직 지원하지 않아요."
+
+!macro customWelcomePage
+  !insertmacro skipPageIfUpdated
+  !insertmacro MUI_PAGE_WELCOME
+!macroend
 
 !macro NubiDurationLabel Output Seconds
   IntOp $0 ${Seconds} / 60
@@ -25,8 +32,8 @@
 
 !macro customHeader
   BrandingText "누비 Workspace Beta"
-  ShowInstDetails hide
-  ShowUninstDetails hide
+  ShowInstDetails show
+  ShowUninstDetails show
   SetFont "맑은 고딕" 10
 !ifndef BUILD_UNINSTALLER
   Var NubiStarted
@@ -165,8 +172,8 @@
 !macroend
 
 !macro customInit
-  System::Call 'kernel32::GetTickCount() i .s'
-  Pop $NubiStarted
+  ; Reading the notice and choosing a folder are not installation work.
+  StrCpy $NubiStarted 0
   CreateDirectory "$LOCALAPPDATA\Nubi Workspace\Installer"
   FileOpen $NubiLog "$LOCALAPPDATA\Nubi Workspace\Installer\last-install.log" w
   FileClose $NubiLog
@@ -181,6 +188,9 @@
   StrCpy $NubiPhase "${TEXT}"
   System::Call 'kernel32::GetTickCount() i .s'
   Pop $NubiPhaseStarted
+  ${If} $NubiStarted == 0
+    StrCpy $NubiStarted $NubiPhaseStarted
+  ${EndIf}
   ${IfNot} ${Silent}
     Call NubiTick
   ${EndIf}

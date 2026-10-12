@@ -21,6 +21,8 @@ $etaCaptured=$false
 $last=''
 $finishAt=$null
 $finishCaptured=$false
+$noticeCaptured=$false
+$detailsObserved=$false
 $appWindowAt=$null
 $launched=@()
 $appPath=Join-Path $Target 'Nubi Workspace.exe'
@@ -32,6 +34,18 @@ try {
       $controls=@([InstallerWindow]::Controls($window))
       $text=($controls | Where-Object {$_.Text} | ForEach-Object {$_.Text}) -join ' | '
       if ($text -ne $last) {$observations.Add(@{seconds=[Math]::Round($clock.Elapsed.TotalSeconds,2);text=$text});$last=$text}
+      if (!$noticeCaptured -and $text -match '설치 전 이용 안내') {
+        foreach($required in @('AI 계정 연결','연결한 AI로 전달','사내 Github SSO','회사망 또는 VPN','첨부파일 내용 읽기')) {
+          if ($text -notmatch [regex]::Escape($required)) {throw "Install notice missing: $required"}
+        }
+        Save-InstallerCapture $window (Join-Path (Get-Location) 'verification/windows-installer-notice.png')
+        $noticeCaptured=$true
+      }
+      if ($text -match '파일 풀기.*\d+%') {
+        if ($controls | Where-Object {$_.Class -eq 'Button' -and $_.Id -eq 1027}) {throw 'Details toggle must not be shown'}
+        if (!($controls | Where-Object {$_.Class -eq 'SysListView32'})) {throw 'Installation details must be visible by default'}
+        $detailsObserved=$true
+      }
       if (!$captured -and $text -match '파일 풀기.*\d+%') {
         Save-InstallerCapture $window (Join-Path (Get-Location) 'verification/windows-installer-progress.png');$captured=$true
       }
@@ -67,6 +81,8 @@ try {
   }
   if ($null -eq $appWindowAt) {throw 'Finish did not open a responding installed app window'}
   if (!$captured) {throw 'Native extraction percentage was not observed'}
+  if (!$noticeCaptured) {throw 'Pre-install usage notice was not observed'}
+  if (!$detailsObserved) {throw 'Default installation details were not observed'}
   if (!$etaCaptured) {throw 'Measured extraction remaining time was not observed'}
   if (!(($observations.text -join ' ') -match '진행 (?:[1-9]\d*분(?: [1-9]\d*초)?|\d+초)')) {throw 'Native elapsed time was not observed'}
   if (($observations.text -join ' ') -match '(?<!\d)0분') {throw 'Zero minutes must be omitted from elapsed and remaining time'}
@@ -78,7 +94,7 @@ try {
     if($afterRemoval -and $afterRemoval.seconds-$removal[0].seconds -ge 4 -and $removal.Count -lt 3){throw 'Old-uninstaller elapsed display did not advance'}
     for($i=1;$i -lt $removal.Count;$i++){if($removal[$i].seconds-$removal[$i-1].seconds -gt 5){throw 'Old-uninstaller elapsed clock stalled'}}
   }
-  @{elapsedSeconds=[Math]::Round($clock.Elapsed.TotalSeconds,2);finishExitSeconds=$finishExitSeconds;finishToAppWindowSeconds=$appWindowAt-$finishAt;launchChecked=$true;nativeVisibleProgress=$true;estimatedRemainingObserved=$etaCaptured;removalUpdates=$removal.Count;observations=$observations.ToArray()} | ConvertTo-Json -Depth 5 | Set-Content verification/windows-installer-experience.json
+  @{elapsedSeconds=[Math]::Round($clock.Elapsed.TotalSeconds,2);finishExitSeconds=$finishExitSeconds;finishToAppWindowSeconds=$appWindowAt-$finishAt;launchChecked=$true;nativeVisibleProgress=$true;usageNotice=$noticeCaptured;detailsVisibleByDefault=$detailsObserved;estimatedRemainingObserved=$etaCaptured;removalUpdates=$removal.Count;observations=$observations.ToArray()} | ConvertTo-Json -Depth 5 | Set-Content verification/windows-installer-experience.json
 } finally {
   $observations.ToArray() | ConvertTo-Json -Depth 5 | Set-Content verification/windows-installer-ui-observations.json
   # This runner owns only this temporary installation. Close its launched app
