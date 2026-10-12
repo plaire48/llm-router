@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "dff856d9cb5bc0ea5b38ac2a6f83780e78e8baf3da6b495f5080f70a9bf5214a",
-      "bytes": 6035
+      "sha256": "0bc8feeb6927862a3868e21d186a04ee8fa72fcea21d9b8258a405d756f23fa0",
+      "bytes": 6335
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1428,8 +1428,8 @@
     },
     {
       "path": "packages/nubi-desktop/docs/PROJECT-NAVIGATION-2026-10-12.md",
-      "sha256": "3305a71f761a27962372b71944284ea676e97195845d2eb32091ec870ec180a1",
-      "bytes": 3173
+      "sha256": "b0157389299dd2e72af742d21abb0fa8186df295c71be9cc3d3210c100e2ded4",
+      "bytes": 4347
     },
     {
       "path": "packages/nubi-desktop/docs/WIKI-BRIDGE-RECOVERY-2026-10-12.md",
@@ -1553,8 +1553,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "fc61b390b662aa3b7588ebb9bc51cba75961b28e05f33c0e9cdcd5826ca62376",
-      "bytes": 4376
+      "sha256": "89f738ecefaf8bc89a8f55ad8ca9713dd6c3ec6c97f7f67e86c7429253434d67",
+      "bytes": 4113
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",

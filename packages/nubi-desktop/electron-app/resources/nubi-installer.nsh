@@ -22,7 +22,6 @@
   Var NubiElapsedLabel
   Var NubiPhase
   Var NubiLog
-  Var NubiTimer
   Var NubiPhaseStarted
   Var NubiExtracted
   Var NubiExtractTotal
@@ -78,8 +77,9 @@
     Pop $1
     Pop $0
   FunctionEnd
-  ; The extraction callback runs during real I/O; an nsDialogs timer cannot
-  ; update the standard instfiles page while its installer thread is busy.
+  ; Update from the real extraction callback and stage boundaries only.
+  ; nsDialogs timers require a live custom dialog; the stock instfiles page
+  ; has no such owner and must never register one.
   Function NubiExtractionProgress
     Pop $NubiExtracted
     Pop $NubiExtractTotal
@@ -103,10 +103,6 @@
     Pop $1
     Pop $0
   FunctionEnd
-  Function NubiProgressShow
-    GetFunctionAddress $NubiTimer NubiTick
-    nsDialogs::CreateTimer $NubiTimer 1000
-  FunctionEnd
 !endif
 !macroend
 
@@ -116,10 +112,6 @@
   CreateDirectory "$LOCALAPPDATA\Nubi Workspace\Installer"
   FileOpen $NubiLog "$LOCALAPPDATA\Nubi Workspace\Installer\last-install.log" w
   FileClose $NubiLog
-!macroend
-
-!macro customPageAfterChangeDir
-  !define MUI_PAGE_CUSTOMFUNCTION_SHOW NubiProgressShow
 !macroend
 
 !macro NubiStage TEXT
@@ -148,7 +140,4 @@
 
 !macro customInstall
   !insertmacro NubiStage "설치 완료"
-  ${IfNot} ${Silent}
-    nsDialogs::KillTimer $NubiTimer
-  ${EndIf}
 !macroend
