@@ -1,4 +1,4 @@
-const errors={claude_cli_missing:'Claude Code를 찾지 못했습니다. Windows에 공식 Claude Code를 설치한 뒤 다시 연결해 주세요.',claude_cli_update:'Claude Code 업데이트가 필요합니다. 최신 버전으로 업데이트한 뒤 다시 연결해 주세요.',claude_login_required:'Claude 로그인 후 다시 연결해 주세요.',browser_unavailable:'로그인 브라우저를 열지 못했습니다.',worker_busy:'현재 작업을 마친 뒤 모델을 변경해 주세요.'};
+const errors={claude_cli_missing:'Claude Code를 찾지 못했습니다. PowerShell에서 claude --version을 확인한 뒤 다시 연결해 주세요.',claude_cli_failed:'Claude Code를 찾았지만 실행하지 못했습니다. PowerShell에서 claude --version이 정상 실행되는지 확인해 주세요.',claude_cli_timeout:'Claude Code 실행 시간이 초과됐습니다. PowerShell에서 claude --version을 확인한 뒤 다시 연결해 주세요.',claude_cli_update:'Claude Code 업데이트가 필요합니다. 최신 버전으로 업데이트한 뒤 다시 연결해 주세요.',claude_login_required:'Claude 로그인 후 다시 연결해 주세요.',browser_unavailable:'로그인 브라우저를 열지 못했습니다.',worker_busy:'현재 작업을 마친 뒤 모델을 변경해 주세요.'};
 const waiters=new Map();const listeners=new Set();
 export const available=!!window.chrome?.webview;
 export function send(message){if(!available)throw Error('Excel 작업창에서 열어 주세요.');window.chrome.webview.postMessage(message);}

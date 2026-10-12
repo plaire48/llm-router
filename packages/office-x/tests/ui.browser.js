@@ -20,7 +20,7 @@ async (page) => {
         emit({type:'started',runId:'fixture-run',conversationId:m.conversationId});
         emit({type:'view',running:true,target:'견적서.xlsx / 견적 / C1:E4',status:'변경안을 확인해 주세요.'});
         emit({type:'text',runId:'fixture-run',data:'선택한 표를 확인했습니다. 빈 금액 셀 3개에 수식을 넣겠습니다.'});
-        emit({type:'review',runId:'fixture-run',planId:'fixture-plan',target:'견적서.xlsx / 견적 / C1:E4',plan:{operations:[2,3,4].map(r=>({address:'E'+r,formula:'=C'+r+'*D'+r}))}});
+        emit({type:'review',runId:'fixture-run',planId:'fixture-plan',target:'견적서.xlsx / 견적 / C1:E4',plan:{before:{cells:[{address:'C2',value:2},{address:'D2',value:1500}]},operations:[2,3,4].map(r=>({address:'E'+r,formula:'=C'+r+'*D'+r}))}});
       }
       if(m.type==='approve'){
         emit({type:'review_closed'});emit({type:'receipt',runId:'fixture-run',receipt:{status:m.approved?'verified':'rejected',cells:m.approved?[{address:'E2'},{address:'E3'},{address:'E4'}]:[]}});

@@ -8,6 +8,7 @@ GenOffice source, not a reimplementation.
 
 - Source: https://github.com/genspark-ai/genoffice
 - Revision: `438d9c65709952490c970beaa2599ef45e74431f`
+- Unmodified prompt guides: 11 Sheets guides and 3 Slides prompts, provided on demand by `load_office_guide`; native COM guidance is an Office X adaptation.
 - Unmodified packages: `vendor/genoffice/packages/agent-core`, `ai-provider`.
 - Copyright: 2026 Mainfunc, Inc.
 - Original LICENSE and NOTICE retained in `vendor/genoffice/`.

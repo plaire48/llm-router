@@ -91,6 +91,20 @@
     "packages/ai-provider/tests/watchdog.test.ts": "d12d2a6d5989b28d3a4a27d3c229080af9db930d1b5d3a491a0388ec6d616d85",
     "packages/ai-provider/tsconfig.json": "69b22345189862ad1e0cb003d4306678f5c0067037e7357828fb37ec2377e3a2",
     "packages/ai-provider/vitest.config.ts": "4e19e07c1d033c237eb8ad0cf525c3769c0d4d64bf8615b3aa448f7e5871679a",
-    "tsconfig.base.json": "fdee26e13d4e2c3db3867a4436f6d8b7b6efb816c28c5c9ad2772a5f99a88a4b"
+    "tsconfig.base.json": "fdee26e13d4e2c3db3867a4436f6d8b7b6efb816c28c5c9ad2772a5f99a88a4b",
+    "apps/sheets/src/renderer/ai/prompts/guides/shape-image.md": "eec6e427128176677ee473c15ecab275ed218f97fae3cc149753179d505f3606",
+    "apps/sheets/src/renderer/ai/prompts/guides/structure.md": "f6d222639b2eb454f84e531da7713b1fb37667eab87c4f48d77eb116e85e2614",
+    "apps/sheets/src/renderer/ai/prompts/guides/pivot.md": "647d2c31e6ffcbb56e17113c7b1c1ba300010c532037fd9f1e2b558fdf08b9d5",
+    "apps/sheets/src/renderer/ai/prompts/guides/data.md": "b940dd249f1b43d4290a691278b258b972ca0e37f7a064e3ae2f5b9fd22871b9",
+    "apps/sheets/src/renderer/ai/prompts/guides/table.md": "a78b014698f957f322250a88e5efd6b66b4fd3d5d2982bda12fd8ca4b5a96ca2",
+    "apps/sheets/src/renderer/ai/prompts/guides/data-attribution.md": "901b3cbb39e2a06fc93be77ea046d0ec71b1df7785d3d5a2d6ef031f7034ab05",
+    "apps/sheets/src/renderer/ai/prompts/guides/charts.md": "cde7e3fa32c151d8b5fb284d99f97491985e6c111306f38e96dd87fd734ba08b",
+    "apps/sheets/src/renderer/ai/prompts/guides/writing.md": "c22265f02a57052a507013c550e49afc9f12238df01482acdf73d31e82b687cc",
+    "apps/sheets/src/renderer/ai/prompts/guides/formatting.md": "1532292e673fdab37e69cd70d95678602f9a81da2b2fddbe30a82c18cf6e8b2c",
+    "apps/sheets/src/renderer/ai/prompts/guides/layout.md": "8693b73586ccf3d8700148429dd95259201379962c94ee7aac5ef32875db5c05",
+    "apps/sheets/src/renderer/ai/prompts/guides/financial-formatting.md": "7d459a6218a47b47e72fb83996c8bd2b9bcebf6b56b7f255fdb448b75e905141",
+    "apps/slides/src/renderer/ai/prompts/qc-geometry.md": "a8065c2b86b7d089bfd7c59c4161d6afb2e65cad3a171568242cbcf93f4de2ee",
+    "apps/slides/src/renderer/ai/prompts/qc-visual.md": "69e4f730619bbe0ef030ec26d6d4686c22f4880b7c3b2525b381f81a1044cbf1",
+    "apps/slides/src/renderer/ai/prompts/system.md": "8cb1322663a99a68f6e9949e6265fde94e7ffaac8f053b0108edbd173899a4ed"
   }
 }

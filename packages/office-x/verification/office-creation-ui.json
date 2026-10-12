@@ -1,0 +1,16 @@
+{
+  "version": "0.5.0",
+  "scope": "browser fixtures; not Office COM",
+  "passed": true,
+  "apps": [
+    "excel",
+    "word",
+    "powerpoint"
+  ],
+  "flows": [
+    "create_document",
+    "office_operations"
+  ],
+  "total": 6,
+  "pageErrors": 0
+}

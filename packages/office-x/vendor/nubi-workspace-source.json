@@ -363,6 +363,13 @@
       "path": "runtime-src/nubi-wire.mjs",
       "sha256": "248829320a242189b37b9c51c8acee4eadea2e9f92f92241b176ee1319419ee6",
       "note": "Only emptyUsage, textContent, parseArgs, assistant and toPi wire conversion extracted. Agent engine is excluded by the build alias."
+    },
+    {
+      "source": "packages/nubi-desktop/runtime/claude-code.mjs",
+      "sourceSha256": "19be2cee15378eede144fb8899f299212e0543e74f51dda8a6a4049d433382a5",
+      "path": "runtime-src/claude-cli.mjs",
+      "sha256": "73a054ae43200d9a3a67a33ccbe5b2acb0ddb8c8c7e0158894139d00586a7512",
+      "note": "Office-specific discovery and Windows process launcher adapted from runClaude. CLI models, protocol, environment filtering and failure signals are imported unchanged."
     }
   ]
 }

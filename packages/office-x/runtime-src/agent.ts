@@ -1,4 +1,5 @@
 import { AgentLoop, composeSkills, type AgentTransport, type AgentSkill, type AgentMessage, type AgentRunResult } from '@genoffice/agent-core';
+import {officeSkill} from './office-skill';
 import {textSkill} from './text-skill';
 import { excelSkill, type NativeCall } from './excel-skill';
 
@@ -13,8 +14,8 @@ export function startAgent(options: {
   const result = new Promise<AgentRunResult>((yes, no) => { resolve = yes; reject = no; });
   const loop = new AgentLoop({
     transport: options.transport,
-    skill: composeSkills('office-x', 'Use only the native Office tools supplied for this session.', [(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(options.native, options.context), ...(options.additionalSkills||[])]),
-    maxTurns: 12, maxHistory: 30,
+    skill: composeSkills('office-x', 'Use only the native Office tools supplied for this session.', [(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(options.native, options.context), officeSkill(options.native,options.context), ...(options.additionalSkills||[])]),
+    maxTurns: 40, maxHistory: 60,
     compaction: { maxBytes: 128 * 1024, keepRecentBytes: 48 * 1024 },
     events: {
       onText: text => options.event('text', text),

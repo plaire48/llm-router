@@ -51,22 +51,20 @@ namespace OfficeX.ExcelHost {
   }
   public TextSnapshot Read(TextSnapshot binding){using(var scope=new ComScope()){Active(scope);CheckBinding(binding);return Snapshot(scope);}}
   void CheckBinding(TextSnapshot binding){if(binding.DocumentId!=documentId||binding.TargetId!=targetId)throw new OfficeFault("source_changed");}
-  static bool Plain(string text)=>!string.IsNullOrWhiteSpace(text)&&text.Length<=8000&&text.IndexOfAny(new[]{'\r','\n','\t','\a','\v','\f','\0'})<0;
+  static bool Plain(string text)=>text!=null&&text.Length<=8000&&text.IndexOfAny(new[]{'\r','\n','\t','\a','\v','\f','\0'})<0;
   TextBlock WordBlock(ComScope scope,dynamic range,string id){
    dynamic doc=document,font=scope.Keep(range.Font),paragraph=scope.Keep(range.ParagraphFormat);
    var text=(string)range.Text??"";
    var format=Wire.Hash(new{name=(string)font.Name,size=(float)font.Size,bold=(int)font.Bold,italic=(int)font.Italic,underline=(int)font.Underline,color=(int)font.Color,smallCaps=(int)font.SmallCaps,allCaps=(int)font.AllCaps,strike=(int)font.StrikeThrough,doubleStrike=(int)font.DoubleStrikeThrough,subscript=(int)font.Subscript,superscript=(int)font.Superscript,hidden=(int)font.Hidden,spacing=(float)font.Spacing,scaling=(int)font.Scaling,position=(float)font.Position,highlight=(int)range.HighlightColorIndex,language=(int)range.LanguageID,alignment=(int)paragraph.Alignment});
-   bool uniform=!string.IsNullOrWhiteSpace((string)font.Name)&&(float)font.Size<999999&&(int)font.Bold!=9999999&&(int)font.Italic!=9999999&&(int)font.Underline!=9999999&&(int)font.Color!=9999999;
-   uniform=uniform&&(int)font.SmallCaps!=9999999&&(int)font.AllCaps!=9999999&&(int)font.StrikeThrough!=9999999&&(int)font.DoubleStrikeThrough!=9999999&&(int)font.Subscript!=9999999&&(int)font.Superscript!=9999999&&(int)font.Hidden!=9999999&&(float)font.Spacing<999999&&(int)font.Scaling!=9999999&&(float)font.Position<999999&&(int)range.HighlightColorIndex!=9999999&&(int)range.LanguageID!=9999999;
    dynamic revisions=scope.Keep(range.Revisions),parentControl=scope.Keep(range.ParentContentControl),tables=scope.Keep(range.Tables),fields=scope.Keep(range.Fields),inline=scope.Keep(range.InlineShapes),controls=scope.Keep(range.ContentControls),links=scope.Keep(range.Hyperlinks);
-   bool editable=Plain(text)&&uniform&&(int)revisions.Count==0&&parentControl==null&&!(bool)doc.ReadOnly&&!(bool)doc.TrackRevisions&&(int)doc.ProtectionType==-1&&(int)tables.Count==0&&(int)fields.Count==0&&(int)inline.Count==0&&(int)controls.Count==0&&(int)links.Count==0;
-   return new TextBlock{Id=id,Label="문단 "+id.Substring(1),Text=text,FormatHash=format,Editable=editable};
+   string reason=(bool)doc.ReadOnly?"document_read_only":(int)doc.ProtectionType!=-1?"document_protected":(bool)doc.TrackRevisions||(int)revisions.Count>0?"tracked_changes_use_office_operations":parentControl!=null||(int)controls.Count>0?"content_control_use_office_operations":(int)fields.Count>0||(int)inline.Count>0||(int)links.Count>0?"embedded_content_use_office_operations":!Plain(text)?"structure_use_office_operations":null;
+   return new TextBlock{Id=id,Label="문단 "+id.Substring(1),Text=text,FormatHash=format,StructureHash=Wire.Hash(new{alignment=(int)paragraph.Alignment,outline=(int)paragraph.OutlineLevel,left=(float)paragraph.LeftIndent,right=(float)paragraph.RightIndent,before=(float)paragraph.SpaceBefore,after=(float)paragraph.SpaceAfter}),Editable=reason==null,EditReason=reason};
   }
   TextBlock SlideBlock(ComScope scope,dynamic shape,dynamic range,string id,int paragraphIndex){
    dynamic doc=document,frame=scope.Keep(shape.TextFrame),font=scope.Keep(range.Font),color=scope.Keep(font.Color),paragraph=scope.Keep(range.ParagraphFormat),bullet=scope.Keep(paragraph.Bullet),runs=scope.Keep(range.Runs(-1,-1));
    var text=(string)range.Text??"";
    var format=Wire.Hash(new{name=(string)font.Name,size=(float)font.Size,bold=(int)font.Bold,italic=(int)font.Italic,underline=(int)font.Underline,color=(int)color.RGB,alignment=(int)paragraph.Alignment,bullet=(int)bullet.Type,indent=(int)range.IndentLevel,left=(float)shape.Left,top=(float)shape.Top,width=(float)shape.Width,height=(float)shape.Height,autoSize=(int)frame.AutoSize});
-   return new TextBlock{Id=id,Label=(string)shape.Name+" / 문단 "+paragraphIndex,Text=text,FormatHash=format,Editable=Plain(text)&&(int)runs.Count==1&&(int)doc.ReadOnly!=-1&&(int)shape.Type!=6&&(int)frame.AutoSize==0};
+   return new TextBlock{Id=id,Label=(string)shape.Name+" / 문단 "+paragraphIndex,Text=text,FormatHash=format,Editable=Plain(text)&&(int)doc.ReadOnly!=-1&&(int)shape.Type!=6,EditReason=(int)doc.ReadOnly==-1?"document_read_only":!Plain(text)|| (int)shape.Type==6?"structure_use_office_operations":null,StructureHash=Wire.Hash(new{alignment=(int)paragraph.Alignment,bullet=(int)bullet.Type,indent=(int)range.IndentLevel,autoSize=(int)frame.AutoSize})};
   }
   List<Slot> Slots(ComScope scope){
    var slots=new List<Slot>();dynamic doc=document;
@@ -78,7 +76,7 @@ namespace OfficeX.ExcelHost {
      if(b<=a)continue;
      dynamic selected=scope.Keep(doc.Range(a,b));string text=(string)selected.Text??"";
      // Paragraph separators remain in Office; the model cannot replace them.
-     if(text.EndsWith("\r",StringComparison.Ordinal)){b--;selected=scope.Keep(doc.Range(a,b));}
+     while(b>a&&(text.EndsWith("\r",StringComparison.Ordinal)||text.EndsWith("\a",StringComparison.Ordinal))){b--;text=text.Substring(0,text.Length-1);selected=scope.Keep(doc.Range(a,b));}
      slots.Add(new Slot{Start=a,Length=b-a,Block=WordBlock(scope,selected,"p"+i)});
     }
    }else{
@@ -109,9 +107,9 @@ namespace OfficeX.ExcelHost {
     for(int i=1;i<=(int)all.Count;i++){dynamic shape=scope.Keep(all.Item(i));if(selected.Contains((int)shape.Id))continue;string text="";if((int)shape.HasTextFrame==-1){dynamic f=scope.Keep(shape.TextFrame),r=scope.Keep(f.TextRange);text=(string)r.Text;}others.Add(new{id=(int)shape.Id,text});}
     surrounding=Wire.Hash(others);location="슬라이드 "+currentSlide.SlideIndex+" / 텍스트 상자 "+shapes.Count+"개";
    }
-   var blocks=slots.Select(s=>s.Block).ToList();return new TextSnapshot{App=app,DocumentId=documentId,TargetId=targetId,Document=(string)doc.Name,Location=location,Blocks=blocks,Text=string.Join("\n",blocks.Select(b=>b.Text)),Editable=blocks.Count==1&&blocks[0].Editable,FormatHash=Wire.Hash(blocks.Select(b=>new{b.Id,b.FormatHash}).ToArray()),SurroundingHash=surrounding};
+   var blocks=slots.Select(s=>s.Block).ToList();return new TextSnapshot{App=app,DocumentId=documentId,TargetId=targetId,Document=(string)doc.Name,Location=location,Blocks=blocks,Text=string.Join("\n",blocks.Select(b=>b.Text)),Editable=blocks.Any(b=>b.Editable),FormatHash=Wire.Hash(blocks.Select(b=>new{b.Id,b.FormatHash}).ToArray()),SurroundingHash=surrounding};
   }
-  public void Replace(TextSnapshot binding,string text){using(var scope=new ComScope()){var live=Read(binding);if(!live.Editable)throw new OfficeFault("text_format_unsupported");ReplaceBlocks(binding,new[]{new TextOperation{BlockId=live.Blocks[0].Id,Text=text}});}}
+  public void Replace(TextSnapshot binding,string text){using(var scope=new ComScope()){var live=Read(binding);if(!live.Editable||live.Blocks.Count!=1)throw new OfficeFault("text_format_unsupported");ReplaceBlocks(binding,new[]{new TextOperation{BlockId=live.Blocks[0].Id,Text=text}});}}
   public void ReplaceBlocks(TextSnapshot binding,IReadOnlyList<TextOperation> operations){
    using(var scope=new ComScope()){
     Active(scope);CheckBinding(binding);var slots=Slots(scope);
@@ -119,9 +117,14 @@ namespace OfficeX.ExcelHost {
     if(writes.Any(w=>w.Slot==null||!w.Slot.Block.Editable))throw new OfficeFault("text_format_unsupported");
     // Descending offsets keep every later paragraph anchored to its observed position.
     foreach(var write in writes.OrderByDescending(w=>w.Slot.Start)){
-     dynamic range;
-     if(app=="word"){dynamic doc=document;range=scope.Keep(doc.Range(write.Slot.Start,write.Slot.Start+write.Slot.Length));range.Text=write.Operation.Text;end+=write.Operation.Text.Length-write.Slot.Length;}
-     else{dynamic shape=write.Slot.Shape,frame=scope.Keep(shape.TextFrame),text=scope.Keep(frame.TextRange);range=scope.Keep(text.Characters(write.Slot.Start,write.Slot.Length));range.Text=write.Operation.Text;}
+     dynamic range;var edit=TextSplice.Between(write.Slot.Block.Text,write.Operation.Text);
+     if(app=="word"){dynamic doc=document;int at=write.Slot.Start+edit.Start;range=scope.Keep(doc.Range(at,at+edit.Length));range.Text=edit.Text;end+=write.Operation.Text.Length-write.Slot.Length;}
+     else{dynamic shape=write.Slot.Shape,frame=scope.Keep(shape.TextFrame),text=scope.Keep(frame.TextRange);int at=write.Slot.Start+edit.Start;
+      if(edit.Length>0){range=scope.Keep(text.Characters(at,edit.Length));range.Text=edit.Text;}
+      else if((int)text.Length==0)text.Text=edit.Text;
+      else if(at>(int)text.Length){range=scope.Keep(text.Characters((int)text.Length,1));scope.Keep(range.InsertAfter(edit.Text));}
+      else{range=scope.Keep(text.Characters(at,1));scope.Keep(range.InsertBefore(edit.Text));}
+     }
     }
    }
   }

@@ -1,41 +1,27 @@
 {
+  "version": "0.5.0",
   "date": "2026-10-13",
-  "host": "macOS arm64",
   "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
   "sourceChecks": {
-    "vendorHashes": 85,
-    "agentCoreTests": 183,
-    "providerTests": 426,
-    "integrationUnitTests": 22,
-    "nativeCoreTests": 49,
+    "genofficeHashes": 99,
+    "nubiHashes": 88,
+    "unitTestsPassed": 45,
+    "unitTestsSkipped": 4,
+    "nativeCoreTests": 63,
     "stdioMockIntegration": "passed",
     "net472HostCrossCompile": "passed",
-    "nubiVendorHashes": 88,
-    "nubiAuthFixture": "passed",
-    "nubiStdioFixture": "passed",
-    "claudeCliFixture": "passed",
-    "browserFixtureFlows": 14,
-    "browserPageErrors": 0,
-    "agentEngineBoundary": "passed",
-    "workspaceVisualStyle": "38 computed properties/tokens match current Workspace CSS; 14 mock UI flows passed; source CSS fixture only",
-    "cxStaticIssues": 0,
-    "readability": "Removed repeated help, middle-dot UI separators; font weights 400/500/600; 14 UI flows and 11 unit tests passed",
-    "textBrowserFixtureFlows": 2,
+    "creationOperationBrowserFlows": 6,
+    "existingBrowserFlows": 14,
+    "textBrowserFlows": 2,
     "officeIdentity": {
       "states": 12,
       "propertiesPerState": 77,
-      "matchesExcel": true,
-      "scope": "browser fixtures"
-    },
-    "excelReadScope": "Single-cell selection can read surrounding table and bounded ranges in pinned sheet; writes remain selection-bound"
+      "matchesExcel": true
+    }
   },
   "windowsVstoBuildVerified": false,
+  "windowsInstallerVerified": false,
   "officeRuntimeVerified": false,
-  "nascaVerified": false,
   "liveModelVerified": false,
-  "workspaceA2AVerified": false,
-  "version": "0.4.0",
-  "windowsDpapiVerified": false,
-  "windowsWebView2Verified": false,
-  "liveClaudeVerified": false
+  "genofficeFullProductParityVerified": false
 }

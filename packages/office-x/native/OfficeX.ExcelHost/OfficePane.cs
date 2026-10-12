@@ -17,7 +17,16 @@ namespace OfficeX.ExcelHost
         private readonly TextPort textPort;
         private readonly string app;
         private TextSession textSession;
-        private object Context => app=="excel"?(object)session.Context:textSession.Context;
+        private object fallbackContext;
+        private object Context => fallbackContext??(app=="excel"?(object)session.Context:textSession.Context);
+        private readonly object application;
+        private readonly int windowHandle;
+        private OfficeAutomationPort automationPort;
+        private OfficeAutomationSession automation;
+        private DocumentCreationPort creationPort;
+        private bool writesStopped,createdDuringRun;
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hwnd);
         private readonly string root;
         private WorkerProcess worker;
         private ExcelSession session;
@@ -35,7 +44,7 @@ namespace OfficeX.ExcelHost
         private readonly ChatSurface surface;
         private string conversationId, reviewId;
         public OfficePane(object application,string root,int windowHandle,string app="excel") {
-            this.root=root;this.app=app;
+            this.root=root;this.app=app;this.application=application;this.windowHandle=windowHandle;
             if(app=="excel")port=new ExcelPort((Excel.Application)application,windowHandle);else textPort=new TextPort(application,app,windowHandle);
             surface=new ChatSurface(root);Controls.Add(surface);
             surface.Message+=ReceiveUi;
@@ -48,7 +57,7 @@ namespace OfficeX.ExcelHost
         private async void ReceiveUi(JObject message) {
             try {
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.4.0"});EnsureWorker();Publish();break;
+                    case "ready":surface.Send(new {type="host",app,version="0.5.0"});EnsureWorker();Publish();break;
                     case "provider":
                         if(running||nativeBusy)throw new OfficeFault("worker_busy");
                         EnsureWorker();worker.Send(new {type="provider",id=(string)message["id"],method=(string)message["method"],input=message["input"]});break;
@@ -82,8 +91,15 @@ namespace OfficeX.ExcelHost
             });
             worker.Listen();
         }
-        private void CaptureContext(){if(app=="excel")session=new ExcelSession(port);else textSession=new TextSession(textPort);}
-        private void ShowContext() {if(app=="excel"){var c=session.Context; target.Text=c.Workbook+" / "+c.Worksheet+" / "+c.Address;}else{var c=textSession.Context;target.Text=c.Document+" / "+c.Location;}}
+        private void CaptureContext(){
+            automationPort?.Dispose();creationPort?.Dispose();
+            automationPort=new OfficeAutomationPort(application,app,windowHandle);automation=new OfficeAutomationSession(automationPort);
+            creationPort=new DocumentCreationPort(application,app,windowHandle);fallbackContext=null;writesStopped=false;createdDuringRun=false;
+            try{if(app=="excel")session=new ExcelSession(port);else textSession=new TextSession(textPort);}
+            catch(OfficeFault e)when(new[]{"select_cells","single_range_required","range_limit","context_limit","select_text","text_block_limit","text_scope_invalid"}.Contains(e.Message)){fallbackContext=new{app,selectionAvailable=false,selectionReason=e.Message,documentToolsAvailable=true};}
+            catch(System.Runtime.InteropServices.COMException){fallbackContext=new{app,selectionAvailable=false,documentToolsAvailable=true};}
+        }
+        private void ShowContext() {if(fallbackContext!=null){target.Text="현재 문서";return;}if(app=="excel"){var c=session.Context; target.Text=c.Workbook+" / "+c.Worksheet+" / "+c.Address;}else{var c=textSession.Context;target.Text=c.Document+" / "+c.Location;}}
         private void Begin() {
             if(running||nativeBusy)throw new OfficeFault("worker_busy");
             CaptureContext();ShowContext();runId=Guid.NewGuid().ToString("N");
@@ -145,13 +161,36 @@ namespace OfficeX.ExcelHost
         private async Task<object> Native(string name,JObject input) {
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
+            if(writesStopped&&name!="inspect_office"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
+            if(name=="save_document"){var saved=automationPort.Save((string)input["format"]=="pdf",cancelToken);surface.Send(new{type="receipt",runId,receipt=saved});return saved;}
+            if(name=="inspect_office")return automation.Inspect(input["steps"]?.ToObject<List<OfficeStep>>());
+            if(writesStopped&&new[]{"create_document","execute_office_operations","replace_blocks","replace_text","set_formula"}.Contains(name))throw new OfficeFault("writes_stopped_for_this_run");
+            if(name=="execute_office_operations"){
+                var plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
+                status.Text="문서 변경안을 확인해 주세요.";
+                var approved=await AwaitReview(plan.Id,plan);var receipt=automation.Apply(plan.Id,approved,cancelToken);
+                writesStopped=receipt.Status!="verified";surface.Send(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return receipt;
+            }
+            if(name=="create_document"){
+                var creation=new DocumentCreation(creationPort,app,input.ToObject<DocumentDraft>());var plan=creation.Plan;
+                status.Text="새 문서 내용을 확인해 주세요.";var approved=await AwaitReview(plan.Id,plan);var receipt=creation.Apply(plan.Id,approved,cancelToken);
+                writesStopped=receipt.Status!="verified";
+                if(receipt.Status=="verified"){
+                    dynamic active=((dynamic)application).ActiveWindow;int newHandle=(int)active.HWND;
+                    if(System.Runtime.InteropServices.Marshal.IsComObject(active))System.Runtime.InteropServices.Marshal.ReleaseComObject(active);
+                    createdDuringRun=true;automationPort.Dispose();automationPort=new OfficeAutomationPort(application,app,newHandle);automation=new OfficeAutomationSession(automationPort);
+                    fallbackContext=new{app,selectionAvailable=false,documentToolsAvailable=true};target.Text=receipt.Document;
+                }
+                surface.Send(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"새 문서를 만들고 내용을 확인했습니다. 저장 전입니다.":"생성 결과: "+receipt.Status;return receipt;
+            }
+            if(fallbackContext!=null)throw new OfficeFault("use_document_tools");
             if(app!="excel") {
                 if(name=="read_selection")return textSession.Read();
                 if(name=="read_outline")return textPort.ReadOutline();
                 if(name!="replace_text"&&name!="replace_blocks")throw new OfficeFault("unsupported_tool");
                 var textPlan=name=="replace_blocks"?textSession.PrepareBlocks((string)input["snapshotId"],input["operations"]?.ToObject<List<TextOperation>>()):textSession.Prepare((string)input["snapshotId"],(string)input["text"]);
                 var accepted=await ReviewText(textPlan);
-                var textReceipt=textSession.Apply(textPlan.Id,accepted,cancelToken);
+                var textReceipt=textSession.Apply(textPlan.Id,accepted,cancelToken);writesStopped=textReceipt.Status!="verified";
                 surface.Send(new {type="receipt",runId,receipt=textReceipt});
                 outcome.Text=textReceipt.Status=="verified"?"문장 변경을 확인했습니다. 저장 전입니다.":"변경 결과: "+textReceipt.Status;
                 return textReceipt;
@@ -175,11 +214,12 @@ namespace OfficeX.ExcelHost
             return AwaitReview(plan.Id,plan);
         }
         private async Task<bool> AwaitReview(string id,object plan) {
+            if(createdDuringRun)SetForegroundWindow(new IntPtr(windowHandle));
             reviewId=id;
             surface.Send(new {type="review",runId,planId=id,plan,target=target.Text});
             approval=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using(cancellation.Token.Register(()=>approval?.TrySetResult(false))) {
-                try{return await approval.Task;}finally{approval=null;reviewId=null;surface.Send(new {type="review_closed"});}
+                try{var accepted=await approval.Task;if(accepted&&createdDuringRun)automationPort.FocusSource();return accepted;}finally{approval=null;reviewId=null;surface.Send(new {type="review_closed"});}
             }
         }
         private void ShowReceipt(ApplyReceipt receipt) {
@@ -231,14 +271,15 @@ namespace OfficeX.ExcelHost
                 case "select_text":return "문단이나 텍스트 상자를 선택해 주세요.";
                 case "text_block_limit":return "문단 30개 이내로 선택해 주세요.";
                 case "text_scope_invalid":return "8,000자 이내의 문장을 선택해 주세요.";
-                case "text_format_unsupported":return "현재 서식은 직접 수정할 수 없습니다. 채팅에서 수정안을 확인해 주세요.";
+                case "text_format_unsupported":return "문서 개체 도구로 서식과 구조를 확인하고 있습니다.";
+                case "use_document_tools":return "문서 전체에서 작업할 위치를 찾고 있습니다.";
                 case "single_paragraph_required":return "문단 나눔 없는 문장만 적용할 수 있습니다.";
                 case null:return "문서 상태를 확인해 주세요.";
                 default:return "작업을 진행하지 못했습니다: "+code;
             }
         }
         protected override void Dispose(bool disposing) {
-            if(disposing){cancellation?.Cancel();approval?.TrySetResult(false);worker?.Dispose();worker=null;port?.Dispose();textPort?.Dispose();surface.Dispose();}
+            if(disposing){automationPort?.Dispose();creationPort?.Dispose();cancellation?.Cancel();approval?.TrySetResult(false);worker?.Dispose();worker=null;port?.Dispose();textPort?.Dispose();surface.Dispose();}
             base.Dispose(disposing);
         }
     }

@@ -25,6 +25,8 @@ try {
  if($LASTEXITCODE){throw 'Typecheck failed'}
  & npm.cmd test
  if($LASTEXITCODE){throw 'Unit tests failed'}
+ & node scripts/test-auth.mjs tests/claude.integration.mjs
+ if($LASTEXITCODE){throw 'Claude login/catalog/GenOffice integration tests failed'}
  & dotnet run --project native/OfficeX.Core.Tests -c Release
  if($LASTEXITCODE){throw 'Native core tests failed'}
  & dotnet build native/OfficeX.ExcelHost -c Release
@@ -52,6 +54,7 @@ try {
  Copy-Item native/OfficeX.ExcelHost/bin/Release/net472/* $stage -Recurse -Force
  foreach($part in @('ui','worker','licenses')){Copy-Item "dist/$part" "$stage/OfficeX" -Recurse}
  Copy-Item installer/INSTALL-KO.txt $stage
+ Copy-Item scripts/Test-OfficeRuntime.ps1 $stage
  foreach($name in @('office.dll','Microsoft.Office.Interop.Excel.dll','Microsoft.Office.Interop.Word.dll','Microsoft.Office.Interop.PowerPoint.dll','Microsoft.Vbe.Interop.dll')){if(Test-Path "$stage/$name"){throw "PIA must be embedded: $name"}}
  $inventory=@()
  New-Item installer/prerequisites -ItemType Directory -Force|Out-Null

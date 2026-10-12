@@ -3,7 +3,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 namespace OfficeX.Core {
- public sealed class TextBlock {public string Id {get;set;} public string Label {get;set;} public string Text {get;set;} public string FormatHash {get;set;} public bool Editable {get;set;}}
+ public sealed class TextBlock {public string Id {get;set;} public string Label {get;set;} public string Text {get;set;} public string FormatHash {get;set;} public bool Editable {get;set;} public string EditReason {get;set;} public string StructureHash {get;set;}}
  public sealed class TextOperation {public string BlockId {get;set;} public string Text {get;set;}}
  public interface ITextBatchPort {void ReplaceBlocks(TextSnapshot binding,IReadOnlyList<TextOperation> operations);object ReadOutline();}
  public sealed class TextSnapshot {
@@ -32,7 +32,7 @@ namespace OfficeX.Core {
   public TextPlan Prepare(string snapshotId,string replacement){
    if(consumed||plan!=null)throw new OfficeFault("writes_stopped_for_this_run");
    if(observation==null||snapshotId!=observation.SnapshotId)throw new OfficeFault("snapshot_required");
-   if(!observation.Editable)throw new OfficeFault("text_format_unsupported");
+   if(!observation.Editable||observation.Blocks.Count>1)throw new OfficeFault("text_format_unsupported");
    if(string.IsNullOrWhiteSpace(replacement)||replacement.Length>8000||replacement.IndexOfAny(new[]{'\r','\n','\t','\a','\v','\f','\0'})>=0)throw new OfficeFault("single_paragraph_required");
    if(replacement==observation.Text)throw new OfficeFault("no_change");
    plan=new TextPlan{Id=Guid.NewGuid().ToString("N"),Before=Wire.Clone(observation),Replacement=replacement};return Wire.Clone(plan);
@@ -61,10 +61,10 @@ namespace OfficeX.Core {
     token.ThrowIfCancellationRequested();receipt.Mutated=true; // A COM exception after dispatch is an uncertain mutation.
     if(plan.Operations.Count>0)((ITextBatchPort)port).ReplaceBlocks(binding,plan.Operations);else port.Replace(binding,plan.Replacement);
     var after=port.Read(binding);receipt.ActualText=after.Text;
-    if(after.DocumentId!=binding.DocumentId||after.TargetId!=binding.TargetId||(plan.Operations.Count==0&&after.Text!=plan.Replacement)||after.SurroundingHash!=plan.Before.SurroundingHash||after.FormatHash!=plan.Before.FormatHash)throw new OfficeFault("readback_mismatch");
-    if(plan.Operations.Count>0){
+    if(after.DocumentId!=binding.DocumentId||after.TargetId!=binding.TargetId||(plan.Operations.Count==0&&after.Text!=plan.Replacement)||after.SurroundingHash!=plan.Before.SurroundingHash||(plan.Operations.Count==0&&plan.Before.Blocks.Count==0&&after.FormatHash!=plan.Before.FormatHash))throw new OfficeFault("readback_mismatch");
+    if(plan.Before.Blocks.Count>0){
      if(after.Blocks.Count!=plan.Before.Blocks.Count)throw new OfficeFault("readback_mismatch");
-     foreach(var before in plan.Before.Blocks){var actual=after.Blocks.SingleOrDefault(b=>b.Id==before.Id);var expected=plan.Operations.FirstOrDefault(o=>o.BlockId==before.Id)?.Text??before.Text;if(actual==null||actual.Text!=expected||actual.FormatHash!=before.FormatHash)throw new OfficeFault("readback_mismatch");}
+     foreach(var before in plan.Before.Blocks){var actual=after.Blocks.SingleOrDefault(b=>b.Id==before.Id);var expected=plan.Operations.FirstOrDefault(o=>o.BlockId==before.Id)?.Text??(plan.Operations.Count==0?plan.Replacement:before.Text);if(actual==null||actual.Text!=expected||((plan.Operations.Count==0||plan.Operations.Any(o=>o.BlockId==before.Id))&&before.StructureHash!=null?actual.StructureHash!=before.StructureHash:actual.FormatHash!=before.FormatHash))throw new OfficeFault("readback_mismatch");}
     }
     receipt.Status="verified";receipt.Count=plan.Operations.Count>0?plan.Operations.Count:1;
    }catch(OperationCanceledException){receipt.Status=receipt.Mutated?"partial":"cancelled";receipt.Error="cancelled";}

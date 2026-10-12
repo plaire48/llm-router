@@ -52,7 +52,7 @@ async function receive(msg: Record<string, any>) {
   }
   if(msg.type==='provider'){
     try{const result=await providerCommand(msg);send({type:'reply',id:msg.id,result});}
-    catch(e){send({type:'reply',id:msg.id,error:['worker_busy','claude_cli_missing','claude_cli_update','claude_login_required','browser_unavailable'].includes((e as Error).message)?(e as Error).message:'connection_failed'});}return;
+    catch(e){send({type:'reply',id:msg.id,error:['worker_busy','claude_cli_missing','claude_cli_failed','claude_cli_timeout','claude_cli_update','claude_login_required','browser_unavailable'].includes((e as Error).message)?(e as Error).message:'connection_failed'});}return;
   }
   if(msg.type==='clear_conversation'&&!active){conversations.clear(String(msg.conversationId));return;}
 
