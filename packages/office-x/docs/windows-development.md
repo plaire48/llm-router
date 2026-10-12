@@ -13,11 +13,11 @@ Visual Studio 2022 Office 개발 도구와 .NET Framework 4.7.2 targeting pack, 
 
 두 번째 명령은 관리자 권한의 일회용 Windows 검증 환경에서 실행한다. 실제 설치, 재설치, 제거를 수행하므로 개발 PC의 기존 설치 위에서 검사하지 않는다. 결과는 `releases/install-smoke.json`이다.
 
-첫 명령은 npm 복원, 타입과 동작 검사, 공통 호스트, 세 VSTO 진입점, 런타임과 공식 선행 설치 파일 검증, Inno EXE 빌드를 수행한다. 출력은 `releases/Nubi-Office-X-0.3.0-Setup.exe`와 SHA256이다. `-InstallBuildTools`는 CI에서 누락된 Visual Studio Office 개발 도구를 설치한다.
+첫 명령은 npm 복원, 타입과 동작 검사, 공통 호스트, 세 VSTO 진입점, 런타임과 공식 선행 설치 파일 검증, Inno EXE 빌드를 수행한다. 출력은 `releases/Nubi-Office-X-0.4.0-Setup.exe`와 SHA256이다. `-InstallBuildTools`는 CI에서 누락된 Visual Studio Office 개발 도구를 설치한다.
 
 VSTO manifest는 임시 미리보기 인증서로 서명하며 빌드 후 인증서를 삭제한다. 신뢰 저장소에는 추가하지 않는다. EXE 자체는 배포용 서명이 없다. 실제 조직 배포에는 별도의 게시자 서명 절차가 필요하다.
 
-설치 후 각 앱의 Office X 탭을 연다. 리본이 없으면 해당 앱의 COM 추가 기능에서 `OfficeX.GenOffice` 등록과 로드 오류를 확인한다.
+설치 후 각 앱의 누비 Agent 탭을 연다. 리본이 없으면 해당 앱의 COM 추가 기능에서 `OfficeX.GenOffice` 등록과 로드 오류를 확인한다.
 
 ## 모델 없이 문서 실행기 확인
 
@@ -30,7 +30,7 @@ VSTO manifest는 임시 미리보기 인증서로 서명하며 빌드 후 인증
 | 3 | 3 | 2000 | 빈 셀 |
 | 4 | 0 | 500 | 빈 셀 |
 
-C1:E4 선택 → Office X 리본 → Office X 열기 → 모델 없이 문서 도구 확인 → 변경안 확인 → 변경 적용.
+C1:E4 선택 → 누비 Agent 리본 → 누비 Agent 열기 → 모델 없이 문서 도구 확인 → 변경안 확인 → 변경 적용.
 
 E2:E4의 수식이 `=C2*D2`, `=C3*D3`, `=C4*D4`, 값이 3000, 6000, 0인지 확인한다. 적용 대기 중 C2나 E2를 수정한 경우에는 충돌로 멈춰야 한다. 다른 문서로 전환해도 원래 대상만 사용해야 한다. 다음 테스트에는 새 빈 대상이나 새 문서를 사용한다.
 

@@ -26,18 +26,28 @@ namespace OfficeX.Core
         public Snapshot ReadSelection() => ReadRange(scope.Address);
         public Snapshot ReadRange(string address) {
             var region=Region.Parse(address);
-            if(!Region.Parse(scope.Address).Contains(region)) throw new OfficeFault("out_of_scope");
+            if(region.Rows>101||region.Columns>20||(long)region.Rows*region.Columns>2020)throw new OfficeFault("range_limit");
             var current=port.Read(scope, region.Address); ValidateSnapshot(current);
+            if(current.DocumentId!=scope.DocumentId||current.WorksheetId!=scope.WorksheetId||current.Address!=region.Address)throw new OfficeFault("source_changed");
             current.SnapshotId=Guid.NewGuid().ToString("N");
             if(snapshots.Count>=32) snapshots.Remove(snapshots.Keys.First());
             snapshots.Add(current.SnapshotId,Wire.Clone(current)); return Wire.Clone(current);
+        }
+        public ExcelReadContext ReadContext(){
+            if(!(port is IExcelContextPort contextPort))throw new OfficeFault("read_context_unavailable");
+            return contextPort.GetReadContext(scope);
+        }
+        public object ReadSurrounding(){var context=ReadContext();return new{snapshot=ReadRange(context.SurroundingRange),selection=scope.Address,sourceRange=context.CurrentRegion,truncated=context.Truncated};}
+        private void ValidateWriteScope(IList<FormulaOperation> operations){
+            var allowed=Region.Parse(scope.Address);
+            if(operations==null||operations.Any(op=>op==null||!allowed.Contains(Region.Parse(op.Address))))throw new OfficeFault("write_out_of_scope");
         }
         public Snapshot CalculateAndRead() { port.Calculate(scope); return ReadSelection(); }
         public ChangePlan Prepare(string snapshotId, IList<FormulaOperation> operations) {
             if(writeConsumed) throw new OfficeFault("writes_stopped_for_this_run");
             if(snapshotId==null || !snapshots.TryGetValue(snapshotId,out var snapshot)) throw new OfficeFault("snapshot_expired");
             if(operations==null || operations.Count<1 || operations.Count>100) throw new OfficeFault("operation_limit");
-            var copy=Wire.Clone(operations.ToList()); ValidateOperations(snapshot,copy);
+            var copy=Wire.Clone(operations.ToList()); ValidateWriteScope(copy); ValidateOperations(snapshot,copy);
             if(plans.Count>=16) throw new OfficeFault("plan_limit");
             var plan=new ChangePlan {Id=Guid.NewGuid().ToString("N"), Before=Wire.Clone(snapshot), Operations=copy};
             plans.Add(plan.Id,plan); return Wire.Clone(plan);
@@ -56,7 +66,7 @@ namespace OfficeX.Core
             try {
                 var live=port.Read(scope,plan.Before.Address);
                 if(live.Fingerprint()!=plan.Before.Fingerprint()) { receipt.Status="conflict"; receipt.Error="source_changed"; return Wire.Clone(receipt); }
-                ValidateOperations(live,plan.Operations);
+                ValidateWriteScope(plan.Operations); ValidateOperations(live,plan.Operations);
                 foreach(var op in plan.Operations) {
                     cancellation.ThrowIfCancellationRequested();
                     var entry=new CellReceipt {Address=op.Address,Formula=op.Formula,Status="attempted",

@@ -104,5 +104,10 @@ details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-captio
 /* Greetings wrap by words in narrow Office panes without changing the type scale. */
 .office-shell .aipro-login .agent-intro h1 { white-space:normal; word-break:keep-all; overflow-wrap:anywhere; text-wrap:balance; }
 
-.review-text { max-height: 220px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
-.review-text p { margin: 6px 0 14px; line-height: 1.6; }
+/* Every Office app uses this same identity and reading scale. */
+.office-suggestions { display:flex; flex-wrap:wrap; justify-content:center; gap:var(--cx-space-2); }
+.review-text { max-height:220px; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; font:var(--deck-font-body); }
+.review-text dl { margin:var(--cx-space-2) 0; }
+.review-text dt { font:var(--deck-font-caption); color:var(--deck-sub); margin-top:var(--cx-space-2); }
+.review-text dd { margin:var(--cx-space-1) 0 var(--cx-space-3); font:var(--deck-font-body); color:var(--deck-ink); }
+.review-block+.review-block { border-top:1px solid var(--deck-line); padding-top:var(--cx-space-3); }

@@ -35,9 +35,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag='office-x-v0.3.0-beta.1'
-          gh release view $tag --repo $env:GITHUB_REPOSITORY 2>$null
-          if($LASTEXITCODE){gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --draft --prerelease --title 'Nubi Office X 0.3.0 Beta 1' --notes-file RELEASE-NOTES.md}
+          $version=(Get-Content package.json -Raw|ConvertFrom-Json).version
+          $tag="office-x-v$version-beta.1"
+          $existingDraft=gh release view $tag --repo $env:GITHUB_REPOSITORY --json isDraft --jq .isDraft 2>$null
+          if($LASTEXITCODE -eq 0 -and $existingDraft -eq 'false'){throw 'Published releases are immutable. Bump the package version.'}
+          if($LASTEXITCODE){gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --draft --prerelease --title "Nubi Agent Office $version Beta 1" --notes-file RELEASE-NOTES.md}
           if($LASTEXITCODE){throw 'Release creation failed'}
-          gh release upload $tag releases/Nubi-Office-X-0.3.0-Setup.exe releases/Nubi-Office-X-0.3.0-Setup.exe.sha256 releases/office-x-0.3.0-source.zip releases/office-x-0.3.0-source.json releases/installer-build.json releases/install-smoke.json --clobber --repo $env:GITHUB_REPOSITORY
+          gh release upload $tag "releases/Nubi-Office-X-$version-Setup.exe" "releases/Nubi-Office-X-$version-Setup.exe.sha256" "releases/office-x-$version-source.zip" "releases/office-x-$version-source.json" releases/installer-build.json releases/install-smoke.json --clobber --repo $env:GITHUB_REPOSITORY
           if($LASTEXITCODE){throw 'Release upload failed'}

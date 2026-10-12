@@ -58,3 +58,11 @@ describe('real GenOffice AgentLoop with native Office skill',()=>{
     expect(validateConfig({baseUrl:'http://127.0.0.1:8787/v1',model:'m',apiKey:''}).model).toBe('m');
   });
 });
+describe('Excel reading beyond a single selected cell',()=>{
+ it('uses surrounding table context without expanding write destinations',async()=>{
+  const names:string[]=[];
+  const run=startAgent({transport:scripted([{call:call('read_sheet_context')},{call:call('read_surrounding')},{call:call('read_range',{address:'A1:E20'})},{text:'주변 표를 확인했습니다.'}]),request:'이 셀 주변 데이터를 읽어줘',context:{address:'E2'},event(){},native:async name=>{names.push(name);return name==='read_sheet_context'?{selection:'E2',currentRegion:'A1:E20',surroundingRange:'A1:E20'}:{snapshotId:'s',cells:[]};}});
+  await run.result;expect(names).toEqual(['read_sheet_context','read_surrounding','read_range']);
+ });
+ it('explains separate read and write scopes to the model',()=>{const skill=excelSkill(async()=>({}),{address:'E2'});expect(skill.systemPrompt).toContain('Selection is the WRITE scope, not the READ scope');expect(skill.tools.find(t=>t.name==='read_range')?.description).toContain('outside the selection');});
+});

@@ -2,7 +2,7 @@
 
 **GenOffice의 Agent Core와 AI Provider 원본을 기반으로**, Windows Excel, Word, PowerPoint 2016의 열린 문서를 읽고 수정하는 VSTO 추가 기능이다.
 
-설치는 [Beta 릴리스](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.3.0-beta.1)의 `Nubi-Office-X-0.3.0-Setup.exe`를 사용한다. 세 앱을 닫고 실행하면 공통 런타임과 선택한 추가 기능을 설치한다. Node는 포함하며 WebView2가 없으면 인터넷으로 설치한다.
+설치는 [Beta 릴리스](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.4.0-beta.1)의 `Nubi-Office-X-0.4.0-Setup.exe`를 사용한다. 세 앱을 닫고 실행하면 공통 런타임과 선택한 추가 기능을 설치한다. Node는 포함하며 WebView2가 없으면 인터넷으로 설치한다.
 
 Windows CI 빌드와 설치 검사의 증거는 릴리스 첨부 JSON에 기록한다. **실제 Office 2016 로드, 실제 모델 계정, NASCA 보호 문서는 별도 검증이 필요하다.** Beta EXE는 배포용 코드 서명이 없다.
 
@@ -22,14 +22,15 @@ Windows CI 빌드와 설치 검사의 증거는 릴리스 첨부 JSON에 기록�
 
 ## 현재 범위
 
-- read_selection, read_range, set_formula, calculate_and_read.
+- read_selection, read_sheet_context, read_surrounding, read_range, set_formula, calculate_and_read.
+- 단일 셀 선택도 주변 표 읽기가 가능하다. 같은 시트의 다른 범위를 나눠 읽을 수 있으며, 원래 선택 범위는 수정 대상에만 적용한다.
 - 단일 선택 범위, 최대 101행 × 20열, 문서 맥락 128 KiB, 최대 100개 수식.
-- 수식은 선택 범위 안의 숫자 셀 두 개를 곱하는 `=C2*D2` 형태이며 대상은 빈 셀이다.
+- 수식은 읽어 확인한 숫자 셀 두 개를 곱하는 `=C2*D2` 형태이며 대상은 빈 셀이다.
 - 요청마다 문서·시트를 고정하고 변경안의 원본 스냅샷을 재검사한다.
 - 거절·취소·부분 실패·계산 미완료를 완료와 구분하며 같은 변경안을 재적용하지 않는다.
 - 병합 셀, 표(ListObject), 배열 수식, 숨긴 행·열, 외부 참조는 첫 수정 범위에서 제외한다.
-- Word: 선택한 일반 문장 읽기와 한 문단 교체. PowerPoint: 선택한 단일 텍스트 상자 읽기와 한 문단 교체.
-- 문장 편집은 변경 전후 승인, 원문과 서식 재확인, 주변 텍스트 및 결과 검증을 거친다. 복잡한 서식과 여러 문단은 읽기만 지원한다.
+- Word: 여러 문단 읽기, 교정과 번역 및 문서 개요 읽기. PowerPoint: 여러 텍스트 상자의 문단 수정과 발표 개요 읽기. 한 번에 30문단, 8,000자까지 문단 경계를 유지하며 적용한다.
+- 문장 편집은 변경 전후 승인, 원문과 서식 재확인, 주변 텍스트 및 결과 검증을 거친다. 복잡한 서식은 읽기만 지원한다.
 - 값과 서식의 일반 편집, 문서 생성, 자동 저장과 복구, 누비 A2A 활성화는 후속 범위다.
 
 ## 구조

@@ -20,7 +20,7 @@ Partial Public Class ThisAddIn
             If Not panes.TryGetValue(window.HWND, pane) Then
                 Dim control = CreateControl(window.HWND)
                 Try
-                    pane = CustomTaskPanes.Add(control, "Office X")
+                    pane = CustomTaskPanes.Add(control, "누비 Agent")
                     pane.Width = 420
                     panes.Add(window.HWND, pane)
                 Catch
@@ -73,8 +73,16 @@ End Class
 Public Class OfficeXRibbon
     Implements Office.IRibbonExtensibility
     Public Function GetCustomUI(ribbonId As String) As String Implements Office.IRibbonExtensibility.GetCustomUI
-        Return "<customUI xmlns=""http://schemas.microsoft.com/office/2009/07/customui""><ribbon><tabs><tab id=""officeXTab"" label=""Office X""><group id=""officeXGroup"" label=""Word Agent""><button id=""officeXOpen"" label=""Office X 열기"" size=""large"" imageMso=""ReviewReviewingPane"" onAction=""OpenPane"" screentip=""선택한 텍스트 읽기와 수정""/></group></tab></tabs></ribbon></customUI>"
+        Return "<customUI xmlns=""http://schemas.microsoft.com/office/2009/07/customui"" loadImage=""LoadNubiImage""><ribbon><tabs><tab id=""officeXTab"" label=""누비 Agent""><group id=""officeXGroup"" label=""문서 작업""><button id=""officeXOpen"" label=""누비 Agent 열기"" size=""large"" image=""nubi"" onAction=""OpenPane"" screentip=""선택한 텍스트 읽기와 수정""/></group></tab></tabs></ribbon></customUI>"
     End Function
+    Public Function LoadNubiImage(imageId As String) As System.Drawing.Bitmap
+        Dim codeBase = New Uri(GetType(ThisAddIn).Assembly.CodeBase)
+        Dim directory = Path.GetDirectoryName(If(codeBase.IsFile, codeBase.LocalPath, GetType(ThisAddIn).Assembly.Location))
+        Using source As New System.Drawing.Bitmap(Path.Combine(directory, "OfficeX", "ui", "icons", "agent-128.png"))
+            Return New System.Drawing.Bitmap(source)
+        End Using
+    End Function
+
     Public Sub OpenPane(control As Office.IRibbonControl)
         Globals.ThisAddIn.ShowOfficeX()
     End Sub

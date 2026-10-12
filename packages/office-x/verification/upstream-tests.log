@@ -1,0 +1,30 @@
+
+> office-x@0.3.0 test:upstream
+> npm test -w @genoffice/agent-core && npm test -w @genoffice/ai-provider
+
+
+> @genoffice/agent-core@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/vendor/genoffice/packages/agent-core
+
+
+ Test Files  10 passed (10)
+      Tests  183 passed (183)
+   Start at  07:26:58
+   Duration  706ms (transform 547ms, setup 0ms, import 745ms, tests 525ms, environment 1ms)
+
+
+> @genoffice/ai-provider@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/vendor/genoffice/packages/ai-provider
+
+
+ Test Files  31 passed (31)
+      Tests  426 passed (426)
+   Start at  07:26:59
+   Duration  2.31s (transform 963ms, setup 0ms, import 1.89s, tests 3.14s, environment 2ms)
+

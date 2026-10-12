@@ -11,7 +11,7 @@ namespace OfficeX.ExcelHost
 {
     // Adapted from Nubi.Office.Host.ExcelPort's live COM identity binding.
     // All calls, including construction and disposal, stay on the Office UI thread.
-    public sealed class ExcelPort : IExcelPort, IDisposable
+    public sealed class ExcelPort : IExcelPort, IExcelContextPort, IDisposable
     {
         private readonly Excel.Application app;
         private readonly int uiThread = Thread.CurrentThread.ManagedThreadId;
@@ -52,11 +52,21 @@ namespace OfficeX.ExcelHost
             identities.Clear(); identities.Add(binding.DocumentId+":"+binding.WorksheetId,(Identity(book),Identity(sheet)));
             return Read(binding,binding.Address);
         }
+        public ExcelReadContext GetReadContext(Snapshot binding) {
+            AssertThread();if(!app.Ready)throw new OfficeFault("excel_busy");
+            var sheet=Resolve(binding);
+            Excel.Range selected=null,current=null,used=null;
+            try {
+                selected=sheet.get_Range(binding.Address);current=selected.CurrentRegion;used=sheet.UsedRange;
+                var currentAddress=current.get_Address(false,false,Excel.XlReferenceStyle.xlA1);
+                var readAddress=Region.Surrounding(binding.Address,currentAddress);
+                return new ExcelReadContext{Selection=binding.Address,CurrentRegion=currentAddress,UsedRange=used.get_Address(false,false,Excel.XlReferenceStyle.xlA1),SurroundingRange=readAddress,Truncated=!Region.Parse(readAddress).Contains(Region.Parse(currentAddress))};
+            } finally {if(used!=null)Marshal.ReleaseComObject(used);if(current!=null)Marshal.ReleaseComObject(current);if(selected!=null)Marshal.ReleaseComObject(selected);}
+        }
         public Snapshot Read(Snapshot binding,string address) {
             AssertThread();
             if(!app.Ready) throw new OfficeFault("excel_busy");
-            var region=Region.Parse(address); var scope=Region.Parse(binding.Address);
-            if(!scope.Contains(region)) throw new OfficeFault("out_of_scope");
+            var region=Region.Parse(address);
             if(region.Rows>101||region.Columns>20||(long)region.Rows*region.Columns>2020) throw new OfficeFault("range_limit");
             var sheet=Resolve(binding); var book=(Excel.Workbook)sheet.Parent;
             var result=new Snapshot {DocumentId=binding.DocumentId,WorksheetId=binding.WorksheetId,Workbook=book.Name,

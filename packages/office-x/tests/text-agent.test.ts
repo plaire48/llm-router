@@ -12,3 +12,10 @@ it.each(['rejected','partial','conflict'])('does not replay a %s text mutation o
  const native=vi.fn(async()=>({status}));const skill=textSkill(native,{app:'word'});await skill.executeTool(call('replace_text'));await skill.executeTool(call('replace_text'));expect(native).toHaveBeenCalledTimes(1);expect(skill.verifyResponse?.('수정했습니다.',[])).toBeTruthy();
 });
 it('does not replay when native write receipt is lost',async()=>{const native=vi.fn(async()=>{throw Error('lost');});const skill=textSkill(native,{app:'powerpoint'});await skill.executeTool(call('replace_text'));await skill.executeTool(call('replace_text'));expect(native).toHaveBeenCalledTimes(1);});
+it.each(['word','powerpoint'])('runs %s outline, observed blocks and one approved batch',async app=>{
+ let step=0;const names:string[]=[];
+ const transport:AgentTransport={stream(_req,cb){queueMicrotask(()=>{const tools=[call('read_outline'),call('read_selection'),call('replace_blocks',{snapshotId:'s',operations:[{blockId:'p1',text:'First'},{blockId:'p2',text:'Second'}]})];if(step<tools.length)cb.onToolCall(tools[step++]);else cb.onDelta('두 문단을 확인했습니다.');cb.onDone();});return {cancel(){cb.onDone();}};}};
+ const run=startAgent({transport,request:'문서 개요 확인 후 선택한 문단을 다듬어줘',context:{app},event(){},native:async name=>{names.push(name);return name==='replace_blocks'?{status:'verified',mutated:true,count:2}:{snapshotId:'s',blocks:[],truncated:false};}});
+ await run.result;expect(names).toEqual(['read_outline','read_selection','replace_blocks']);
+});
+it('one mutation gate covers both single and batch tools',async()=>{const native=vi.fn(async()=>({status:'partial'}));const skill=textSkill(native,{app:'word'});await skill.executeTool(call('replace_blocks'));await skill.executeTool(call('replace_text'));expect(native).toHaveBeenCalledTimes(1);});

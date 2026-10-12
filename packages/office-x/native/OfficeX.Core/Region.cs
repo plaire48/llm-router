@@ -23,6 +23,14 @@ namespace OfficeX.Core
             if(r.EndRow<r.Row || r.EndColumn<r.Column || r.EndRow>1048576 || r.EndColumn>16384) throw new OfficeFault("address_invalid");
             return r;
         }
+        public static string Surrounding(string selection,string currentRegion) {
+            var anchor=Parse(selection);var current=Parse(currentRegion);
+            if(current.Rows<=101&&current.Columns<=20&&(current.Rows>1||current.Columns>1))return current.Address;
+            // A blank or isolated cell still exposes a bounded neighborhood.
+            int top=Math.Max(1,anchor.Row-10),left=Math.Max(1,anchor.Column-5);
+            int bottom=Math.Min(1048576,top+(current.Rows>1?100:20)),right=Math.Min(16384,left+19);
+            return CellAddress(top,left)+":"+CellAddress(bottom,right);
+        }
         public bool Contains(Region other) => other.Row>=Row && other.Column>=Column && other.EndRow<=EndRow && other.EndColumn<=EndColumn;
         public static string CellAddress(int row,int column) {
             var s=""; while(column>0) { column--; s=(char)('A'+column%26)+s; column/=26; } return s+row;

@@ -48,7 +48,7 @@ namespace OfficeX.ExcelHost
         private async void ReceiveUi(JObject message) {
             try {
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app});EnsureWorker();Publish();break;
+                    case "ready":surface.Send(new {type="host",app,version="0.4.0"});EnsureWorker();Publish();break;
                     case "provider":
                         if(running||nativeBusy)throw new OfficeFault("worker_busy");
                         EnsureWorker();worker.Send(new {type="provider",id=(string)message["id"],method=(string)message["method"],input=message["input"]});break;
@@ -147,8 +147,9 @@ namespace OfficeX.ExcelHost
             cancelToken.ThrowIfCancellationRequested();
             if(app!="excel") {
                 if(name=="read_selection")return textSession.Read();
-                if(name!="replace_text")throw new OfficeFault("unsupported_tool");
-                var textPlan=textSession.Prepare((string)input["snapshotId"],(string)input["text"]);
+                if(name=="read_outline")return textPort.ReadOutline();
+                if(name!="replace_text"&&name!="replace_blocks")throw new OfficeFault("unsupported_tool");
+                var textPlan=name=="replace_blocks"?textSession.PrepareBlocks((string)input["snapshotId"],input["operations"]?.ToObject<List<TextOperation>>()):textSession.Prepare((string)input["snapshotId"],(string)input["text"]);
                 var accepted=await ReviewText(textPlan);
                 var textReceipt=textSession.Apply(textPlan.Id,accepted,cancelToken);
                 surface.Send(new {type="receipt",runId,receipt=textReceipt});
@@ -157,6 +158,8 @@ namespace OfficeX.ExcelHost
             }
             switch(name) {
                 case "read_selection":return current.ReadSelection();
+                case "read_sheet_context":return current.ReadContext();
+                case "read_surrounding":return current.ReadSurrounding();
                 case "read_range":return current.ReadRange((string)input["address"]);
                 case "calculate_and_read":return current.CalculateAndRead();
                 case "set_formula":
@@ -211,6 +214,7 @@ namespace OfficeX.ExcelHost
         private void Finish(string text) {running=false;cancellation?.Cancel();SetBusy(nativeBusy);approval?.TrySetResult(false);status.Text=text;}
         private static string Explain(string code) {
             switch(code) {
+                case "write_out_of_scope":return "읽기는 주변 범위까지 가능합니다. 수정할 셀은 선택한 뒤 다시 요청해 주세요.";
                 case "source_changed":return "문서가 변경됐습니다. 범위를 다시 확인해 주세요.";
                 case "document_closed":return "대상 문서 또는 시트가 닫혔습니다.";
                 case "target_not_empty":case "target_changed":return "금액 셀에 기존 내용이 있습니다. 덮어쓰지 않았습니다.";
@@ -224,7 +228,8 @@ namespace OfficeX.ExcelHost
                 case "demo_scope":return "도구 확인은 C1:E4를 선택해 주세요. C열 수량, D열 단가, E열 빈 금액입니다.";
                 case "numeric_source_required":return "수량과 단가에 숫자가 필요합니다.";
                 case "activate_source_window":return "이 작업창이 붙어 있는 문서 창을 활성화해 주세요.";
-                case "select_text":return "문장이나 텍스트 상자 하나를 선택해 주세요.";
+                case "select_text":return "문단이나 텍스트 상자를 선택해 주세요.";
+                case "text_block_limit":return "문단 30개 이내로 선택해 주세요.";
                 case "text_scope_invalid":return "8,000자 이내의 문장을 선택해 주세요.";
                 case "text_format_unsupported":return "현재 서식은 직접 수정할 수 없습니다. 채팅에서 수정안을 확인해 주세요.";
                 case "single_paragraph_required":return "문단 나눔 없는 문장만 적용할 수 있습니다.";

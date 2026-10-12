@@ -78,6 +78,14 @@ namespace OfficeX.Core
         public bool Saved { get; set; } // No automatic save in the initial toolset.
         public List<CellReceipt> Cells { get; set; } = new List<CellReceipt>();
     }
+    public sealed class ExcelReadContext {
+        public string Selection {get;set;}
+        public string CurrentRegion {get;set;}
+        public string UsedRange {get;set;}
+        public string SurroundingRange {get;set;}
+        public bool Truncated {get;set;}
+    }
+    public interface IExcelContextPort {ExcelReadContext GetReadContext(Snapshot binding);}
     public interface IExcelPort
     {
         Snapshot CaptureSelection();

@@ -5,6 +5,16 @@ using System.Threading;
 using OfficeX.Core;
 
 var tests=new (string,Action)[] {
+    ("batch keeps each paragraph boundary and verifies every block",()=>{var(p,s,plan)=BatchSetup();var r=s.Apply(plan.Id,true,default);Equal("verified",r.Status);Equal(2,r.Count);Equal("new one",p.Data.Blocks[0].Text);Equal("new two",p.Data.Blocks[1].Text);Equal("untouched",p.Data.Blocks[2].Text);}),
+    ("batch rejects a block outside pinned selection",()=>{var p=new FakeBatchPort();var s=new TextSession(p);var snap=s.Read();Fault("out_of_scope",()=>s.PrepareBlocks(snap.SnapshotId,new List<TextOperation>{new TextOperation{BlockId="outline-2",Text="changed"}}));}),
+    ("batch cannot mix duplicate paragraph targets",()=>{var p=new FakeBatchPort();var s=new TextSession(p);var snap=s.Read();Fault("text_operations_invalid",()=>s.PrepareBlocks(snap.SnapshotId,new List<TextOperation>{new TextOperation{BlockId="p1",Text="a"},new TextOperation{BlockId="p1",Text="b"}}));}),
+    ("batch checks readonly block before any write",()=>{var p=new FakeBatchPort();p.Data.Blocks[1].Editable=false;var s=new TextSession(p);var snap=s.Read();Fault("text_format_unsupported",()=>s.PrepareBlocks(snap.SnapshotId,BatchOperations()));Equal(0,p.Writes);}),
+    ("batch rechecks all source blocks before writing",()=>{var(p,s,plan)=BatchSetup();p.Data.Blocks[2].Text="user changed";Equal("conflict",s.Apply(plan.Id,true,default).Status);Equal(0,p.Writes);}),
+    ("batch detects unexpected change to unedited paragraph",()=>{var(p,s,plan)=BatchSetup();p.ChangeOther=true;Equal("partial",s.Apply(plan.Id,true,default).Status);}),
+    ("batch partial failure cannot replay applied paragraphs",()=>{var(p,s,plan)=BatchSetup();p.FailSecond=true;Equal("partial",s.Apply(plan.Id,true,default).Status);Fault("invalid_plan",()=>s.Apply(plan.Id,true,default));Equal(2,p.Writes);}),
+    ("batch approval is an immutable copy",()=>{var(p,s,plan)=BatchSetup();plan.Operations[0].Text="tampered";Equal("verified",s.Apply(plan.Id,true,default).Status);Equal("new one",p.Data.Blocks[0].Text);}),
+    ("batch cancellation before apply never writes",()=>{var(p,s,plan)=BatchSetup();Equal("cancelled",s.Apply(plan.Id,true,new CancellationToken(true)).Status);Equal(0,p.Writes);}),
+    ("batch rejection never writes",()=>{var(p,s,plan)=BatchSetup();Equal("rejected",s.Apply(plan.Id,false,default).Status);Equal(0,p.Writes);}),
     ("text replacement verifies content and keeps unsaved",()=>{var(p,s,plan)=TextSetup();plan.Replacement="tampered";var r=s.Apply(plan.Id,true,default);Equal("verified",r.Status);Equal("새 문장",p.Data.Text);Equal(false,r.Saved);}),
     ("text source drift blocks writes",()=>{var(p,s,plan)=TextSetup();p.Data.Text="user edit";Equal("conflict",s.Apply(plan.Id,true,default).Status);Equal(0,p.Writes);}),
     ("text other-content drift blocks writes",()=>{var(p,s,plan)=TextSetup();p.Data.SurroundingHash="changed";Equal("conflict",s.Apply(plan.Id,true,default).Status);Equal(0,p.Writes);}),
@@ -34,7 +44,12 @@ var tests=new (string,Action)[] {
     ("non-target change after calculation is detected",()=>{var(p,s,plan)=Setup();p.ChangeSourceOnCalculate=true;var r=s.Apply(plan.Id,true,default);Equal("verification_pending",r.Status);Equal("non_target_changed",r.Error);}),
     ("caller cannot mutate reviewed plan",()=>{var(p,s,plan)=Setup();plan.Operations[0].Formula="=C3*D3";plan.Before.Cells.Clear();Equal("verified",s.Apply(plan.Id,true,default).Status);Equal("=C2*D2",p.Cell("E2").Formula);}),
     ("caller cannot mutate stored snapshot",()=>{var p=new FakePort();var s=new ExcelSession(p);var snap=s.ReadSelection();snap.Cells.Single(c=>c.Address=="C2").Value=999;var plan=s.Prepare(snap.SnapshotId,Ops());Equal("verified",s.Apply(plan.Id,true,default).Status);}),
-    ("outside selection read is rejected",()=>{var p=new FakePort();var s=new ExcelSession(p);Fault("out_of_scope",()=>s.ReadRange("A1"));}),
+    ("single selected cell can read the surrounding table",()=>{var p=new FakePort{SelectedAddress="E2"};var s=new ExcelSession(p);var read=s.ReadRange("C1:E4");Equal(12,read.Cells.Count);Equal("E2",s.Context.Address);Equal("C1:E4",s.ReadContext().SurroundingRange);s.ReadSurrounding();Equal(0,p.Writes);}),
+    ("single-cell write can use observed surrounding operands",()=>{var p=new FakePort{SelectedAddress="E2"};var s=new ExcelSession(p);var read=s.ReadRange("C1:E4");var plan=s.Prepare(read.SnapshotId,new[]{new FormulaOperation{Address="E2",Formula="=C2*D2"}});Equal("verified",s.Apply(plan.Id,true,default).Status);Equal(1,p.Writes);}),
+    ("expanded reads do not expand write authorization",()=>{var p=new FakePort{SelectedAddress="E2"};var s=new ExcelSession(p);var read=s.ReadRange("C1:E4");Fault("write_out_of_scope",()=>s.Prepare(read.SnapshotId,new[]{new FormulaOperation{Address="E3",Formula="=C3*D3"}}));Equal(0,p.Writes);}),
+    ("read cannot switch to another worksheet identity",()=>{var p=new FakePort{SelectedAddress="E2"};var s=new ExcelSession(p);p.WrongSheet=true;Fault("source_changed",()=>s.ReadRange("C1:E4"));}),
+    ("large surrounding reads remain bounded",()=>{var p=new FakePort{SelectedAddress="E2"};var s=new ExcelSession(p);Fault("range_limit",()=>s.ReadRange("A1:T102"));Fault("range_limit",()=>s.ReadRange("A1:U20"));}),
+    ("surrounding window includes isolated cell and sheet edges",()=>{foreach(var a in new[]{"A1","E2","XFD1048576"}){var region=Region.Parse(Region.Surrounding(a,a));Equal(true,region.Contains(Region.Parse(a)));Equal(true,region.Rows<=101&&region.Columns<=20);}Equal("C1:E4",Region.Surrounding("E2","C1:E4"));}),
     ("snapshot must include both operands",()=>{var p=new FakePort();var s=new ExcelSession(p);var snap=s.ReadRange("E2:E4");Fault("numeric_source_required",()=>s.Prepare(snap.SnapshotId,Ops()));}),
     ("model supplied snapshot ID is rejected",()=>{var p=new FakePort();var s=new ExcelSession(p);Fault("snapshot_expired",()=>s.Prepare("invented",Ops()));}),
     ("external and executable formulas are unsupported",()=>{foreach(var f in new[]{"=WEBSERVICE(\"https://example.com\")","=[book.xlsx]Sheet1!C2*D2","=SUM(C2:D2)","=C2*D2+1"}){var p=new FakePort();var s=new ExcelSession(p);var snap=s.ReadSelection();Fault("unsupported_formula",()=>s.Prepare(snap.SnapshotId,new[]{new FormulaOperation{Address="E2",Formula=f}}));}}),
@@ -49,19 +64,23 @@ var tests=new (string,Action)[] {
 int failures=0;foreach(var(name,test) in tests){try{test();Console.WriteLine("PASS "+name);}catch(Exception e){failures++;Console.WriteLine("FAIL "+name+": "+e.Message);}}
 Console.WriteLine($"{tests.Length-failures}/{tests.Length} core behavior tests passed; fake port, not Excel COM.");return failures==0?0:1;
 
+static List<TextOperation> BatchOperations()=>new List<TextOperation>{new TextOperation{BlockId="p1",Text="new one"},new TextOperation{BlockId="p2",Text="new two"}};
+static (FakeBatchPort,TextSession,TextPlan) BatchSetup(){var p=new FakeBatchPort();var s=new TextSession(p);var snap=s.Read();return(p,s,s.PrepareBlocks(snap.SnapshotId,BatchOperations()));}
 static (FakeTextPort,TextSession,TextPlan) TextSetup(){var p=new FakeTextPort();var s=new TextSession(p);var snap=s.Read();return(p,s,s.Prepare(snap.SnapshotId,"새 문장"));}
 static (FakePort,ExcelSession,ChangePlan) Setup(){var p=new FakePort();var s=new ExcelSession(p);var snap=s.ReadSelection();return(p,s,s.Prepare(snap.SnapshotId,Ops()));}
 static List<FormulaOperation> Ops()=>Enumerable.Range(2,3).Select(r=>new FormulaOperation{Address="E"+r,Formula="=C"+r+"*D"+r}).ToList();
 static void Equal(object expected,object actual){if(!Equals(expected,actual))throw new Exception($"Expected {expected}; actual {actual}");}
 static void Fault(string code,Action action){try{action();throw new Exception("Expected fault "+code);}catch(OfficeFault e){Equal(code,e.Message);}}
 
-sealed class FakePort:IExcelPort {
+sealed class FakePort:IExcelPort,IExcelContextPort {
+    public string SelectedAddress;public bool WrongSheet;
     public Snapshot Data=new Snapshot{DocumentId="doc",WorksheetId="sheet",Workbook="fixture",Worksheet="내역",Address="C1:E4",CalculationDone=true};
     public int Writes,FailWriteAt;public bool Closed,FailAfterWrite,BadCalculation,PendingAfterCalculate,ChangeSourceOnCalculate;
     public FakePort(){for(int r=1;r<=4;r++)for(int c=3;c<=5;c++)Data.Cells.Add(new Cell{Address=Region.CellAddress(r,c)});Cell("C1").Value="수량";Cell("D1").Value="단가";Cell("E1").Value="금액";Cell("C2").Value=2d;Cell("D2").Value=1500d;Cell("C3").Value=3d;Cell("D3").Value=2000d;Cell("C4").Value=0d;Cell("D4").Value=500d;}
     public Cell Cell(string address)=>Data.Cells.Single(c=>c.Address==address);
-    public Snapshot CaptureSelection()=>Wire.Clone(Data);
-    public Snapshot Read(Snapshot binding,string address){if(Closed)throw new OfficeFault("document_closed");if(FailAfterWrite&&Writes>0)throw new OfficeFault("read_failed");var r=Region.Parse(address);var s=Wire.Clone(Data);s.Address=address;s.Cells=s.Cells.Where(c=>r.Contains(Region.Parse(c.Address))).ToList();return s;}
+    public Snapshot CaptureSelection()=>Read(Data,SelectedAddress??Data.Address);
+    public ExcelReadContext GetReadContext(Snapshot binding)=>new ExcelReadContext{Selection=binding.Address,CurrentRegion=Data.Address,UsedRange=Data.Address,SurroundingRange=Region.Surrounding(binding.Address,Data.Address)};
+    public Snapshot Read(Snapshot binding,string address){if(Closed)throw new OfficeFault("document_closed");if(FailAfterWrite&&Writes>0)throw new OfficeFault("read_failed");var r=Region.Parse(address);var s=Wire.Clone(Data);if(WrongSheet)s.WorksheetId="other-sheet";s.Address=address;s.Cells=s.Cells.Where(c=>r.Contains(Region.Parse(c.Address))).ToList();return s;}
     public void WriteFormula(Snapshot binding,string address,string formula){Writes++;if(Writes==FailWriteAt)throw new OfficeFault("write_failed");var c=Cell(address);c.Formula=formula;var parts=formula.Substring(1).Split('*');c.Value=Convert.ToDouble(Cell(parts[0]).Value)*Convert.ToDouble(Cell(parts[1]).Value);}
     public void Calculate(Snapshot binding){if(BadCalculation)Cell("E2").Value=-1d;if(PendingAfterCalculate)Data.CalculationDone=false;if(ChangeSourceOnCalculate)Cell("D2").Value=9000d;}
 }
@@ -72,4 +91,14 @@ sealed class FakeTextPort:ITextPort {
  public TextSnapshot Capture()=>Wire.Clone(Data);
  public TextSnapshot Read(TextSnapshot binding)=>Wire.Clone(Data);
  public void Replace(TextSnapshot binding,string value){Writes++;Data.Text=value;if(Fail)throw new Exception("COM failed after mutation");if(ChangeFormat)Data.FormatHash="changed";}
+}
+
+sealed class FakeBatchPort:ITextPort,ITextBatchPort {
+ public TextSnapshot Data=new TextSnapshot{App="word",DocumentId="doc",TargetId="selection",Text="one\ntwo\nuntouched",FormatHash="plain",SurroundingHash="outside",Blocks=new List<TextBlock>{new TextBlock{Id="p1",Text="one",FormatHash="a",Editable=true},new TextBlock{Id="p2",Text="two",FormatHash="b",Editable=true},new TextBlock{Id="p3",Text="untouched",FormatHash="c",Editable=true}}};
+ public int Writes;public bool ChangeOther,FailSecond;
+ public TextSnapshot Capture()=>Wire.Clone(Data);
+ public TextSnapshot Read(TextSnapshot binding){Data.Text=string.Join("\n",Data.Blocks.Select(b=>b.Text));return Wire.Clone(Data);}
+ public void Replace(TextSnapshot binding,string text)=>throw new Exception("single write unsupported in fixture");
+ public void ReplaceBlocks(TextSnapshot binding,IReadOnlyList<TextOperation> operations){foreach(var op in operations){Writes++;if(FailSecond&&Writes==2)throw new Exception("COM failure");Data.Blocks.Single(b=>b.Id==op.BlockId).Text=op.Text;}if(ChangeOther)Data.Blocks[2].Text="unexpected";}
+ public object ReadOutline()=>new {readOnly=true};
 }

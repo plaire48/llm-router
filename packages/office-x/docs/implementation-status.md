@@ -1,4 +1,4 @@
-# Office X 0.3.0 구현 결과
+# Office X 0.4.0 구현 결과
 
 확인일: 2026-10-13. 개발 호스트는 macOS arm64다. Windows 실행 완료를 의미하지 않는다.
 
@@ -18,7 +18,7 @@
 | 항목 | 결과 | 증거 범위 |
 | --- | --- | --- |
 | TypeScript typecheck | 통과 | Office X 런타임·GenOffice 타입 |
-| Office X 연결·대화 테스트 | 17/17 | 실제 AgentLoop와 모의 제공자·네이티브 |
+| Office X 연결·대화 테스트 | 22/22 | 실제 AgentLoop와 모의 제공자·네이티브 |
 | GenOffice agent-core 원본 테스트 | 183/183 | 원본 회귀 테스트 |
 | GenOffice ai-provider 원본 테스트 | 426/426 | 원본 회귀 테스트 |
 | 기존 직접 연결 stdio 통합 | 통과 | localhost 모의 SSE 모델·모의 Office |
@@ -26,7 +26,7 @@
 | 누비 인증 → GenOffice stdio | 통과 | 모의 인증 복원 후 실제 워커·도구 호출·후속 대화, 실행 중 모델 변경 거부 |
 | Claude → GenOffice 통합 | 통과 | 모의 CLI 로그인·모델·추론 수준·복원·도구 제안. CLI 자체 도구와 MCP 비활성화 인자 확인 |
 | 브라우저 UI | Excel 14개 흐름과 Word/PPT 각 승인 흐름 통과, pageerror 0 | 모의 WebView2 호스트. 로그인·모델 검색·IME·승인·대화 전환·Claude·자동 스크롤·320px 폭 |
-| C# 공통 문서 실행기 | 34/34 | 모의 port로 충돌·계산값·취소·부분 실패·재실행 방지 |
+| C# 공통 문서 실행기 | 49/49 | 모의 port로 충돌·계산값·취소·부분 실패·재실행 방지 |
 | C# ExcelHost net472 컴파일 | 통과, 경고·오류 0 | WebView2·DPAPI 참조 포함. Windows 실행은 아님 |
 | 원본 해시 검사 | GenOffice 85/85, 누비 88/88 | 복사한 원본 변경 없음 |
 | 실행 엔진 구성 검사 | 통과 | GenOffice AgentLoop; 누비 runAgent와 pi-agent-core 불포함 |
@@ -37,4 +37,4 @@
 
 Windows VSTO 진입점 로드, WebView2 작업창, DPAPI 실제 저장·복원, Excel 2016 32/64비트 COM 읽기·적용·계산·닫힘, 실제 AI Pro/ChatGPT/FabriX/Claude 로그인과 모델 작업, NASCA 저장·재개방은 아직 검증하지 않았다. Windows 빌드와 설치 검사 결과는 릴리스의 installer-build.json 및 install-smoke.json에서 확인한다. 게시자 서명과 누비 Workspace A2A 활성화는 포함하지 않는다.
 
-현재 문서 수정은 Excel 빈 셀의 곱셈 수식, Word 일반 선택 문장, PowerPoint 단일 텍스트 상자의 한 문단 교체를 지원한다. 전체 GenOffice 편집 기능, 전체 문서 보존, 자동 저장·복구가 구현됐다는 의미는 아니다. 기능 확대는 GenOffice Skill과 VSTO 문서 어댑터를 추가하는 방식으로 진행할 수 있다.
+현재 문서 수정은 Excel 빈 셀의 곱셈 수식, Word 여러 문단, PowerPoint 여러 텍스트 상자의 문단 교체를 지원한다. 전체 GenOffice 편집 기능, 전체 문서 보존, 자동 저장·복구가 구현됐다는 의미는 아니다. 기능 확대는 GenOffice Skill과 VSTO 문서 어댑터를 추가하는 방식으로 진행할 수 있다.
