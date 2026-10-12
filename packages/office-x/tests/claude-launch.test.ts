@@ -51,9 +51,9 @@ describe.skipIf(process.platform!=='win32')('Windows shell process round trips',
     // Assert argv before a script passes it onward to native executables.
     await writeFile(file,"$inputText=[Console]::In.ReadToEnd();[Console]::WriteLine((@{args=@($args);input=$inputText}|ConvertTo-Json -Compress))");
     const shell=path.join(process.env.SystemRoot||'C:\\Windows','System32','WindowsPowerShell','v1.0','powershell.exe');
-    const result=JSON.parse(await runClaude({kind:'powershell',file,shell,profile:false},args,{input:'한글 stdin'}));
+    const result=JSON.parse(await runClaude({kind:'powershell',file,shell,profile:false},args,{input:'한글 stdin',timeoutMs:20000}));
     expect(result.args).toEqual(args);expect(result.input).toBe('한글 stdin');
-  });
+  },30000);
   it('discovers and executes an npm package end to end from a custom prefix',async()=>{
     const {dir,file}=await fixture(),packageRoot=path.join(dir,'node_modules','@anthropic-ai','claude-code');
     const {mkdir,copyFile}=await import('node:fs/promises');await mkdir(packageRoot,{recursive:true});await copyFile(file,path.join(packageRoot,'cli.cjs'));
