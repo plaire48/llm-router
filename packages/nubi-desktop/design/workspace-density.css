@@ -595,3 +595,8 @@
  .desktop-shell .nubi-workbench .nubi-compose-card { --nubi-composer-icon-size:44px; }
  .desktop-shell .nubi-workbench .nubi-compose-card .composer-bottom button { min-width:44px; min-height:44px; }
 }
+
+/* A wide conversation sidebar takes space even when the right pane uses an
+   overlay. Its layout must not depend on that unrelated pane's mode. */
+.desktop-shell .nubi-workbench[data-host-layout=integrated][data-compact=false] .nubi-sidebar[data-open=true] { position:relative; left:auto; flex:none; }
+.desktop-shell .nubi-workbench[data-host-layout=integrated][data-compact=false] .nubi-sidebar-resize { position:relative; left:auto; top:auto; flex:none; }

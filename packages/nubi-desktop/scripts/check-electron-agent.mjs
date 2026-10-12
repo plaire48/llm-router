@@ -45,6 +45,7 @@ try{
   await page.getByRole('navigation',{name:'프로젝트 도구'}).waitFor({timeout:30000});
   await page.locator('.desktop-shell[data-startup-ready="true"]').waitFor({timeout:30000});
   const startup=page.getByText('메일을 연결해 주세요');if(await startup.count()){await page.keyboard.press('Escape');await startup.waitFor({state:'hidden',timeout:5000});}
+  const sidebarClose=page.getByRole('button',{name:'사이드바 접기',exact:true});if(await sidebarClose.count())await sidebarClose.click();
   const status=await request('provider',{action:'connect',input:fixture.connection});assert.equal(status.connected,true);
   const composer=page.getByRole('textbox',{name:'작업 요청'});await composer.waitFor({timeout:20000});stage('fixture model connected');
   await composer.fill('example.js의 value를 2로 바꿔 줘');await page.getByRole('button',{name:'전송',exact:true}).click();
@@ -59,6 +60,8 @@ try{
   assert.equal(await readFile(path.join(root,'example.js'),'utf8'),'export const value = 2;\n','applying writes the proposed content');
   await page.getByText('반영을 확인했어요. value는 이제 2예요.').waitFor({timeout:90000});
   await page.getByRole('button',{name:'Git 변경',exact:true}).click();await page.locator('.desktop-list').getByRole('button',{name:'example.js'}).waitFor();stage('applying writes the file, the run verifies it and Git lists the change');await page.getByRole('button',{name:'오른쪽 사이드바 닫기',exact:true}).click();
+  const sidebarOpen=page.getByRole('button',{name:'사이드바 펼치기',exact:true});if(await sidebarOpen.count())await sidebarOpen.click();
+  await page.waitForFunction(()=>{const sidebar=document.querySelector('.nubi-sidebar[data-open=true]'),content=document.querySelector('.nubi-workbench-content');return sidebar&&content&&sidebar.getBoundingClientRect().right<=content.getBoundingClientRect().left+1;});stage('the reopened sidebar leaves the conversation and recovery controls unobscured');
   const state=await request('state');const task=state.tasks[0];assert.ok(task,'the task exists');assert.equal(state.proposals.filter(item=>item.state==='applied').length,1,'one applied proposal');
   fixture.setFailing(true);const followUp=page.getByRole('textbox',{name:'추가 요청'});await followUp.fill('한 줄로 다시 답해 줘');await page.getByRole('button',{name:'전송',exact:true}).click();
   await toast(/분석이 멈췄어요|모델 사용량 제한/).waitFor({timeout:60000});await page.getByRole('button',{name:'이어서 진행',exact:true}).waitFor({timeout:15000});stage('a model server failure ends the run with a readable message');
