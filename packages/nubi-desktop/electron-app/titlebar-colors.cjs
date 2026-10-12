@@ -3,6 +3,9 @@ const DEFAULT_TITLEBAR = Object.freeze({color:'#F1F7FE',symbolColor:'#4E5968',he
 function rgba(value) {
  const hex=/^#([\da-f]{6})([\da-f]{2})?$/i.exec(value||'');
  if(hex)return [...[0,2,4].map(i=>parseInt(hex[1].slice(i,i+2),16)),hex[2]?parseInt(hex[2],16)/255:1];
+ // Chromium preserves CSS color-mix tokens as color(srgb ...), not rgb(...).
+ const srgb=/^color\(srgb\s+([-\d.e]+)\s+([-\d.e]+)\s+([-\d.e]+)(?:\s*\/\s*([\d.]+))?\s*\)$/i.exec(value||'');
+ if(srgb)return [Number(srgb[1])*255,Number(srgb[2])*255,Number(srgb[3])*255,srgb[4]===undefined?1:Number(srgb[4])];
  const rgb=/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:\s*[,/]\s*([\d.]+))?\s*\)$/.exec(value||'');
  return rgb?[Number(rgb[1]),Number(rgb[2]),Number(rgb[3]),rgb[4]===undefined?1:Number(rgb[4])]:null;
 }

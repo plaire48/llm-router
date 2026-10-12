@@ -38,6 +38,7 @@ try{page=await app.firstWindow();page.setDefaultTimeout(10000);page.on('crash',(
   const {captionColors}=await import('../electron-app/titlebar-colors.cjs');
   const style=await page.evaluate(()=>{const toolbar=getComputedStyle(document.querySelector('.nubi-window-toolbar'));return {background:toolbar.backgroundColor,symbol:toolbar.getPropertyValue('--deck-sub').trim(),layers:[...document.querySelectorAll('.cx-panel-backdrop')].filter(node=>node.checkVisibility()).map(node=>getComputedStyle(node).backgroundColor)};});
   const expected={...captionColors(style.background,style.symbol,style.layers),height:48};
+  assert.notEqual(expected.color,captionColors(style.background,style.symbol).color,'settings has a visible scrim; a fallback color must not pass');
   for(let i=0;i<30;i++){const current=await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].captionUpdates.at(-1));if(JSON.stringify(current)===JSON.stringify(expected))break;await new Promise(resolve=>setTimeout(resolve,100));}
   assert.deepEqual(await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].captionUpdates.at(-1)),expected,'settings scrim reaches native minimize/maximize/close controls');
   await page.screenshot({path:path.join(captures,'settings-caption.png')});

@@ -15,6 +15,12 @@ test('native caption follows the same scrim and restores after the last dialog c
 test('caption colors use the current theme instead of a hardcoded modal shade',()=>{
  assert.deepEqual(captionColors('rgb(255, 255, 255)','#000000',['rgba(0, 0, 0, 0.5)']),{color:'#808080',symbolColor:'#000000'});
 });
+test('actual CX color-mix serialization dims the caption instead of using the fallback',()=>{
+ const background='color(srgb 0.967059 0.981176 0.997647)',overlay='color(srgb 0.0980392 0.121569 0.156863 / 0.2)';
+ assert.deepEqual(captionColors(background,'#4E5968'),{color:'#f7fafe',symbolColor:'#4e5968'});
+ // Green: (0.981176 * 0.8 + 0.121569 * 0.2) * 255 = 206.4398.
+ assert.deepEqual(captionColors(background,'#4E5968',[overlay]),{color:'#caced4',symbolColor:'#434d5b'});
+});
 test('native updates preserve caption height and reject non-color payloads',()=>{
  const calls=[],window={isDestroyed:()=>false,setTitleBarOverlay:value=>calls.push(value)};
  applyCaptionColors(window,{color:'#c1c8d1',symbolColor:'#424c5c',height:0},'win32');
