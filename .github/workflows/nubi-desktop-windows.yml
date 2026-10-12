@@ -59,7 +59,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify body-only mail Beta scope
         run: |
-          node --test tests/mail-beta-scope.test.mjs tests/mail-search.test.mjs
+          node --test tests/mail-beta-scope.test.mjs tests/mail-search.test.mjs tests/mail-connection-errors.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify native OpenWiki initialization and update bridge
         run: |

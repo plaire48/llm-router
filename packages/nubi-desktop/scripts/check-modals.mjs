@@ -93,6 +93,17 @@ try{
  }
  checks.push('wiki progress uses actual stage percentage, elapsed and stage-only ETA; modal can stay in background');
  await p.goto(origin+'/?context&modals&integrated&catalog');await closeSidebar();
+ await p.getByRole('button',{name:'모델 변경',exact:true}).click();await p.getByRole('dialog',{name:'모델 선택',exact:true}).waitFor();
+ await p.evaluate(()=>window.setWikiFixture({id:'delayed-wiki',state:'running',stage:'scanning',startedAt:new Date().toISOString(),percent:null}));
+ assert.equal(await p.getByRole('dialog',{name:'위키 준비',exact:true}).count(),0,'progress waits until the current modal closes');
+ await p.keyboard.press('Escape');const immediateWiki=p.getByRole('dialog',{name:'위키 준비',exact:true});await immediateWiki.waitFor({timeout:2000});
+ assert.match(await immediateWiki.innerText(),/파일 목록 확인/);assert(!await immediateWiki.innerText().then(text=>text.includes('남은 시간 계산 중')));
+ await p.evaluate(()=>window.setWikiFixture({id:'delayed-wiki',state:'attention',stage:'snapshot_git',error:'wiki_snapshot_failed',startedAt:new Date(Date.now()-5000).toISOString(),finishedAt:new Date().toISOString()}));
+ await immediateWiki.getByText(/분석용 Git 준비에 실패/).waitFor();await immediateWiki.getByText('오류 상세',{exact:true}).click();await immediateWiki.getByText('wiki_snapshot_failed',{exact:true}).waitFor();
+ await p.screenshot({path:path.join(dir,'wiki-failure-detail.png'),animations:'disabled'});await p.keyboard.press('Escape');await p.waitForTimeout(250);assert.equal(await immediateWiki.count(),0);
+ checks.push('Wiki opens after model picker closes, shows scanning immediately and retains staged failure details without reopening');
+
+ await p.goto(origin+'/?context&modals&integrated&catalog');await closeSidebar();
  await selectTask();await closeSidebar();await p.evaluate(()=>{window.slowStart=true;});await p.getByRole('textbox',{name:'추가 요청',exact:true}).fill('느린 시작 검사');
  await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('button',{name:'요청 접수 중',exact:true}).waitFor();
  await p.getByRole('button',{name:'설정',exact:true}).click();await p.getByRole('dialog',{name:'설정',exact:true}).waitFor();

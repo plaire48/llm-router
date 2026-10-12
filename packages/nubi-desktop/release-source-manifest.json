@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "0bc8feeb6927862a3868e21d186a04ee8fa72fcea21d9b8258a405d756f23fa0",
-      "bytes": 6335
+      "sha256": "91ac12c95092ba8b7f5b3cc8ff0d0c669b93d82e054627bcdbe8723355a6cc3b",
+      "bytes": 6373
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1383,8 +1383,8 @@
     },
     {
       "path": "packages/nubi-desktop/AGENTS.md",
-      "sha256": "361971d7904ada43cc39e1c91532af10a5664ee789f1a4951d7f7c7b3291aa12",
-      "bytes": 85276
+      "sha256": "dc70d8c646264d672d6ebd21f7deaec57940e1fada65c3a56add51c5b759d452",
+      "bytes": 85854
     },
     {
       "path": "packages/nubi-desktop/THIRD-PARTY-NOTICES.md",
@@ -1413,8 +1413,8 @@
     },
     {
       "path": "packages/nubi-desktop/design/workspace-identity.css",
-      "sha256": "854b8c40357c603c9026ff6e92c0a7b9f47edefb9d319a2f3500309532d8b6f5",
-      "bytes": 172365
+      "sha256": "dc8f8c2b1b4957ac8b4146c38e738b8eab7fc941704fdf12ae5f1d18bce3136c",
+      "bytes": 173196
     },
     {
       "path": "packages/nubi-desktop/design/workspace-typography.css",
@@ -1427,9 +1427,14 @@
       "bytes": 11497
     },
     {
+      "path": "packages/nubi-desktop/docs/MAIL-WIKI-PROGRESS-2026-10-12.md",
+      "sha256": "31b94e6243370952259a379ec265fd843d5c770f633783da6245fb41eb8c8b7d",
+      "bytes": 4077
+    },
+    {
       "path": "packages/nubi-desktop/docs/PROJECT-NAVIGATION-2026-10-12.md",
-      "sha256": "b0157389299dd2e72af742d21abb0fa8186df295c71be9cc3d3210c100e2ded4",
-      "bytes": 4347
+      "sha256": "927018fb7342e91c8128140bfb3c1c00cddde3e13ae5022a9c5552f42bf71f6c",
+      "bytes": 4835
     },
     {
       "path": "packages/nubi-desktop/docs/WIKI-BRIDGE-RECOVERY-2026-10-12.md",
@@ -1548,13 +1553,13 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/renderer.jsx",
-      "sha256": "bdcede2c30a1aa2a9af193bfe0b2d8540bdd5bc6dc9c30891c1c2a82a650a659",
-      "bytes": 41669
+      "sha256": "7ddd8fce39b3dd09e7a5cc5e1e44f8e95bf55888660e753f1a4ae2c69de6060c",
+      "bytes": 41891
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "89f738ecefaf8bc89a8f55ad8ca9713dd6c3ec6c97f7f67e86c7429253434d67",
-      "bytes": 4113
+      "sha256": "3624cf990a152868ba22bb26f2fba71c465284d1f0664e00aa56f0e4559c04f1",
+      "bytes": 4086
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -1758,8 +1763,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/desktop-features.mjs",
-      "sha256": "b03acf4d57f7dcebd92ceea9ad5e69bb0dee85b2077ba3472327b9b747a680cd",
-      "bytes": 13137
+      "sha256": "fc9a75ffdd4227d4b30e120fbc12ff461eb129e641be455c33bcc6779e2da956",
+      "bytes": 13810
     },
     {
       "path": "packages/nubi-desktop/runtime/document-extract.mjs",
@@ -1848,13 +1853,13 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/mail-worker.mjs",
-      "sha256": "93d1e4bdee5958a596240ef9370d088168438c033a0cbce25abe1d11f31dd2bb",
-      "bytes": 484
+      "sha256": "17e5f381c11df252fd7620a558404eb810e8449274ca72134d6ea51e4b78ef39",
+      "bytes": 490
     },
     {
       "path": "packages/nubi-desktop/runtime/mail.mjs",
-      "sha256": "e056fe6e20040def771687d828cfef97882bd16e28cc114c2f6f1c0c78ae0eeb",
-      "bytes": 47458
+      "sha256": "8e201e44f41ac8922a42d783d44a4c8559ee8ceb84f43894baff49803ab90df7",
+      "bytes": 47701
     },
     {
       "path": "packages/nubi-desktop/runtime/metadata-contract.mjs",
@@ -2057,9 +2062,14 @@
       "bytes": 20517
     },
     {
+      "path": "packages/nubi-desktop/runtime/wiki-initialization-error.mjs",
+      "sha256": "d7373b8588aae7e1969197ecc262460e91445ef453949faf16bea410e63ea187",
+      "bytes": 944
+    },
+    {
       "path": "packages/nubi-desktop/runtime/wiki-snapshot.mjs",
-      "sha256": "1fd9b2764627b28c04d63a3f75cbf396005402da246f9b3cf2d0df6d9db218f5",
-      "bytes": 3351
+      "sha256": "12557ccab9e7769dca01067a286851bc8ed53a0a4318560e5a583d8d4b0e79ff",
+      "bytes": 3864
     },
     {
       "path": "packages/nubi-desktop/runtime/wiki-update.mjs",
@@ -2108,8 +2118,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
-      "sha256": "338da17448a45dc8fb7f0059ecec5115e695345c1ecebd4e7a1bc047caf1ade7",
-      "bytes": 3570
+      "sha256": "74a7c2f8f47d6060d834ccd052ddf8e3837e203795bd655529fc517df73bc5b5",
+      "bytes": 3594
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
@@ -2198,13 +2208,13 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/check-mail-ui.mjs",
-      "sha256": "1188149f35c2fced2296eb5bdceea11a96c405096f2da05545fab50452a9fc6d",
-      "bytes": 6000
+      "sha256": "986c7ed4d20744beade6e206227e5274f9d13adb9d9930e2c60a6c964185d7f4",
+      "bytes": 7270
     },
     {
       "path": "packages/nubi-desktop/scripts/check-modals.mjs",
-      "sha256": "7fd89ad01a39b8d5baadcb74218faa01d9a94aaa90f8ee0ee9544354d7b68c7b",
-      "bytes": 21557
+      "sha256": "60a40ccc1d607fe1993f810f03bc1853760d228f6daf87b51fd3b4ccc1413655",
+      "bytes": 23163
     },
     {
       "path": "packages/nubi-desktop/scripts/check-shared-ui.mjs",
@@ -2662,9 +2672,14 @@
       "bytes": 4930
     },
     {
+      "path": "packages/nubi-desktop/tests/mail-connection-errors.test.mjs",
+      "sha256": "d5bc14dbf2d58c6e4cbdb98b6972fc284ee3ad0bfa6ead7668dabfa43cc44627",
+      "bytes": 2397
+    },
+    {
       "path": "packages/nubi-desktop/tests/mail-fixture.jsx",
-      "sha256": "501c3252aae5f2a77bc4534e7620186775ea0f4f0b0abec573feecedefa848a3",
-      "bytes": 2329
+      "sha256": "9ea95f1f2b67fb02bc28c5c5b282bc2e3f7d835f41ac6530c050fd1838d1413c",
+      "bytes": 2379
     },
     {
       "path": "packages/nubi-desktop/tests/mail-image.test.mjs",
@@ -2688,8 +2703,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/mail.test.mjs",
-      "sha256": "bb90453e37763c62a58b505bbbd91acfb958f9e20df2329e745b6d34a40ea5dc",
-      "bytes": 19793
+      "sha256": "ae718a12d0c4544c932e01f8066d554c30e640789392cc618c46b26588d856c6",
+      "bytes": 20526
     },
     {
       "path": "packages/nubi-desktop/tests/model-catalog-refresh.test.mjs",
@@ -2848,8 +2863,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/shared-ui-fixture.jsx",
-      "sha256": "a9bfee92c27de4c1f5be0ccee44b8eedfaa640ef7334bee8da62706e7a132d8a",
-      "bytes": 28485
+      "sha256": "9b8f8de0977d5d50c68d764d4bf1d5df48354df1d473bf08ca6fb6bc10c463a6",
+      "bytes": 28545
     },
     {
       "path": "packages/nubi-desktop/tests/shell-encoding.test.mjs",
@@ -2918,8 +2933,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-initialization-flow.test.mjs",
-      "sha256": "a973533f6722f78cd8b4eb63adf892e356f4b420bc29ee10ab42c4629a392fdf",
-      "bytes": 6072
+      "sha256": "a2be2230e8891828c5bc74370459aea8653b3316668635885af3b4d399fa59fb",
+      "bytes": 8822
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-steering.test.mjs",
@@ -3103,8 +3118,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/MailLibrary.jsx",
-      "sha256": "5a2956ac5a1353a31f0a041c181e9ec921b931aaf58d07764ae62e6d0befd43c",
-      "bytes": 17258
+      "sha256": "671ce0a579f977c655959c2117ad6dde61850ec2f27b7cc80a267a1110fb35cf",
+      "bytes": 17690
     },
     {
       "path": "packages/nubi-desktop/ui/MailLocalControls.jsx",
@@ -3233,8 +3248,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/WikiInitializationProgress.jsx",
-      "sha256": "4106810d1cf12df025a9b96b14a752d98a8bba2d98bcf740c17a5d34a68791af",
-      "bytes": 4074
+      "sha256": "d16092707a7f0e9633cc470b1f9e5e2eeb5d764d471e2eec2504bf51b4eacefd",
+      "bytes": 6146
     },
     {
       "path": "packages/nubi-desktop/ui/WikiUpdate.jsx",
@@ -3243,8 +3258,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",
-      "sha256": "b4e8453db64b3b39573e4c48dc123fd1144ea68335ece1affdc6e404f3e5c315",
-      "bytes": 94448
+      "sha256": "1e8ac48f34a212c53c05d2cb5490a5331f05faf8c49570abf62a66bf29b16476",
+      "bytes": 94611
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",
@@ -3350,6 +3365,11 @@
       "path": "packages/nubi-desktop/ui/ghes-account.css",
       "sha256": "4333a545804a08550aac3a0676ea9bc464117a606e7894aabe63708dfd59b625",
       "bytes": 7299
+    },
+    {
+      "path": "packages/nubi-desktop/ui/mail-connection-error.mjs",
+      "sha256": "3f6c4ef28fc9134a3629f7847a063b4e83c56aa8164a661189991c774d444b1c",
+      "bytes": 2839
     },
     {
       "path": "packages/nubi-desktop/ui/mail-search-draft.mjs",
@@ -4623,8 +4643,8 @@
     },
     {
       "path": "packages/openwiki/src/connectors/sources/pop3.mjs",
-      "sha256": "26a53e2ebae218e24e002ce02a0c34e76e21efefa6ffd02c1c26d4497e5cdb42",
-      "bytes": 7720
+      "sha256": "a63b44e2a5df97146be3e725633922d25aa6c6a4e74bba5a1b6ec4b7ac4c853b",
+      "bytes": 9032
     },
     {
       "path": "packages/openwiki/src/connectors/sources/slack.ts",

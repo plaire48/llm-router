@@ -51,7 +51,7 @@ try {
   if (!$captured) {throw 'Native extraction percentage was not observed'}
   if (!$etaCaptured) {throw 'Measured extraction remaining time was not observed'}
   if (!(($observations.text -join ' ') -match '진행 \d+분 \d+초')) {throw 'Native elapsed time was not observed'}
-  if (!(($observations.text -join ' ') -match '남은 시간 계산 중')) {throw 'ETA preparation state was not observed'}
+  if (($observations.text -join ' ') -match '남은 시간 계산 중') {throw 'Unknown remaining time must not stay as a calculating placeholder'}
   if (!(Test-Path (Join-Path $Target 'Nubi Workspace.exe'))) {throw 'Visible installer used unexpected destination'}
   @{elapsedSeconds=[Math]::Round($clock.Elapsed.TotalSeconds,2);nativeVisibleProgress=$true;estimatedRemainingObserved=$etaCaptured;observations=$observations.ToArray()} | ConvertTo-Json -Depth 5 | Set-Content verification/windows-installer-experience.json
 } finally {

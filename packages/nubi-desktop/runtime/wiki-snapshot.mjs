@@ -4,6 +4,17 @@ import {git,listFiles,readSource,fail} from './files.mjs';
 import {OpenWikiIgnore} from '../generated/openwiki.mjs';
 
 export const WIKI_CHECKPOINT='openwiki/.nubi-sources.json';
+export async function hasWikiPages(root){
+  async function visit(directory){
+    try{if((await lstat(directory)).isSymbolicLink())fail('path_scope');}catch(error){if(error.code==='ENOENT')return false;throw error;}
+    for(const entry of await readdir(directory,{withFileTypes:true})){
+      if(entry.isFile()&&entry.name.endsWith('.md'))return true;
+      if(entry.isDirectory()&&await visit(path.join(directory,entry.name)))return true;
+    }
+    return false;
+  }
+  return visit(path.join(root,'openwiki'));
+}
 export async function wikiSources(root){
   root=await realpath(root);
   const listed=await listFiles(root);if(listed.truncated)fail('wiki_source_limit');

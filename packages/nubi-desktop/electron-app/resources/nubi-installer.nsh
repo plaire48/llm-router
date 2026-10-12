@@ -45,9 +45,9 @@
     IntOp $0 $NubiElapsed / 60
     IntOp $1 $NubiElapsed % 60
     StrCpy $NubiElapsedLabel "$0분 $1초"
-    StrCpy $4 "진행 $NubiElapsedLabel / 남은 시간 계산 중"
+    StrCpy $4 "진행 $NubiElapsedLabel"
     ${If} $NubiPhase == "앱 파일 풀기"
-    ${AndIf} $5 >= 2
+    ${AndIf} $5 >= 1
       StrCpy $2 $NubiExtractPercent
         ${If} $2 > 0
         ${AndIf} $2 < 100

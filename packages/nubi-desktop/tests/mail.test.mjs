@@ -14,7 +14,7 @@ class PersonalMail extends BasePersonalMail{constructor(host,options){super(host
 async function fixture(t){
  const root=await mkdtemp(path.join(os.tmpdir(),'nubi-pop3-'));
  execFileSync('openssl',['req','-x509','-newkey','rsa:2048','-nodes','-keyout',path.join(root,'key.pem'),'-out',path.join(root,'cert.pem'),'-subj','/CN=localhost','-addext','subjectAltName=DNS:localhost','-days','1'],{stdio:'ignore'});
- const cert=await readFile(path.join(root,'cert.pem')),commands=[],mailbox=[],sockets=new Set();let authFail=false,uidlFail=false;
+ const cert=await readFile(path.join(root,'cert.pem')),commands=[],mailbox=[],sockets=new Set();let authFail=false,uidlFail=false,uidlText=null;
  const server=createServer({key:await readFile(path.join(root,'key.pem')),cert},socket=>{
   sockets.add(socket);socket.on('close',()=>sockets.delete(socket));socket.on('error',()=>{});socket.write('+OK fixture\r\n');let buffer='';
   async function multi(content){socket.write(Buffer.concat([Buffer.from('+OK\r\n'),Buffer.from(content),Buffer.from('\r\n')]));socket.write('.');await new Promise(r=>setTimeout(r,4));socket.write('\r');await new Promise(r=>setTimeout(r,4));socket.write('\n');}
@@ -22,13 +22,13 @@ async function fixture(t){
    if(cmd==='USER')socket.write('+OK\r\n');
    else if(cmd==='PASS')socket.write(authFail?'-ERR secret-from-server\r\n':'+OK\r\n');
    else if(cmd==='CAPA')void multi('UIDL\r\nLOGIN-DELAY 65');
-   else if(cmd==='UIDL')uidlFail?socket.write('-ERR unsupported\r\n'):void multi(mailbox.map((m,i)=>`${i+1} ${m.uidl}`).join('\r\n'));
+   else if(cmd==='UIDL')uidlFail?socket.write('-ERR unsupported\r\n'):void multi(uidlText??mailbox.map((m,i)=>`${i+1} ${m.uidl}`).join('\r\n'));
    else if(cmd==='RETR')void multi(mailbox[Number(arg)-1].raw);
    else if(cmd==='QUIT')socket.end('+OK bye\r\n');else socket.write('-ERR bad command\r\n');
   }});
  });await new Promise(r=>server.listen(0,'127.0.0.1',r));
  t.after(async()=>{for(const socket of sockets)socket.destroy();await new Promise(r=>server.close(r));await rm(root,{recursive:true,force:true});});
- return {root,commands,mailbox,endpoint:{host:'127.0.0.1',port:server.address().port,servername:'localhost',tlsOptions:{ca:cert}},auth:value=>authFail=value,uidl:value=>uidlFail=value};
+ return {root,commands,mailbox,endpoint:{host:'127.0.0.1',port:server.address().port,servername:'localhost',tlsOptions:{ca:cert}},auth:value=>authFail=value,uidl:value=>uidlFail=value,listing:value=>uidlText=value};
 }
 // The company profile: automatic Wiki summaries stay on by default, and the password is taken as typed. The Gmail test
 // profile (the default of a new install, 2026-10-04) starts with summaries off and takes an address and a 16-character
@@ -47,9 +47,10 @@ test('TLS, split terminator, Korean MIME, attachment bytes, stable UIDL and no D
  let result=await pullPop3({...credentials,endpoint:f.endpoint});assert.deepEqual(result.uidls,['old']);assert.equal(result.mails.length,0);assert.equal(result.delaySeconds,65);
  f.mailbox.unshift({uidl:'new',raw:multipart});result=await pullPop3({...credentials,endpoint:f.endpoint,known:['old']});assert.equal(result.mails.length,1);assert.match(result.mails[0].normalized.text,/안녕/);assert.match(result.mails[0].attachments[0].text,/계약/);
  result=await pullPop3({...credentials,endpoint:f.endpoint,known:['old','new']});assert.equal(result.mails.length,0);assert(!f.commands.includes('DELE'));
- await assert.rejects(pullPop3({...credentials,endpoint:{...f.endpoint,tlsOptions:{}}}),/mail_tls_error/);
+ await assert.rejects(pullPop3({...credentials,endpoint:{...f.endpoint,tlsOptions:{}}}),/mail_tls_untrusted/);
+ await assert.rejects(pullPop3({...credentials,endpoint:{...f.endpoint,servername:'wrong.example.test'}}),/mail_tls_hostname/);
  f.auth(true);await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_auth_failed/);f.auth(false);
- f.uidl(true);await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_connection_failed/);
+ f.uidl(true);await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_listing_failed/);
  await assert.rejects(pullPop3({...credentials,user:'bad\r\nDELE 1',endpoint:f.endpoint}),/mail_input_invalid/);
 });
 test('durable personal intake, attachments, no secret persistence, restart and user edits',async t=>{
@@ -83,11 +84,15 @@ test('cancelled connection cannot activate or persist a late result',async t=>{
  const mail=new PersonalMail({storageRoot:root},{personalRoot:path.join(root,'personal'),pull:()=>new Promise(r=>release=r)});t.after(async()=>{mail.dispose();await rm(root,{recursive:true,force:true});});
  const pending=mail.call({action:'connect',requestId:'slow',...credentials});await mail.call({action:'cancelConnect',requestId:'slow'});release({uidls:[],mails:[],delaySeconds:60});await assert.rejects(pending,/mail_cancelled/);assert.equal(mail.status().connected,false);assert.equal(mail.rows().length,0);
 });
-test('oversize retrieval is quarantined without starving later mail; invalid UIDLs fail',async t=>{
+test('oversize retrieval is quarantined without starving later mail; duplicate UIDLs remain usable',async t=>{
  const f=await fixture(t);f.mailbox.push({uidl:'huge',raw:Buffer.alloc(10*1024*1024+100,65)},{uidl:'small',raw:simple('small')});
  const result=await pullPop3({...credentials,endpoint:f.endpoint,known:[]});assert.equal(result.failed[0].error,'mail_size_limit');assert.equal(result.failed[0].uidl,'huge');
  const next=await pullPop3({...credentials,endpoint:f.endpoint,known:[],skip:['huge']});assert.equal(next.mails[0].uidl,'small');
- f.mailbox.splice(0,2,{uidl:'duplicate',raw:simple('one')},{uidl:'duplicate',raw:simple('two')});await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_uidl_invalid/);
+ f.mailbox.splice(0,2,{uidl:'duplicate',raw:simple('one')},{uidl:'duplicate',raw:simple('one')});
+ const duplicates=await pullPop3({...credentials,endpoint:f.endpoint,known:[]});assert.deepEqual(duplicates.uidls,['duplicate']);assert.equal(duplicates.mails.length,1);
+ f.listing(' 1\tduplicate  \r\n2   duplicate');const padded=await pullPop3({...credentials,endpoint:f.endpoint,known:['duplicate']});assert.equal(padded.mails.length,0);
+ f.listing('1 first\r\n1 second');await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_uidl_number_conflict/);
+ f.listing('1 invalid extra');await assert.rejects(pullPop3({...credentials,endpoint:f.endpoint}),/mail_uidl_format/);assert(!f.commands.includes('DELE'));
 });
 test('prepared Wiki is reconciled without another model call after interrupted final receipt',async t=>{
  const f=await fixture(t);let calls=0;

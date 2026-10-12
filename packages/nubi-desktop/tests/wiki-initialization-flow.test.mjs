@@ -7,6 +7,7 @@ import {ProjectService} from '../runtime/project-service.mjs';
 import {git,hash} from '../runtime/files.mjs';
 import {RepositoryEvidenceResolver} from '../generated/openwiki.mjs';
 import {wikiUpdateStatus} from '../runtime/wiki-update.mjs';
+import {wikiInitializationError} from '../runtime/wiki-initialization-error.mjs';
 
 async function setup(t,{gitProject=false}={}){
   const temp=await mkdtemp(path.join(os.tmpdir(),'nubi-wiki-flow-')),root=path.join(temp,'source');await mkdir(root);await writeFile(path.join(root,'app.txt'),'initial source\n');
@@ -60,4 +61,35 @@ test('Git updates include the current uncommitted Wiki and still use committed s
   service.wikiUpdater=async({root:copy})=>{assert.match(await readFile(path.join(copy,'openwiki/home.md'),'utf8'),/initial source/);assert.equal((await readFile(path.join(copy,'app.txt'),'utf8')).replace(/\r\n/g,'\n'),'committed change\n');await publish(copy,'# App\n\ncommitted change\n');return {};};
   const proposal=await service.wikiUpdate({method:'propose'});await service.wikiUpdate({method:'run',id:proposal.id,fingerprint:proposal.fingerprint});
   const ready=await settle(service,proposal.id);assert.equal(ready.state,'ready',JSON.stringify(ready));
+});
+
+test('initialization returns its scanning job before a slow listing and cancellation remains responsive',async t=>{
+  const {service}=await setup(t);await rm(path.join(service.root,'openwiki'),{recursive:true});service.store.set('wiki-init',null);
+  let release,entered;const started=new Promise(resolve=>entered=resolve);
+  service.wikiSourceLister=()=>{entered();return new Promise(resolve=>release=resolve);};
+  let modelCalled=false;service.wikiInitializer=async()=>{modelCalled=true;};
+  const first=await service.initializeWiki();assert.equal(first.state,'running');assert.equal(first.stage,'scanning');assert(first.startedAt);
+  await started;assert.equal(service.wikiInitialization().stage,'scanning');
+  service.wikiInitialization({action:'cancel'});assert.equal(service.wikiInitialization().state,'cancelled');
+  release({paths:['app.txt'],truncated:false});await service.wikiInitPromise;
+  assert.equal(modelCalled,false);assert.equal(service.wikiInitialization().state,'cancelled');
+  assert.equal((await service.initializeWiki()).state,'cancelled');
+});
+
+test('a listing failure remains a staged, sanitized retryable result',async t=>{
+  const {service}=await setup(t);await rm(path.join(service.root,'openwiki'),{recursive:true});service.store.set('wiki-init',null);
+  service.wikiSourceLister=async()=>{throw Object.assign(Error('private path and private server reply'),{code:'EACCES'});};
+  await service.initializeWiki();await service.wikiInitPromise;
+  const failure=service.wikiInitialization();assert.equal(failure.state,'attention');assert.equal(failure.stage,'scanning');assert.equal(failure.error,'wiki_permission_denied');assert(!JSON.stringify(failure).includes('private'));
+  service.wikiSourceLister=async()=>({paths:[],truncated:false});
+  const retry=service.wikiInitialization({action:'retry'});assert.equal(retry.state,'running');assert.notEqual(retry.id,failure.id);await service.wikiInitPromise;assert.equal(service.wikiInitialization().error,'wiki_no_sources');
+});
+
+test('Wiki failure diagnostics preserve actionable codes without raw errors',()=>{
+  assert.equal(wikiInitializationError({code:'ENOENT'},'snapshot_git'),'wiki_git_required');
+  assert.equal(wikiInitializationError({code:128,stderr:'private'},'snapshot_git'),'wiki_snapshot_failed');
+  assert.equal(wikiInitializationError({code:'ENOSPC'},'publishing'),'wiki_disk_full');
+  assert.equal(wikiInitializationError({code:'EEXIST'},'publishing'),'wiki_output_conflict');
+  assert.equal(wikiInitializationError(Error('response_invalid'),'planning'),'response_invalid');
+  assert.equal(wikiInitializationError(Error('unknown_private_reply'),'planning'),'wiki_failed');
 });

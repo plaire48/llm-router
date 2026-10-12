@@ -6,6 +6,24 @@ export const POP3_SERVER=Object.freeze({host:'pop3.samsung.net',port:995,tls:tru
 const MAX_UIDL=4*1024*1024, MAX_MAIL=10*1024*1024;
 export const digest=value=>createHash('sha256').update(value).digest('hex');
 
+export function parseUidlListing(buffer){
+  // Tolerate horizontal padding used by some servers, without changing the ID.
+  // RFC 1939 permits identical copies to share a UIDL. Keep one stable identity
+  // instead of rejecting the entire mailbox or suffixing a moving message number.
+  if(buffer.some(byte=>byte>126||byte<32&&![9,10,13].includes(byte)))throw new Error('mail_uidl_characters');
+  const entries=[],numbers=new Set(),ids=new Set();
+  for(const line of buffer.toString('ascii').split('\r\n')){
+    if(!line)continue;
+    const match=/^[ \t]*([1-9]\d*)[ \t]+([!-~]{1,70})[ \t]*$/.exec(line);
+    if(!match)throw new Error('mail_uidl_format');
+    const number=Number(match[1]),uidl=match[2];
+    if(!Number.isSafeInteger(number)||numbers.has(number))throw new Error('mail_uidl_number_conflict');
+    numbers.add(number);
+    if(!ids.has(uidl)){ids.add(uidl);entries.push({number,uidl});}
+  }
+  return entries;
+}
+
 // node-pop3 0.15.3 does not retain a terminator split across TCP chunks.
 // Keep five bytes until the complete terminator arrives; leave commands, TLS,
 // greeting parsing and stream ownership to the pinned library.
@@ -28,9 +46,17 @@ async function bytes(stream,max){
   // Latin1 round-trip preserves MIME bytes, including legacy Korean encodings.
   return Buffer.from(Buffer.concat(chunks).toString('latin1').replace(/(^|\r\n)\.\./g,'$1.'),'latin1');
 }
-function safeError(error,endpoint){
-  if(['mail_size_limit','mail_uidl_invalid','mail_protocol','mail_cancelled','mail_timeout'].includes(error?.message))return error.message;
-  if(/CERT|TLS|SSL|SELF_SIGNED|VERIFY|ALTNAME/i.test(error?.code||''))return 'mail_tls_error';
+export function classifyPop3Error(error,endpoint=POP3_SERVER){
+  if(['mail_size_limit','mail_uidl_invalid','mail_uidl_characters','mail_uidl_format','mail_uidl_number_conflict','mail_protocol','mail_cancelled','mail_timeout'].includes(error?.message))return error.message;
+  const code=String(error?.code||error?.cause?.code||'');
+  if(code==='ERR_TLS_CERT_ALTNAME_INVALID')return 'mail_tls_hostname';
+  if(['CERT_HAS_EXPIRED','CERT_NOT_YET_VALID'].includes(code))return 'mail_tls_expired';
+  if(['SELF_SIGNED_CERT_IN_CHAIN','DEPTH_ZERO_SELF_SIGNED_CERT','UNABLE_TO_VERIFY_LEAF_SIGNATURE','UNABLE_TO_GET_ISSUER_CERT','UNABLE_TO_GET_ISSUER_CERT_LOCALLY','CERT_UNTRUSTED'].includes(code))return 'mail_tls_untrusted';
+  if(/CERT|TLS|SSL|SELF_SIGNED|VERIFY|ALTNAME/i.test(code))return 'mail_tls_error';
+  if(['ENOTFOUND','EAI_AGAIN'].includes(code))return 'mail_dns_failed';
+  if(code==='ECONNREFUSED')return 'mail_connection_refused';
+  if(code==='ETIMEDOUT'||error?.eventName==='timeout')return 'mail_timeout';
+  if(error?.eventName==='bad-server-response')return 'mail_protocol';
   if(error?.command?.startsWith('PASS')||error?.command?.startsWith('USER')){
     // Classify only known Gmail replies. Never return server text or credentials.
     if(endpoint.host==='pop.gmail.com'){
@@ -42,6 +68,8 @@ function safeError(error,endpoint){
     }
     return 'mail_auth_failed';
   }
+  if(error?.command==='UIDL')return 'mail_listing_failed';
+  if(error?.command?.startsWith('RETR'))return 'mail_retrieval_failed';
   return 'mail_connection_failed';
 }
 export async function pullPop3({user,password,known=null,skip=[],signal,endpoint=POP3_SERVER,timeoutMs=60000}){
@@ -60,10 +88,7 @@ export async function pullPop3({user,password,known=null,skip=[],signal,endpoint
       try{const [,stream]=await client.command('CAPA');const text=(await bytes(stream,65536)).toString('ascii');const value=text.match(/^LOGIN-DELAY\s+(\d+)/im)?.[1];if(value){const seconds=Number(value);if(!Number.isSafeInteger(seconds)||seconds>2147483)throw new Error('mail_protocol');delay=Math.max(60,seconds);}}
       catch(error){if(error.command!=='CAPA'||error.eventName!=='error')throw error;}
       const [,stream]=await client.command('UIDL');
-      const uidlBytes=await bytes(stream,MAX_UIDL);if(uidlBytes.some(byte=>byte>126||byte<32&&byte!==10&&byte!==13))throw new Error('mail_uidl_invalid');
-      const listing=uidlBytes.toString('ascii').split('\r\n').filter(Boolean);
-      const entries=listing.map(line=>{const match=/^([1-9]\d*) ([!-~]{1,70})$/.exec(line);if(!match)throw new Error('mail_uidl_invalid');return {number:Number(match[1]),uidl:match[2]};});
-      if(new Set(entries.map(e=>e.uidl)).size!==entries.length||new Set(entries.map(e=>e.number)).size!==entries.length||entries.some(e=>!Number.isSafeInteger(e.number)))throw new Error('mail_uidl_invalid');
+      const entries=parseUidlListing(await bytes(stream,MAX_UIDL));
       const seen=new Set([...(known||[]),...skip]),pending=known===null?[]:entries.filter(e=>!seen.has(e.uidl));
       const mails=[],failed=[];let total=0,terminated=false;
       for(const entry of pending.slice(0,5)){
@@ -89,6 +114,6 @@ export async function pullPop3({user,password,known=null,skip=[],signal,endpoint
       if(!terminated)await client.command('QUIT');
       return {uidls:entries.map(e=>e.uidl),delaySeconds:delay,mails,failed,remaining:Math.max(0,pending.length-mails.length-failed.length)};
     })()]);
-  }catch(error){throw new Error(safeError(error,endpoint));}
+  }catch(error){throw new Error(classifyPop3Error(error,endpoint));}
   finally{clearTimeout(timer);signal?.removeEventListener('abort',interrupt);stop();}
 }
