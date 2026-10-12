@@ -30,9 +30,11 @@ async function generated(t){
 }
 const commit=async(root,file,content)=>{await writeFile(path.join(root,file),content);await git(root,['add','-A']);await git(root,['commit','-qm','change '+file]);};
 
-test('a Wiki without a generation record is unknown, and a current one is current',async t=>{
+test('an existing Wiki without a generation record can recover through an approved update, and a current one is current',async t=>{
   const plain=await fixture(t);
-  assert.equal((await wikiUpdateStatus(plain.root)).state,'unknown');
+  assert.equal((await wikiUpdateStatus(plain.root)).state,'stale');
+  assert.equal((await wikiUpdateStatus(plain.root)).reason,'no_generation_record');
+  assert.equal((await plain.service.wikiUpdate({method:'propose'})).state,'proposed');
   const {root}=await generated(t);
   const status=await wikiUpdateStatus(root);
   assert.equal(status.state,'current',JSON.stringify(status));assert.deepEqual(status.changedFiles,[]);assert.deepEqual(status.stalePages,[]);
@@ -215,9 +217,14 @@ test('a response rejected by the model connection is asked for again, with a req
   assert.equal(result.skipped,false);assert.equal(attempts,2);
   assert.notEqual(sent[0].at(-1).content,TEXT_REPLY.content,'the first request is as the runner made it');
   assert.deepEqual(sent[1].at(-1),TEXT_REPLY,'the second asks for a short reply when no tool call is needed');
-  let rejected=0;service.providers.complete=async()=>{rejected++;throw new Error('response_invalid');};
-  await assert.rejects(defaultWikiUpdater(service,{load})({root,signal:new AbortController().signal,onEvent(){},updateId:'u4'}),/response_invalid/,'a third rejection ends the run');
-  assert.equal(rejected,3,'the request and two more');
+  // Measured 2026-10-12 (S29 diagnosis): three rejections in a row ended a five-minute generation. The request is
+  // asked up to three more times; the fourth rejection ends the run.
+  let rejected=0;service.providers.complete=async()=>{rejected++;if(rejected<=3)throw new Error('response_invalid');return {content:'done',calls:[]};};
+  assert.equal((await defaultWikiUpdater(service,{load})({root,signal:new AbortController().signal,onEvent(){},updateId:'u4'})).skipped,false,'three rejections are survived');
+  assert.equal(rejected,4,'the request and three more');
+  rejected=0;service.providers.complete=async()=>{rejected++;throw new Error('response_invalid');};
+  await assert.rejects(defaultWikiUpdater(service,{load})({root,signal:new AbortController().signal,onEvent(){},updateId:'u5'}),/response_invalid/,'a fourth rejection ends the run');
+  assert.equal(rejected,4,'the request and three more, then the error');
 });
 
 // The agent is told when the Wiki is behind its sources, from Git alone, so an

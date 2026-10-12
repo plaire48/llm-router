@@ -27,7 +27,7 @@ function draw(width,height,{size,x,y,sidebar=false}){
     for(let c=0;c<3;c++){const value=top[c]*(1-t)+bottom[c]*t;png.data[at+c]=Math.round(value+(255-value)*glow);}
     png.data[at+3]=255;
   }
-  // Area sampling preserves soft alpha edges when reducing the 1280px master.
+  // Area sampling preserves soft alpha edges when reducing the original master.
   const ratio=bird.width/size;
   for(let dy=0;dy<size;dy++)for(let dx=0;dx<size;dx++){
     const left=dx*ratio,right=(dx+1)*ratio,top=dy*ratio,bottom=(dy+1)*ratio;

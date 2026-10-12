@@ -3,6 +3,7 @@ import {Icon} from '@e2e/cx-design-system';
 
 const stages={reading:'파일 읽기',snapshot:'분석 준비',planning:'구성 분석',replanning:'구성 다시 분석',generating:'문서 작성',finalizing:'문서 검토',publishing:'저장 확인'};
 const states={waiting_model:'위키 모델 연결 대기',waiting_source:'위키 프로젝트 선택 대기',completed:'위키 준비 완료',existing:'위키 연결됨',attention:'위키 확인 필요',cancelled:'위키 준비 중지됨'};
+const errors={wiki_interrupted:'앱이 종료되어 위키 준비가 멈췄어요. 다시 시도해 주세요.',source_stale:'원본 파일이 바뀌었어요. 최신 파일로 다시 시도해 주세요.',provider_changed:'모델이 바뀌었어요. 선택한 모델로 다시 시도해 주세요.',wiki_git_required:'위키 준비에 필요한 Git을 찾지 못했어요. Git 설치를 확인해 주세요.',wiki_source_limit:'파일이 너무 많아요. 더 작은 프로젝트 폴더를 선택해 주세요.',unauthorized:'모델 로그인을 다시 확인해 주세요.',expired_token:'모델 로그인이 만료됐어요. 다시 연결해 주세요.',response_invalid:'모델 응답을 읽지 못했어요. 다시 시도해 주세요.'};
 function elapsed(start,end){
   const seconds=Math.max(0,Math.floor((end-start)/1000));
   if(seconds<60)return `${seconds}초`;
@@ -31,7 +32,8 @@ export function WikiInitializationProgress({job, inline=false}) {
     </div>
     {!inline&&running&&percent===null&&<div className="nubi-progress is-indeterminate" role="progressbar" aria-label={title}><span/></div>}
     {!inline&&percent!==null&&<div className="nubi-progress" role="progressbar" aria-label={`${title} 진행률`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%${job.total>0?` (${job.completed}/${job.total})`:''}`}><span style={{width:`${percent}%`}}/></div>}
-    {!inline&&running&&job.total>0&&percent!==null&&<small>{job.completed}/{job.total}{['reading','snapshot'].includes(job.stage)?'개 파일':'개 문서'}</small>}
+    {!inline&&running&&job.total>0&&percent!==null&&<small>{job.completed}/{job.total}{['reading','snapshot','publishing'].includes(job.stage)?'개 파일':'개 문서'}</small>}
     {!inline&&running&&<small className="nubi-wiki-eta">{remaining!==null?`현재 단계 약 ${elapsed(0,remaining*1000)} 남음`:'남은 시간 계산 중'}</small>}
+    {!inline&&job.state==='attention'&&<small>{errors[job.error]||'위키 준비를 마치지 못했어요. 다시 시도해 주세요.'}</small>}
   </div>;
 }

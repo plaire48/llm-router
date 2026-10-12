@@ -26,7 +26,7 @@ for(const [file,expected] of Object.entries(sources)){
     replace('!insertmacro installApplicationFiles','!insertmacro NubiStage "설치 파일 준비"\n!insertmacro installApplicationFiles');
     replace('!insertmacro registryAddInstallInfo','!insertmacro NubiStage "바로가기 등록"\n!insertmacro registryAddInstallInfo');
   }else{
-    replace('  Nsis7z::Extract "${FILE}"\n  Pop $R0','  !insertmacro NubiStage "앱 파일 풀기"\n  Nsis7z::ExtractWithDetails "${FILE}" "파일 풀기 %s"\n  Pop $R0');
+    replace('  Nsis7z::Extract "${FILE}"\n  Pop $R0','  !insertmacro NubiStage "앱 파일 풀기"\n  GetFunctionAddress $NubiExtractCallback NubiExtractionProgress\n  Nsis7z::ExtractWithCallback "${FILE}" $NubiExtractCallback\n  Pop $R0');
     replace('    CopyFiles /SILENT','    !insertmacro NubiStage "앱 파일 배치"\n    CopyFiles /SILENT');
   }
   await writeFile(path.join(output,path.basename(file)),text);

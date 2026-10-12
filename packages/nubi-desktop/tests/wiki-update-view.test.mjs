@@ -36,6 +36,8 @@ test('a finished update lists the pages to apply and what is left out',()=>{
   assert.match(empty.lines.join(' '),/바뀐 페이지가 없어요/);assert.deepEqual(empty.actions,['discard']);
   const skipped=wikiUpdateView({status:stale,update:{state:'ready',changes:[{path:'openwiki/.last-update.json',change:'modified'}],outside:[],result:{skipped:true}}});
   assert.match(skipped.lines.join(' '),/다시 쓸 페이지가 없다고 판단/,'a run that OpenWiki found unnecessary says so');
+  assert.deepEqual(skipped.pages,[],'internal provenance files are not shown as pages');
+  assert.deepEqual(skipped.actions,['apply','discard'],'a metadata-only update can still be applied');
   const cited=wikiUpdateView({status:stale,update:{state:'ready',changes:[{path:'openwiki/home.md',change:'modified'}],outside:['AGENTS.md'],outsideEvidence:[{page:'openwiki/home.md',path:'AGENTS.md'}]}});
   assert.match(cited.lines.join(' '),/근거로 인용한 페이지가 있어요.*openwiki\/home\.md\(AGENTS\.md\)/,'pages that cite a file that is not applied are named');
 });

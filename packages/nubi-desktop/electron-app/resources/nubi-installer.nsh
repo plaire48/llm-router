@@ -8,8 +8,8 @@
 !define MUI_FINISHPAGE_TITLE "누비 Workspace 설치 완료"
 !define MUI_FINISHPAGE_TEXT "준비가 끝났어요. 누비 Workspace를 시작하세요."
 !define MUI_FINISHPAGE_RUN_TEXT "누비 Workspace 실행"
-!define MUI_HEADERIMAGE_BITMAP_STRETCH AspectFitHeight
-!define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH AspectFitHeight
+!define MUI_HEADERIMAGE_BITMAP_STRETCH FitControl
+!define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH FitControl
 
 !macro customHeader
   ShowInstDetails hide
@@ -22,6 +22,10 @@
   Var NubiLog
   Var NubiTimer
   Var NubiPhaseStarted
+  Var NubiExtracted
+  Var NubiExtractTotal
+  Var NubiExtractPercent
+  Var NubiExtractCallback
   Function NubiTick
     Push $0
     Push $1
@@ -37,14 +41,7 @@
     StrCpy $4 "경과 $NubiElapsed초 / 남은 시간 계산 중"
     ${If} $NubiPhase == "앱 파일 풀기"
     ${AndIf} $5 >= 2
-      FindWindow $0 "#32770" "" $HWNDPARENT
-      GetDlgItem $1 $0 1006
-      SendMessage $1 ${WM_GETTEXT} ${NSIS_MAX_STRLEN} "STR:$2"
-      StrLen $3 "파일 풀기 "
-      StrCpy $0 $2 $3
-      ${If} $0 == "파일 풀기 "
-        StrCpy $2 $2 "" $3
-        IntOp $2 $2 + 0
+      StrCpy $2 $NubiExtractPercent
         ${If} $2 > 0
         ${AndIf} $2 < 100
           IntOp $3 100 - $2
@@ -55,7 +52,6 @@
           IntOp $3 $3 * 5
           StrCpy $4 "경과 $NubiElapsed초 / 파일 풀기 약 $3초 남음"
         ${EndIf}
-      ${EndIf}
     ${ElseIf} $NubiPhase == "설치 완료"
       StrCpy $4 "경과 $NubiElapsed초"
     ${EndIf}
@@ -64,6 +60,28 @@
     Pop $4
     Pop $3
     Pop $2
+    Pop $1
+    Pop $0
+  FunctionEnd
+  ; The extraction callback runs during real I/O; an nsDialogs timer cannot
+  ; update the standard instfiles page while its installer thread is busy.
+  Function NubiExtractionProgress
+    Pop $NubiExtracted
+    Pop $NubiExtractTotal
+    Push $0
+    Push $1
+    ${If} $NubiExtractTotal > 0
+      System::Int64Op $NubiExtracted * 100
+      Pop $0
+      System::Int64Op $0 / $NubiExtractTotal
+      Pop $NubiExtractPercent
+      IntOp $0 $NubiExtracted / 1048576
+      IntOp $1 $NubiExtractTotal / 1048576
+      SetDetailsPrint textonly
+      DetailPrint "파일 풀기 $NubiExtractPercent% ($0 / $1 MB)"
+      SetDetailsPrint both
+      Call NubiTick
+    ${EndIf}
     Pop $1
     Pop $0
   FunctionEnd

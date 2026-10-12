@@ -3,11 +3,13 @@ $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Drawing
 Add-Type -Path (Join-Path $PSScriptRoot 'InstallerWindow.cs')
 function Save-InstallerCapture([IntPtr]$Window,[string]$Path) {
+  [InstallerWindow]::Foreground($Window)
+  Start-Sleep -Milliseconds 150
   $bounds=[InstallerWindow]::Bounds($Window)
-  $image=[Drawing.Bitmap]::new($bounds[0],$bounds[1])
+  $image=[Drawing.Bitmap]::new($bounds[2],$bounds[3])
   try {
     $graphics=[Drawing.Graphics]::FromImage($image)
-    try {$dc=$graphics.GetHdc();try {[InstallerWindow]::Paint($Window,$dc)} finally {$graphics.ReleaseHdc($dc)}} finally {$graphics.Dispose()}
+    try {$graphics.CopyFromScreen($bounds[0],$bounds[1],0,0,$image.Size)} finally {$graphics.Dispose()}
     $image.Save($Path,[Drawing.Imaging.ImageFormat]::Png)
   } finally {$image.Dispose()}
 }
@@ -47,6 +49,7 @@ try {
   $p.WaitForExit()
   if ($p.ExitCode -ne 0) {throw "Visible installer exit: $($p.ExitCode)"}
   if (!$captured) {throw 'Native extraction percentage was not observed'}
+  if (!$etaCaptured) {throw 'Measured extraction remaining time was not observed'}
   if (!(($observations.text -join ' ') -match '경과 \d+초')) {throw 'Native elapsed time was not observed'}
   if (!(($observations.text -join ' ') -match '남은 시간 계산 중')) {throw 'ETA preparation state was not observed'}
   if (!(Test-Path (Join-Path $Target 'Nubi Workspace.exe'))) {throw 'Visible installer used unexpected destination'}

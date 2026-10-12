@@ -8,7 +8,8 @@
 import {randomUUID} from 'node:crypto';
 import {mkdir,readFile,writeFile,rm,unlink} from 'node:fs/promises';
 import path from 'node:path';
-import {git,hash,fail,readSource,scopedFile} from './files.mjs';
+import {git,hash,fail,readSource,scopedFile,gitOpenFailure} from './files.mjs';
+import {wikiSources,wikiFiles,writeWikiSnapshot,initializeWikiSnapshotGit,checkpointSnapshotWiki,WIKI_CHECKPOINT} from './wiki-snapshot.mjs';
 import {stalePages} from './wiki-evidence.mjs';
 import {OpenWikiIgnore,RepositoryEvidenceResolver,parseRepositoryEvidenceResource} from '../generated/openwiki.mjs';
 import {modelTransport} from './recovery.mjs';
@@ -21,9 +22,22 @@ const counted=ignore=>rel=>rel&&!inWiki(rel)&&!ignore.ignores(rel);
 
 export async function wikiUpdateStatus(root){
   let record;
-  try{record=JSON.parse((await readSource(root,RECORD)).content);}catch{return {state:'unknown',reason:'no_generation_record'};}
+  try{record=JSON.parse((await readSource(root,RECORD)).content);}catch{
+    if(!(await wikiFiles(root)).some(file=>file.path.endsWith('.md')))return {state:'unknown',reason:'no_generation_record'};
+    record={};
+  }
   const lastUpdate={updatedAt:record.updatedAt||null,gitHead:record.gitHead||null,status:record.status||null,language:record.language||null};
-  const head=(await git(root,['rev-parse','HEAD'])).trim(),source=counted(await OpenWikiIgnore.load(root));
+  let head=null;try{head=(await git(root,['rev-parse','HEAD'])).trim();}catch(error){if(!['not_git_repository','git_unavailable'].includes(gitOpenFailure(error)))throw error;}
+  const source=counted(await OpenWikiIgnore.load(root));
+  if(!head||!lastUpdate.gitHead){
+    let checkpoint;try{checkpoint=JSON.parse((await readSource(root,WIKI_CHECKPOINT)).content);}catch{}
+    const files=await wikiSources(root),current=Object.fromEntries(files.map(file=>[file.path,file.hash]));
+    const known=checkpoint?.schemaVersion===1&&checkpoint.files&&typeof checkpoint.files==='object';
+    const changedFiles=known?[...new Set([...Object.keys(checkpoint.files),...Object.keys(current)])].filter(rel=>checkpoint.files[rel]!==current[rel]):[];
+    const pages=await stalePages(root),reason=record.status==='interrupted'?'interrupted':!known?'no_generation_record':null;
+    const uncommitted=head?(await git(root,['status','--porcelain','--untracked-files=all'])).split('\n').filter(Boolean).map(line=>line.slice(3).replace(/^"|"$/g,'')).filter(source):[];
+    return {state:reason||changedFiles.length||pages.length?'stale':'current',...(reason?{reason}:{}),head,lastUpdate,changedFiles,stalePages:pages,uncommitted,sourceMode:head?'committed':'folder'};
+  }
   let changedFiles=[],reason=null;
   if(!lastUpdate.gitHead)reason='no_base';
   else if(lastUpdate.gitHead!==head){
@@ -40,7 +54,8 @@ export async function wikiUpdateStatus(root){
 // The model connections reject a response with more than 8 tool calls, or with neither text nor a tool call
 // (response_invalid). Measured 2026-09-29 with gpt-5.6-sol: OpenWiki's planner read a repository in parallel and
 // asked for more calls; told the limit, it split them. After submit_plan it ended with an empty response; asked
-// for a short reply, it wrote one. A rejected response is asked for again with that request, up to twice.
+// for a short reply, it wrote one. A rejected response is asked for again with that request, up to three more times
+// (2026-10-12: three rejections in a row ended a five-minute generation).
 export const CALL_LIMIT={role:'system',content:'Host limit: return at most 8 tool calls in one response. Split larger sets of calls across responses.'};
 export const TEXT_REPLY={role:'user',content:'Host note: if no tool call is needed now, reply with one short sentence.'};
 const withCallLimit=wire=>{const at=wire.findIndex(message=>message.role!=='system');return at<0?[...wire,CALL_LIMIT]:[...wire.slice(0,at),CALL_LIMIT,...wire.slice(at)];};
@@ -58,12 +73,11 @@ export function defaultWikiUpdater(service,{load=()=>import('../generated/openwi
     await syncBundledSkills?.();
     const invoke=modelTransport(service,{signal,metrics:createRunMetrics({store:service.store,taskId:'wiki-update:'+updateId,runId:updateId})});
     const complete=async(wire,tools,options={})=>{
-      const request=withCallLimit(wire);
-      try{return await invoke(request,tools,options.signal||signal,'wiki_update');}
-      catch(error){
-        if(error.message!=='response_invalid')throw error;
-        try{return await invoke([...request,TEXT_REPLY],tools,options.signal||signal,'wiki_update');}
-        catch(again){if(again.message!=='response_invalid')throw again;return invoke([...request,TEXT_REPLY],tools,options.signal||signal,'wiki_update');}
+      const active=service.providers.status();if(!active.connected||active.model!==status.model||active.provider!==status.provider||active.connectionId!==status.connectionId)fail('provider_changed');
+      const request=withCallLimit(wire);let attempt=request;
+      for(let retry=0;;retry++){
+        try{return await invoke(attempt,tools,options.signal||signal,'wiki_update',{retryInvalidResponse:false});}
+        catch(error){if(error.message!=='response_invalid'||retry>=3)throw error;attempt=[...request,TEXT_REPLY];}
       }
     };
     const model=new NubiOpenWikiModel({complete,signal,modelId:status.model,taskId:null});
@@ -125,7 +139,7 @@ async function removeCopy(root,copy){
 }
 
 export async function wikiUpdate({method='status',id,fingerprint}={}){
-  this.ready();const root=this.root;
+  this.ready();const root=this.root,owner=this.store;
   if(method==='status')return {status:await wikiUpdateStatus(root),updates:records(this).slice(0,KEPT).map(visible)};
   if(method==='propose'){
     const status=await wikiUpdateStatus(root);
@@ -147,25 +161,37 @@ export async function wikiUpdate({method='status',id,fingerprint}={}){
     if(value.fingerprint!==fingerprint)fail('wiki_update_changed');
     if(this.wikiUpdateRun)fail('wiki_update_busy');
     // The proposal holds what was stale. A moved HEAD is a different update.
-    if((await git(root,['rev-parse','HEAD'])).trim()!==value.status.head)fail('wiki_update_changed');
+    if(value.status.head&&(await git(root,['rev-parse','HEAD'])).trim()!==value.status.head)fail('wiki_update_changed');
     const copy=path.join(this.store.directory,'wiki-update',value.id);
     await mkdir(path.dirname(copy),{recursive:true});
-    await git(root,['worktree','add','--detach',copy,value.status.head]);
+    const originalWiki=await wikiFiles(root);
+    let folderSources;
+    if(value.status.head)await git(root,['worktree','add','--detach',copy,value.status.head]);
+    else{folderSources=await wikiSources(root);await mkdir(copy,{recursive:true});await writeWikiSnapshot(copy,folderSources);await initializeWikiSnapshotGit(copy);}
+    // Newly generated or edited Wiki files may not be committed. Give OpenWiki
+    // the current pages and provenance, never an older/empty HEAD copy.
+    await rm(path.join(copy,'openwiki'),{recursive:true,force:true});
+    await writeWikiSnapshot(copy,originalWiki);
     const controller=new AbortController(),events=[];
     this.wikiUpdateRun={id:value.id,controller};
     const running=save(this,{...value,state:'running',copy,startedAt:new Date().toISOString(),events:[]});
     const runner=this.wikiUpdater||defaultWikiUpdater(this);
     const finish=async patch=>{
-      const current={...this.store.get('wiki-update:'+value.id),...patch,events:events.slice(-EVENTS),finishedAt:new Date().toISOString()};
+      const current={...running,...(owner.db.isOpen?owner.get('wiki-update:'+value.id):{}),...patch,events:events.slice(-EVENTS),finishedAt:new Date().toISOString()};
       if(!['ready'].includes(current.state))await removeCopy(root,copy);
-      save(this,current);this.wikiUpdateRun=null;
+      if(owner.db.isOpen)owner.set('wiki-update:'+value.id,current);if(this.wikiUpdateRun?.id===value.id)this.wikiUpdateRun=null;
     };
     Promise.resolve().then(async()=>{
       const result=await runner({root:copy,language:value.status.lastUpdate.language,signal:controller.signal,updateId:value.id,onEvent:event=>{events.push({...event,at:new Date().toISOString()});}});
-      if(controller.signal.aborted)return finish({state:'cancelled'});
+      if(controller.signal.aborted||this.store!==owner||this.root!==root)return finish({state:'cancelled'});
+      if(folderSources)await checkpointSnapshotWiki(copy,folderSources);
       const {changes,outside}=await changesOf(copy);
-      // The hashes of the workspace files that the result would replace, as they were when the run started.
-      const base={};for(const change of changes)base[change.path]=await fileHash(root,change.path);
+      // Compare with the actual Wiki snapshot, including deletions of pages that
+      // were never committed. Capture conflict hashes before the model ran.
+      const before=new Map(originalWiki.map(file=>[file.path,file])),after=new Map((await wikiFiles(copy)).map(file=>[file.path,file]));
+      changes.length=0;
+      for(const rel of new Set([...before.keys(),...after.keys()]))if(before.get(rel)?.hash!==after.get(rel)?.hash)changes.push({path:rel,change:!after.has(rel)?'deleted':!before.has(rel)?'added':'modified'});
+      const base={};for(const change of changes)base[change.path]=before.get(change.path)?.hash??null;
       // The runner reports whether preflight proved no generation was needed, and whether the source moved during the run.
       const ready={state:'ready',changes,outside,outsideEvidence:await outsideEvidence(root,copy,changes,outside),base,result:{skipped:result?.skipped===true,...(result?.sourceChanged?{sourceChanged:true}:{})}};
       ready.fingerprint=hash(JSON.stringify([value.id,changes,base]));
@@ -179,6 +205,7 @@ export async function wikiUpdate({method='status',id,fingerprint}={}){
     // A page changed in the workspace since the run is the user's: nothing is overwritten.
     for(const change of value.changes)if(await fileHash(root,change.path)!==value.base[change.path])fail('wiki_update_conflict');
     for(const change of value.changes){
+      let parent=root;for(const segment of change.path.split('/').slice(0,-1)){parent=path.join(parent,segment);await mkdir(parent,{recursive:true});await scopedFile(root,path.relative(root,parent).split(path.sep).join('/'));}
       const target=await scopedFile(root,change.path,{newFile:true});
       if(change.change==='deleted'){await unlink(target).catch(error=>{if(error.code!=='ENOENT')throw error;});continue;}
       await mkdir(path.dirname(target),{recursive:true});

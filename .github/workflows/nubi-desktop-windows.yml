@@ -56,6 +56,10 @@ jobs:
         run: |
           node --test tests/mail-beta-scope.test.mjs tests/mail-search.test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify native OpenWiki initialization and update bridge
+        run: |
+          node --test tests/wiki-initialization-flow.test.mjs tests/wiki-update-bundle.test.mjs tests/wiki-update.test.mjs tests/wiki-update-view.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Download verified upgrade baseline
         env:
           GH_TOKEN: ${{ github.token }}

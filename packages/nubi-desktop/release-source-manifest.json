@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/nubi-desktop-windows.yml",
-      "sha256": "fcc3866a410aacc13283cdd63a70cd9063a2567bf19b22f4aad9b253575923ba",
-      "bytes": 5492
+      "sha256": "5911e1863280e118fe8527277df49a52c19adf811c7a9491f88a3e2be750b1ad",
+      "bytes": 5790
     },
     {
       "path": "extensions/aipro-chat/.gitignore",
@@ -1383,8 +1383,8 @@
     },
     {
       "path": "packages/nubi-desktop/AGENTS.md",
-      "sha256": "ce31cc5ee87c6c5e36b75e06b983f807c0b3009cd1d69adfb11f4432df4f18b7",
-      "bytes": 84073
+      "sha256": "220dc04bb0606c6f429fdec807b9c30922682c142803914aa5cf6b7f2828d905",
+      "bytes": 84607
     },
     {
       "path": "packages/nubi-desktop/THIRD-PARTY-NOTICES.md",
@@ -1528,8 +1528,8 @@
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi-installer.nsh",
-      "sha256": "f54ec295ad4a066851dd05cc649660d58a2c8783d9c04eaa2f753493c76bceb2",
-      "bytes": 3249
+      "sha256": "09276b5c5b7e58f5efa8505e0a5501ddf0d4abd6e936f7a72e888f9e3debc9d0",
+      "bytes": 3777
     },
     {
       "path": "packages/nubi-desktop/electron-app/resources/nubi.png",
@@ -1733,8 +1733,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/desktop-features.mjs",
-      "sha256": "7f4efa8033d0708d0374fd264687805ca67bd9499d6c27436f84cc47541bd76f",
-      "bytes": 12841
+      "sha256": "b03acf4d57f7dcebd92ceea9ad5e69bb0dee85b2077ba3472327b9b747a680cd",
+      "bytes": 13137
     },
     {
       "path": "packages/nubi-desktop/runtime/document-extract.mjs",
@@ -1893,8 +1893,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/project-service.mjs",
-      "sha256": "74c7f730a7c8913dc40ac940b3b2ecac81d118b78f5404dec564457942ba820e",
-      "bytes": 31687
+      "sha256": "d7e5fd49328dd4c22f56ddb4e47bae748f0670e89892d95f10e97542710aad6c",
+      "bytes": 31766
     },
     {
       "path": "packages/nubi-desktop/runtime/project-zip.mjs",
@@ -1918,8 +1918,8 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/recovery.mjs",
-      "sha256": "ed0a43951916061bd15f6be7d2a6b074b2cb774dbe4cfe67c524a821022d1b20",
-      "bytes": 9893
+      "sha256": "a87733db13ea444083e8554dfff0527a370f1ee8d004388c4d05a9fa00f2862b",
+      "bytes": 10333
     },
     {
       "path": "packages/nubi-desktop/runtime/regenerate-answer.mjs",
@@ -2028,13 +2028,18 @@
     },
     {
       "path": "packages/nubi-desktop/runtime/wiki-evidence.mjs",
-      "sha256": "b045b9f249bc9bfe3c7ac93a7056b56c86ecda8185810693a15209f4a3b0e06e",
-      "bytes": 19767
+      "sha256": "e64588e7dd7dba02f997403db06a0cdfabde1262d5d2ed1841b25eb27331053c",
+      "bytes": 20517
+    },
+    {
+      "path": "packages/nubi-desktop/runtime/wiki-snapshot.mjs",
+      "sha256": "1fd9b2764627b28c04d63a3f75cbf396005402da246f9b3cf2d0df6d9db218f5",
+      "bytes": 3351
     },
     {
       "path": "packages/nubi-desktop/runtime/wiki-update.mjs",
-      "sha256": "275f4bab0e9fe2d81b7fa66f8b5bfb3e6d2dc25ee5de9f1fb2adce2e997bab44",
-      "bytes": 13215
+      "sha256": "33a943016b2c69298889b62e2a7a10083f9d3490f864fee55fb2de6731e78259",
+      "bytes": 16185
     },
     {
       "path": "packages/nubi-desktop/runtime/windows-apps.mjs",
@@ -2068,8 +2073,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/InstallerWindow.cs",
-      "sha256": "cfc9dd9379bf3b539049da0cc346b30dcc7e7d043c53fe29ea4ef8d786b1c846",
-      "bytes": 2592
+      "sha256": "7d89bffb4a8dac096c786309a03684bb5327c98574cb05039b7420ecf20d27b3",
+      "bytes": 2808
     },
     {
       "path": "packages/nubi-desktop/scripts/Read-ShellLink.cs",
@@ -2078,8 +2083,8 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-InstallerExperience.ps1",
-      "sha256": "21ffda7b027dac8cb8226a2139d975c15a46b50becc41e6057d28bd1b6fbdacf",
-      "bytes": 3439
+      "sha256": "48eb4d61ff1839a2726aa0757c3208715d496c66b4ae6528f7857d0508719f67",
+      "bytes": 3556
     },
     {
       "path": "packages/nubi-desktop/scripts/Test-ShellLink.ps1",
@@ -2228,13 +2233,13 @@
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-installer-brand.mjs",
-      "sha256": "04beddbdd91cd6faf657d38b40d16b448c9ae80100e849576db1ab0303dd5e99",
-      "bytes": 3092
+      "sha256": "a272ee9a5bf655a04250c3239220d669f635d5243003b13c3f8ff1b131a12994",
+      "bytes": 3094
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-installer-ui.mjs",
-      "sha256": "a2175dedeee5996eee43e47837367300b030655ac7b65a55f3393ad09ed36778",
-      "bytes": 2797
+      "sha256": "7d77ce393a07352ab63e784ba27bc6a52c1f1298ffa5d532dd67d5dab1deb7cb",
+      "bytes": 2866
     },
     {
       "path": "packages/nubi-desktop/scripts/prepare-winapp.ps1",
@@ -2758,8 +2763,8 @@
     },
     {
       "path": "packages/nubi-desktop/tests/recovery.test.mjs",
-      "sha256": "110c9f83deb9066f1c6f7a465a99c5e56dc4d9413a78a7ab50d83d5c744b00f3",
-      "bytes": 12383
+      "sha256": "bbcc8d92105d19690983cc6fa420c3a88d57cfae65e5b56190488879f6c08caa",
+      "bytes": 13821
     },
     {
       "path": "packages/nubi-desktop/tests/result-review.test.mjs",
@@ -2873,8 +2878,13 @@
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-evidence.test.mjs",
-      "sha256": "d3153e1fefc76e99a691884818165119560f6da038494e4ea0d39c5c4986684d",
-      "bytes": 14646
+      "sha256": "a150976ffd0be2806b3bf5b25c1cbe5802463b431afd9d4fb44123d76e1a8f4b",
+      "bytes": 16778
+    },
+    {
+      "path": "packages/nubi-desktop/tests/wiki-initialization-flow.test.mjs",
+      "sha256": "5fa491f77dfc34f467d936ec3bed1ddda35747729ae8a7982091583c594cd6ab",
+      "bytes": 6010
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-steering.test.mjs",
@@ -2888,18 +2898,18 @@
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-update-bundle.test.mjs",
-      "sha256": "a539e37df1c0d14969f43099abdfaace6a6298871e0260daac04c99159fe1413",
-      "bytes": 2470
+      "sha256": "2ba42d47ad86901c1d9257eda916dcf76ae2c1563b1f9476cad4e8456e79356c",
+      "bytes": 3808
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-update-view.test.mjs",
-      "sha256": "8a13dfdf1dfee5d2c9c9762c7d5f4ed5f04d44fb63296a2f90cf2ab7f9f00683",
-      "bytes": 4218
+      "sha256": "d80198b1afef953ffc730cfc29425435e74a3fd44ede965388f9ec997a08cc56",
+      "bytes": 4410
     },
     {
       "path": "packages/nubi-desktop/tests/wiki-update.test.mjs",
-      "sha256": "31eb3c9360b36282c70fbbd078e3cc562a4372e63326113d0a22168e94fe68ff",
-      "bytes": 18255
+      "sha256": "51789363390d1318a7782ca25f26063f729e63fe467b9a8c30a5fcef073bb624",
+      "bytes": 19047
     },
     {
       "path": "packages/nubi-desktop/tests/windows-apps.test.mjs",
@@ -3188,8 +3198,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/WikiInitializationProgress.jsx",
-      "sha256": "f52129a4b54a8972fb84e6b7d11fd2a1e0ab957069ac1b70d28cdd2fabfaca54",
-      "bytes": 3313
+      "sha256": "da1d07efd064230acf8ec1392547e17927addf32cd1037dabf7e65b26925648a",
+      "bytes": 4217
     },
     {
       "path": "packages/nubi-desktop/ui/WikiUpdate.jsx",
@@ -3198,8 +3208,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/Workbench.jsx",
-      "sha256": "bc86d917763a47eb3e5e535d79be5359bb5d9ed28dfc5c6d1fe1d6d49e735555",
-      "bytes": 93168
+      "sha256": "788698e5185f5428c3ccca72346e695f010a867b0c165e43525bb44c2b305fa8",
+      "bytes": 93265
     },
     {
       "path": "packages/nubi-desktop/ui/WorkspaceAction.jsx",
@@ -3383,8 +3393,8 @@
     },
     {
       "path": "packages/nubi-desktop/ui/wiki-update-view.mjs",
-      "sha256": "878df0b1ddcd0156522b330e5ea5ce5d095912e45deba7e3c947b8a391a16eb3",
-      "bytes": 3660
+      "sha256": "2b3dceab6fe603cd81eb5df369a10960a6869c62fa31b8fdd70bf3fd9c71f210",
+      "bytes": 3915
     },
     {
       "path": "packages/nubi-desktop/vendor/licenses/DeepAgents-LICENSE.txt",

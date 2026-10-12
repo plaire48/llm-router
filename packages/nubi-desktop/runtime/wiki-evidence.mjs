@@ -64,6 +64,11 @@ function fuse(lists){
   return [...values.values()].sort((a,b)=>b.rankScore-a.rankScore||a.provenance.path.localeCompare(b.provenance.path)||a.provenance.start-b.provenance.start);
 }
 
+// The files OpenWiki manages beside the Wiki (its code-mode.ts: the agent instructions and the update workflow).
+// Desktop applies only openwiki/ (user decision 2026-09-29), so a claim that cites one of them stays unverified
+// instead of marking its page stale after every update (measured 2026-09-30 S18 and 2026-10-12 S29).
+const MANAGED_FILES=new Set(['AGENTS.md','CLAUDE.md','.github/workflows/openwiki-update.yml']);
+const managedReference=(file,resource)=>({path:file,state:'unverified',reason:'managed_not_applied',resource});
 async function reader(root,{references=MAX_REFERENCES}={}){
   let ignore=new OpenWikiIgnore([]);
   try{ignore=OpenWikiIgnore.parse((await readSource(root,'.openwikiignore')).content);}catch(error){if(error.code!=='ENOENT')throw error;}
@@ -84,8 +89,9 @@ async function reader(root,{references=MAX_REFERENCES}={}){
         state:!current?'unavailable':!version?'unverified':current.evidence.version===version?'source_matched':'source_changed',
         // The resource range is only a location hint: OpenWiki can relocate it.
         resource,...(version?{versionHash:hash(version)}:{})};
+      if(MANAGED_FILES.has(parsed.path)&&['unavailable','source_changed'].includes(result.state))return managedReference(file.path,resource);
       cache.set(key,result);return result;
-    }catch{return {state:'unavailable',reason:'source_unavailable'};}
+    }catch{return MANAGED_FILES.has(parsed?.path)?managedReference(parsed.path,resource):{state:'unavailable',reason:'source_unavailable'};}
   };
   return {ignore,inspect,store};
 }

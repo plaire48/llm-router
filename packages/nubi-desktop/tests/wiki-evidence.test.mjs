@@ -53,6 +53,27 @@ test('unversioned frontmatter stays unverified; excluded, malformed and unsafe e
   const result=await row(service);assert.equal(result.freshness,'unavailable');assert.doesNotMatch(JSON.stringify(result),/PRIVATE_SENTINEL/);
 });
 
+// Measured 2026-09-30 (S18) and 2026-10-12 (S29): an OpenWiki update also rewrites the files it manages beside the
+// Wiki (its agent instructions and update workflow) and its Claims cite them. Desktop applies only openwiki/ (user
+// decision 2026-09-29), so those citations never matched the workspace and a page stayed stale after every update.
+test('a citation of a file OpenWiki manages beside the Wiki stays unverified instead of making the page stale',async t=>{
+  const {root,service}=await fixture(t);const {stalePages}=await import('../runtime/wiki-evidence.mjs');
+  const {data,sidecar}=await claims(root);
+  data.claims[0].evidence=[{resource:'repo://.github/workflows/openwiki-update.yml#L1-L4',version:'repo-lines-v1:sha256:'+'0'.repeat(64)},{resource:'repo://AGENTS.md#L40-L48',version:'repo-lines-v1:sha256:'+'1'.repeat(64)}];
+  await writeFile(path.join(root,sidecar),JSON.stringify(data));
+  let result=await row(service);assert.equal(result.freshness,'unverified');
+  assert.deepEqual(result.sourceReferences.map(r=>[r.state,r.reason]),[['unverified','managed_not_applied'],['unverified','managed_not_applied']]);
+  assert.deepEqual(await stalePages(root),[]);
+  // A managed file whose cited version the workspace holds is matched like any other source.
+  await writeFile(path.join(root,'AGENTS.md'),'# Rules\n\nKeep app.txt.\n');
+  const version=(await new RepositoryEvidenceResolver({rootDir:root}).resolve('repo://AGENTS.md#L1-L3')).evidence.version;
+  data.claims[0].evidence=[{resource:'repo://AGENTS.md#L1-L3',version}];await writeFile(path.join(root,sidecar),JSON.stringify(data));
+  result=await row(service);assert.equal(result.sourceReferences[0].state,'source_matched');assert.equal(result.freshness,'source_matched');
+  // Any other missing file still makes the page stale.
+  data.claims[0].evidence=[{resource:'repo://docs/missing.md#L1-L2',version:'repo-lines-v1:sha256:'+'2'.repeat(64)}];await writeFile(path.join(root,sidecar),JSON.stringify(data));
+  assert.equal((await row(service)).freshness,'unavailable');assert.deepEqual((await stalePages(root)).map(p=>p.path),['openwiki/home.md']);
+});
+
 test('synthetic retrieval evaluation: declared aliases recover cross-vocabulary documents without unrelated matches',async t=>{
   const {root,service}=await fixture(t);await mkdir(path.join(root,'.nubi'));
   const docs=[{id:'openwiki/billing',title:'billing.md',raw:'# Billing\n\nInvoices follow NET30 payment terms.\n'},{id:'openwiki/discount',title:'discount.md',raw:'# Discount\n\nEligible accounts receive a five percent rebate.\n'},{id:'openwiki/login',title:'login.md',raw:'# Login\n\nAUTH_401 means the user needs to sign in again.\n'}];
