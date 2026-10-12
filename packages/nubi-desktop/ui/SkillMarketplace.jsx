@@ -31,7 +31,7 @@ export function SkillMarketplace({api,taskId,openPath,connectMarketplace,toolbar
     {error&&!requiresSignIn&&<div className="nubi-skill-recovery"><p>{error}</p><ActionButton action="refresh" label="스킬 목록 다시 확인" disabled={busy} onClick={()=>run('refresh')}/></div>}
     {busy&&<p role="status" className="nubi-marketplace-status"><span className="status-spinner"/>{operation?.name==='install'?'스킬을 내려받고 있어요.':'목록 확인 중'}</p>}
     {!busy&&!requiresSignIn&&!error&&!filtered.length&&<p className="nubi-muted">{query?'검색 결과가 없어요.':'등록된 스킬이 없어요.'}</p>}
-    {confirm&&<DeckConfirmation title="스킬을 삭제할까요?" message={<><strong>{confirm.title||confirm.name}</strong> 스킬을 이 프로젝트에서 삭제해요.</>} confirmLabel="확인" confirmIcon="check" showActionLabels busy={busy} onCancel={()=>{if(!lock.current)setConfirm(null);}} onConfirm={async()=>{const value=await run('remove',confirm);if(value&&live.current){setConfirm(null);notifyWorkspaceToast('이 프로젝트에서 스킬을 삭제했어요.',{success:true});}}}/>}
+    {confirm&&<DeckConfirmation className="nubi-delete-skill" title="스킬을 삭제할까요?" message={<><strong>{confirm.title||confirm.name}</strong> 스킬을 이 프로젝트에서 삭제해요.</>} confirmLabel="삭제" confirmIcon="check" showActionLabels busy={busy} onCancel={()=>{if(!lock.current)setConfirm(null);}} onConfirm={async()=>{const value=await run('remove',confirm);if(value&&live.current){setConfirm(null);notifyWorkspaceToast('이 프로젝트에서 스킬을 삭제했어요.',{success:true});}}}/>}
     {filtered.map(item=>{
       const own=catalog?.installed?.find(i=>i.id===item.id),installed=own?.state==='installed',canInstall=!requiresSignIn&&!error&&(item.state==='available'||installed&&item.updateAvailable);
       return <article className="nubi-skill-card nubi-marketplace-card" key={item.id}>

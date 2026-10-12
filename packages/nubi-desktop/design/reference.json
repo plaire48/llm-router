@@ -42,10 +42,49 @@
     "actionGap": 12,
     "rowBlock": 12,
     "groupGap": 20,
-    "navigationRail": 88,
+    "navigationRail": 72,
     "toolbarHeight": 48,
     "narrowToolbarHeight": 48,
     "namedActions": false,
-    "singleLineControls": true
+    "singleLineControls": true,
+    "workControl": {
+      "height": 40,
+      "touchHeight": 44,
+      "radius": 12,
+      "icon": 18,
+      "iconLabelGap": 8,
+      "labelWeight": 500,
+      "headingWeight": 600
+    },
+    "modal": {
+      "contractVersion": 1,
+      "title": 18,
+      "body": 15,
+      "caption": 14,
+      "titleWeight": 600,
+      "labelWeight": 500,
+      "bodyWeight": 400,
+      "inset": 24,
+      "narrowInset": 16,
+      "sectionGap": 16,
+      "fieldGap": 8,
+      "footerBottom": 24,
+      "radius": 20,
+      "choiceWidth": 420,
+      "compactWidth": 480,
+      "standardWidth": 600,
+      "wideWidth": 760,
+      "layers": [
+        "base",
+        "inset",
+        "selected"
+      ],
+      "colors": [
+        "action",
+        "warning",
+        "error",
+        "success"
+      ]
+    }
   }
 }

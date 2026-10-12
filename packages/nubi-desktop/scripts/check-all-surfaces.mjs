@@ -5,6 +5,7 @@ import {mkdir,mkdtemp,writeFile,readFile,cp,rm} from 'node:fs/promises';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {WELCOME_GREETINGS} from '../ui/welcome-greetings.mjs';
+import {assertDialogChrome} from './identity-browser.mjs';
 const dir=path.resolve('verification/all-surfaces'),bundle=path.join(dir,'fixture');
 await mkdir(bundle,{recursive:true});
 await build({entryPoints:['tests/surface-audit-fixture.jsx'],outfile:path.join(bundle,'app.js'),bundle:true,format:'esm',platform:'browser',nodePaths:[path.resolve('node_modules')],alias:{...Object.fromEntries(['react','react-dom','@e2e/cx-design-system'].map(name=>[name,path.resolve('node_modules',name)])),'@e2e/cx-design-system/styles.css':path.resolve('node_modules/@e2e/cx-design-system/dist/styles.css')},loader:{'.woff2':'file','.woff':'file'},define:{__APP_VERSION__:'"fixture"','process.env.NODE_ENV':'"production"'}});
@@ -15,6 +16,7 @@ const app=await electron.launch({executablePath:require('electron'),args:['elect
 const records=[],errors=[];let p;
 async function load(query){await p.goto('file://'+path.join(bundle,'index.html')+'?'+query);await p.locator('.nubi-workbench,.deck-dialog,.nubi-bar').first().waitFor();await p.emulateMedia({reducedMotion:'reduce'});await p.evaluate(()=>document.fonts.ready);}
 async function audit(name,selector='body'){
+ for(const dialog of await p.locator('.deck-dialog:visible').all())await assertDialogChrome(dialog);
  const metrics=await p.locator(selector).first().evaluate(root=>{
   const floor=parseFloat(getComputedStyle(document.documentElement).fontSize)*.875;
   const nodes=[...root.querySelectorAll('*')].filter(e=>e.checkVisibility()&&!e.closest('svg,.monaco-editor,.xterm,[aria-hidden="true"],.visually-hidden')&&[...e.childNodes].some(n=>n.nodeType===Node.TEXT_NODE&&n.textContent.trim()));

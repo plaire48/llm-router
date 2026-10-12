@@ -54,3 +54,19 @@ test('separate stdout chunks preserve a split UTF-8 character in real process ou
   const until=Date.now()+5000;while(processes.active.size&&Date.now()<until)await new Promise(r=>setTimeout(r,20));
   const receipt=processes.poll(result.id);assert.equal(receipt.output,'한글');assert.equal(receipt.state,'completed');processes.dispose();
 });
+
+test('Windows PowerShell preserves Korean output, UTF-8 source reads and explicit legacy decoding', {skip:process.platform!=='win32'}, async t=>{
+  const {service,root}=await fixture(t),content='누비 한글 문서 확인',file=path.join(root,'한글 원문.txt');
+  await writeFile(file,content,'utf8');
+  await writeFile(path.join(root,'utf16.txt'),Buffer.concat([Buffer.from([0xff,0xfe]),Buffer.from(content,'utf16le')]));
+  await writeFile(path.join(root,'latin.txt'),Buffer.from([0xe9]));
+  const record=await service.processes.start({cwd:root,taskId:'encoding',profile:'powershell',autoDiagnose:false,script:"Write-Output '한글 직접 출력'; Get-Content -LiteralPath './한글 원문.txt'; Get-Content -LiteralPath './utf16.txt'; Get-Content -LiteralPath './latin.txt' -Encoding Byte; [Console]::Error.WriteLine('한글 오류 출력'); exit 7"});
+  const deadline=Date.now()+15000;
+  while(service.processes.active.size&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,30));
+  const result=service.processes.poll(record.id);
+  assert.equal(result.exitCode,7);assert.equal(result.state,'failed');
+  assert.match(result.output,/한글 직접 출력/);assert.match(result.output,/한글 오류 출력/);
+  assert.equal(result.output.split(content).length-1,2,'UTF-8 without BOM and UTF-16 with BOM both retain Korean');
+  assert.match(result.output,/233/,'explicit Encoding overrides the process-local read default');
+  assert.equal(await (await import('node:fs/promises')).readFile(file,'utf8'),content,'reading preserves original bytes');
+});

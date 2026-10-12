@@ -17,11 +17,11 @@ export function modelTransport(service,{signal,onRetry,metrics}){
   // Telemetry reads the model name defensively: it must not add a failure path.
   const modelName=()=>{try{return service.providers.status().model;}catch{return null;}};
   // retries may lower the retries of one call (a large request), never raise them.
-  return (messages,tools,childSignal=signal,purpose='actor',{retries,visionModel,maxTokens,toolChoice,retryInvalidResponse=true}={})=>{
+  return (messages,tools,childSignal=signal,purpose='actor',{retries,visionModel,maxTokens,toolChoice,responseFormat,retryInvalidResponse=true}={})=>{
     const options={retries:2,...service.recoveryOptions?.model};
     return recoverModel(async ({signal:attemptSignal,activity,attempt})=>{
       const measured=metrics?.beginModel({purpose,attempt,messages,tools,model:visionModel||modelName()});
-      try{const result=await service.providers.complete(messages,tools,attemptSignal,activity,activity,activity,{...(visionModel?{visionModel}:{}),...(Number.isSafeInteger(maxTokens)&&maxTokens>0?{maxTokens}:{}),...(toolChoice==='required'?{toolChoice}:{})});measured?.end(result);return result;}
+      try{const result=await service.providers.complete(messages,tools,attemptSignal,activity,activity,activity,{...(visionModel?{visionModel}:{}),...(Number.isSafeInteger(maxTokens)&&maxTokens>0?{maxTokens}:{}),...(toolChoice==='required'?{toolChoice}:{}),...(responseFormat?.type==='json_object'?{responseFormat:{type:'json_object'}}:{})});measured?.end(result);return result;}
       // A response the connection rejects (response_invalid: a stream error, an empty answer, too many tool calls) is
       // asked for again within this budget: the shared policy retries only network, timeout, 429 and 5xx, and one
       // server-side stream error ended a run (measured 2026-10-12, S29: 2 of 6 identical requests for an hour).

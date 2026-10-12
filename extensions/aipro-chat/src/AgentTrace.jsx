@@ -118,7 +118,7 @@ export function AgentTrace({debugMode = false, steps, captures = [], question, c
       const key = step.id || `legacy-${steps.indexOf(step)}`;
       if (step.tool === 'progress_note') return <li key={key} className="agent-progress-note"><Icon name="message" size={14}/><MessageBody content={step.content} compact/></li>;
       const reason = SCRIPT_FAILURES[step.reason]?.[0];
-      const label = step.status === 'error' ? reason || statusText.error : step.status === 'waiting' && step.tool === 'ask_user' ? '답변 대기' : statusText[step.status];
+      const label = step.status === 'error' ? traceOptions?.errorLabels?.[step.reason] || reason || statusText.error : step.status === 'waiting' && step.tool === 'ask_user' ? '답변 대기' : statusText[step.status];
       const images = step.id ? screenshots.filter(capture => capture.traceId === step.id) : [];
       const content = <TraceStep status={step.status} label={step.status === 'recovered' && reason ? `${reason} 이후 결과 검증 완료` : label}>{step.planStep && step.planStep !== visible[index - 1]?.planStep && <span className="agent-trace-plan"><InlineMarkdown content={step.planStep}/></span>}{step.label ? <InlineMarkdown content={step.label}/> : toolLabels[step.tool]}<span className="agent-tool-state"> {step.status === 'running' ? '중' : label}</span></TraceStep>;
       return <li key={key} data-tool={step.tool} data-status={step.status} data-step-id={step.id}>

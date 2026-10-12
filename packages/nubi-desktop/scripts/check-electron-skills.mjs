@@ -80,7 +80,7 @@ try{
   const issues=skillsDialog().locator('details.nubi-skill-info');await issues.locator('summary').click();await issues.getByRole('button',{name:'.nubi/skill/zipped-skill/SKILL.md'}).waitFor();
   await writeFile(zipped,intact);await refresh();await row('zipped-skill').waitFor();assert.equal(await row('zipped-skill').getByText('지침을 확인해 주세요.').count(),0);assert.equal(await issues.count(),0,'a repaired instruction leaves no issue');
   stage('malformed instruction disclosed and recovered');
-  await row('zipped-skill').getByRole('button',{name:'zipped-skill 삭제'}).click();await page.getByText('스킬을 삭제할까요?').waitFor();await page.getByRole('button',{name:'확인',exact:true}).click();
+  await row('zipped-skill').getByRole('button',{name:'zipped-skill 삭제'}).click();await page.getByText('스킬을 삭제할까요?').waitFor();await page.getByRole('alertdialog').getByRole('button',{name:'삭제',exact:true}).click();
   await row('zipped-skill').waitFor({state:'detached'});assert.equal(await exists(zipped),false,'a deleted skill leaves the project');
   await skillsDialog().getByRole('button',{name:/^휴지통 보기 \(1개\)/}).click();await row('zipped-skill').getByRole('button',{name:'zipped-skill 복원'}).click();await row('zipped-skill').waitFor({state:'detached'});
   await skillsDialog().getByRole('button',{name:'등록 목록 보기',exact:true}).click();await row('zipped-skill').waitFor();assert.equal(await readFile(zipped,'utf8'),intact,'a restored skill is back as it was');

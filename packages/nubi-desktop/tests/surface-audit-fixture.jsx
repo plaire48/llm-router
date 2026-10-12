@@ -31,6 +31,7 @@ import '../electron-app/shell.css';
 import '../electron-app/ios-tokens.css';
 import '../design/workspace-typography.css';
 import '../design/workspace-density.css';
+import '../design/workspace-dialogs.css';
 const params=new URLSearchParams(location.search),screen=params.get('screen')||'workbench';
 const modelRows=Array.from({length:40},(_,i)=>({id:`model-${i}`,name:`model-${i}`,label:`업무 문서를 분석하는 모델 ${i+1}`,displayName:`업무 문서를 분석하는 모델 ${i+1}`,contextLength:32000}));
 const provider={provider:'aipro',connected:true,model:'model-0',models:modelRows,providers:[{id:'aipro',connected:true},{id:'chatgpt',connected:false},{id:'fabrix',connected:false}]};

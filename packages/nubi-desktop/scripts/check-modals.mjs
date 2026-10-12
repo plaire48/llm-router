@@ -108,6 +108,14 @@ try{
  await p.getByRole('button',{name:'전송',exact:true}).click();await p.getByRole('button',{name:'요청 접수 중',exact:true}).waitFor();
  await p.getByRole('button',{name:'설정',exact:true}).click();await p.getByRole('dialog',{name:'설정',exact:true}).waitFor();
  await p.keyboard.press('Escape');await p.waitForTimeout(1800);checks.push('slow agent start leaves navigation usable and shows immediate pending feedback');
+ await p.goto(origin+'/?context&modals&integrated&catalog');await selectTask();await closeSidebar();
+ await p.evaluate(()=>{window.commandReviewRace=true;});
+ const followup=p.getByRole('textbox',{name:'추가 요청',exact:true});await followup.fill('방금 실행한 결과를 설명해 주세요.');await followup.press('Enter');
+ await p.getByRole('list',{name:'대기 메시지'}).getByText('방금 실행한 결과를 설명해 주세요.',{exact:true}).waitFor();
+ assert.equal(await followup.inputValue(),'');assert.equal(await p.evaluate(()=>window.commandReviewAdmissions),1);
+ assert.equal(await p.getByText('AI가 다른 작업을 확인하고 있어요. 입력한 내용은 보관했어요.',{exact:true}).count(),0);
+ await p.screenshot({path:path.join(dir,'command-followup-queue.png'),animations:'disabled'});
+ checks.push('Send racing automatic command review refreshes state and queues the exact message once without a busy error');
  // Company sign-in must be discoverable in the titlebar, including before a project/model is connected.
  for(const variant of [{width:1280,height:720},{width:800,height:600},{width:440,height:500},{width:440,height:500,noProject:true},{width:1280,height:720,connected:true}]){
   await p.setViewportSize({width:variant.width,height:variant.height});

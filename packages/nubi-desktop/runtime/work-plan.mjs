@@ -88,12 +88,19 @@ export async function prepareWorkPlan({task,history,model,invoke,signal,capabili
     onProgress({state:'running',attempt:attempt+1});
     let result;
     try{
-      result=await invoke(attempt?[{...messages[0],content:WORK_PLAN_GUIDANCE+' The previous response was invalid ('+reason+'). Return exactly one update_plan call with the full declared schema. Preserve the original goal and constraints. Problems found: '+problems.join(' ')},messages[1]]:messages,[WORK_PLANNING_TOOL],{toolChoice:attempt?'required':'auto',maxTokens:Math.min(budget.output,attempt?4096:2048)});
+      // Change the response protocol on repair. Requiring the same tool call
+      // again can repeat a provider's formatting failure indefinitely. This
+      // request returns data only; the identical host validators still gate
+      // every project operation. Never execute a tool returned by the repair.
+      const definitions=attempt?[]:[WORK_PLANNING_TOOL];
+      const wire=attempt?[{role:'system',content:WORK_PLAN_GUIDANCE+' For this repair, no tools are available. Return only one complete JSON object with intent and steps, without an update_plan envelope or commentary. Preserve the original goal and constraints. JSON schema: '+JSON.stringify(WORK_PLANNING_TOOL.function.parameters)+' Previous failure: '+reason+'. Problems found: '+problems.join(' ')},messages[1]]:messages;
+      if(contextTokens(wire,definitions)>limit)throw new Error('context_input_too_large');
+      result=await invoke(wire,definitions,{toolChoice:'auto',retryInvalidResponse:false,maxTokens:Math.min(budget.output,attempt?8192:4096),...(attempt?{responseFormat:{type:'json_object'}}:{})});
       if(signal.aborted)throw new Error('cancelled');
       if(result.finishReason==='length')throw Error('output_limit');
       const calls=result.calls||[];
       let value;
-      if(!Array.isArray(calls)||calls.length>1||calls.length===1&&calls[0]?.function?.name!=='update_plan'){
+      if(!Array.isArray(calls)||calls.length>1||attempt&&calls.length||calls.length===1&&calls[0]?.function?.name!=='update_plan'){
         reason='plan_tool_calls';problems=['Return only one update_plan call. No other tool may be called.'];
       }else{
         try{value=withStatus(parseWorkPlan(calls.length?calls[0].function.arguments:result.content));}
@@ -104,8 +111,10 @@ export async function prepareWorkPlan({task,history,model,invoke,signal,capabili
         }
       }
     }catch(error){
-      if(signal.aborted||error.message!=='output_limit'){onProgress({state:signal.aborted?'cancelled':'error',attempt:attempt+1});throw error;}
-      reason='plan_output_limit';problems=['The response was cut off. Return one or two short steps.'];
+      const refusedFormat=!attempt&&[400,422].includes(error.status)&&['request_format','request_rejected','invalid_model'].includes(error.message);
+      if(signal.aborted||!['output_limit','response_invalid'].includes(error.message)&&!refusedFormat){onProgress({state:signal.aborted?'cancelled':'error',attempt:attempt+1,reason:'plan_request_failed'});throw error;}
+      reason=refusedFormat?'plan_request_format':error.message==='output_limit'?'plan_output_limit':'plan_json_invalid';
+      problems=[refusedFormat?'The server refused the tool request. Return plan data as JSON.':error.message==='output_limit'?'The response was cut off. Return one or two short steps.':'The response was not a complete plan. Return the complete JSON object.'];
     }
     failures.push(reason);onProgress({state:'error',attempt:attempt+1,reason});
   }

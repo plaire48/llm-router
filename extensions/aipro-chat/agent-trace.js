@@ -52,12 +52,12 @@ function analysisTrace(step) {
 
 // Hosts may supply a fixed tool vocabulary and validate their own executor IDs.
 // These options are source-owned adapters, never values from model arguments.
-export function normalizeTrace(steps, {toolLabels = TOOL_LABELS, normalizeId = normalizeTraceId} = {}) {
+export function normalizeTrace(steps, {toolLabels = TOOL_LABELS, normalizeId = normalizeTraceId, errorLabels = {}} = {}) {
   const normalized = (Array.isArray(steps) ? steps : []).flatMap(step => {
     const id = normalizeId(step?.id);
     const identity = id ? {id} : {};
     if (step?.tool === 'progress_note' && progressNote(step.content)) return [{...identity, tool: 'progress_note', status: 'done', content: progressNote(step.content)}];
-    return Object.hasOwn(toolLabels, step?.tool) && ['queued', 'running', 'done', 'error', 'cancelled', 'waiting', 'deferred'].includes(step.status) ? [{...identity, ...analysisTrace(step), tool: step.tool, status: step.status, ...(progressNote(step.label) ? {label: progressNote(step.label).slice(0, 100)} : {}), ...(typeof step.planStep === 'string' && step.planStep.length <= 200 ? {planStep: step.planStep} : {}), ...(step.status === 'error' && (Object.hasOwn(SCRIPT_FAILURES, step.reason) || step.tool === 'recover_model' && PLAN_FAILURE_REASONS.includes(step.reason)) ? {reason: step.reason} : {})}] : [];
+    return Object.hasOwn(toolLabels, step?.tool) && ['queued', 'running', 'done', 'error', 'cancelled', 'waiting', 'deferred'].includes(step.status) ? [{...identity, ...analysisTrace(step), tool: step.tool, status: step.status, ...(progressNote(step.label) ? {label: progressNote(step.label).slice(0, 100)} : {}), ...(typeof step.planStep === 'string' && step.planStep.length <= 200 ? {planStep: step.planStep} : {}), ...(step.status === 'error' && (Object.hasOwn(SCRIPT_FAILURES, step.reason) || step.tool === 'recover_model' && (PLAN_FAILURE_REASONS.includes(step.reason)||Object.hasOwn(errorLabels,step.reason))) ? {reason: step.reason} : {})}] : [];
   });
   // Active assignments remain visible even while the leader emits many steps.
   const pinned = new Set(normalized.filter(step => isAnalysisStep(step) && ['queued', 'running'].includes(step.status)).slice(-6));

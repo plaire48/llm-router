@@ -46,9 +46,9 @@
   --nubi-pointer-shadow: drop-shadow(0 1px 1px #0008);
   --nubi-modal-inset: var(--cx-space-6);
   --nubi-modal-block: var(--cx-space-2);
-  --nubi-modal-body-block: var(--cx-space-3);
+  --nubi-modal-body-block: var(--cx-space-4);
   --nubi-modal-title-inset: var(--cx-space-4);
-  --nubi-modal-title-height: 34px;
+  --nubi-modal-title-height: 40px;
   --nubi-toolbar-height: 48px;
   --nubi-toolbar-mac-inset: 88px;
   --nubi-compact-control: 32px;
@@ -62,8 +62,33 @@
   --nubi-mail-selection-size: 40px;
   --nubi-group-gap: var(--cx-space-5);
   --nubi-model-list-height: 260px;
-  --nubi-modal-close-size: var(--cx-space-8);
+  --nubi-modal-close-size: var(--nubi-work-control-height);
   --nubi-modal-close-icon-size: 18px;
+  --nubi-work-control-height: 40px;
+  --nubi-work-control-icon: 1.125rem;
+  --nubi-work-control-radius: var(--deck-control-radius);
+  --nubi-work-control-gap: var(--cx-space-2);
+  --nubi-modal-section-gap: var(--cx-space-4);
+  --nubi-weight-regular: 400;
+  --nubi-weight-label: 500;
+  --nubi-weight-emphasis: 600;
+  --nubi-icon-small: 1rem;
+  --nubi-icon-large: 1.25rem;
+  --nubi-surface-base: var(--deck-card);
+  --nubi-surface-inset: var(--deck-tint);
+  --nubi-surface-selected: var(--deck-blue-soft);
+  --nubi-text-primary: var(--deck-ink);
+  --nubi-text-secondary: var(--deck-sub);
+  --nubi-text-action: var(--deck-blue-deep);
+  --nubi-dialog-width-choice: 26.25rem;
+  --nubi-dialog-width-compact: 30rem;
+  --nubi-dialog-width-standard: 37.5rem;
+  --nubi-dialog-width-wide: 47.5rem;
+  --nubi-dialog-radius: var(--deck-panel-radius);
+  --nubi-dialog-shadow: var(--deck-shadow);
+  --nubi-dialog-footer-inset: var(--cx-space-6);
+  --nubi-dialog-field-gap: var(--cx-space-2);
+  --nubi-dialog-symbol-size: var(--nubi-work-control-height);
   --nubi-chat-width: 700px;
   --nubi-reading-width: calc(var(--nubi-chat-width) + var(--nubi-page-inset) * 2);
   --nubi-scrollbar-size: 4px;
@@ -303,20 +328,9 @@
 .nubi-panel .nubi-run-form small { font: var(--deck-font-body); color: var(--deck-sub); }
 .cx-panel-backdrop.is-modal > .nubi-panel { width:min(600px,100%); border:0; border-radius:var(--deck-panel-radius); background:var(--deck-card); box-shadow:var(--deck-shadow); }
 .cx-panel-backdrop.is-modal > .nubi-panel--wide { width:min(760px,100%); }
-/* Shared provider, context and confirmation dialogs use the same gutters as workspace panels. */
-.cx-panel-backdrop > .deck-dialog > .cx-panel-header { padding:var(--nubi-modal-title-inset) var(--nubi-modal-inset) var(--nubi-modal-block); border-color:var(--deck-line); }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-body { padding:var(--nubi-modal-body-block) var(--nubi-modal-inset); }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-body > :first-child { margin-top:0; }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-body > :last-child { margin-bottom:0; }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-footer { padding:var(--nubi-modal-block) var(--nubi-modal-inset); gap:var(--cx-space-2); }
-/* Every modal starts its heading and body on the same shared gutters. */
-.context-dialog .context-note:is([data-usage-kind="empty"],[data-usage-kind="unknown"]) { color:var(--nubi-note-ink); }
-.deck-dialog .cx-panel-header > div:first-child { min-width:0; }
-.deck-dialog .cx-panel-header h2 { display:flex; align-items:center; min-height:var(--nubi-modal-title-height); margin:0; font-size:var(--cx-type-section); line-height:var(--deck-line-heading); font-weight:700; }
 /* Chromium can report a rectangle for a nested summary inside closed details.
    CX's focus loop uses rectangles, so explicitly remove closed contents from that loop. */
 .deck-dialog details:not([open]) > :not(summary) { display:none; }
-.deck-dialog :is(input,select,textarea) { font:var(--deck-font-body); }
 .nubi-panel .nubi-error { margin:0 0 var(--cx-space-3); }
 .nubi-panel { position:relative; }
 .nubi-panel-navigation { margin:0; }
@@ -334,9 +348,6 @@
 .nubi-deletion-note > svg { flex:none; }
 @media(max-width:600px) { :root { --nubi-modal-inset:var(--cx-space-4); } }
 
-.nubi-panel-title { display:inline-flex; align-items:center; gap:var(--cx-space-3); }
-.nubi-panel-title-icon { display:inline-grid; place-items:center; width:var(--nubi-modal-title-height); height:var(--nubi-modal-title-height); border-radius:var(--deck-control-radius); background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
-.nubi-panel-title-icon svg { flex:none; }
 .nubi-skill-toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:var(--cx-space-2); margin-bottom:var(--cx-space-3); }
 .nubi-skill-toolbar > .cx-action-button { margin-left:auto; }
 .nubi-skill-toolbar .cx-kit-button { display:inline-flex; align-items:center; gap:var(--cx-space-2); }
@@ -1271,14 +1282,6 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 .desktop-shell .desktop-file-tabs .desktop-tab-close:hover { background:var(--deck-card); color:var(--deck-blue-deep); }
 .desktop-tab-close > svg { flex:none; }
 
-/* All Desktop dialogs keep the same visible top-right dismissal action. */
-.cx-panel-backdrop > .deck-dialog > .cx-panel-header .cx-panel-header-actions { display:flex; align-items:center; justify-content:flex-end; }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-header .cx-panel-header-actions [data-action="close"],
-.nubi-desktop-host .nubi-modal-close.cx-kit-button { display:inline-flex; align-items:center; justify-content:center; flex:none; width:var(--nubi-modal-close-size); min-width:var(--nubi-modal-close-size); height:var(--nubi-modal-close-size); min-height:var(--nubi-modal-close-size); padding:0; border:0; border-radius:var(--deck-control-radius); background:transparent; color:var(--deck-sub); box-shadow:none; }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-header .cx-panel-header-actions [data-action="close"]:not(:disabled):hover,
-.nubi-desktop-host .nubi-modal-close.cx-kit-button:not(:disabled):hover { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
-.cx-panel-backdrop > .deck-dialog > .cx-panel-header .cx-panel-header-actions [data-action="close"] > svg,
-.nubi-desktop-host .nubi-modal-close > svg { width:var(--nubi-modal-close-icon-size); height:var(--nubi-modal-close-icon-size); }
 .nubi-reasoning-heading > strong { flex:1; min-width:0; }
 /* The user selected only pin actions for the additional hover shade. */
 @media(hover:hover) {
@@ -1519,13 +1522,10 @@ button.nubi-start-card:hover:not(:disabled) .nubi-start-go svg { transform:trans
 
 /* Destructive confirmation: concise scope, preserved-file note, clear action. */
 .nubi-delete-conversation { width:min(440px,calc(100vw - 32px)); }
-.nubi-delete-conversation .deck-symbol { background:#FEF0F0;color:#D92D20; }
-.nubi-delete-conversation .deck-confirmation-content { align-items:flex-start;gap:16px; }
 .nubi-delete-conversation .deck-confirmation-content p { min-width:0;margin:0; }
 .nubi-delete-title { display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--deck-ink,#191F28); }
 .nubi-delete-scope { display:block;margin-top:8px; }
 .nubi-delete-conversation .nubi-deletion-note { margin-top:16px;color:#4E5968; }
-.nubi-delete-conversation .cx-panel-footer button.cx-button--primary { background:#D92D20; }
 
 .nubi-wiki-progress-dialog { width:min(480px,calc(100vw - 32px)); }
 .nubi-wiki-progress-dialog .nubi-wiki-initialization-line { flex-wrap:nowrap;gap:12px; }

@@ -71,7 +71,6 @@ body {
 .desktop-shell .nubi-project-start :is(.nubi-start-text,.nubi-start-model>span,.nubi-start-privacy) {
   font:var(--deck-font-caption); color:var(--deck-sub);
 }
-.deck-dialog .cx-panel-header h2 { font-weight:600; }
 .deck-dialog .nubi-mail-help { font:var(--deck-font-caption); }
 .deck-dialog .nubi-mail-help code { font-size:inherit; }
 

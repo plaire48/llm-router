@@ -14,6 +14,7 @@ import '../electron-app/shell.css';
 import '../electron-app/ios-tokens.css';
 import '../design/workspace-typography.css';
 import '../design/workspace-density.css';
+import '../design/workspace-dialogs.css';
 let selected='aipro',connected=false,pending=null,model='qwen-fixture',catalogAt=1;
 if(new URLSearchParams(location.search).has('catalog')){connected=true;window.catalogCalls=0;window.catalogDelay=0;window.catalogFailure=false;}
 const models=[{id:'qwen-fixture',label:'Qwen fixture',contextLength:32000},{id:'second-exact-id',label:'Second fixture',contextLength:64000}];
@@ -171,7 +172,8 @@ async function api(method,args={}){
   if(method==='deleteTask'){(window.deletedTasks||=[]).push(args.taskId);project.tasks=project.tasks.filter(task=>task.id!==args.taskId);return {deleted:args.taskId};}
   if(method==='overview'||method==='state'){if(new URLSearchParams(location.search).has('noproject'))throw Error('project_missing');return structuredClone(project);}
   if(method==='createTask'){const task={id:'fixture-task',request:args.request,requirementId:'REQ-fixture',criteria:[],state:'draft',messages:[],trace:[]};project.tasks=[task];return task;}
-  if(method==='startAgent'){if(window.slowStart)await new Promise(resolve=>setTimeout(resolve,1500));const task=project.tasks[0];const runId=`fixture-run-${(task.runCount=(task.runCount||0)+1)}`;// activity is shown per run: the plan and messages carry the run id (2026-10-02)
+  if(method==='agentInput'&&window.commandReviewRace){const task=project.tasks[0];task.inbox=[{id:args.id,text:args.text,mode:'queue',createdAt:Date.now(),runId:args.runId}];window.commandReviewAdmissions=(window.commandReviewAdmissions||0)+1;return structuredClone(task);}
+  if(method==='startAgent'){if(window.commandReviewRace){const task=project.tasks[0];task.state='running';task.checkpoint={runId:'command-review-race'};throw Error('agent_busy');}if(window.slowStart)await new Promise(resolve=>setTimeout(resolve,1500));const task=project.tasks[0];const runId=`fixture-run-${(task.runCount=(task.runCount||0)+1)}`;// activity is shown per run: the plan and messages carry the run id (2026-10-02)
     task.workPlan={runId,steps:[{text:'현재 문구 확인',expected_outcome:'변경할 문구와 유지할 조건을 확인합니다.',status:'in_progress'},{text:'수정안과 확인 결과 정리',expected_outcome:'변경안과 아직 확인하지 못한 결과를 구분합니다.',status:'pending'}]};if(args.answer)task.messages.push({role:'user',content:args.answer,runId});task.messages.push({role:'assistant',content:'**핵심 내용을 먼저 보여줍니다.**\n\n이 응답은 화면 흐름 검증용 합성 응답입니다. **실제 모델 결과가 아닙니다.**',runId});task.state='review';return {taskId:task.id,state:'review'};}
   throw new Error('fixture_method_invalid');
 }

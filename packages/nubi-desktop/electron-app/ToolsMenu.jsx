@@ -2,7 +2,7 @@ import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {CxButton,Icon} from '@e2e/cx-design-system';
 import {TerminalMark,FolderMark,BrowserMark} from '../ui/marks.jsx';
 
-export function ToolsMenu({profiles=[],defaultShell,projectReady,onTerminal,onFiles,onWeb,onSearch,onOpenChange}) {
+export function ToolsMenu({profiles=[],defaultShell,projectReady,onTerminal,onFiles,onWeb,onOpenChange}) {
  const [open,setOpen]=useState(false),[shells,setShells]=useState(false);
  const anchor=useRef(null),trigger=useRef(null),menuNode=useRef(null);
  const [menuStyle,setMenuStyle]=useState(undefined);
@@ -25,8 +25,6 @@ export function ToolsMenu({profiles=[],defaultShell,projectReady,onTerminal,onFi
    {shells&&<div className="desktop-tools-shell-list" role="group" aria-label="사용할 터미널">{profiles.map(profile=><CxButton role="menuitem" key={profile.id} onClick={()=>choose(()=>onTerminal(profile.id))}><TerminalMark size={15}/><span>{profile.label}</span>{profile.id===defaultShell&&<Icon name="check" size={14}/>}</CxButton>)}</div>}
    <CxButton role="menuitem" disabled={!projectReady} onClick={()=>choose(onFiles)}><FolderMark size={17}/><span>파일</span></CxButton>
    <CxButton role="menuitem" onClick={()=>choose(onWeb)}><BrowserMark size={17}/><span>웹</span></CxButton>
-   {/* Source search had no visible entry: only the tools list behind Cmd/Ctrl+Shift+P reached it (2026-10-07). */}
-   {onSearch&&<CxButton role="menuitem" disabled={!projectReady} onClick={()=>choose(onSearch)}><Icon name="search" size={17}/><span>검색</span></CxButton>}
   </div>}
  </div>;
 }

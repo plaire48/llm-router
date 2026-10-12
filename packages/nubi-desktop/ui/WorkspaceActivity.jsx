@@ -10,7 +10,7 @@ const toolLabels = Object.freeze({...TOOL_LABELS, ...{inspect_environment:'실�
   ground_computer_target:'조작할 위치 확인',verify_computer_outcome:'앱 동작 결과 대조',
   personal_mail_query:'메일과 개인 위키 검색',read_personal_mail:'메일 원문과 개인 위키 조회',
   ask_openwiki:'프로젝트 자료 조사'});
-const traceOptions = Object.freeze({toolLabels, normalizeId(value) {
+const traceOptions = Object.freeze({toolLabels, errorLabels:{plan_json_invalid:"응답 형식 확인 필요",plan_arguments_invalid:"계획 항목 확인 필요",plan_tool_calls:"계획 응답 확인 필요",plan_output_limit:"응답 길이 초과",plan_request_format:"요청 형식 확인 필요",plan_request_failed:"모델 연결 확인 필요"}, normalizeId(value) {
   if (normalizeTraceId(value)) return value;
   if (typeof value !== 'string' || value.length > 160) return null;
   const [runId, round, ...index] = value.split(':');

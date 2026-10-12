@@ -209,29 +209,6 @@
 :root:has(.desktop-shell) .model-dialog .provider-switcher[data-provider='fabrix'] .provider-tabs [aria-selected='true'] {color:var(--provider-fabrix-ink)}
 :root:has(.desktop-shell) .model-dialog .provider-tab-icon.with-name {gap:var(--cx-space-3)}
 
-/* Portalled dialogs share Desktop's blue feedback without warning-colored cards. */
-:root:has(.desktop-shell) :is(.deck-dialog,.nubi-panel,.nubi-approval-mode-menu,.nubi-reasoning-menu,.nubi-composer-skill-menu) {
- --brand-action:var(--deck-blue);
- --brand-ink:var(--deck-blue-deep);
- --brand-soft:var(--deck-blue-soft);
- --brand-surface:var(--deck-blue-soft);
- --brand-selected:var(--deck-blue-soft);
- --brand-border:transparent;
- --cx-danger:var(--deck-blue);
- --cx-error-surface:var(--deck-blue-soft);
- border:0;
- background:var(--deck-card);
- accent-color:var(--deck-blue);
-}
-:root:has(.desktop-shell) :is(.deck-dialog,.nubi-panel) :is(.cx-panel-header,.cx-panel-footer) {border:0}
-:root:has(.desktop-shell) :is(.deck-dialog,.nubi-panel) :is(.cx-kit-button,.cx-action-button,.cx-kit-input,.cx-input-shell,.cx-kit-notice) {border:0;box-shadow:none}
-:root:has(.desktop-shell) :is(.deck-dialog,.nubi-panel) :is(.cx-kit-input,.cx-input-shell) {background:var(--deck-tint)}
-:root:has(.desktop-shell) :is(.deck-dialog,.nubi-panel) .cx-kit-notice.is-danger {background:var(--deck-blue-soft)}
-/* Preserve the shared provider highlight and connection-button palettes. */
-:root:has(.desktop-shell) .model-dialog {--brand-action:var(--deck-blue-deep);--brand-surface:var(--deck-tint)}
-:root:has(.desktop-shell) .model-dialog .model-option[aria-pressed='true'],
-:root:has(.desktop-shell) .model-dialog .model-option[aria-pressed='true'] .model-option-text {color:var(--brand-ink)}
-
 .desktop-shell .nubi-workbench .nubi-task .message-assistant {padding-block:var(--cx-space-2);margin-block:var(--cx-space-4)}
 .desktop-shell .nubi-workbench .nubi-task .nubi-request {margin-block:var(--nubi-section-gap);}
 .desktop-shell .nubi-start-choices[data-count="3"] {grid-template-columns:repeat(3,minmax(0,1fr))}

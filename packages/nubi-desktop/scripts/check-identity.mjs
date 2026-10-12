@@ -23,7 +23,7 @@ for(const file of uiFiles.filter(file=>file.endsWith('.jsx')&&file!=='Collaborat
   for(const match of source.matchAll(/<DetailPanel\b[^>]*>/g))assert(/className="[^"]*deck-dialog/.test(match[0]),`${file}: modal must use deck-dialog`);
   assert(!/style=\{\{[^}]*\b(?:fontSize|fontFamily|color|backgroundColor)\s*:/.test(source),`${file}: typography and brand styling belong in shared tokens`);
 }
-for(const file of ['electron-app/workbench.css','design/workspace-density.css',...uiFiles.filter(file=>file.endsWith('.css')).map(file=>'ui/'+file)]){
+for(const file of ['electron-app/workbench.css','design/workspace-density.css','design/workspace-dialogs.css',...uiFiles.filter(file=>file.endsWith('.css')).map(file=>'ui/'+file)]){
   const source=(await readFile(file,'utf8')).replace(/\/\*[\s\S]*?\*\//g,'');
   assert(!/(?:^|[;{])\s*font(?:-size)?\s*:[^;{}]*\b\d+(?:\.\d+)?px/.test(source),`${file}: use typography tokens, not fixed screen font sizes`);
   assert(!/(?:^|[;{])\s*(?:color|background(?:-color)?|border(?:-color)?|fill|stroke|box-shadow|filter)\s*:[^;{}]*#[\da-f]{3,8}\b/i.test(source),`${file}: raw colors belong in the identity token layer`);
