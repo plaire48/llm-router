@@ -96,10 +96,10 @@ namespace OfficeX.ExcelHost
             automationPort=new OfficeAutomationPort(application,app,windowHandle);automation=new OfficeAutomationSession(automationPort);
             creationPort=new DocumentCreationPort(application,app,windowHandle);fallbackContext=null;writesStopped=false;createdDuringRun=false;
             try{if(app=="excel")session=new ExcelSession(port);else textSession=new TextSession(textPort);}
-            catch(OfficeFault e)when(new[]{"select_cells","single_range_required","range_limit","context_limit","select_text","text_block_limit","text_scope_invalid"}.Contains(e.Message)){fallbackContext=new{app,selectionAvailable=false,selectionReason=e.Message,documentToolsAvailable=true};}
-            catch(System.Runtime.InteropServices.COMException){fallbackContext=new{app,selectionAvailable=false,documentToolsAvailable=true};}
+            catch(OfficeFault e)when(new[]{"select_cells","single_range_required","range_limit","context_limit","select_text","text_block_limit","text_scope_invalid"}.Contains(e.Message)){fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,selectionReason=e.Message,documentToolsAvailable=true};}
+            catch(System.Runtime.InteropServices.COMException){fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};}
         }
-        private void ShowContext() {if(fallbackContext!=null){target.Text="현재 문서";return;}if(app=="excel"){var c=session.Context; target.Text=c.Workbook+" / "+c.Worksheet+" / "+c.Address;}else{var c=textSession.Context;target.Text=c.Document+" / "+c.Location;}}
+        private void ShowContext() {if(fallbackContext!=null){target.Text=automationPort.DocumentName;return;}if(app=="excel"){var c=session.Context; target.Text=c.Workbook+" / "+c.Worksheet+" / "+c.Address;}else{var c=textSession.Context;target.Text=c.Document+" / "+c.Location;}}
         private void Begin() {
             if(running||nativeBusy)throw new OfficeFault("worker_busy");
             CaptureContext();ShowContext();runId=Guid.NewGuid().ToString("N");
@@ -179,7 +179,7 @@ namespace OfficeX.ExcelHost
                     dynamic active=((dynamic)application).ActiveWindow;int newHandle=(int)active.HWND;
                     if(System.Runtime.InteropServices.Marshal.IsComObject(active))System.Runtime.InteropServices.Marshal.ReleaseComObject(active);
                     createdDuringRun=true;creationPort.Dispose();creationPort=new DocumentCreationPort(application,app,newHandle);automationPort.Dispose();automationPort=new OfficeAutomationPort(application,app,newHandle);automation=new OfficeAutomationSession(automationPort);
-                    fallbackContext=new{app,selectionAvailable=false,documentToolsAvailable=true};target.Text=receipt.Document;
+                    fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};target.Text=receipt.Document;
                 }
                 surface.Send(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"새 문서를 만들고 내용을 확인했습니다. 저장 전입니다.":"생성 결과: "+receipt.Status;return receipt;
             }

@@ -20,6 +20,8 @@ namespace OfficeX.ExcelHost {
   static readonly HashSet<string> Denied=new HashSet<string>(new[]{"GetType","Evaluate","Application","Parent","VBProject","VBE","Run","RunAutoMacros","ExecuteExcel4Macro","DDEInitiate","DDEExecute","DDEPoke","DDERequest","OnTime","OnKey","OnAction","OLEObjects","OLEFormat","AddOLEObject","AddOLEControl","AddFromFile","Open","FollowHyperlink","ExportAsFixedFormat","Save","SaveAs","SaveAs2","SaveCopyAs","Close","Quit"},StringComparer.OrdinalIgnoreCase);
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   public OfficeAutomationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;object doc=Source();acquired.Add(doc);objects["document"]=doc;sourceId=Identity(doc);}
+  public string DocumentId=>sourceId;
+  public string DocumentName=>(string)((dynamic)objects["document"]).Name;
   object Source()=>app=="word"?application.ActiveDocument:app=="powerpoint"?application.ActivePresentation:application.ActiveWorkbook;
   public void CheckSource(){object win=null,doc=null;try{win=application.ActiveWindow;doc=Source();if((int)((dynamic)win).HWND!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
   static void Release(object o){if(o!=null&&Marshal.IsComObject(o))Marshal.ReleaseComObject(o);}
