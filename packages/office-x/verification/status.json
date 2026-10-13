@@ -1,13 +1,37 @@
 {
   "version": "0.8.4",
-  "scope": "source and local browser/native core checks; Windows candidate build pending",
-  "source": {"buildPassed": true, "typecheckPassed": true, "testsPassed": 79, "testsSkippedOnMac": 4, "nativeCoreTestsPassed": 82, "nativeHostCompilePassed": true, "vendorGenOfficeFiles": 4582, "vendorNubiFiles": 88},
-  "ui": {"scope": "browser with mock WebView host", "apps": ["excel", "word", "powerpoint"], "headerTitleRemoved": true, "checkpointFailureDisclosedBeforeApproval": true, "explicitNoBackupApproval": true, "inputLocationAndReasonVisible": true, "width320Passed": true},
-  "windowsBuildVerified": false,
-  "windowsInstallVerified": false,
+  "scope": "source, browser fixtures and Windows COM/WebView2/install tests; real Office 2016 not verified",
+  "source": {
+    "buildPassed": true,
+    "typecheckPassed": true,
+    "testsPassed": 79,
+    "testsSkippedOnMac": 4,
+    "nativeCoreTestsPassed": 82,
+    "nativeHostCompilePassed": true,
+    "vendorGenOfficeFiles": 4582,
+    "vendorNubiFiles": 88,
+    "windowsTestsPassed": 83
+  },
+  "ui": {
+    "scope": "browser with mock WebView host",
+    "apps": [
+      "excel",
+      "word",
+      "powerpoint"
+    ],
+    "headerTitleRemoved": true,
+    "checkpointFailureDisclosedBeforeApproval": true,
+    "explicitNoBackupApproval": true,
+    "inputLocationAndReasonVisible": true,
+    "width320Passed": true
+  },
+  "windowsBuildVerified": true,
+  "windowsInstallVerified": true,
   "realOffice2016Verified": false,
   "realWindowsClaudeVerified": false,
   "realWindowsChatGPTVerified": false,
   "saveCopyAsUserEnvironmentRootCauseConfirmed": false,
-  "copyFailureBehavior": "No automatic document mutation. Disclose no rollback copy in existing review; proceed only after explicit apply choice with source comparison and independent readback."
+  "copyFailureBehavior": "No automatic document mutation. Disclose no rollback copy in existing review; proceed only after explicit apply choice with source comparison and independent readback.",
+  "buildCommit": "e0f6ef6bf291b5e2e2ac94b6a7886ddbc77dccc7",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38383081772"
 }

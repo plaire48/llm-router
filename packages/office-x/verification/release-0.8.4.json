@@ -1,0 +1,203 @@
+{
+  "version": "0.8.4",
+  "tag": "office-x-v0.8.4-beta.1",
+  "buildCommit": "e0f6ef6bf291b5e2e2ac94b6a7886ddbc77dccc7",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38383081772",
+  "windowsChecks": {
+    "sourceTestsPassed": 83,
+    "nativeCoreTestsPassed": 82,
+    "nativeCom": [
+      {
+        "passed": true,
+        "architecture": "x64",
+        "legacyFailed": true,
+        "legacyException": "COMException",
+        "legacyCode": "0x80028018",
+        "legacyTypeInfoCalls": 1,
+        "typeInfoCalls": 0,
+        "valueWrites": 4,
+        "checkpointCopies": 2,
+        "creationSheets": 2,
+        "matrixReadback": true,
+        "multilineCellReadback": true,
+        "raggedRowsPadded": true,
+        "refusedCopyAllowsReviewedWrite": true,
+        "largeIntegerReadback": true,
+        "wordCreation": true,
+        "powerpointCreation": true,
+        "newDocumentIdentity": true,
+        "formatMismatchReproduced": true,
+        "checkpointFormatMatched": true,
+        "wordCheckpoint": true,
+        "powerpointCheckpoint": true,
+        "propertyPaths": true,
+        "propertyCallAliases": true,
+        "deniedPathBlocked": true,
+        "readMutationBlocked": true,
+        "binaryCheckpoint": true,
+        "hostAnyCPU": true,
+        "coreAnyCPU": true,
+        "realOfficeVerified": false
+      },
+      {
+        "passed": true,
+        "architecture": "x86",
+        "legacyFailed": true,
+        "legacyException": "COMException",
+        "legacyCode": "0x80028018",
+        "legacyTypeInfoCalls": 1,
+        "typeInfoCalls": 0,
+        "valueWrites": 4,
+        "checkpointCopies": 2,
+        "creationSheets": 2,
+        "matrixReadback": true,
+        "multilineCellReadback": true,
+        "raggedRowsPadded": true,
+        "refusedCopyAllowsReviewedWrite": true,
+        "largeIntegerReadback": true,
+        "wordCreation": true,
+        "powerpointCreation": true,
+        "newDocumentIdentity": true,
+        "formatMismatchReproduced": true,
+        "checkpointFormatMatched": true,
+        "wordCheckpoint": true,
+        "powerpointCheckpoint": true,
+        "propertyPaths": true,
+        "propertyCallAliases": true,
+        "deniedPathBlocked": true,
+        "readMutationBlocked": true,
+        "binaryCheckpoint": true,
+        "hostAnyCPU": true,
+        "coreAnyCPU": true,
+        "realOfficeVerified": false
+      }
+    ],
+    "nativeSurface": {
+      "passed": true,
+      "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+      "editors": 3,
+      "approvals": 3,
+      "physicalClickAndTyping": true,
+      "invalidContractRecovery": true,
+      "error": null
+    },
+    "install": {
+      "realOfficeVerified": false,
+      "liveModelVerified": false,
+      "legacyEditorUpgradeCleanup": true,
+      "reinstallSeconds": 5.36,
+      "officeInstalled": false,
+      "registry": [
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+          "app": "Excel",
+          "view": "Registry32"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+          "app": "Word",
+          "view": "Registry32"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+          "app": "PowerPoint",
+          "view": "Registry32"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+          "app": "Excel",
+          "view": "Registry64"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+          "app": "Word",
+          "view": "Registry64"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+          "app": "PowerPoint",
+          "view": "Registry64"
+        }
+      ],
+      "runner": "windows-2022",
+      "passed": true,
+      "standaloneEditorsAbsent": true,
+      "imageFeatures": false,
+      "uninstallSeconds": 1.48,
+      "installSeconds": 8.35
+    }
+  },
+  "macClaudeExcel": {
+    "passed": true,
+    "liveProvider": true,
+    "provider": "claude",
+    "platform": "macOS",
+    "nativeOffice": "mock",
+    "realOfficeVerified": false,
+    "realWindowsClaudeVerified": false,
+    "proposals": [
+      "create_document"
+    ],
+    "nativeMockWrites": 1,
+    "sheets": 1,
+    "multilineCellProposed": true,
+    "finalTextDelivered": true,
+    "connectedAfterCompletion": true,
+    "sourceHashes": {
+      "runtime-src/claude-office-run.mjs": "8e778e52e0d5a36c8bc1e3b189e790a5df0378e1d24c1d4e743dc6a437e21221",
+      "runtime-src/nubi-transport.ts": "32a94fbe104f70485e14d226d09a736fcc8029dba5d52d276c95c82820ad605d",
+      "runtime-src/nubi-providers.mjs": "1657f0f11682fdd464a359c1fdf6aff4c4a347b33e8c02da5643f7a6bcd529ca",
+      "runtime-src/agent.ts": "0d37279199b684841a6afc41d1a09af82d0b84601a31cd4528b02f30c58fcda5",
+      "runtime-src/office-skill.ts": "bd8312f0dbb40538b07e94caecab2784080e169fd4dc0344a51199cda62c06e1"
+    }
+  },
+  "browserUI": {
+    "passed": true,
+    "scope": "browser with mock WebView host; not real Office or live Claude",
+    "results": [
+      {
+        "app": "excel",
+        "headerTextRemoved": true,
+        "copyFailureDisclosed": true,
+        "rejectionPreserved": true,
+        "explicitApproval": true,
+        "receiptShowsNoBackup": true,
+        "validationLocationVisible": true
+      },
+      {
+        "app": "word",
+        "headerTextRemoved": true,
+        "copyFailureDisclosed": true,
+        "rejectionPreserved": true,
+        "explicitApproval": true,
+        "receiptShowsNoBackup": true,
+        "validationLocationVisible": true
+      },
+      {
+        "app": "powerpoint",
+        "headerTextRemoved": true,
+        "copyFailureDisclosed": true,
+        "rejectionPreserved": true,
+        "explicitApproval": true,
+        "receiptShowsNoBackup": true,
+        "validationLocationVisible": true
+      }
+    ]
+  },
+  "integrity": {
+    "commit": "e0f6ef6bf291b5e2e2ac94b6a7886ddbc77dccc7",
+    "exeSha256": "7a4e203b31ad19894b629e73e0206b348bdcd18fb5c46403d6692743307856c8",
+    "exeBytes": 124573146,
+    "sourceSha256": "24bdc5e75f8023839baeb05de24b49be3a6ec380f56043e5c9b9191638524b8e",
+    "sourceFiles": 5436,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 13,
+    "zipCRC": true
+  },
+  "realOffice2016Verified": false,
+  "realWindowsClaudeVerified": false,
+  "realWindowsChatGPTVerified": false,
+  "saveCopyAsUserEnvironmentRootCauseConfirmed": false,
+  "copyFailureBehavior": "Disclose missing backup before approval; no automatic writes. Explicit no-backup apply preserves source comparison and independent readback. Complete rollback not available for that change."
+}

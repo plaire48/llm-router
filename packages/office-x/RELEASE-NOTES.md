@@ -9,3 +9,9 @@ Excel 작성 도구가 줄바꿈·탭이 있는 셀과 행마다 열 수가 다�
 상단 초록색 누비 Agent 문구를 제거했습니다. 누비 아이콘과 모델·복원 버튼, 리본 탭은 유지합니다. 자동 로그인 제거, GenOffice 문서 기능, 누비 Workspace 모델 선택과 Claude 연결은 기존대로 유지하며 별도 편집기·히스토리·이미지 기능은 포함하지 않습니다.
 
 Office 앱을 모두 종료한 뒤 EXE를 실행하세요. Windows 빌드·설치, COM 테스트 객체 및 WebView2 입력 검사는 실제 사용자 Office 2016 문서 작성이나 Windows Claude/ChatGPT 로그인을 대신하지 않습니다. 해당 실제 환경에는 접근할 수 없어 확인하지 못했습니다.
+
+[Windows 빌드 및 검사](https://github.com/plaire48/llm-router/actions/runs/38383081772)를 통과했습니다. 대상 커밋은 e0f6ef6bf291b5e2e2ac94b6a7886ddbc77dccc7입니다. Windows 소스 검사 83개와 코어 82개, x86/x64 COM 테스트 객체, 세 앱 화면의 WebView2 입력 검사를 통과했습니다. 설치 8.35초, 재설치 5.36초는 테스트 VM 기준입니다.
+
+실제 macOS Claude에서 줄바꿈이 있는 Excel 표 작성 제안 1회와 최종 응답을 확인했습니다. 이 검사에서는 Office 실행부를 모의 개체로 사용했습니다. 사용자의 실제 Windows Office/Claude/ChatGPT 환경에서 동일 작업의 성공을 확인한 결과는 아닙니다.
+
+EXE SHA-256: 7a4e203b31ad19894b629e73e0206b348bdcd18fb5c46403d6692743307856c8. 설치 파일 124573146바이트, 소스 ZIP 5436개 파일이며 GenOffice 4582개와 누비 88개 원본 파일의 해시를 확인했습니다. 세부 범위는 첨부 release-0.8.4.json을 참고하세요.
