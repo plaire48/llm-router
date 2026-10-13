@@ -5,3 +5,5 @@ Excel 새 문서 작성, 셀 입력과 검증, 암호화 체크포인트, 파일
 Windows 전용 C++ IDispatch 객체는 GetTypeInfo를 TYPE_E_INVDATAREAD로 실패시키면서 Excel 모양의 Workbooks, Worksheets, Range, Value2, SAFEARRAY, SaveCopyAs를 구현한다. 기존 동적 호출은 실패했으며, 수정된 호스트를 32비트 및 64비트로 검사한다. 설치된 Excel의 실제 동작을 대신하는 증거는 아니다.
 
 작성 결과는 독립적인 읽기 확인을 통과해야 verified가 된다. 셀 쓰기 횟수와 불확실한 결과 구분을 유지한다. Core 일반 예외도 실패한 멤버·단계·HRESULT·예외 유형을 보존한다. 반복 중단 제한을 완화하거나 확인되지 않은 쓰기를 성공으로 표시하지 않는다.
+
+XLS/OLE 및 CSV 등 기존 Excel 형식의 복원 사본은 ZIP으로 가정하지 않고 원본 바이트 해시로 비교한다. 바이트의 차이는 보수적으로 source_changed로 처리되며 비교를 우회하지 않는다.
