@@ -1,17 +1,13 @@
-# Nubi Office X 0.8.7 Beta 1
+# Nubi Office X 0.8.8 Beta 1
 
-0.8.6에서 Office 작업창 제목을 빈 문자열로 전달하던 변경을 수정했습니다. 화면 위 중복 제목을 숨기기 위해 사용한 이 호출은 사용자 환경에서 발생한 작업창 열기 ArgumentException의 우선 의심 경로입니다. 실제 사용자 스택이 없어 원인이 제목인지 창/크기 인자인지는 확정하지 못했습니다.
+Excel의 Count 검증을 실제로 읽은 기존 시트 수 기준으로 보완했습니다. 시트를 하나 추가하면 추가한 개수 1이 아니라 기존 전체 개수에 1을 더해 확인합니다. Agent는 관측한 Count와 추가할 개수(delta)를 사용하고 셀 값, 수식, 시트 이름은 별도로 확인합니다. Range.Count는 빈 셀까지 포함하는 범위의 셀 수이며 입력된 값의 수가 아닙니다.
 
-세 앱의 최초 열기와 새 문서 연결 모두 비어 있지 않은 화면용 제목으로 생성합니다. 제목이 거절되면 짧은 호환 제목으로, 창 인자가 거절되면 현재 활성 창을 사용하는 VSTO 호출로 연결합니다. 호환 경로에서는 Office 제목 표시줄에 ‘누비’가 보일 수 있습니다. 작업창 너비 420이 거절되면 320, 두 값 모두 거절되면 Office 기본 너비로 표시합니다. 다른 종류의 실패는 임의로 재시도하지 않습니다.
+관측한 Worksheets/Sheets의 Count와 직접 Add 호출로 결과를 확정할 수 있는 계획은 예상 개수를 쓰기 전에 검증합니다. 잘못된 예상값은 아직 변경하지 않은 상태에서 Agent가 다시 읽고 수정하도록 반환합니다. 일반적인 구조 변경의 결과는 추측하지 않고 실제 쓰기 후 확인합니다. 문자열이나 소수 형태의 개수 검증은 쓰기 전에 거절합니다.
 
-처음 열기와 새 문서 연결의 실패 처리에 단계, 예외 이름, 인자 이름, 오류 코드, 확인 번호를 추가했습니다. 문서 내용과 파일 경로가 포함될 수 있는 원문 예외 메시지는 표시/기록하지 않습니다. 실패한 새 문서 작업창의 컨트롤은 정리하며 원래 Agent 창은 새 화면이 준비될 때까지 유지합니다.
+쓰기가 완료된 뒤 Count 비교가 다르면 나머지 내용 검사도 읽어 결과를 보관합니다. 오류 정보에는 예상 개수와 실제 개수를 표시하며 복사되는 오류 요약에 셀 내용은 넣지 않습니다. 실제 검증 불일치를 성공으로 바꾸거나 이미 수행한 Add/쓰기 작업을 자동 반복하지 않습니다.
 
-Excel, Word, PowerPoint의 작업창 생성 코드를 함께 수정했습니다. 셀 입력, Item/Range 경로, 계산, 병합, 스냅샷 재조회와 GenOffice 기능은 0.8.6의 동작을 유지합니다. 별도 편집기, 새 대화/히스토리, 이미지 기능은 포함하지 않습니다.
+0.8.7의 작업창 열기 호환 처리는 유지합니다. 별도 GenOffice 편집기, 새 대화/히스토리, 이미지 기능은 포함하지 않습니다. Office 앱을 모두 종료한 뒤 설치하세요.
 
-Office 앱을 모두 닫고 EXE를 실행하세요. 실행 중인 Office는 이전 추가 기능을 계속 사용할 수 있습니다. 실제 Windows Office 2016 작업창에는 접근할 수 없어 그 환경에서의 열기 성공은 직접 확인하지 못했습니다. Windows 설치/화면 검사와 COM 모의 검사, 제목/창/너비 인자 거절 회귀 검사는 별도 범위입니다.
+현재 확인 범위와 설치 파일 정보는 Windows 빌드 후 기록합니다. 실제 사용자 환경의 오류 상세와 실제 Windows Office 2016에는 접근할 수 없어 이번 신고가 잘못된 Count 예상값 때문인지는 확정하지 못했습니다. Windows COM 모의 실행과 실제 Office의 동작은 구분합니다.
 
-참고: [Microsoft VSTO 작업창 생성과 창 인자](https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.tools.customtaskpanecollection.add?view=vsto-2022).
-
-[Windows 빌드 및 검사](https://github.com/plaire48/llm-router/actions/runs/38399840513)를 통과했습니다. 커밋 80cf8c1b3789e74173cd8002d95e3d75bf17a9a1의 Windows 소스 115개, 네이티브 코어 105개, x86/x64 COM 회귀 및 설치된 WebView2의 세 앱 클릭/입력 검사를 통과했습니다. Office 없는 Windows VM에서 설치 9.67초, 재설치 4.69초입니다. 실제 Office 작업창 열기 성공의 증거와는 구분합니다.
-
-설치 파일 SHA-256: dcd33bde3444f02defc655d2aac1260e77fe257679ed7c1b0510df1b9aa345dd. 설치 파일 124595406바이트, 소스 5468개 파일입니다. GenOffice 4582개와 누비 88개 원본, 소스 52개의 해시를 대조했습니다. 상세 범위는 release-0.8.7.json을 참고하세요.
+참고: [Excel Worksheets.Add 인자](https://learn.microsoft.com/en-us/office/vba/api/excel.worksheets.add), [Range.Count](https://learn.microsoft.com/en-us/office/vba/api/excel.range.count).

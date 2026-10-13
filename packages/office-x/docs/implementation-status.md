@@ -1,9 +1,9 @@
-# 0.8.7 변경
+# 0.8.8 변경
 
-TaskPaneOpening은 VSTO Add에 String.Empty를 전달하지 않는다. 기본 표시 제목은 U+200B로 길이가 1이고 whitespace-only가 아니다. 공장 호출의 ArgumentException만 같은 창/호환 제목, 활성 창/호환 제목 순서로 제한하여 처리한다. 너비 인자 거절은 420에서 320, Office 기본 너비로 처리한다. 실제 Office의 빈 제목 검증 규칙이나 사용자 예외의 ParamName은 아직 관측되지 않았다.
+OfficeCountChecks는 Count의 숫자 기대값과 delta를 검증한다. delta는 같은 대상/멤버/인자의 Count가 포함된 네이티브 snapshot에서만 정수 기대값으로 변환한다. 승인 화면과 실행은 변환된 동일한 기대값을 사용하며, 쓰기 후 관측값을 기대값으로 대체하지 않는다. 최초 시트 수 1과 3의 추가와 값 입력, 다중 Add의 Count 인자, 검증안 오류의 쓰기 전 거절/수정, source drift, 실제 불일치와 재실행 방지를 검사한다.
 
-세 VSTO 호스트의 최초 표시와 새 문서 연결이 공통 경로를 사용한다. 생성 중 예외 발생 시 컨트롤과 생성된 작업창을 정리하고 실패 단계가 포함된 진단을 표시한다. Dispose된 follower는 원래 세션에서 제거해 이후 포커스 판단을 막지 않는다. 새로운 화면 준비 전에 원래 작업창을 숨기지 않는다.
+관측한 document.Worksheets/Sheets 핸들의 Count는 해당 핸들의 직접 Add와 setter만 있는 경우에 한해 예상 총개수를 사전 검증한다. 임의 구조 변경 호출, 핸들 재지정, 관측하지 않은 대상의 절대 개수는 추측하지 않는다. readback은 불일치가 나도 이후 읽기 검사를 수행하고 모든 완료한 검사 결과를 receipt에 보관한다. 읽기 자체가 실패하거나 취소되면 그 시점에서 멈춘다. 실제 불일치는 partial이며 다시 쓰기를 허용하지 않는다.
 
-TaskPaneStartupDiagnostics는 단계, 예외 종류, 안전한 인자 이름, HRESULT, 확인 번호를 제공한다. 예외의 원문 메시지나 문서 내용/경로는 포함하지 않는다.
+Office skill의 도구 스키마와 안내는 equals 또는 Count 전용 delta를 지원한다. 쓰기 전 개수 오류는 native 상태를 읽고 계획을 수정한다. UI에는 안전한 정수 Count 정보만 표시/복사하며 다른 검사에 포함된 문서 내용을 오류 요약에 포함하지 않는다.
 
-문서 도구와 모델 동작은 0.8.6과 동일하다. Windows 빌드와 설치된 WinForms WebView2 검증은 Office VSTO 내부 실행과 별개이며 실제 Office 2016 작업창 열기는 미검증이다.
+실제 Windows Office 2016과 사용자 오류의 기대값/실제값은 미관측이다. 설치, WinForms WebView2, Core 모의 포트, 네이티브 IDispatch fixture, 실제 모델 연결 검증은 각각 별도 범위다.

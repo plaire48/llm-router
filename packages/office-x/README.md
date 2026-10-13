@@ -1,8 +1,8 @@
-# Nubi Office X 0.8.7
+# Nubi Office X 0.8.8
 
 Windows Office 2016의 Excel, Word, PowerPoint 안에서 누비 채팅과 GenOffice Agent를 사용합니다. 별도 GenOffice 편집기는 설치하지 않습니다.
 
-[Windows 설치 파일](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.7-beta.1)을 받아 Office 앱을 닫고 실행하세요. 각 앱의 **누비 Agent** 탭에서 시작합니다.
+[Windows 설치 파일](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.8-beta.1)을 받아 Office 앱을 닫고 실행하세요. 각 앱의 **누비 Agent** 탭에서 시작합니다.
 
 GenOffice AgentLoop, Word/XLSX 파일 엔진, PPTX 작업·생성·레이아웃 검사, PDF 변환과 웹 검색을 재사용합니다. 현재 Office 문서는 네이티브 작업 도구로 수정하고 결과를 다시 읽습니다. 누비 Workspace의 계정·모델 선택, Claude 연결, 폰트·색감·강조를 유지합니다.
 

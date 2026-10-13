@@ -17,9 +17,12 @@ export function toolFailure(execution){
  const code=safe(result?.error);if(!code)return null;
  const source=result.diagnostics||{};
  const path=result.inputPath||source.inputPath;
- return {code,tool:safe(execution.name),member:safeMember(result.failedMember||source.member),inputPath:typeof path==='string'&&path.length<=150&&/^[A-Za-z_][A-Za-z0-9_]*(\[\d{1,3}\]|\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(path)?path:undefined,inputRule:safe(result.inputRule||source.inputRule),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||source.nativeCode||'')?result.nativeCode||source.nativeCode:undefined,exception:safe(result.exceptionName||source.exception),stage:safe(result.failureStage||source.failureStage||source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
+ const countChecks=Array.isArray(result.checks)?result.checks.filter(c=>/^(?:[A-Za-z_][A-Za-z0-9_]*\.)*Count$/i.test(c?.read?.member||'')&&Number.isSafeInteger(c.actual)&&c.actual>=0&&Number.isSafeInteger(c.expected)&&c.expected>=0).slice(0,10).map(c=>({actual:c.actual,expected:c.expected,passed:c.passed===true})):[];
+ return {code,countChecks,tool:safe(execution.name),member:safeMember(result.failedMember||source.member),inputPath:typeof path==='string'&&path.length<=150&&/^[A-Za-z_][A-Za-z0-9_]*(\[\d{1,3}\]|\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(path)?path:undefined,inputRule:safe(result.inputRule||source.inputRule),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||source.nativeCode||'')?result.nativeCode||source.nativeCode:undefined,exception:safe(result.exceptionName||source.exception),stage:safe(result.failureStage||source.failureStage||source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
 }
 export function documentInputFailure(fault){
+ if(fault?.code==='office_count_expectation_invalid')return '문서를 변경하기 전에 예상 개수 오류를 발견했습니다. 실제 개수를 읽고 변경안을 다시 확인해야 합니다.';
+ if(fault?.code==='readback_mismatch'&&fault.countChecks?.some(c=>!c.passed)){const c=fault.countChecks.find(c=>!c.passed);return `개수 확인: 예상 ${c.expected}개, 실제 ${c.actual}개. 셀 내용의 확인 결과도 함께 확인해야 합니다. 변경을 반복하지 않습니다.`;}
  if(fault?.code!=='document_content_invalid')return '';
  const path=fault.inputPath||'',cell=/^sheets\[(\d+)\]\.rows\[(\d+)\](?:\[(\d+)\])?$/.exec(path),sheet=/^sheets\[(\d+)\]\.name$/.exec(path);
  const location=cell?`${+cell[1]+1}번째 시트 ${+cell[2]+1}행${cell[3]!==undefined?` ${+cell[3]+1}열`:''}`:sheet?`${+sheet[1]+1}번째 시트 이름`:path==='title'?'문서 제목':'문서 내용';
