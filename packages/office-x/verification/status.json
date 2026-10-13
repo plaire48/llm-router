@@ -36,7 +36,14 @@
     "powerpointSelectionFallbackCrossCompiled": true,
     "originalFileEngineTests": 4,
     "companionLocalBuild": "six editors passed",
-    "nativeAccountBridgeCrossCompile": "passed"
+    "nativeAccountBridgeCrossCompile": "passed",
+    "upstreamDocsEditorTests": 3472,
+    "upstreamPdfEditorTests": 955,
+    "upstreamPdfEditorSkipped": 2,
+    "upstreamXlsxGatewayTests": 248,
+    "originalEditorTestsPassed": 4675,
+    "npm10CleanInstall": "passed",
+    "officeFeatureBrowserFlows": 9
   },
   "windowsVstoBuildVerified": false,
   "windowsInstallerVerified": false,

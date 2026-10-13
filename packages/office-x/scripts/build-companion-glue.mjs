@@ -1,8 +1,11 @@
 import {build} from 'esbuild';
+import {fileURLToPath} from 'node:url';
 import {mkdir,copyFile,cp} from 'node:fs/promises';
 await mkdir('companion/workspace/nubi-glue',{recursive:true});
-await build({entryPoints:['companion/src/nubi-main.ts'],outfile:'companion/workspace/nubi-glue/nubi-main.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',external:['electron'],define:{'import.meta.url':'__nubiModuleUrl'},banner:{js:'const __nubiModuleUrl=require("node:url").pathToFileURL(__filename).href;'},plugins:[{name:'nubi-wire-only',setup(b){b.onResolve({filter:/agent-runtime\.js$/},()=>({path:new URL('../runtime-src/nubi-wire.mjs',import.meta.url).pathname}));}}]});
+await build({entryPoints:['companion/src/nubi-main.ts'],outfile:'companion/workspace/nubi-glue/nubi-main.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',external:['electron'],define:{'import.meta.url':'__nubiModuleUrl'},banner:{js:'const __nubiModuleUrl=require("node:url").pathToFileURL(__filename).href;'},plugins:[{name:'nubi-wire-only',setup(b){b.onResolve({filter:/agent-runtime\.js$/},()=>({path:fileURLToPath(new URL('../runtime-src/nubi-wire.mjs',import.meta.url))}));}}]});
 await mkdir('dist/companion',{recursive:true});
+await mkdir('dist/companion/licenses',{recursive:true});
+await copyFile('node_modules/@e2e/cx-design-system/fonts/OFL.txt','dist/companion/licenses/Noto-Sans-KR-OFL.txt');
 await build({entryPoints:['companion/src/connection.jsx'],outfile:'dist/companion/connection.js',bundle:true,platform:'browser',target:'chrome110',format:'iife',minify:true,loader:{'.woff2':'file','.woff':'file','.ttf':'file'},assetNames:'fonts/[name]-[hash]'});
 for(const name of ['connection.html','nubi-preload.cjs'])await copyFile('companion/src/'+name,'dist/companion/'+name);
 await cp('vendor/nubi/extensions/aipro-chat/public/icons','dist/companion/icons',{recursive:true});
