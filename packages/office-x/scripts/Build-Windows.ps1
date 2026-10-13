@@ -31,10 +31,7 @@ try {
  if($LASTEXITCODE){throw 'Native core tests failed'}
  & dotnet build native/OfficeX.ExcelHost -c Release
  if($LASTEXITCODE){throw 'Native host build failed'}
- & dotnet build native/OfficeX.Dispatch.Tests -c Release
- if($LASTEXITCODE){throw 'IDispatch test build failed'}
- & native/OfficeX.Dispatch.Tests/bin/Release/net472/OfficeX.Dispatch.Tests.exe
- if($LASTEXITCODE){throw 'Windows IDispatch regression failed'}
+ ./scripts/Test-NativeDispatch.ps1 -Architecture x64
  & dotnet build native/OfficeX.Surface.Tests -c Release
  if($LASTEXITCODE){throw 'Native WebView2 regression build failed'}
  $interop=@{}
