@@ -1,0 +1,132 @@
+PASS task pane factory never receives an empty or whitespace-only title
+PASS task pane caption rejection uses a compatible title for the same window
+PASS task pane window argument rejection uses the active-window overload once
+PASS task pane failures are bounded and unrelated exceptions are not retried
+PASS task pane width rejection falls back to compact width without blocking visibility
+PASS task pane leaves host default width when both requested widths are rejected
+PASS worksheet Count delta uses existing one or three sheets and verifies cell content
+PASS wrong total worksheet Count is rejected before writing and can be corrected
+PASS worksheet Add Count optional argument is reflected in count preflight
+PASS Count checks reject string expectations and missing or conflicting delta baselines
+PASS Count delta still detects source count drift before edits
+PASS count mismatch retains all independent readbacks and never replays a write
+PASS arbitrary structural calls defer Count prediction to actual readback
+PASS late missing Item selector is rejected before an earlier write can run
+PASS missing Item selectors in checks and malformed late matrices are rejected before writing
+PASS preflight indexed paths consume selectors without native getters or guessing
+PASS cell format helper resolves real range and preserves values and formulas
+PASS format helper validates malformed inputs before reading and normalizes General only
+PASS format source drift and actual format mismatch cannot claim completion
+PASS worksheet collection Name paths are rejected before any earlier batch write
+PASS worksheet Item Name and actual worksheet handles are not mistaken for collections
+PASS worksheet list returns actual paged names and native handles without editing
+PASS rename changes the observed second worksheet and preserves first sheet and chart names
+PASS add creates one named worksheet after the last actual sheet and verifies all original names
+PASS worksheet name validation duplicate chart name and unknown worksheet never write
+PASS worksheet rename detects source drift and corrupt name readback without replay
+PASS chart-only workbook can receive a new worksheet without guessing a first worksheet
+PASS Item index omission is rejected before COM without guessing a collection member
+PASS indexed Office paths consume explicit sheet and range selectors in order
+PASS indexed Office paths never guess missing selectors or consume a set value
+PASS wire preserves ISO text and arguments accept actual reference handles
+PASS arguments reject unknown handles and malformed matrices before invocation with precise input paths
+PASS typed argument diagnostics survive a zero-write native receipt
+PASS Calculate remains a method and inspection never executes it or structural writes
+PASS cell merging resolves Range uses method arguments and verifies preserved top-left values
+PASS merging refuses populated trailing cells and detects source changes or failed readback
+PASS legacy and expired snapshot IDs fail before invocation and recover through fresh native reads
+PASS no selection context uses active worksheet and detects worksheet switches before writing
+PASS general cell writes preserve existing content intent and literal formula-looking text
+PASS general formulas accept SUM and normalize function case without changing string literals
+PASS cell writes source drift approval decline and readback mismatch prevent completion
+PASS cell value batches support numeric boolean and null with fresh native reads
+PASS cell validation rejects malformed destinations and ambiguous payloads before reading
+PASS Excel geometry rejects pixels strings and out-of-range dimensions before writes
+PASS PowerPoint textbox validates five finite native arguments without creating a shape
+PASS layout readback accepts bounded quantization but rejects wrong dimensions and data tolerances
+PASS native Single readback matches exact Single only and never arbitrary near values
+PASS format helper verifies rounded native dimensions with content preserved
+PASS formula comparer is not available for arbitrary data readback
+PASS Excel creation preserves multiline cells and pads only missing trailing cells
+PASS Excel rectangular validation uses the longest row rather than the first row
+PASS Excel invalid content returns a precise pre-write location without exposing cell data
+PASS Excel normalization retains width and size limits and duplicate-name checks
+PASS generic native failures preserve member HRESULT and execution stage without claiming cell values
+PASS read accessors before an unsupported write never count as completed document writes
+PASS synchronous Office callers retain their owning thread without a UI synchronization context
+PASS native task-pane review and receipt preserve the camelCase wire contract
+PASS unsupported member before invocation can be replanned without reporting a write
+PASS real partial writes cannot be replanned as an unsupported-member retry
+PASS property paths preserve read and mutation classification without execution escapes
+PASS removed image creation cannot be called through native Office members
+PASS model execution escape remains unavailable and metadata errors are not write successes
+PASS type library failure before invocation reports no completed write
+PASS Excel rejection reports unverified attempt instead of entered values
+PASS automatic shape resize preserves other text block checks
+PASS shape geometry drift before approval blocks replacement
+PASS Office operations continue after verified edits
+PASS Office operations detect source drift before mutation
+PASS Office operations cannot replay rejected writes
+PASS Office operations enforce real readback
+PASS Office plan is immutable and requires fresh reads after success
+PASS Office writes require independent result checks
+PASS Office cancellation between steps stops remaining mutations
+PASS Office cancellation before execution leaves data intact
+PASS creation pre-call rejection cannot be reported as a partial document
+PASS Word creation reads back paragraphs and tables
+PASS document creation never replays a partial COM result
+PASS document creation rejection never creates
+PASS document creation cancellation never creates
+PASS document creation detects wrong actual content
+PASS creation validates each app schema before dispatch
+PASS minimal splice preserves unchanged prefix and suffix including emoji
+PASS batch keeps each paragraph boundary and verifies every block
+PASS batch rejects a block outside pinned selection
+PASS batch cannot mix duplicate paragraph targets
+PASS batch checks readonly block before any write
+PASS batch rechecks all source blocks before writing
+PASS batch detects unexpected change to unedited paragraph
+PASS batch partial failure cannot replay applied paragraphs
+PASS batch approval is an immutable copy
+PASS batch cancellation before apply never writes
+PASS batch rejection never writes
+PASS text replacement verifies content and keeps unsaved
+PASS text source drift blocks writes
+PASS text other-content drift blocks writes
+PASS text rejection and replay never mutate
+PASS text cancellation before dispatch does not mutate
+PASS text uncertain COM failure cannot replay
+PASS text formatting drift fails independent readback
+PASS text mixed or complex selection stays readonly
+PASS text new paragraphs cannot expand mutation scope
+PASS three formulas are applied and independently read back
+PASS changed operand blocks the whole batch
+PASS changed target blocks the whole batch
+PASS document close never falls back to active workbook
+PASS approval rejection consumes the write without mutation
+PASS receipt replay never reapplies
+PASS cancel before apply writes nothing
+PASS second COM call failure reports attempted partial receipt
+PASS failed final readback is not success
+PASS wrong calculated result is not success
+PASS incomplete calculation is not success
+PASS non-target change after calculation is detected
+PASS caller cannot mutate reviewed plan
+PASS caller cannot mutate stored snapshot
+PASS single selected cell can read the surrounding table
+PASS single-cell write can use observed surrounding operands
+PASS expanded reads do not expand write authorization
+PASS read cannot switch to another worksheet identity
+PASS large surrounding reads remain bounded
+PASS surrounding window includes isolated cell and sheet edges
+PASS snapshot must include both operands
+PASS model supplied snapshot ID is rejected
+PASS external and executable formulas are unsupported
+PASS duplicate targets are rejected
+PASS existing formulas and empty strings are not blank targets
+PASS unsafe ranges fail closed
+PASS readonly and protected workbook reject proposals
+PASS numeric-looking strings are not numeric evidence
+PASS invalid and unbounded addresses reject
+PASS large cell context is rejected before model transfer
+131/131 core behavior tests passed; fake port, not Excel COM.

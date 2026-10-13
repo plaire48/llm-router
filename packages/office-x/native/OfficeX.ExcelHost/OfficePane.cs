@@ -91,7 +91,7 @@ namespace OfficeX.ExcelHost
                 EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.8"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.9"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
@@ -213,7 +213,7 @@ namespace OfficeX.ExcelHost
             if(new[]{"open_genoffice_editor","insert_image","image_search","generate_image","analyze_media"}.Contains(name))throw new OfficeFault("feature_removed");
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
-            if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
+            if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="ask_clarification"){
                 var questions=input["questions"] as JArray;if(questions==null||questions.Count<1||questions.Count>3||questions.Any(q=>q["question"]?.Type!=JTokenType.String||((string)q["question"]).Length>500||q["options"] is JArray opts&&opts.Count>6))throw new OfficeFault("question_invalid");
                 questionId=Guid.NewGuid().ToString("N");questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);pendingQuestion=Wire.Object(new{type="question",runId,questionId,questions});SendSurface(pendingQuestion);
@@ -248,6 +248,7 @@ namespace OfficeX.ExcelHost
             if(name=="save_document"){var saved=automationPort.Save((string)input["format"]=="pdf",cancelToken);SendSurface(new{type="receipt",runId,receipt=saved});return saved;}
             if(name=="inspect_office_members")return automationPort.Members((string)input["target"],(string)input["query"],(int?)input["count"]??80);
             if(name=="inspect_office")return automation.Inspect(input["steps"]?.ToObject<List<OfficeStep>>());
+            if(name=="read_worksheets"){if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);return ExcelWorksheets.Read(automation,(int?)input["start"]??1,(int?)input["count"]??50);}
             if(name=="read_cells"){
                 if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);
                 string sheet=(string)input["sheet"]??(fallbackContext==null?session?.Context.Worksheet:null);
@@ -264,10 +265,10 @@ namespace OfficeX.ExcelHost
                 var after=Wire.Object(automation.Inspect(reads));after["calculated"]=true;after["calculationDone"]=true;after["mutated"]=false;after["address"]=address;return after;
             }
             if(writesStopped&&new[]{"create_document","execute_office_operations","replace_blocks","replace_text","set_formula"}.Contains(name))throw new OfficeFault("writes_stopped_for_this_run");
-            if(name=="execute_office_operations"||name=="write_cells"||name=="set_formula"||name=="merge_cells"||name=="format_cells"){
+            if(name=="execute_office_operations"||name=="write_cells"||name=="set_formula"||name=="merge_cells"||name=="format_cells"||name=="add_worksheet"||name=="rename_worksheet"){
                 OfficePlan plan;
                 if(name=="execute_office_operations")plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
-                else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=name=="format_cells"?ExcelCellFormats.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null):name=="merge_cells"?ExcelRangeTools.PrepareMerge(automation,input,fallbackContext==null?session?.Context.Worksheet:null):ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
+                else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=name=="add_worksheet"||name=="rename_worksheet"?ExcelWorksheets.Prepare(automation,input,name=="add_worksheet"):name=="format_cells"?ExcelCellFormats.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null):name=="merge_cells"?ExcelRangeTools.PrepareMerge(automation,input,fallbackContext==null?session?.Context.Worksheet:null):ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
                 status.Text="문서 변경안을 확인해 주세요.";
                 currentStage="checkpoint_before_write";var checkpoint=files.PrepareCheckpoint(plan.Summary);currentStage="native_"+name;var approved=await AwaitReview(plan.Id,plan,checkpoint);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);var result=Wire.Object(receipt);result["checkpoint"]=Wire.Object(checkpoint);SendSurface(new{type="receipt",runId,receipt=result});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return result;

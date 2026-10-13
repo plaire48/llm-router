@@ -1,4 +1,4 @@
-# GenOffice 기능 대응 — 0.8.8
+# GenOffice 기능 대응 — 0.8.9
 
 원본 기준: genspark-ai/genoffice `438d9c65709952490c970beaa2599ef45e74431f`. 원본 4,582개 파일과 라이선스는 보존한다. 제품에는 별도 편집기를 설치하지 않는다. 원본 AgentLoop와 composeSkills, 실제 파일 엔진을 Office 작업창의 백그라운드 실행부로 사용한다. 누비는 채팅·계정·모델 transport와 CX를 제공한다.
 

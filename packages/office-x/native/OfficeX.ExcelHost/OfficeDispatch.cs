@@ -16,6 +16,7 @@ namespace OfficeX.ExcelHost {
    [PreserveSig]int Invoke(int id,ref Guid iid,uint lcid,ushort flags,ref DISPPARAMS args,[MarshalAs(UnmanagedType.Struct)]out object result,ref EXCEPINFO exception,out uint argumentError);
   }
   [DllImport("oleaut32.dll")]static extern int VariantClear(IntPtr variant);
+  public static void RequireMember(object target,string member){var dispatch=target as Dispatch;if(dispatch==null)throw new OfficeFault("office_dispatch_unavailable",member,invocationStarted:false);var iid=Guid.Empty;var ids=new int[1];int hr=dispatch.GetIDsOfNames(ref iid,new[]{member},1,1033,ids);if(hr<0)throw new OfficeFault(OfficeCallPolicy.ErrorCode(hr),member,hr,false);}
   public static object Get(object target,string member,params object[] args)=>Invoke(target,member,"get",args);
   public static object Call(object target,string member,params object[] args)=>Invoke(target,member,"call",args);
   public static void Set(object target,string member,object value)=>Invoke(target,member,"set",new[]{value});

@@ -10,6 +10,7 @@ namespace OfficeX.Core {
    var marker=new object();reference=reference??(_=>marker);
    var args=(step.Args??new JArray()).Select((v,i)=>Convert(v,reference,"args["+i+"]")).ToList();
    if(step.Action=="set")Convert(step.Value,reference,"value");
+   OfficeGeometry.ValidateInput(step,app);
    var members=step.Member.Split('.');
    OfficePath.Resolve(marker,(targetPrefixes??Enumerable.Empty<string>()).Concat(members.Take(members.Length-1)),args,app,(_,member,selectors)=>marker);
    if(String.Equals(members.Last(),"Item",StringComparison.OrdinalIgnoreCase))ValidateItem(args);

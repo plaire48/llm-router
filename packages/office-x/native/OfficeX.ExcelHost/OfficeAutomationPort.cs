@@ -11,9 +11,10 @@ using Newtonsoft.Json.Linq;
 using OfficeX.Core;
 namespace OfficeX.ExcelHost {
  // Structured Office Object Model calls, never eval, C#, VBA or a shell.
- sealed class OfficeAutomationPort:IOfficeAutomationPort,IOfficePreflightPort,IDisposable {
+ sealed class OfficeAutomationPort:IOfficeAutomationPort,IOfficePreflightPort,IOfficeBatchPreflightPort,IDisposable {
   readonly int threadId=Thread.CurrentThread.ManagedThreadId;
   readonly dynamic application;readonly string app;readonly int hwnd;readonly string sourceId;
+  readonly HashSet<string> worksheetCollections=new HashSet<string>();
   readonly Dictionary<string,object> objects=new Dictionary<string,object>();readonly List<object> acquired=new List<object>();
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   public OfficeAutomationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;object doc=Source();if(doc==null)throw new OfficeFault("open_document_required");acquired.Add(doc);objects["document"]=doc;sourceId=Identity(doc);}
@@ -24,7 +25,12 @@ namespace OfficeX.ExcelHost {
   public void CheckSource(){object win=null,doc=null;try{win=OfficeDispatch.Get((object)application,"ActiveWindow");doc=Source();if(win==null||doc==null||Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
   static void Release(object o){if(o!=null&&Marshal.IsComObject(o))Marshal.ReleaseComObject(o);}
   object Arg(JToken value,string path)=>OfficeArguments.Convert(value,id=>objects.TryGetValue(id,out var found)?found:null,path);
+  bool preflightMutation;readonly Dictionary<string,object> preflightObjects=new Dictionary<string,object>();readonly List<object> preflightAcquired=new List<object>();
+  public void BeginPreflight(){CheckSource();EndPreflight();foreach(var pair in objects)preflightObjects[pair.Key]=pair.Value;}
+  public void EndPreflight(){preflightMutation=false;for(int i=preflightAcquired.Count-1;i>=0;i--)Release(preflightAcquired[i]);preflightAcquired.Clear();preflightObjects.Clear();}
   public void ValidateInput(OfficeStep step,ISet<string> plannedObjects){
+   bool priorMutation=preflightMutation;if(OfficeCallPolicy.WritesDocument(step))preflightMutation=true;
+   if(app=="excel")ExcelWorksheetPaths.Validate(step,plannedObjects.Contains(step.Target??"document")?null:worksheetCollections,objects.ContainsKey(step.Target??"document")||plannedObjects.Contains(step.Target??"document"));
    if(step.Id=="document")throw new OfficeFault("office_object_id_required",step.Member,invocationStarted:false);
    string target=step.Target??"document";var prefixes=new string[0];
    if(!objects.ContainsKey(target)&&!plannedObjects.Contains(target)){
@@ -35,10 +41,23 @@ namespace OfficeX.ExcelHost {
     OfficeCallPolicy.Validate(String.Join(".",prefixes),true,"get");
    }
    try{OfficeArguments.ValidateInput(step,app,prefixes,id=>objects.ContainsKey(id)||plannedObjects.Contains(id)?new object():null);}catch(OfficeFault e){throw new OfficeFault(e.Message,e.Member??step.Member,e.NativeCode==null?(int?)null:unchecked((int)Convert.ToUInt32(e.NativeCode.Substring(2),16)),false,e.ExceptionName,e.InputPath,e.InputRule);}
+   // Resolve existing objects and read-only planned handles before ANY write.
+   // Objects returned by future mutations are deferred, never created speculatively.
+   string root=objects.ContainsKey(target)||plannedObjects.Contains(target)?target:target.Split('.')[0];
+   if(!preflightObjects.TryGetValue(root,out var native)){if(prefixes.Length>0&&root==prefixes[0]&&!plannedObjects.Contains(root))native=preflightObjects["document"];else{if(step.Id!=null)preflightObjects.Remove(step.Id);return;}}
+   if((step.Args??new JArray()).DescendantsAndSelf().OfType<JObject>().Any(v=>v["reference"]!=null||v["ref"]!=null)&& (step.Args??new JArray()).DescendantsAndSelf().OfType<JObject>().Any(v=>(v["reference"]??v["ref"]) is JValue id&&!preflightObjects.ContainsKey(Convert.ToString(id.Value)))){if(step.Id!=null)preflightObjects.Remove(step.Id);return;}
+   try{
+    var args=(step.Args??new JArray()).Select((v,i)=>OfficeArguments.Convert(v,id=>preflightObjects.TryGetValue(id,out var found)?found:null,"args["+i+"]")).ToList();
+    native=OfficePath.Resolve(native,prefixes.Concat(step.Member.Split('.').Take(step.Member.Split('.').Length-1)),args,app,(parent,member,selectors)=>{var child=OfficeDispatch.Get(parent,member,selectors);if(child==null||!Marshal.IsComObject(child))throw new OfficeFault("office_member_path_not_supported",member,invocationStarted:false);preflightAcquired.Add(child);return child;});
+    OfficeDispatch.RequireMember(native,OfficeCallPolicy.Leaf(step.Member));
+    if(!String.IsNullOrWhiteSpace(step.Id)){preflightObjects.Remove(step.Id);if(!OfficeCallPolicy.WritesDocument(step)){var result=OfficeDispatch.Get(native,OfficeCallPolicy.Leaf(step.Member),args.ToArray());if(result!=null&&Marshal.IsComObject(result)){preflightAcquired.Add(result);preflightObjects[step.Id]=result;}}}
+   }catch(OfficeFault e){if(priorMutation&&e.NativeCode=="0x8002000B"){if(step.Id!=null)preflightObjects.Remove(step.Id);return;}throw new OfficeFault(e.Message,step.Member,e.NativeCode==null?(int?)null:unchecked((int)Convert.ToUInt32(e.NativeCode.Substring(2),16)),false,e.ExceptionName,e.InputPath,e.InputRule);}
+
   }
   public object Execute(OfficeStep step,bool readOnly){
    if(Thread.CurrentThread.ManagedThreadId!=threadId)throw new OfficeFault("office_thread_required");
    OfficeCallPolicy.Validate(step.Member,readOnly,step.Action);
+   if(app=="excel")ExcelWorksheetPaths.Validate(step,worksheetCollections,objects.ContainsKey(step.Target??"document"));
    string targetName=step.Target??"document";object target;
    string[] targetPath=new string[0];
    if(!objects.TryGetValue(targetName,out target)){
@@ -66,7 +85,7 @@ namespace OfficeX.ExcelHost {
 
    if(result!=null&&Marshal.IsComObject(result)){
     acquired.Add(result);if(string.IsNullOrWhiteSpace(step.Id)||step.Id=="document")throw new OfficeFault("office_object_id_required");
-    objects[step.Id]=result;return new{reference=step.Id};
+    objects[step.Id]=result;if(app=="excel"){if(ExcelWorksheetPaths.IsCollectionMember(member))worksheetCollections.Add(step.Id);else worksheetCollections.Remove(step.Id);}return new{reference=step.Id};
    }
    // Scalar results never become invocation targets; only native COM objects do.
    if(step.Id=="document")throw new OfficeFault("office_object_id_required");

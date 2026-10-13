@@ -1,5 +1,5 @@
 import type {NativeCall} from './excel-skill';
-const edits=new Set(['execute_office_operations','write_cells','set_formula','merge_cells','format_cells','create_document','replace_blocks','replace_text','save_document','import_slides','import_word_content','open_artifact','rollback_document']);
+const edits=new Set(['execute_office_operations','write_cells','set_formula','merge_cells','format_cells','add_worksheet','rename_worksheet','create_document','replace_blocks','replace_text','save_document','import_slides','import_word_content','open_artifact','rollback_document']);
 export interface EditReceipts {attempted:boolean;verified:boolean;failure?:Record<string,unknown>;}
 const states=new WeakMap<NativeCall,EditReceipts>();
 export function editReceipts(native:NativeCall){return states.get(native);}

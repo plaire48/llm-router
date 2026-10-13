@@ -23,6 +23,7 @@ export function toolFailure(execution){
 }
 export function documentInputFailure(fault){
  if(fault?.code==='writes_stopped_for_this_run'){const c=fault.countChecks?.find(c=>!c.passed);return c?`앞선 개수 검증 실패로 후속 쓰기를 멈췄습니다. 예상 ${c.expected}개, 실제 ${c.actual}개입니다. 이미 적용된 내용을 먼저 확인해야 합니다.`:'앞선 문서 작업의 결과 확인이 필요해 후속 쓰기를 멈췄습니다. 이미 적용된 내용을 먼저 확인해야 합니다.';}
+ if(fault?.inputRule==='worksheet_required')return '시트 목록에 이름을 적용하려던 요청을 쓰기 전에 중단했습니다. 실제 시트를 찾아 이름을 변경해야 합니다.';
  if(fault?.code==='office_count_expectation_invalid')return '문서를 변경하기 전에 예상 개수 오류를 발견했습니다. 실제 개수를 읽고 변경안을 다시 확인해야 합니다.';
  if(fault?.code==='readback_mismatch'&&fault.countChecks?.some(c=>!c.passed)){const c=fault.countChecks.find(c=>!c.passed);return `개수 확인: 예상 ${c.expected}개, 실제 ${c.actual}개. 셀 내용의 확인 결과도 함께 확인해야 합니다. 변경을 반복하지 않습니다.`;}
  if(fault?.code!=='document_content_invalid')return '';
