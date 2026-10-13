@@ -1,0 +1,13 @@
+
+> @genoffice/ui@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/companion/workspace/packages/ui
+
+
+ Test Files  20 passed (20)
+      Tests  165 passed (165)
+   Start at  11:20:34
+   Duration  1.57s (transform 1.13s, setup 0ms, import 2.07s, tests 881ms, environment 6.29s)
+

@@ -50,7 +50,8 @@
     "upstreamHtmlEditorTests": 324,
     "companionConnectionBrowserFlows": 10,
     "modelSelectionCX": "Nubi Workspace deferred single-choice workflow form",
-    "modelFormCatalogRefreshWithoutProviderSwitch": "passed"
+    "modelFormCatalogRefreshWithoutProviderSwitch": "passed",
+    "upstreamUiTests": 165
   },
   "windowsVstoBuildVerified": false,
   "windowsInstallerVerified": false,
