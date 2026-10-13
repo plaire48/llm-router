@@ -6,7 +6,7 @@ using System.Threading;
 using OfficeX.Core;
 namespace OfficeX.ExcelHost {
  // New unsaved Office documents only. All COM access remains on the pane's STA thread.
- sealed class DocumentCreationPort:IDocumentCreationPort,IDisposable {
+ sealed class DocumentCreationPort:IDocumentCreationPort,IDocumentCreationState,IDisposable {
   readonly object application;readonly string app;readonly int hwnd;readonly string sourceId;
   object created;CreationPlan plan;
   readonly List<Tuple<int,int>> wordRanges=new List<Tuple<int,int>>();
@@ -17,6 +17,7 @@ namespace OfficeX.ExcelHost {
   public DocumentCreationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;using(var c=new Scope()){object doc=c.Hold(Source());sourceId=Identity(doc);}}
   object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
   public void CheckSource(){using(var c=new Scope()){object win=c.Hold(OfficeDispatch.Get((object)application,"ActiveWindow")),doc=c.Hold(Source());if(Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
+  public bool CreatedDocumentExists=>created!=null;
   public string CreatedName=>created==null?null:Convert.ToString(OfficeDispatch.Get(created,"Name"));
   public string CreatedDocumentId=>created==null?null:Identity(created);
   public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){if(app=="powerpoint"){object windows=c.Hold(OfficeDispatch.Get(created,"Windows")),window=c.Hold(OfficeDispatch.Get(windows,"Item",1));OfficeDispatch.Call(window,"Activate");}else OfficeDispatch.Call(created,"Activate");}}

@@ -44,7 +44,10 @@ namespace OfficeX.ExcelHost {
     double size=0;try{size=Convert.ToDouble(OfficeDispatch.Get(target,"CountLarge"));}catch{}
     if(size>20000)throw new OfficeFault("context_limit");
    }
-   var result=OfficeDispatch.Invoke(target,member,step.Action,args.ToArray());
+   object result;
+   try{result=OfficeDispatch.Invoke(target,member,step.Action,args.ToArray());}
+   catch(OfficeFault e)when(memberPath.Length>1){throw new OfficeFault(e.Message,step.Member,e.NativeCode==null?(int?)null:unchecked((int)Convert.ToUInt32(e.NativeCode.Substring(2),16)),e.InvocationStarted,e.ExceptionName);}
+
    if(result!=null&&Marshal.IsComObject(result)){
     acquired.Add(result);if(string.IsNullOrWhiteSpace(step.Id)||step.Id=="document")throw new OfficeFault("office_object_id_required");
     objects[step.Id]=result;return new{reference=step.Id};

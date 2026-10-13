@@ -25,7 +25,7 @@
     "nubiHashes": 88,
     "unitPassed": 76,
     "unitSkippedMacOS": 4,
-    "nativeCorePassed": 77,
+    "nativeCorePassed": 78,
     "hostCrossCompile": true,
     "stdioIntegration": "mock provider and native Office",
     "claudeIntegration": "mock CLI; no live account",

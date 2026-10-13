@@ -261,7 +261,7 @@ namespace OfficeX.ExcelHost
                 SendSurface(new{type="receipt",runId,receipt});
                 if(receipt.Status=="verified"){
                     try{string createdId=creationPort.CreatedDocumentId;creationPort.ActivateCreated();RebindActiveDocument(createdId);}
-                    catch{writesStopped=true;outcome.Text="새 문서는 만들어졌지만 후속 연결을 확인해야 합니다.";return new{status="verified",mutated=true,document=receipt.Document,followUpAvailable=false,error="created_document_binding_failed"};}
+                    catch(Exception e){writesStopped=true;outcome.Text="새 문서는 만들어졌지만 후속 연결을 확인해야 합니다.";return new{kind="create_document",status="verified",mutated=true,document=receipt.Document,followUpAvailable=false,error="created_document_binding_failed",diagnostics=OfficeDiagnostics.Record(e,app,"bind_created_document")};}
                 }
                 outcome.Text=receipt.Status=="verified"?"새 문서를 만들고 내용을 확인했습니다. 저장 전입니다.":"생성 결과: "+receipt.Status;return receipt;
             }
