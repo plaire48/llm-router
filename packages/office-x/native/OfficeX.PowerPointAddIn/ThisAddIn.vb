@@ -70,15 +70,15 @@ Partial Public Class ThisAddIn
     End Sub
 
     Private Sub ClosingPresentation(presentation As Microsoft.Office.Interop.PowerPoint.Presentation)
-        Dim handles As New List(Of Integer)()
+        Dim closingWindowHandles As New List(Of Integer)()
         Try
             For Each window In presentation.Windows
-                handles.Add(CInt(window.Hwnd))
+                closingWindowHandles.Add(CInt(window.Hwnd))
             Next
         Catch
             ' Office may already have removed the windows from a closing presentation.
         End Try
-        For Each handle In handles
+        For Each handle In closingWindowHandles
             Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
             If panes.TryGetValue(handle, pane) Then
                 panes.Remove(handle)
