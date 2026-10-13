@@ -41,7 +41,6 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - uses: NuGet/setup-nuget@v2
-      - uses: dtolnay/rust-toolchain@stable
       - name: Build Windows installer
         run: ./scripts/Build-Windows.ps1 -InstallBuildTools
       - name: Install, reinstall and uninstall
@@ -57,7 +56,6 @@ jobs:
           name: office-x-windows-verification
           retention-days: 7
           path: |
-            packages/office-x/verification/companion-*.json
             packages/office-x/verification/native-*.json
             packages/office-x/releases/installer-build.json
             packages/office-x/releases/install-smoke.json

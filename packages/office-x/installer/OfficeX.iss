@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.7.1"
+  #define AppVersion "0.8.0"
 #endif
 [Setup]
 AppId={{A2EE607F-D951-4CC3-9B1C-6170685282FE}
@@ -45,7 +45,6 @@ Name: "core"; Description: "누비 공통 실행 구성요소"; Types: full cust
 Name: "excel"; Description: "Excel 2016 추가 기능"; Types: full
 Name: "word"; Description: "Word 2016 추가 기능"; Types: full
 Name: "powerpoint"; Description: "PowerPoint 2016 추가 기능"; Types: full
-Name: "companion"; Description: "GenOffice 편집기 전체 (문서, 시트, 슬라이드, PDF, HTML, Markdown)"; Types: full; Check: IsWin64
 
 [Files]
 Source: "nubi.ico"; DestDir: "{app}"; Components: core; Flags: ignoreversion
@@ -53,7 +52,6 @@ Source: "stage\*"; DestDir: "{app}"; Excludes: "OfficeX.ExcelAddIn.*,OfficeX.Wor
 Source: "stage\OfficeX.ExcelAddIn.*"; DestDir: "{app}"; Components: excel; Flags: ignoreversion
 Source: "stage\OfficeX.WordAddIn.*"; DestDir: "{app}"; Components: word; Flags: ignoreversion
 Source: "stage\OfficeX.PowerPointAddIn.*"; DestDir: "{app}"; Components: powerpoint; Flags: ignoreversion
-Source: "companion\*"; DestDir: "{app}\OfficeX\companion"; Components: companion; Check: IsWin64; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "runtime\x64\node.exe"; DestDir: "{app}\OfficeX\runtime"; Components: core; Check: IsWin64; Flags: ignoreversion
 Source: "runtime\x86\node.exe"; DestDir: "{app}\OfficeX\runtime"; Components: core; Check: not IsWin64; Flags: ignoreversion
 Source: "prerequisites\vstor_redist.exe"; Flags: dontcopy
@@ -92,6 +90,9 @@ Root: HKLM64; Subkey: "Software\Microsoft\Office\PowerPoint\Addins\OfficeX.GenOf
 Root: HKLM64; Subkey: "Software\Microsoft\Office\PowerPoint\Addins\OfficeX.GenOffice"; ValueType: string; ValueName: "Manifest"; ValueData: "{code:ManifestUri|OfficeX.PowerPointAddIn.vsto}"; Components: powerpoint; Check: IsWin64
 
 [InstallDelete]
+; Remove the retired standalone product from earlier installations. User documents/accounts stay outside this folder.
+Type: filesandordirs; Name: "{app}\OfficeX\companion"
+Type: files; Name: "{commonprograms}\Nubi Office X\누비 GenOffice.lnk"
 ; 0.8.6 and earlier installed Office interop assemblies. The host now embeds the interop types.
 Type: files; Name: "{app}\Microsoft.Office.Interop.Excel.dll"
 Type: files; Name: "{app}\Microsoft.Office.Interop.Word.dll"
@@ -103,7 +104,6 @@ Type: files; Name: "{app}\OfficeX.PowerPointAddIn.*"; Components: not powerpoint
 
 [Icons]
 Name: "{commonprograms}\Nubi Office X\설치 및 사용 안내"; Filename: "{app}\INSTALL-KO.txt"; IconFilename: "{app}\nubi.ico"
-Name: "{commonprograms}\Nubi Office X\누비 GenOffice"; Filename: "{app}\OfficeX\companion\Nubi GenOffice.exe"; Components: companion; Check: IsWin64; IconFilename: "{app}\nubi.ico"
 
 [Code]
 function ManifestUri(Param: String): String;

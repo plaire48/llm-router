@@ -395,7 +395,6 @@
     "vendor/nubi/packages/nubi-desktop/runtime/chatgpt-catalog.mjs",
     "runtime-src/claude-office-run.mjs",
     "runtime-src/nubi-providers.mjs",
-    "vendor/genoffice/packages/ai-provider/src/media.ts",
     "vendor/genoffice/packages/ai-provider/src/search-settings.ts",
     "vendor/genoffice/packages/ai-provider/src/providers.ts",
     "vendor/genoffice/packages/ai-provider/src/index.ts",
@@ -692,6 +691,7 @@
     "vendor/genoffice/packages/pdf2docx/src/rebuild-xlsx/index.ts",
     "runtime-src/genoffice-skill.ts",
     "node_modules/marked/lib/marked.esm.js",
+    "runtime-src/feature-policy.ts",
     "runtime-src/original-file-skill.ts"
   ]
 }

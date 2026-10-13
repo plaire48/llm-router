@@ -61,7 +61,7 @@ async function receive(msg: Record<string, any>) {
   }
   if(msg.type==='services'){
     if(active||authBusy||!initialized){send({type:'reply',id:msg.id,error:'worker_busy'});return;}
-    authBusy=true;try{const result=msg.method==='configure'?await services.configure(msg.input):msg.method==='clear'?await services.clear():msg.method==='test'?await services.test():services.state();send({type:'services_state',state:services.state()});send({type:'reply',id:msg.id,result});}catch{send({type:'reply',id:msg.id,error:'services_connection_failed'});}finally{authBusy=false;}return;
+    authBusy=true;try{const result=msg.method==='configure'?await services.configure(msg.input):msg.method==='clear'?await services.clear():services.state();send({type:'services_state',state:services.state()});send({type:'reply',id:msg.id,result});}catch{send({type:'reply',id:msg.id,error:'services_connection_failed'});}finally{authBusy=false;}return;
   }
   if(msg.type==='provider'){
     try{const result=await providerCommand(msg);send({type:'reply',id:msg.id,result});}

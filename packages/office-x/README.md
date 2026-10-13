@@ -1,18 +1,15 @@
-# Nubi Office X 0.7.1
+# Nubi Office X 0.8.0
 
-Office 2016의 Excel·Word·PowerPoint VSTO 추가 기능과 GenOffice 원본 편집기 6종을 함께 제공합니다. 누비의 로그인·모델 연결과 CX를 사용하며 GenOffice AgentLoop와 원본 편집 엔진을 보존합니다.
+Windows Office 2016의 Excel, Word, PowerPoint 안에서 누비 채팅과 GenOffice Agent를 사용합니다. 별도 GenOffice 편집기는 설치하지 않습니다.
 
-Windows x64에는 원본 문서·시트·슬라이드·PDF·HTML·Markdown 편집기를 포함합니다. 자세한 실행 경로와 검증 한계는 [기능 대응](docs/genoffice-capabilities.md)을 확인하세요.
+[Windows 설치 파일](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.0-beta.1)을 받아 Office 앱을 닫고 실행하세요. 각 앱의 **누비 Agent** 탭에서 시작합니다.
 
+GenOffice AgentLoop, Word/XLSX 파일 엔진, PPTX 작업·생성·레이아웃 검사, PDF 변환과 웹 검색을 재사용합니다. 현재 Office 문서는 네이티브 작업 도구로 수정하고 결과를 다시 읽습니다. 누비 Workspace의 계정·모델 선택, Claude 연결, 폰트·색감·강조를 유지합니다.
 
-Windows Office 2016의 Excel, Word, PowerPoint에서 누비 채팅과 GenOffice Agent를 사용합니다.
+새 대화·대화 이력·별도 편집기·이미지 검색/생성/삽입/분석 기능은 제외했습니다. 발표자료와 문서의 검증용 렌더링은 유지합니다. 현재 문서와 새 Office 문서 선택은 실제 문서 작업의 대상 지정입니다.
 
-[Windows 설치 파일](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.1-beta.1)을 받아 Office 앱을 닫고 실행하세요. 각 앱의 **누비 Agent** 탭에서 시작합니다.
+채팅 입력은 작업 중에도 가능하며, 전송은 현재 작업 종료 후 가능합니다. 시작 오류가 나면 입력 잠금을 해제합니다. 연결 오류가 화면 전체를 덮지 않도록 복구 레이어를 분리했습니다.
 
-선택 영역 밖의 문서를 읽고, 기존 내용과 서식을 수정하고, 새 문서·발표자료·통합문서를 생성하는 공통 Office 실행기를 제공합니다. 웹 검색, 이미지 생성·삽입, 원본 발표자료 생성·편집 엔진, 실제 페이지 렌더링, PDF 변환과 전체 스냅샷 복원을 연결했습니다. 누비 Workspace의 로그인, Claude, 폰트와 색감을 유지합니다.
+[변경 내용](RELEASE-NOTES.md) · [기능과 검증 범위](docs/genoffice-capabilities.md) · [라이선스](THIRD-PARTY-NOTICES.md)
 
-[변경 내용](RELEASE-NOTES.md)과 [GenOffice 기능 대응 및 실제 검증 범위](docs/genoffice-capabilities.md)를 확인하세요. 원본 전체 제품의 기능 동등성이나 실제 Office COM 실행을 검증 완료한 버전은 아닙니다.
-
-개발: `npm ci`, `npm run build`, `npm test`. Windows 설치 빌드는 `Build-Windows.cmd` 또는 `scripts/Build-Windows.ps1`을 사용합니다.
-
-[구현 기록](docs/implementation-status.md) · [아키텍처](docs/architecture.md) · [라이선스](THIRD-PARTY-NOTICES.md)
+개발: `npm ci`, `npm run build`, `npm test`. Windows 설치 빌드: `Build-Windows.cmd` 또는 `scripts/Build-Windows.ps1`.

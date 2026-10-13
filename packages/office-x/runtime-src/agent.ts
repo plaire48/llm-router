@@ -14,7 +14,7 @@ export function startAgent(options: {
   const result = new Promise<AgentRunResult>((yes, no) => { resolve = yes; reject = no; });
   const loop = new AgentLoop({
     transport: options.transport,
-    skill: composeSkills('office-x', 'Use the supplied Office and GenOffice search/media, rendering, conversion and recovery tools. Honor the selected current-document or new-document destination.', [(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(options.native, options.context), officeSkill(options.native,options.context), ...(options.additionalSkills||[])]),
+    skill: composeSkills('office-x', 'Use the supplied Office and GenOffice web search, rendering, conversion and recovery tools. Honor the selected current-document or new-document destination.', [(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(options.native, options.context), officeSkill(options.native,options.context), ...(options.additionalSkills||[])]),
     maxTurns: 100, maxHistory: 60,
     compaction: { maxBytes: 128 * 1024, keepRecentBytes: 48 * 1024 },
     events: {

@@ -73,20 +73,18 @@ namespace OfficeX.ExcelHost
             answer.TextChanged+=(_,__)=>Publish();
             outcome.TextChanged+=(_,__)=>Publish();
         }
-        private object LaunchCompanion(string path){var executable=Path.Combine(root,"companion","Nubi GenOffice.exe");if(!File.Exists(executable))throw new OfficeFault("companion_unavailable");var start=new System.Diagnostics.ProcessStartInfo(executable){UseShellExecute=false,Arguments=path==null?"":"\""+path+"\"",WorkingDirectory=Path.GetDirectoryName(executable)};using(var process=System.Diagnostics.Process.Start(start)){if(process==null)throw new OfficeFault("companion_start_failed");}return new{status="opened",editor="Nubi GenOffice",sourceCopy=path!=null,currentOfficeChanged=false};}
         private void Publish() {SendSurface(new {type="view",running,runId,conversationId,status=status.Text,text=answer.Text,outcome=outcome.Text,target=target.Text});}
         private async void ReceiveUi(JObject message) {
             try {
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.7.1"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.0"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
                         if(running||nativeBusy)throw new OfficeFault("worker_busy");EnsureWorker();worker.Send(new{type="services",id=(string)message["id"],method=(string)message["method"],input=message["input"]});break;
                     case "open_source":
                         if(Uri.TryCreate((string)message["url"],UriKind.Absolute,out var sourceUrl)&&new[]{"https","http"}.Contains(sourceUrl.Scheme)&&string.IsNullOrEmpty(sourceUrl.UserInfo))System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(sourceUrl.AbsoluteUri){UseShellExecute=true});break;
-                    case "open_companion":LaunchCompanion(null);break;
                     case "checkpoints":
                         if(files!=null)SendSurface(new{type="checkpoint_list",checkpoints=files.ListCheckpoints()});break;
                     case "rollback":
@@ -196,6 +194,7 @@ namespace OfficeX.ExcelHost
         }
         private async Task<object> Native(string name,JObject input) {using(new OfficeCulture()){return await NativeCore(name,input);}}
         private async Task<object> NativeCore(string name,JObject input) {
+            if(new[]{"open_genoffice_editor","insert_image","image_search","generate_image","analyze_media"}.Contains(name))throw new OfficeFault("feature_removed");
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
             if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
@@ -206,20 +205,19 @@ namespace OfficeX.ExcelHost
             }
             if(name=="list_checkpoints")return files.ListCheckpoints();
             if(name=="checkpoint_document")return files.CheckpointNow((string)input["label"]);
-            if(name=="open_genoffice_editor")return LaunchCompanion(files.CheckedPath((string)input["path"],".docx",".docm",".xlsx",".xlsm",".pptx",".pptm",".pdf",".html",".htm",".md",".markdown",".txt",".csv"));
             if(name=="export_document_copy")return files.ExportCopy();
             if(name=="export_document_pdf")return files.ExportPdf(cancelToken);
             if(name=="select_input_file")return files.SelectInput();
             if(name=="render_slides")return files.RenderSlides((int?)input["first"]??1,(int?)input["count"]??6,(int?)input["width"]??1280,cancelToken);
             if(name=="save_artifact")return files.SaveArtifact((string)input["path"],(string)input["name"]);
-            if(new[]{"rollback_document","import_slides","open_artifact","insert_image","import_word_content"}.Contains(name)){
+            if(new[]{"rollback_document","import_slides","open_artifact","import_word_content"}.Contains(name)){
                 var planId=Guid.NewGuid().ToString("N");string summary=name=="rollback_document"?"문서 전체 스냅샷을 새 창에 복원합니다. 현재 문서는 그대로 유지됩니다.":(string)input["summary"]??"문서에 변경을 적용합니다.";
                 if(!await AwaitReview(planId,new{kind="file_operation",summary,name})){writesStopped=true;return new{status="rejected",mutated=false};}
                 object receipt;
                 if(name=="rollback_document")receipt=files.Restore((string)input["checkpointId"],cancelToken);
                 else if(name=="open_artifact")receipt=files.OpenArtifact((string)input["path"],(string)input["sourceState"],cancelToken);
                 else if(name=="import_slides")receipt=files.ImportSlides((string)input["path"],(string)input["mode"]??"new",(int?)input["slide"]??0,(string)input["sourceState"],cancelToken);
-                else if(name=="import_word_content")receipt=files.ImportWordContent((string)input["path"],(string)input["expectedTextHash"],cancelToken);else receipt=files.InsertImage((string)input["path"],input,cancelToken);
+                else if(name=="import_word_content")receipt=files.ImportWordContent((string)input["path"],(string)input["expectedTextHash"],cancelToken);else throw new OfficeFault("feature_removed");
                 var r=Wire.Object(receipt);
                 if((bool?)r["mutated"]==true&&(name=="rollback_document"||name=="open_artifact"||name=="import_slides"&&(string)input["mode"]=="new")){try{RebindActiveDocument();}catch{r["status"]="partial";r["error"]="created_document_binding_failed";r["followUpAvailable"]=false;}}
                 if((string)r["status"]=="verified"&&name=="import_slides"&&input["expectedTextHashes"] is JArray expected){
@@ -323,8 +321,6 @@ namespace OfficeX.ExcelHost
         }
         private void Finish(string text) {running=false;status.Text=text;foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.handoffState=HandoffState();follower.runId=runId;follower.conversationId=conversationId;follower.request.Text=request.Text;follower.answer.Text=answer.Text;follower.target.Text=target.Text;follower.followOwner=null;follower.files=files?.Fork(()=>follower.automationPort);if(follower.surface.IsReady)follower.EnsureWorker();}followers.Clear();cancellation?.Cancel();SetBusy(nativeBusy);approval?.TrySetResult(false);}
         private static string Explain(string code) {
-            if(code=="companion_unavailable")return "별도 편집기를 설치한 뒤 다시 열어주세요.";
-            if(code=="companion_start_failed")return "편집기를 열지 못했습니다. 설치 상태를 확인해주세요.";
             switch(code) {
                 case "open_document_required":return "작업할 문서를 먼저 열어 주세요.";
                 case "office_member_unavailable":case "office_member_not_found":return "이 문서의 지원 멤버를 다시 확인하고 작업 방법을 조정합니다.";

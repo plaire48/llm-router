@@ -25,13 +25,19 @@ foreach($file in @('OfficeX.ExcelAddIn.vsto','OfficeX.WordAddIn.vsto','OfficeX.P
 if($LASTEXITCODE){throw 'Bundled Node cannot run'}
 & native/OfficeX.Surface.Tests/bin/Release/net472/OfficeX.Surface.Tests.exe "$installPath/OfficeX"
 if($LASTEXITCODE){throw 'Installed native WebView2 screen regression failed'}
-& node scripts/Test-Companion.mjs "$installPath/OfficeX/companion/Nubi GenOffice.exe"
-if($LASTEXITCODE){throw 'Installed GenOffice editor runtime check failed'}
+if(Test-Path "$installPath/OfficeX/companion"){throw 'Retired standalone editor installed'}
+$legacy=Join-Path $installPath 'OfficeX/companion'
+New-Item $legacy -ItemType Directory -Force|Out-Null
+Set-Content "$legacy/Nubi GenOffice.exe" 'retired product upgrade fixture'
+$legacyShortcut=Join-Path ([Environment]::GetFolderPath('CommonPrograms')) 'Nubi Office X/누비 GenOffice.lnk'
+New-Item (Split-Path $legacyShortcut) -ItemType Directory -Force|Out-Null
+Set-Content $legacyShortcut 'retired shortcut upgrade fixture'
 $reinstall=RunInstaller $exe "$projectRoot/releases/reinstall.log"
+if((Test-Path $legacy) -or (Test-Path $legacyShortcut)){throw 'Upgrade retained retired editor or shortcut'}
 $uninstall=RunInstaller "$installPath/unins000.exe" "$projectRoot/releases/uninstall.log"
 foreach($view in @([Microsoft.Win32.RegistryView]::Registry32,[Microsoft.Win32.RegistryView]::Registry64)){
  $hive=[Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine,$view)
  try{foreach($app in @('Excel','Word','PowerPoint')){if($hive.OpenSubKey("Software\Microsoft\Office\$app\Addins\OfficeX.GenOffice")){throw 'Uninstall left registration'}}}finally{$hive.Dispose()}
 }
 if(Test-Path "$installPath/OfficeX/runtime/node.exe"){throw 'Uninstall left runtime'}
-@{passed=$true;installSeconds=$install;reinstallSeconds=$reinstall;uninstallSeconds=$uninstall;registry=$registry;runner='windows-2022';officeInstalled=$false;realOfficeVerified=$false;liveModelVerified=$false}|ConvertTo-Json -Depth 4|Set-Content releases/install-smoke.json
+@{passed=$true;standaloneEditorsAbsent=$true;legacyEditorUpgradeCleanup=$true;imageFeatures=$false;installSeconds=$install;reinstallSeconds=$reinstall;uninstallSeconds=$uninstall;registry=$registry;runner='windows-2022';officeInstalled=$false;realOfficeVerified=$false;liveModelVerified=$false}|ConvertTo-Json -Depth 4|Set-Content releases/install-smoke.json

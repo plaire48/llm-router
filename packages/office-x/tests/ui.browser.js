@@ -50,7 +50,7 @@ async (page) => {
   if(await page.evaluate(()=>window.officeFixture.sent.some(m=>m.type==='start')))throw Error('IME sent too early');
   await page.getByRole('button',{name:'보내기',exact:true}).click();
   await page.getByRole('button',{name:'변경 적용',exact:true}).waitFor();
-  if(!(await page.getByRole('button',{name:'연결 설정',exact:true}).isDisabled()))throw Error('busy model switch enabled');
+  await page.getByRole('textbox',{name:'메시지',exact:true}).fill('다음 요청을 미리 입력');if((await page.getByRole('textbox',{name:'메시지',exact:true}).inputValue())!=='다음 요청을 미리 입력')throw Error('busy composer locked');
   await page.evaluate(()=>window.officeFixture.receive({type:'text',runId:'fixture-run',data:Array(60).fill('스크롤 동작 확인 문장입니다.').join('\n\n')}));
   await page.waitForFunction(()=>{const v=document.querySelector('.conversation');return v.scrollHeight>v.clientHeight+200&&v.scrollHeight-v.scrollTop-v.clientHeight<25;});
   await page.locator('.conversation').evaluate(v=>{v.scrollTop=0;v.dispatchEvent(new Event('scroll',{bubbles:true}));});
@@ -96,6 +96,7 @@ async (page) => {
   await page.setViewportSize({width:320,height:640});
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   if(overflow)throw Error('horizontal overflow at 320px');
+  await page.evaluate(()=>officeFixture.receive({type:'handoff',app:'excel',runId:'old-run',conversationId:'old-session',request:'이전 작업',running:false}));await page.getByRole('textbox',{name:'메시지',exact:true}).fill('재시도');await page.getByRole('button',{name:'보내기',exact:true}).click();await page.evaluate(()=>officeFixture.receive({type:'host_error',operation:'start',error:'시작 오류'}));await page.getByRole('textbox',{name:'메시지',exact:true}).fill('다시 입력 가능');if(await page.getByRole('button',{name:'중지',exact:true}).count())throw Error('startup error left busy lock');await page.getByRole('button',{name:'연결 설정',exact:true}).click();await page.getByRole('button',{name:'취소',exact:true}).click();
   if(errors.length)throw Error(errors.join('\n'));
-  return {passed:['provider login fixture','model search and selection','IME composition','native approval payload','busy guards','verified receipt','simplified header without new/history/image/external buttons','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
+  return {passed:['provider login fixture','model search and selection','IME composition','native approval payload','typing during a run','startup error unlocks input and clicks','busy send/model mutation guards','verified receipt','simplified header without new/history/image/external buttons','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
 }

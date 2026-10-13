@@ -77,7 +77,7 @@ button,input,textarea,select { font:inherit; }
 .receipt[data-status=rejected] { border-color:var(--deck-sub); background:var(--deck-section-surface); }
 .receipt span { color:var(--deck-sub); }
 .latest { align-self:center; flex:none; font:var(--deck-font-caption); }
-.history-row { display:block; width:100%; margin-top:var(--cx-space-2); text-align:left; overflow:hidden; text-overflow:ellipsis; }
+.checkpoint-row { display:block; width:100%; margin-top:var(--cx-space-2); text-align:left; overflow:hidden; text-overflow:ellipsis; }
 .connection-field { display:grid; gap:var(--cx-space-2); margin-bottom:var(--cx-space-4); }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-caption); }

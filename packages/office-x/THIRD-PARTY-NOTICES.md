@@ -9,7 +9,7 @@ GenOffice source, not a reimplementation.
 - Source: https://github.com/genspark-ai/genoffice
 - Revision: `438d9c65709952490c970beaa2599ef45e74431f`
 - Unmodified prompt guides: 11 Sheets guides and 3 Slides prompts, provided on demand by `load_office_guide`; native COM guidance is an Office X adaptation.
-- Unmodified packages: agent-core, ai-provider, ai-search, electron-utils, pptx-engine, pptx-render, pipelines, zip-gate, docx-engine, pptx-ops, pdf2docx, font-metrics. 4,582 original files with hashes. The full original six-editor source, CLI, XLSX gateway, i18n, UI, project store, attachment parser and HTML converter are included. Generated adaptations are recorded separately in companion/adaptations.json.
+- Unmodified packages: agent-core, ai-provider, ai-search, electron-utils, pptx-engine, pptx-render, pipelines, zip-gate, docx-engine, pptx-ops, pdf2docx, font-metrics. 4,582 original files with hashes. The full original six-editor source, CLI, XLSX gateway, i18n, UI, project store, attachment parser and HTML converter are included. Upstream editor sources remain preserved for provenance. No standalone Electron editor is built or installed; retained engines execute in the Office Agent.
 - Copyright: 2026 Mainfunc, Inc.
 - Original LICENSE and NOTICE retained in `vendor/genoffice/`.
 - Per-file hashes: `vendor/genoffice-source.json`.
