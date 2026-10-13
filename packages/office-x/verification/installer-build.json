@@ -1,0 +1,46 @@
+{
+  "bytes": 367106661,
+  "liveModelVerified": false,
+  "version": "0.7.0",
+  "components": [
+    "excel",
+    "word",
+    "powerpoint",
+    "genoffice-companion"
+  ],
+  "editors": [
+    "docs",
+    "sheets",
+    "slides",
+    "pdf",
+    "markdown",
+    "html"
+  ],
+  "installerAuthenticode": "unsigned",
+  "manifestSigning": "self-signed preview",
+  "realOfficeVerified": false,
+  "compression": "zip/7, non-solid",
+  "prerequisites": [
+    {
+      "name": "vstor_redist.exe",
+      "source": "https://download.microsoft.com/download/5/d/2/5d24f8f8-efbb-4b63-aa33-3785e3104713/vstor_redist.exe",
+      "sha256": "CFE1A40BBE4A50022DB2164ABDB0154984E2CECB761A23CDC81CB5754F6E0A18"
+    },
+    {
+      "name": "MicrosoftEdgeWebview2Setup.exe",
+      "source": "https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+      "sha256": "9B5CA0A259E6FC9B57230089258BB2EE1DE74A9ED52F88D06B4AC354A8A68C70"
+    },
+    {
+      "name": "node-v22.23.2-win-x64.zip",
+      "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x64.zip",
+      "sha256": "1177b4137ba5adaa56354ae40f1080c7450e8ae09cecb47da459d1c52ac99f97"
+    },
+    {
+      "name": "node-v22.23.2-win-x86.zip",
+      "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x86.zip",
+      "sha256": "725c9e2bdd1c2016b41c995a81f4fa36ce4e2ee565b7455d8f889182727df647"
+    }
+  ],
+  "commit": "0996619061aca36c55984eecc91935ce4b5fbf22"
+}

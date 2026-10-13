@@ -1,0 +1,13 @@
+{
+  "version": "0.7.0",
+  "commit": "0996619061aca36c55984eecc91935ce4b5fbf22",
+  "installerBytes": 367106661,
+  "installerSha256": "a13664be81e17a98879c4dd4960de82d16c501ed56b06146ae7cf385ad45eec8",
+  "sourceSha256": "f1746f2b7d34a468a10155efa99623533e328bf2e99dd4a2559e8c6c5573b517",
+  "originalFilesVerified": 4582,
+  "installSeconds": 21.52,
+  "reinstallSeconds": 16.42,
+  "uninstallSeconds": 2.63,
+  "officeRuntimeVerified": false,
+  "liveModelVerified": false
+}

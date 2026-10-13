@@ -1,0 +1,15 @@
+{
+  "sharedOfficeVault": true,
+  "liveModelsVerified": false,
+  "exe": "Nubi GenOffice.exe",
+  "sha256": "B1E321AA3275E5E1D0361E200DA7D6346A9D1708447BA16ECEA07FC2150B0418",
+  "version": "0.7.0",
+  "editors": [
+    "docs",
+    "sheets",
+    "slides",
+    "pdf",
+    "markdown",
+    "html"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "platform": "win32",
+  "editors": [
+    {
+      "kind": "docs",
+      "ready": "complete",
+      "accent": "#3182F6",
+      "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif"
+    },
+    {
+      "kind": "sheets",
+      "ready": "complete",
+      "accent": "#3182F6",
+      "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif"
+    },
+    {
+      "kind": "slides",
+      "ready": "complete",
+      "accent": "#3182F6",
+      "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif"
+    },
+    {
+      "kind": "markdown",
+      "ready": "complete",
+      "accent": "#3182F6",
+      "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif"
+    },
+    {
+      "kind": "html",
+      "ready": "complete",
+      "accent": "#3182F6",
+      "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif"
+    },
+    {
+      "kind": "pdf",
+      "ready": "complete",
+      "font": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif"
+    },
+    {
+      "kind": "nubi-connection",
+      "providers": 4,
+      "accountConnected": false,
+      "sharedVault": true,
+      "sharedModelSettings": [
+        "docs",
+        "sheets",
+        "slides",
+        "pdf",
+        "html",
+        "markdown"
+      ],
+      "workflowModelForm": true
+    }
+  ],
+  "liveModelVerified": false,
+  "realOfficeVerified": false
+}

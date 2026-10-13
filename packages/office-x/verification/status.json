@@ -51,16 +51,18 @@
     "companionConnectionBrowserFlows": 10,
     "modelSelectionCX": "Nubi Workspace deferred single-choice workflow form",
     "modelFormCatalogRefreshWithoutProviderSwitch": "passed",
-    "upstreamUiTests": 165
+    "upstreamUiTests": 165,
+    "windowsUnitTestsPassed": 71,
+    "sharedModelSettingsEditors": 6
   },
-  "windowsVstoBuildVerified": false,
-  "windowsInstallerVerified": false,
+  "windowsVstoBuildVerified": true,
+  "windowsInstallerVerified": true,
   "officeRuntimeVerified": false,
   "liveModelVerified": false,
   "genofficeFullProductParityVerified": false,
-  "releasePublished": false,
-  "windowsBuildVerified": false,
-  "windowsInstallVerified": false,
+  "releasePublished": true,
+  "windowsBuildVerified": true,
+  "windowsInstallVerified": true,
   "companionEditorsIncluded": [
     "docs",
     "sheets",
@@ -70,5 +72,10 @@
     "html"
   ],
   "realOfficeVerified": false,
-  "upstreamFiles": 4582
+  "upstreamFiles": 4582,
+  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.0-beta.1",
+  "buildCommit": "0996619061aca36c55984eecc91935ce4b5fbf22",
+  "sourcePackageCommit": "46f93c2d3fe699677f9b1f0e798832228ab389be",
+  "windowsRun": 38339944981,
+  "companionRuntimeVerified": true
 }
