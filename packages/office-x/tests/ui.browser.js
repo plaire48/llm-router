@@ -66,7 +66,7 @@ async (page) => {
   await page.screenshot({path:'/Users/ganadi/Documents/office_x/verification/chat-result.png'});
   for(const name of ['새 대화','대화 이력','검색과 이미지 설정','GenOffice 편집기 열기'])if(await page.getByRole('button',{name,exact:true}).count())throw Error('removed header action remains: '+name);
   await page.getByRole('button',{name:'연결 설정',exact:true}).click();
-  await page.getByRole('radio',{name:'Claude',exact:true}).click();
+  if(await page.getByRole('button',{name:'계정 변경',exact:true}).count())await page.getByRole('button',{name:'계정 변경',exact:true}).click();await page.getByRole('radio',{name:'Claude',exact:true}).click();
   await page.evaluate(()=>officeFixture.holdLogin=true);
   await page.getByRole('button',{name:'연결',exact:true}).click();
   await page.getByText('Claude 연결 확인 중',{exact:true}).waitFor();
@@ -105,9 +105,9 @@ async (page) => {
   if(overflow)throw Error('horizontal overflow at 320px');
   await page.evaluate(()=>officeFixture.receive({type:'handoff',app:'excel',runId:'old-run',conversationId:'old-session',request:'이전 작업',running:false}));await page.getByRole('textbox',{name:'메시지',exact:true}).fill('재시도');await page.getByRole('button',{name:'보내기',exact:true}).click();await page.evaluate(()=>officeFixture.receive({type:'host_error',operation:'start',error:'시작 오류'}));await page.getByRole('textbox',{name:'메시지',exact:true}).fill('다시 입력 가능');if(await page.getByRole('button',{name:'중지',exact:true}).count())throw Error('startup error left busy lock');await page.getByRole('button',{name:'연결 설정',exact:true}).click();await page.getByRole('button',{name:'취소',exact:true}).click();
   await page.evaluate(()=>{officeFixture.receive({type:'started',runId:'diagnostic-run'});officeFixture.receive({type:'tool_executed',runId:'diagnostic-run',data:{name:'execute_office_operations',isError:true,output:JSON.stringify({error:'office_operation_failed',failedMember:'Font.Bold',nativeCode:'0x800A03EC',failureStage:'execute_step'})}});});
+  if(await page.locator('.tool-errors').last().getAttribute('open')!==null)throw Error('raw fault details distract from the answer');await page.locator('.tool-errors').last().locator('summary').click();
   await page.getByText('Font.Bold',{exact:true}).waitFor();
   await page.getByText('office_operation_failed',{exact:true}).waitFor();
-  if(await page.locator('.tool-errors').last().getAttribute('open')===null)throw Error('fault metadata collapsed');
   if(errors.length)throw Error(errors.join('\n'));
   return {passed:['login request immediately displays progress','startup login disabled until ready','no automatic login','visible member and HRESULT','provider login fixture','model search and selection','IME composition','native approval payload','typing during a run','startup error unlocks input and clicks','busy send/model mutation guards','verified receipt','simplified header without new/history/image/external buttons','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
 }

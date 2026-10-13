@@ -21,8 +21,8 @@
       "geometry": {
         "left": 12,
         "right": 408,
-        "top": 41.296875,
-        "bottom": 778.6875,
+        "top": 12,
+        "bottom": 808,
         "overflow": false,
         "bodyOverflow": false,
         "footerVisible": true,
@@ -1324,8 +1324,8 @@
       "geometry": {
         "left": 12,
         "right": 408,
-        "top": 41.296875,
-        "bottom": 778.6875,
+        "top": 12,
+        "bottom": 808,
         "overflow": false,
         "bodyOverflow": false,
         "footerVisible": true,
@@ -2440,8 +2440,8 @@
       "geometry": {
         "left": 12,
         "right": 408,
-        "top": 41.296875,
-        "bottom": 778.6875,
+        "top": 12,
+        "bottom": 808,
         "overflow": false,
         "bodyOverflow": false,
         "footerVisible": true,

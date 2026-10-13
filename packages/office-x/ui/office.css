@@ -54,7 +54,7 @@ button,input,textarea,select { font:inherit; }
 /* The same inset aligns message content and the composer surface. */
 .office-shell .composer { width:100%; margin:0; }
 .office-shell .nubi-composer-input { padding:0; border:0; background:transparent; box-shadow:none; }
-.office-shell .composer textarea.aipro-message-input { width:100%; resize:none; max-height:180px; overflow-y:auto; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.office-shell .composer textarea.aipro-message-input { width:100%; resize:none; max-height:clamp(48px,16dvh,128px); overflow-y:auto; border:0; border-radius:0; background:transparent; box-shadow:none; }
 .office-shell .composer-note { margin:var(--cx-space-2) 0 0; text-align:center; }
 /* Office has fewer controls than Workspace: preserve the selected model name. */
 .office-host .office-shell .nubi-compose-card .model-trigger.cx-kit-button { width:auto; max-width:min(200px,48vw); padding-inline:var(--cx-space-2); }
@@ -64,13 +64,15 @@ button,input,textarea,select { font:inherit; }
 .office-shell .run-status { display:flex; align-items:center; gap:var(--cx-space-2); flex:none; padding:var(--cx-space-1) var(--office-inset); font:var(--deck-font-caption); color:var(--deck-sub); }
 .status-spinner { display:inline-block; width:12px; height:12px; border:2px solid var(--deck-blue-soft); border-top-color:var(--deck-blue); border-radius:50%; animation:office-spin 1s linear infinite; }
 @keyframes office-spin { to { transform:rotate(360deg); } }
-.review { margin:var(--cx-space-2) var(--office-inset); padding:var(--cx-space-3); border:1px solid var(--deck-line); border-radius:var(--deck-control-radius); background:var(--deck-card); flex:none; max-height:35vh; overflow:auto; }
+.review { margin:var(--cx-space-3) 0; padding:var(--cx-space-4); border:1px solid var(--deck-line); border-radius:var(--deck-control-radius); background:var(--deck-card); flex:none; min-width:0; }
 .review>strong { font-weight:600; }
 .review p { margin:var(--cx-space-1) 0; font:var(--deck-font-caption); overflow-wrap:anywhere; }
 .review-table { max-height:130px; overflow:auto; }
 .review table { width:100%; border-collapse:collapse; text-align:left; font:var(--deck-font-caption); }
 .review :is(td,th) { padding:var(--cx-space-1); }
-.review-actions { display:flex; justify-content:flex-end; gap:var(--nubi-action-gap); margin-top:var(--cx-space-3); }
+.review :is(td,th):first-child{min-width:48px;white-space:nowrap;}
+.review :is(td,th):not(:first-child){min-width:96px;}
+.review-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:var(--nubi-action-gap); margin-top:var(--cx-space-3); }
 .receipt { display:grid; gap:var(--cx-space-1); margin-top:var(--cx-space-3); padding:var(--cx-space-2) var(--cx-space-3); border:1px solid var(--nubi-text-warning);border-radius:var(--deck-control-radius); background:var(--nubi-surface-warning); font:var(--deck-font-caption); }
 .receipt[data-status=verified] { border-color:var(--nubi-text-success); background:var(--nubi-surface-success); }
 .receipt[data-status=verified]>strong { color:var(--nubi-text-success); }
@@ -125,3 +127,26 @@ details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-captio
 .office-question-form :is(input,button){font-family:inherit}
 .office-shell .review>strong{font-size:15px;font-weight:600;color:var(--nubi-text-primary)}
 .office-shell .review :is(th,.review-block>strong){font-weight:600;color:var(--nubi-text-primary)}
+/* Codex-style reading flow: previews and approvals scroll with the answer.
+   The input has its own space and cannot cover the last message or action. */
+.office-host .office-content{min-height:0;}
+.office-host .conversation{min-width:0;scroll-padding-block:16px;scrollbar-width:thin;}
+.office-host .conversation::-webkit-scrollbar{display:initial;width:6px;}
+.office-host .office-task{gap:0;padding-bottom:16px;}
+.office-host .office-composer-dock{min-width:0;max-height:45dvh;overflow-y:auto;background:var(--nubi-chat-surround);}
+.office-host .office-shell .nubi-composer-surface{border-radius:18px;padding:12px;}
+.office-host .office-shell .nubi-composer-surface:focus-within{border-color:var(--nubi-text-action);}
+.office-host .office-shell .message-text{font-size:15px;line-height:1.65;min-width:0;}
+.office-host .office-shell .message-text :is(h1,h2,h3){margin:16px 0 8px;line-height:1.5;}
+.office-host .office-shell .message-text :is(ul,ol){padding-left:24px;margin:8px 0 16px;}
+.office-host .office-shell .message-text :is(pre,table){max-width:100%;margin:12px 0;}
+.office-host .office-shell .message-text td{white-space:normal;min-width:80px;}
+.office-host .office-shell .cx-kit-notice{min-width:0;margin-top:12px;}
+.office-host .office-shell .cx-kit-notice>svg{flex:none;}
+.office-host .office-shell .cx-kit-notice>div{min-width:0;overflow-wrap:anywhere;}
+.office-host .office-shell .cx-kit-notice>div>.cx-kit-button{display:flex;margin-top:8px;max-width:100%;height:auto;white-space:normal;}
+.office-host .office-shell .review-actions>.cx-kit-button{height:auto;white-space:normal;min-height:40px;}
+.office-host .tool-errors{margin-top:12px;font:var(--deck-font-caption);color:var(--nubi-text-secondary);}
+.office-host .tool-errors summary{cursor:pointer;padding-block:6px;}
+
+@media(max-width:300px){.office-host .office-shell .composer textarea.aipro-message-input{max-height:64px;}}

@@ -1,0 +1,28 @@
+{
+  "version": "0.8.11",
+  "source": {
+    "typecheck": true,
+    "passed": 134,
+    "skippedOnMacOS": 4,
+    "upstreamAgent": 183,
+    "upstreamProvider": 426
+  },
+  "worker": {
+    "documentReadWriteReadbackFinalResponse": "mock Office/provider over real worker stdio",
+    "contextUsageCompressionFollowup": "provider fixture over real worker stdio",
+    "realOfficeVerified": false,
+    "claude": "real child-process fixture: login/catalog/model/effort/GenOffice loop, no real account/network"
+  },
+  "ui": {
+    "contextStates": 6,
+    "shortContextDialog": {
+      "width": 280,
+      "height": 480,
+      "passed": true
+    },
+    "modalStates": 36,
+    "realWindowsOffice": false,
+    "readabilityStates": 9
+  },
+  "scope": "Local source/process and owned browser fixtures before final Windows build"
+}

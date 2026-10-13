@@ -5,10 +5,14 @@
 :root:has(.office-host) .nubi-model-form .model-form-provider.cx-kit-button{display:flex;justify-content:flex-start;gap:8px;height:auto;min-height:48px;padding:10px 12px;text-align:left;background:var(--office-surface-inset);border:1px solid transparent;color:var(--office-ink);}
 .model-form-provider strong{flex:1;min-width:0;font-size:var(--office-type-body);font-weight:500;line-height:22px;}
 .model-form-provider>svg{flex:none;}
+.model-form-account-summary{display:flex;align-items:center;gap:8px;min-width:0;}
+.model-form-account-summary>svg{flex:none;}
+.model-form-account-summary>strong{flex:1;min-width:0;font-size:15px;font-weight:500;}
+:root:has(.office-host) .model-form-account-summary>.cx-kit-button{min-height:32px;padding:4px 8px;border:0;background:transparent;color:var(--office-muted);font-size:14px;}
 .model-form-provider:not([aria-checked=true])>svg:last-child{visibility:hidden;}
 :root:has(.office-host) .nubi-model-form .model-form-provider[aria-checked=true]{background:var(--office-selected);border-color:var(--office-action);color:var(--office-action);}
 .model-form-provider[aria-checked=true] strong{font-weight:600;}
-.model-form-models{max-height:min(280px,32dvh);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px 3px;}
+.model-form-models{min-width:0;padding:2px 3px;}
 .model-form-options{display:grid;gap:4px;}
 :root:has(.office-host) .nubi-model-form .model-form-option.cx-kit-button{display:flex;align-items:center;justify-content:flex-start;width:100%;gap:12px;height:auto;min-height:56px;text-align:left;white-space:normal;padding:10px 12px;border:1px solid transparent;background:var(--office-paper);color:var(--office-ink);}
 :root:has(.office-host) .nubi-model-form .model-form-option[aria-checked=true]{background:var(--office-selected);color:var(--office-action);}
@@ -36,3 +40,4 @@
 
 :root:has(.office-host) .nubi-model-form .model-form-provider strong{font-weight:var(--nubi-weight-label);}
 :root:has(.office-host) .nubi-model-form .model-form-provider[aria-checked=true] strong{font-weight:var(--nubi-weight-emphasis);}
+@media(max-width:300px){.model-form-providers{grid-template-columns:minmax(0,1fr);}}

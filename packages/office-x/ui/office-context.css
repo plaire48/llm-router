@@ -1,14 +1,19 @@
 /* Workspace ContextMeter and ReasoningPicker remain the controls. */
-.office-context-control{display:inline-flex;align-items:center;gap:4px;min-width:0;}
-.office-context-remaining{font:var(--deck-font-caption);color:var(--nubi-text-meta);white-space:nowrap;}
-.office-host .office-shell .nubi-compose-card .composer-leading{flex-flow:row wrap;min-width:0;row-gap:4px;}
-.office-host .office-shell .nubi-compose-card .composer-leading>.office-context-control{flex:0 0 100%;gap:8px;}
-.office-host .office-shell .nubi-compose-card .model-trigger.cx-kit-button{max-width:min(160px,40vw);}
-.office-host .office-shell .nubi-compose-card .context-trigger.cx-kit-button[data-token-count]{display:inline-flex;gap:6px;min-width:0;width:auto;height:40px;min-height:40px;padding:0;}
+.office-host .office-shell .nubi-compose-card .composer-bottom{flex-wrap:wrap;gap:8px;}
+.office-host .office-shell .nubi-compose-card .composer-leading{flex:1 1 176px;flex-flow:row nowrap;min-width:0;gap:8px;}
+.office-host .office-shell .nubi-compose-card .model-picker{flex:1 1 auto;min-width:0;}
+.office-host .office-shell .nubi-compose-card .model-trigger.cx-kit-button{width:auto;max-width:100%;padding:4px 8px;}
+.office-host .office-shell .nubi-compose-card .nubi-reasoning-trigger.cx-kit-button{width:auto;min-width:0;padding:4px;gap:6px;}
+.office-host .office-shell .nubi-compose-card .nubi-reasoning-label{display:inline-flex;font:var(--deck-font-caption);font-weight:500;}
+.office-host .office-shell .nubi-compose-card .composer-tools{align-self:flex-end;gap:8px;}
+.office-host .office-shell .nubi-compose-card .composer-tools .context-trigger.cx-kit-button{width:36px;min-width:36px;height:36px;min-height:36px;padding:0;}
 .office-host .office-shell .context-ring{width:40px;height:40px;flex:none;}
 .office-host .office-shell .context-ring text{stroke:none;font-size:14px;font-weight:600;}
-.office-host .office-shell .context-token-count{position:static;flex:none;font:var(--deck-font-caption);color:var(--nubi-text-secondary);}
-.office-context-status{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;color:var(--nubi-text-action);font:var(--deck-font-caption);}
+.office-host .office-shell .composer-tools .context-ring{width:36px;height:36px;}
+.office-context-caption{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:6px;font:var(--deck-font-caption);color:var(--nubi-text-meta);font-variant-numeric:tabular-nums;}
+.office-context-status{display:flex;justify-content:space-between;align-items:center;flex:none;gap:8px;padding:4px var(--office-inset);color:var(--nubi-text-action);font:var(--deck-font-caption);}
 .office-context-status .cx-kit-button{min-height:32px;padding:4px 8px;}
 .office-context-notice{margin:0 0 8px;color:var(--nubi-text-secondary);font:var(--deck-font-caption);}
 :root:has(.office-host) .context-dialog{--cx-font-family:var(--nubi-font-family);max-height:calc(100dvh - 24px);}
+
+.office-host .office-shell .nubi-compose-card .model-trigger.cx-kit-button .model-trigger-label{font-weight:600;}

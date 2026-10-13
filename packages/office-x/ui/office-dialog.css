@@ -26,6 +26,12 @@
 .office-dialog-symbol{display:grid;place-items:center;flex:none;width:var(--nubi-dialog-symbol-size);height:var(--nubi-dialog-symbol-size);border-radius:var(--office-control-radius);background:var(--office-selected);color:var(--office-action);}
 :root:has(.office-host) .office-dialog .cx-panel-header-actions [data-action=close]{width:var(--office-control-height);min-width:var(--office-control-height);height:var(--office-control-height);min-height:var(--office-control-height);border-radius:var(--office-control-radius);color:var(--office-muted);}
 :root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;gap:var(--nubi-modal-section-gap);padding:var(--nubi-modal-body-block) var(--office-dialog-inset);background:var(--office-paper);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-body>*{flex:none;min-width:0;}
+:root:has(.office-host) :is(.office-dialog,.context-dialog) .cx-kit-notice>div{min-width:0;overflow-wrap:anywhere;}
+:root:has(.office-host) .context-dialog .context-total{line-height:1.3;align-items:center;}
+:root:has(.office-host) .context-dialog .context-total strong{line-height:1.3;}
+:root:has(.office-host) .context-dialog .context-details>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr);align-items:start;gap:12px;}
+:root:has(.office-host) .context-dialog .context-details :is(dt,dd){min-width:0;white-space:normal;overflow-wrap:anywhere;}
 :root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-footer{flex:none;display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px;padding:var(--cx-space-3) var(--office-dialog-inset) var(--nubi-dialog-footer-inset);border:0;background:var(--office-paper);}
 :root:has(.office-host) .office-dialog :is(p,label,legend,summary){line-height:var(--office-leading);word-break:keep-all;overflow-wrap:anywhere;}
 :root:has(.office-host) .office-dialog :is(p,fieldset){margin:0;}

@@ -1,0 +1,141 @@
+{
+  "passed": true,
+  "scope": "Owned mocked WebView fixture, no real Office/provider",
+  "reports": [
+    {
+      "app": "excel",
+      "width": 280,
+      "height": 480,
+      "geometry": {
+        "chatBottom": 264,
+        "composerTop": 264,
+        "inputHeight": 64
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "excel",
+      "width": 320,
+      "height": 480,
+      "geometry": {
+        "chatBottom": 286.203125,
+        "composerTop": 286.203125,
+        "inputHeight": 76.796875
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "excel",
+      "width": 420,
+      "height": 760,
+      "geometry": {
+        "chatBottom": 521.40625,
+        "composerTop": 521.40625,
+        "inputHeight": 121.59375
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "word",
+      "width": 280,
+      "height": 480,
+      "geometry": {
+        "chatBottom": 264,
+        "composerTop": 264,
+        "inputHeight": 64
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "word",
+      "width": 320,
+      "height": 480,
+      "geometry": {
+        "chatBottom": 286.203125,
+        "composerTop": 286.203125,
+        "inputHeight": 76.796875
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "word",
+      "width": 420,
+      "height": 760,
+      "geometry": {
+        "chatBottom": 521.40625,
+        "composerTop": 521.40625,
+        "inputHeight": 121.59375
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "powerpoint",
+      "width": 280,
+      "height": 480,
+      "geometry": {
+        "chatBottom": 264,
+        "composerTop": 264,
+        "inputHeight": 64
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "powerpoint",
+      "width": 320,
+      "height": 480,
+      "geometry": {
+        "chatBottom": 286.203125,
+        "composerTop": 286.203125,
+        "inputHeight": 76.796875
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    },
+    {
+      "app": "powerpoint",
+      "width": 420,
+      "height": 760,
+      "geometry": {
+        "chatBottom": 521.40625,
+        "composerTop": 521.40625,
+        "inputHeight": 121.59375
+      },
+      "modal": {
+        "oneScrollRegion": true
+      },
+      "approval": true
+    }
+  ],
+  "checks": [
+    "long Markdown/table/code does not cover composer",
+    "long draft keeps send visible",
+    "resize follows latest without jumping while reading older messages",
+    "model name and context metadata do not intersect",
+    "modal content never covers footer",
+    "context details wrap",
+    "inline approval stays in chat and buttons remain accessible"
+  ]
+}
