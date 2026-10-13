@@ -1,2 +1,4 @@
+# Canonical source bytes on Windows and macOS.
+* text=auto eol=lf
 # Preserve vendored source bytes exactly as recorded by the source manifests.
 vendor/** -text

@@ -19,6 +19,8 @@ try {
  $msbuild=Join-Path $vs 'MSBuild\Current\Bin\MSBuild.exe'
  & npm.cmd ci --ignore-scripts
  if($LASTEXITCODE){throw 'npm ci failed'}
+ & npm.cmd run verify:vendor
+ if($LASTEXITCODE){throw 'Immutable sources and Office adapter hashes failed'}
  & npm.cmd run build
  if($LASTEXITCODE){throw 'UI/worker build failed'}
  & npm.cmd run typecheck
