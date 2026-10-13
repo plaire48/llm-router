@@ -7,6 +7,7 @@ import { officeProviders, publicProviderState } from './nubi-providers.mjs';
 import { providerTransport, validateConfig } from './transport';
 import {OfficeServices,Artifacts} from './services';
 import {extendedOfficeSkill} from './genoffice-skill';
+import {originalFileSkill} from './original-file-skill';
 import {mkdtempSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
@@ -97,7 +98,7 @@ async function receive(msg: Record<string, any>) {
     const root=String(context.artifactRoot||mkdtempSync(join(tmpdir(),'office-x-artifacts-')));
     let artifacts=artifactStores.get(root);if(!artifacts){artifacts=new Artifacts(root);artifactStores.set(root,artifacts);}
     const run = startAgent({transport, request:msg.request, history:conversations.history(conversationId,context),
-      additionalSkills:[extendedOfficeSkill({native,context,transport,services,artifacts,event:(type,data)=>send({type,runId:id,data})})],
+      additionalSkills:[extendedOfficeSkill({native,context,transport,services,artifacts,event:(type,data)=>send({type,runId:id,data})}),originalFileSkill(native,context,artifacts)],
       context:(msg.context || {}) as Record<string,unknown>,
       event:(type,data) => send({type,runId:id,data}),
       native,

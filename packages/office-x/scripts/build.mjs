@@ -8,6 +8,10 @@ const runtime=await build({metafile:true,entryPoints:['runtime-src/main.ts'], ou
   plugins:[{name:'nubi-wire-only',setup(b){b.onResolve({filter:/agent-runtime\.js$/},()=>({path:resolve('runtime-src/nubi-wire.mjs')}));}}]});
 await mkdir('dist/licenses', {recursive:true});
 await copyFile('node_modules/@embedpdf/pdfium/dist/pdfium.wasm','dist/worker/pdfium.wasm');
+await build({entryPoints:['tools-src/genoffice-engine.ts'],outfile:'dist/cli/genoffice-engine.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',jsx:'automatic',external:['jsdom','electron','mermaid'],define:{'import.meta.url':'__engineModuleUrl'},banner:{js:'const __engineModuleUrl=require("node:url").pathToFileURL(__filename).href;'},loader:{'.css':'empty','.woff2':'empty','.woff':'empty','.ttf':'empty','.png':'empty','.svg':'empty','.md':'text'},plugins:[{name:'original-raw',setup(b){b.onResolve({filter:/\?raw$/},a=>({path:resolve(a.resolveDir,a.path.replace(/\?raw$/,'')),namespace:'raw'}));b.onLoad({filter:/.*/,namespace:'raw'},async a=>({contents:await (await import('node:fs/promises')).readFile(a.path,'utf8'),loader:'text'}));}}]});
+await mkdir('dist/wasm',{recursive:true});
+await copyFile('dist/worker/pdfium.wasm','dist/wasm/pdfium.wasm');
+await (await import('./collect-engine-deps.mjs')).collectEngineDeps();
 for (const [source, name] of [['vendor/genoffice/LICENSE','GenOffice-LICENSE.txt'],
   ['vendor/genoffice/NOTICE','GenOffice-NOTICE.txt'],
   ['licenses/office-ai-agent-Apache-2.0.txt','office-ai-agent-LICENSE.txt'],

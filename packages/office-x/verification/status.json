@@ -1,11 +1,11 @@
 {
-  "version": "0.6.0",
+  "version": "0.7.0",
   "date": "2026-10-13",
   "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
   "sourceChecks": {
-    "genofficeHashes": 842,
+    "genofficeHashes": 4582,
     "nubiHashes": 88,
-    "unitTestsPassed": 62,
+    "unitTestsPassed": 66,
     "unitTestsSkipped": 4,
     "nativeCoreTests": 72,
     "stdioMockIntegration": "passed",
@@ -33,12 +33,27 @@
     "upstreamPptxEngineSkipped": 1,
     "upstreamEnginesTotalPassed": 2829,
     "memberPreInvocationRecoveryFixture": true,
-    "powerpointSelectionFallbackCrossCompiled": true
+    "powerpointSelectionFallbackCrossCompiled": true,
+    "originalFileEngineTests": 4,
+    "companionLocalBuild": "six editors passed",
+    "nativeAccountBridgeCrossCompile": "passed"
   },
   "windowsVstoBuildVerified": false,
   "windowsInstallerVerified": false,
   "officeRuntimeVerified": false,
   "liveModelVerified": false,
   "genofficeFullProductParityVerified": false,
-  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.6.0-beta.1"
+  "releasePublished": false,
+  "windowsBuildVerified": false,
+  "windowsInstallVerified": false,
+  "companionEditorsIncluded": [
+    "docs",
+    "sheets",
+    "slides",
+    "pdf",
+    "markdown",
+    "html"
+  ],
+  "realOfficeVerified": false,
+  "upstreamFiles": 4582
 }

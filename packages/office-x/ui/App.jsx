@@ -100,6 +100,7 @@ function App(){
       <CxButton aria-label="연결 설정" title={`연결 설정 / ${app.name} / 누비 Agent ${version}`} disabled={busy||!ready} onClick={()=>setDialog('models')}><Icon name="sliders" size={20}/></CxButton>
       <CxButton aria-label="검색과 이미지 설정" title="검색과 이미지" disabled={busy||!ready} onClick={()=>setDialog('services')}><Icon name="image" size={18}/></CxButton>
       <CxButton disabled={busy} onClick={()=>send({type:'checkpoints'})}>복원</CxButton>
+      <CxButton aria-label="GenOffice 편집기 열기" title="GenOffice 편집기 전체" onClick={()=>send({type:'open_companion'})}><Icon name="linkExternal" size={18}/></CxButton>
     </div></header>
     {!available&&<CxNotice tone="warning">미리보기 화면입니다. Windows Office에서 실행하세요.</CxNotice>}
     {lost&&<CxButton onClick={()=>{setLost(false);setError('');send({type:'ready'});}}>Agent 다시 연결</CxButton>}

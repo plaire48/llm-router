@@ -1,0 +1,7 @@
+/* Nubi chrome only. Document content, cell formats and exported slides retain their own fonts and colors. */
+:root{--gs-font-sans:"Pretendard Variable",Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif;--color-ai-action:#3182F6;--color-ai-action-hover:#2164BD;--color-brand-secondary:#3182F6;--color-border-brand:#3182F6;--color-text-primary:#191F28;--color-text-secondary:#596574;--color-bg-subtle:#F3F5F7;--color-border-default:#E5E8EB;--color-btn-primary:#3182F6;--color-btn-primary-hover:#2164BD;--text-body-lg:16px;--text-small:14px;--accent:#3182F6!important;--accent-dark:#2164BD!important;--accent-soft:#E8F3FF!important}
+body,button,input,select,textarea{font-family:var(--gs-font-sans)}
+.ai-panel{font-size:15px;line-height:1.65}.ai-panel :is(strong,b){font-weight:600}.ai-panel :is(h1,h2,h3){font-weight:650}.ai-panel textarea{font-size:15px;line-height:1.6}
+[data-theme=dark]{--color-ai-action:#5B9CFA;--color-ai-action-hover:#7CB3FF;--color-text-primary:#e4e4e4;--color-text-secondary:#acb5bf;--color-bg-subtle:#292e35;--color-border-default:#39424e}
+
+.ai-panel :is(button,input,select,textarea){font-family:var(--gs-font-sans)!important}

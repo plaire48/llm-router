@@ -319,6 +319,14 @@
     "node_modules/launder/index.js",
     "node_modules/sanitize-html/index.js",
     "node_modules/@embedpdf/pdfium/dist/index.js",
+    "node_modules/@xmldom/xmldom/lib/conventions.js",
+    "node_modules/@xmldom/xmldom/lib/errors.js",
+    "node_modules/@xmldom/xmldom/lib/grammar.js",
+    "node_modules/@xmldom/xmldom/lib/dom.js",
+    "node_modules/@xmldom/xmldom/lib/entities.js",
+    "node_modules/@xmldom/xmldom/lib/sax.js",
+    "node_modules/@xmldom/xmldom/lib/dom-parser.js",
+    "node_modules/@xmldom/xmldom/lib/index.js",
     "runtime-src/main.ts",
     "vendor/genoffice/packages/agent-core/src/skill.ts",
     "vendor/genoffice/packages/agent-core/src/index.ts",
@@ -683,6 +691,7 @@
     "vendor/genoffice/packages/pdf2docx/src/rebuild-xlsx/rebuild.ts",
     "vendor/genoffice/packages/pdf2docx/src/rebuild-xlsx/index.ts",
     "runtime-src/genoffice-skill.ts",
-    "node_modules/marked/lib/marked.esm.js"
+    "node_modules/marked/lib/marked.esm.js",
+    "runtime-src/original-file-skill.ts"
   ]
 }

@@ -9,7 +9,7 @@ permissions:
 jobs:
   windows:
     runs-on: windows-2022
-    timeout-minutes: 60
+    timeout-minutes: 120
     defaults:
       run:
         working-directory: packages/office-x
@@ -23,6 +23,7 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - uses: NuGet/setup-nuget@v2
+      - uses: dtolnay/rust-toolchain@stable
       - name: Build Windows installer
         run: ./scripts/Build-Windows.ps1 -InstallBuildTools
       - name: Install, reinstall and uninstall

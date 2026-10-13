@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -71,16 +72,18 @@ namespace OfficeX.ExcelHost
             answer.TextChanged+=(_,__)=>Publish();
             outcome.TextChanged+=(_,__)=>Publish();
         }
+        private object LaunchCompanion(string path){var executable=Path.Combine(root,"companion","Nubi GenOffice.exe");if(!File.Exists(executable))throw new OfficeFault("companion_unavailable");var start=new System.Diagnostics.ProcessStartInfo(executable){UseShellExecute=false,Arguments=path==null?"":"\""+path+"\"",WorkingDirectory=Path.GetDirectoryName(executable)};using(var process=System.Diagnostics.Process.Start(start)){if(process==null)throw new OfficeFault("companion_start_failed");}return new{status="opened",editor="Nubi GenOffice",sourceCopy=path!=null,currentOfficeChanged=false};}
         private void Publish() {SendSurface(new {type="view",running,runId,conversationId,status=status.Text,text=answer.Text,outcome=outcome.Text,target=target.Text});}
         private async void ReceiveUi(JObject message) {
             try {
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.6.0"});EnsureWorker();if(handoffState!=null)ReplayFollow();else Publish();break;
+                    case "ready":surface.Send(new {type="host",app,version="0.7.0"});EnsureWorker();if(handoffState!=null)ReplayFollow();else Publish();break;
                     case "services":
                         if(running||nativeBusy)throw new OfficeFault("worker_busy");EnsureWorker();worker.Send(new{type="services",id=(string)message["id"],method=(string)message["method"],input=message["input"]});break;
                     case "open_source":
                         if(Uri.TryCreate((string)message["url"],UriKind.Absolute,out var sourceUrl)&&new[]{"https","http"}.Contains(sourceUrl.Scheme)&&string.IsNullOrEmpty(sourceUrl.UserInfo))System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(sourceUrl.AbsoluteUri){UseShellExecute=true});break;
+                    case "open_companion":LaunchCompanion(null);break;
                     case "checkpoints":
                         if(files!=null)SendSurface(new{type="checkpoint_list",checkpoints=files.ListCheckpoints()});break;
                     case "rollback":
@@ -200,6 +203,7 @@ namespace OfficeX.ExcelHost
             }
             if(name=="list_checkpoints")return files.ListCheckpoints();
             if(name=="checkpoint_document")return files.CheckpointNow((string)input["label"]);
+            if(name=="open_genoffice_editor")return LaunchCompanion(files.CheckedPath((string)input["path"],".docx",".docm",".xlsx",".xlsm",".pptx",".pptm",".pdf",".html",".htm",".md",".markdown",".txt",".csv"));
             if(name=="export_document_copy")return files.ExportCopy();
             if(name=="export_document_pdf")return files.ExportPdf(cancelToken);
             if(name=="select_input_file")return files.SelectInput();
@@ -316,6 +320,8 @@ namespace OfficeX.ExcelHost
         }
         private void Finish(string text) {running=false;status.Text=text;foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.handoffState=HandoffState();follower.followOwner=null;follower.files=files?.Fork(()=>follower.automationPort);follower.EnsureWorker();}followers.Clear();cancellation?.Cancel();SetBusy(nativeBusy);approval?.TrySetResult(false);}
         private static string Explain(string code) {
+            if(code=="companion_unavailable")return "별도 편집기를 설치한 뒤 다시 열어주세요.";
+            if(code=="companion_start_failed")return "편집기를 열지 못했습니다. 설치 상태를 확인해주세요.";
             switch(code) {
                 case "open_document_required":return "작업할 문서를 먼저 열어 주세요.";
                 case "office_member_unavailable":case "office_member_not_found":return "이 문서의 지원 멤버를 다시 확인하고 작업 방법을 조정합니다.";

@@ -23,6 +23,8 @@ foreach($view in @([Microsoft.Win32.RegistryView]::Registry32,[Microsoft.Win32.R
 foreach($file in @('OfficeX.ExcelAddIn.vsto','OfficeX.WordAddIn.vsto','OfficeX.PowerPointAddIn.vsto','OfficeX.ExcelHost.dll','OfficeX/runtime/node.exe','OfficeX/worker/main.cjs','OfficeX/ui/index.html')){if(!(Test-Path "$installPath/$file")){throw "Missing installed $file"}}
 & "$installPath/OfficeX/runtime/node.exe" --version
 if($LASTEXITCODE){throw 'Bundled Node cannot run'}
+& node scripts/Test-Companion.mjs "$installPath/OfficeX/companion/Nubi GenOffice.exe"
+if($LASTEXITCODE){throw 'Installed GenOffice editor runtime check failed'}
 $reinstall=RunInstaller $exe "$projectRoot/releases/reinstall.log"
 $uninstall=RunInstaller "$installPath/unins000.exe" "$projectRoot/releases/uninstall.log"
 foreach($view in @([Microsoft.Win32.RegistryView]::Registry32,[Microsoft.Win32.RegistryView]::Registry64)){

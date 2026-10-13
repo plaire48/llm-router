@@ -1,0 +1,102 @@
+{
+  "version": "0.6.0",
+  "date": "2026-10-13",
+  "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
+  "sourceChecks": {
+    "genofficeHashes": 842,
+    "nubiHashes": 88,
+    "unitTestsPassed": 62,
+    "unitTestsSkipped": 4,
+    "nativeCoreTests": 72,
+    "stdioMockIntegration": "passed",
+    "net472HostCrossCompile": "passed",
+    "creationOperationBrowserFlows": 6,
+    "existingBrowserFlows": 14,
+    "textBrowserFlows": 2,
+    "officeIdentity": {
+      "states": 12,
+      "propertiesPerState": 77,
+      "matchesExcel": true
+    },
+    "newGenofficeBrowserFlows": 9,
+    "realPdfConversionFormats": [
+      "docx",
+      "pptx",
+      "xlsx"
+    ],
+    "realPptxGeneratedFixture": true,
+    "claudeTextOnlyRecoveryFixture": true,
+    "upstreamPptxOps": 68,
+    "upstreamPipelines": 77,
+    "upstreamPdf2docx": 822,
+    "upstreamPptxEngine": 1253,
+    "upstreamPptxEngineSkipped": 1,
+    "upstreamEnginesTotalPassed": 2829,
+    "memberPreInvocationRecoveryFixture": true,
+    "powerpointSelectionFallbackCrossCompiled": true
+  },
+  "windowsVstoBuildVerified": true,
+  "windowsInstallerVerified": true,
+  "officeRuntimeVerified": false,
+  "liveModelVerified": false,
+  "genofficeFullProductParityVerified": false,
+  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.6.0-beta.1",
+  "commit": "3fd85a96d3d5c88d424aa7dfadec028d5dfa052e",
+  "windowsBuildRun": "https://github.com/plaire48/llm-router/actions/runs/38327824007",
+  "installerSha256": "59cc81bbfc6e8fe7b16e87124ae412976390a7359c3ca8046c8d7496cf295270",
+  "windowsInstallation": {
+    "officeInstalled": false,
+    "installSeconds": 5.05,
+    "runner": "windows-2022",
+    "realOfficeVerified": false,
+    "uninstallSeconds": 1.14,
+    "liveModelVerified": false,
+    "reinstallSeconds": 2.43,
+    "passed": true,
+    "registry": [
+      {
+        "view": "Registry32",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "app": "Excel"
+      },
+      {
+        "view": "Registry32",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "app": "Word"
+      },
+      {
+        "view": "Registry32",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "app": "PowerPoint"
+      },
+      {
+        "view": "Registry64",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "app": "Excel"
+      },
+      {
+        "view": "Registry64",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "app": "Word"
+      },
+      {
+        "view": "Registry64",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "app": "PowerPoint"
+      }
+    ]
+  },
+  "releasePublished": false,
+  "windowsBuildVerified": false,
+  "windowsInstallVerified": false,
+  "companionEditorsIncluded": [
+    "docs",
+    "sheets",
+    "slides",
+    "pdf",
+    "markdown",
+    "html"
+  ],
+  "realOfficeVerified": false,
+  "upstreamFiles": 4582
+}

@@ -52,7 +52,11 @@ try {
  New-Item "$stage/OfficeX" -ItemType Directory -Force|Out-Null
  foreach($app in @('Excel','Word','PowerPoint')){Copy-Item "native/OfficeX.$($app)AddIn/bin/Release/*" $stage -Recurse -Force}
  Copy-Item native/OfficeX.ExcelHost/bin/Release/net472/* $stage -Recurse -Force
- foreach($part in @('ui','worker','licenses')){Copy-Item "dist/$part" "$stage/OfficeX" -Recurse}
+ foreach($part in @('ui','worker','licenses','cli','wasm')){Copy-Item "dist/$part" "$stage/OfficeX" -Recurse}
+ & "$projectRoot/scripts/Build-Companion.ps1"
+ if($LASTEXITCODE){throw 'Companion build failed'}
+ if(Test-Path installer/companion){Remove-Item installer/companion -Recurse -Force}
+ Copy-Item "companion/workspace/apps/shell/release/win-unpacked" "installer/companion" -Recurse -Force
  Copy-Item installer/INSTALL-KO.txt $stage
  Copy-Item scripts/Test-OfficeRuntime.ps1 $stage
  foreach($name in @('office.dll','Microsoft.Office.Interop.Excel.dll','Microsoft.Office.Interop.Word.dll','Microsoft.Office.Interop.PowerPoint.dll','Microsoft.Vbe.Interop.dll')){if(Test-Path "$stage/$name"){throw "PIA must be embedded: $name"}}
@@ -82,5 +86,5 @@ try {
  if($LASTEXITCODE){throw 'Installer compile failed'}
  $exe=Get-Item "releases/Nubi-Office-X-$version-Setup.exe"
  "$((Get-FileHash $exe).Hash.ToLower())  $($exe.Name)"|Set-Content "$($exe.FullName).sha256" -Encoding ascii
- @{version=$version;commit=$env:GITHUB_SHA;bytes=$exe.Length;manifestSigning='self-signed preview';installerAuthenticode='unsigned';compression='zip/7, non-solid';prerequisites=$inventory;components=@('excel','word','powerpoint');realOfficeVerified=$false;liveModelVerified=$false}|ConvertTo-Json -Depth 5|Set-Content releases/installer-build.json
+ @{version=$version;commit=$env:GITHUB_SHA;bytes=$exe.Length;manifestSigning='self-signed preview';installerAuthenticode='unsigned';compression='zip/7, non-solid';prerequisites=$inventory;components=@('excel','word','powerpoint','genoffice-companion');editors=@('docs','sheets','slides','pdf','markdown','html');realOfficeVerified=$false;liveModelVerified=$false}|ConvertTo-Json -Depth 5|Set-Content releases/installer-build.json
 } finally {Pop-Location}

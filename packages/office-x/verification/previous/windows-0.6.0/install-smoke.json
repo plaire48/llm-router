@@ -1,0 +1,42 @@
+{
+  "officeInstalled": false,
+  "installSeconds": 5.05,
+  "runner": "windows-2022",
+  "realOfficeVerified": false,
+  "uninstallSeconds": 1.14,
+  "liveModelVerified": false,
+  "reinstallSeconds": 2.43,
+  "passed": true,
+  "registry": [
+    {
+      "view": "Registry32",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+      "app": "Excel"
+    },
+    {
+      "view": "Registry32",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+      "app": "Word"
+    },
+    {
+      "view": "Registry32",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+      "app": "PowerPoint"
+    },
+    {
+      "view": "Registry64",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+      "app": "Excel"
+    },
+    {
+      "view": "Registry64",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+      "app": "Word"
+    },
+    {
+      "view": "Registry64",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+      "app": "PowerPoint"
+    }
+  ]
+}

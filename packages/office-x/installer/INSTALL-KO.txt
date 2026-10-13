@@ -1,4 +1,4 @@
-누비 Office X Beta 0.6.0
+누비 Office X Beta 0.7.0
 
 Excel, Word, PowerPoint를 닫고 설치하세요.
 각 앱의 누비 Agent 탭에서 작업창을 열고 사용할 모델에 로그인하세요.
@@ -21,3 +21,7 @@ Node는 포함되어 있으며 WebView2가 없으면 인터넷으로 설치합�
 Claude는 Claude Code 로그인이 필요합니다.
 Beta 설치 파일은 배포용 코드 서명이 없습니다.
 실제 Office 실행 검사는 설치 폴더의 Test-OfficeRuntime.ps1을 사용하세요.
+
+GenOffice 편집기 전체
+Windows x64에는 별도 편집기 6종을 함께 설치합니다. 시작 메뉴의 누비 GenOffice 또는 Office 작업창의 외부 편집기 버튼으로 여세요. 상단 누비 버튼에서 계정·모델·검색·이미지를 연결합니다. Office와 같은 암호화 계정 저장소를 사용합니다.
+별도 편집기에 열리는 Office 스냅샷은 사본입니다. 현재 Office 창에 변경이 자동 반영되지는 않습니다. 현재 Office 문서 수정은 Office 작업창에서 요청하세요.

@@ -1,8 +1,13 @@
-# 누비 Agent Office 0.6.0
+# Nubi Office X 0.7.0
+
+Office 2016의 Excel·Word·PowerPoint VSTO 추가 기능과 GenOffice 원본 편집기 6종을 함께 제공합니다. 누비의 로그인·모델 연결과 CX를 사용하며 GenOffice AgentLoop와 원본 편집 엔진을 보존합니다.
+
+Windows x64에는 원본 문서·시트·슬라이드·PDF·HTML·Markdown 편집기를 포함합니다. 자세한 실행 경로와 검증 한계는 [기능 대응](docs/genoffice-capabilities.md)을 확인하세요.
+
 
 Windows Office 2016의 Excel, Word, PowerPoint에서 누비 채팅과 GenOffice Agent를 사용합니다.
 
-[Windows 설치 파일](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.6.0-beta.1)을 받아 Office 앱을 닫고 실행하세요. 각 앱의 **누비 Agent** 탭에서 시작합니다.
+[Windows 설치 파일](https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.0-beta.1)을 받아 Office 앱을 닫고 실행하세요. 각 앱의 **누비 Agent** 탭에서 시작합니다.
 
 선택 영역 밖의 문서를 읽고, 기존 내용과 서식을 수정하고, 새 문서·발표자료·통합문서를 생성하는 공통 Office 실행기를 제공합니다. 웹 검색, 이미지 생성·삽입, 원본 발표자료 생성·편집 엔진, 실제 페이지 렌더링, PDF 변환과 전체 스냅샷 복원을 연결했습니다. 누비 Workspace의 로그인, Claude, 폰트와 색감을 유지합니다.
 

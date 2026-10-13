@@ -1,0 +1,11 @@
+import {build} from 'esbuild';
+import {mkdir,copyFile,cp} from 'node:fs/promises';
+await mkdir('companion/workspace/nubi-glue',{recursive:true});
+await build({entryPoints:['companion/src/nubi-main.ts'],outfile:'companion/workspace/nubi-glue/nubi-main.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',external:['electron'],define:{'import.meta.url':'__nubiModuleUrl'},banner:{js:'const __nubiModuleUrl=require("node:url").pathToFileURL(__filename).href;'},plugins:[{name:'nubi-wire-only',setup(b){b.onResolve({filter:/agent-runtime\.js$/},()=>({path:new URL('../runtime-src/nubi-wire.mjs',import.meta.url).pathname}));}}]});
+await mkdir('dist/companion',{recursive:true});
+await build({entryPoints:['companion/src/connection.jsx'],outfile:'dist/companion/connection.js',bundle:true,platform:'browser',target:'chrome110',format:'iife',minify:true,loader:{'.woff2':'file','.woff':'file','.ttf':'file'},assetNames:'fonts/[name]-[hash]'});
+for(const name of ['connection.html','nubi-preload.cjs'])await copyFile('companion/src/'+name,'dist/companion/'+name);
+await cp('vendor/nubi/extensions/aipro-chat/public/icons','dist/companion/icons',{recursive:true});
+await copyFile('dist/worker/auth-bird.png','dist/companion/auth-bird.png');
+await copyFile('dist/worker/auth-fonts.css','dist/companion/auth-fonts.css');
+console.log('Built Nubi companion account/model UI and original transport adapter.');

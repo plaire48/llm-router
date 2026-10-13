@@ -1,0 +1,13 @@
+
+> @genoffice/xlsx-gateway@0.1.0 test
+> vitest run --passWithNoTests
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/companion/workspace/packages/xlsx-gateway
+
+
+ Test Files  38 passed (38)
+      Tests  248 passed (248)
+   Start at  10:44:30
+   Duration  3.29s (transform 5.53s, setup 0ms, import 10.89s, tests 2.24s, environment 7ms)
+

@@ -1,0 +1,6 @@
+
+> office-x@0.7.0 build
+> node scripts/build.mjs
+
+Bundled original editor DOM dependencies: 39
+Built GenOffice worker and Nubi WebView UI. Windows VSTO execution is not verified.

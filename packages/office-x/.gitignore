@@ -11,3 +11,8 @@ runtime/
 artifacts/
 
 .playwright-mcp/
+companion/workspace/
+
+!vendor/genoffice/packages/cli/bin/
+!vendor/genoffice/packages/cli/bin/*
+installer/companion/

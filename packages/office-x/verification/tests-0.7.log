@@ -1,0 +1,13 @@
+
+> office-x@0.6.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x
+
+
+ Test Files  10 passed (10)
+      Tests  66 passed | 4 skipped (70)
+   Start at  10:35:08
+   Duration  2.68s (transform 2.27s, setup 0ms, import 3.26s, tests 2.51s, environment 1ms)
+

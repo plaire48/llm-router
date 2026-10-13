@@ -1,13 +1,27 @@
 {
   "name": "office-x",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=22.19.0"
   },
   "workspaces": [
-    "vendor/genoffice/packages/*"
+    "vendor/genoffice/packages/agent-core",
+    "vendor/genoffice/packages/ai-provider",
+    "vendor/genoffice/packages/ai-search",
+    "vendor/genoffice/packages/docx-engine",
+    "vendor/genoffice/packages/electron-utils",
+    "vendor/genoffice/packages/font-metrics",
+    "vendor/genoffice/packages/pdf2docx",
+    "vendor/genoffice/packages/pipelines",
+    "vendor/genoffice/packages/pptx-engine",
+    "vendor/genoffice/packages/pptx-ops",
+    "vendor/genoffice/packages/pptx-render",
+    "vendor/genoffice/packages/zip-gate",
+    "vendor/genoffice/packages/xlsx-gateway",
+    "vendor/genoffice/packages/ui",
+    "vendor/genoffice/packages/i18n"
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -42,13 +56,20 @@
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",
     "sanitize-html": "^2.18.0",
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.0",
+    "@genoffice/xlsx-gateway": "*",
+    "@tiptap/core": "3.31.0",
+    "@tiptap/extensions": "3.31.0",
+    "@tiptap/pm": "3.31.0",
+    "@tiptap/react": "3.31.0",
+    "@xmldom/xmldom": "^0.9.12",
+    "jsdom": "^29.1.1",
+    "@tiptap/extension-bubble-menu": "3.31.0",
+    "@tiptap/extension-floating-menu": "3.31.0"
   },
   "devDependencies": {
     "@types/node": "22.19.0",
-    "@xmldom/xmldom": "^0.9.12",
     "esbuild": "0.25.12",
-    "jsdom": "^29.1.1",
     "pdf-lib": "^1.17.1",
     "pngjs": "^7.0.0",
     "typescript": "5.9.3",
