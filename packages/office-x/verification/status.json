@@ -1,6 +1,6 @@
 {
   "version": "0.8.5",
-  "scope": "source and fixtures; real Office 2016 unavailable",
+  "scope": "source, browser fixtures, Windows native COM fixtures and installer/WebView2; real Office 2016 unavailable",
   "source": {
     "buildPassed": true,
     "typecheckPassed": true,
@@ -9,18 +9,22 @@
     "nativeCoreTestsPassed": 89,
     "nativeHostCompilePassed": true,
     "vendorGenOfficeFiles": 4582,
-    "vendorNubiFiles": 88
+    "vendorNubiFiles": 88,
+    "windowsTestsPassed": 94
   },
   "ui": {
     "scope": "browser mock WebView host",
     "loginErrorClassified": true,
     "manualReconnectVerified": true,
-    "silentCatalogWarningVerified": true
+    "silentCatalogWarningVerified": true,
+    "nativeWindowsSurfaceVerified": true
   },
-  "windowsBuildVerified": false,
-  "windowsInstallVerified": false,
+  "windowsBuildVerified": true,
+  "windowsInstallVerified": true,
   "realOffice2016Verified": false,
   "realWindowsClaudeVerified": false,
   "realWindowsChatGPTVerified": false,
-  "saveCopyAsUserEnvironmentRootCauseConfirmed": false
+  "saveCopyAsUserEnvironmentRootCauseConfirmed": false,
+  "buildCommit": "239978cb07783712ece64131855ffa612d72a9d3",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38389217862"
 }

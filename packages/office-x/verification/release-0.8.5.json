@@ -1,0 +1,241 @@
+{
+  "version": "0.8.5",
+  "tag": "office-x-v0.8.5-beta.1",
+  "buildCommit": "239978cb07783712ece64131855ffa612d72a9d3",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38389217862",
+  "windowsChecks": {
+    "sourceTestsPassed": 94,
+    "nativeCoreTestsPassed": 89,
+    "nativeCom": [
+      {
+        "passed": true,
+        "architecture": "x64",
+        "legacyFailed": true,
+        "legacyException": "COMException",
+        "legacyCode": "0x80028018",
+        "legacyTypeInfoCalls": 1,
+        "typeInfoCalls": 0,
+        "valueWrites": 9,
+        "checkpointCopies": 2,
+        "creationSheets": 2,
+        "matrixReadback": true,
+        "multilineCellReadback": true,
+        "raggedRowsPadded": true,
+        "refusedCopyAllowsReviewedWrite": true,
+        "explicitCheckpointWarning": true,
+        "repeatedCheckpointNotRetried": true,
+        "newDocumentValuesAndGeneralFormulas": true,
+        "activeWorksheetUsedWithoutSelection": true,
+        "otherWorksheetPreserved": true,
+        "literalFormulaTextPreserved": true,
+        "largeIntegerReadback": true,
+        "wordCreation": true,
+        "powerpointCreation": true,
+        "newDocumentIdentity": true,
+        "formatMismatchReproduced": true,
+        "checkpointFormatMatched": true,
+        "wordCheckpoint": true,
+        "powerpointCheckpoint": true,
+        "propertyPaths": true,
+        "propertyCallAliases": true,
+        "deniedPathBlocked": true,
+        "readMutationBlocked": true,
+        "binaryCheckpoint": true,
+        "hostAnyCPU": true,
+        "coreAnyCPU": true,
+        "realOfficeVerified": false
+      },
+      {
+        "passed": true,
+        "architecture": "x86",
+        "legacyFailed": true,
+        "legacyException": "COMException",
+        "legacyCode": "0x80028018",
+        "legacyTypeInfoCalls": 1,
+        "typeInfoCalls": 0,
+        "valueWrites": 9,
+        "checkpointCopies": 2,
+        "creationSheets": 2,
+        "matrixReadback": true,
+        "multilineCellReadback": true,
+        "raggedRowsPadded": true,
+        "refusedCopyAllowsReviewedWrite": true,
+        "explicitCheckpointWarning": true,
+        "repeatedCheckpointNotRetried": true,
+        "newDocumentValuesAndGeneralFormulas": true,
+        "activeWorksheetUsedWithoutSelection": true,
+        "otherWorksheetPreserved": true,
+        "literalFormulaTextPreserved": true,
+        "largeIntegerReadback": true,
+        "wordCreation": true,
+        "powerpointCreation": true,
+        "newDocumentIdentity": true,
+        "formatMismatchReproduced": true,
+        "checkpointFormatMatched": true,
+        "wordCheckpoint": true,
+        "powerpointCheckpoint": true,
+        "propertyPaths": true,
+        "propertyCallAliases": true,
+        "deniedPathBlocked": true,
+        "readMutationBlocked": true,
+        "binaryCheckpoint": true,
+        "hostAnyCPU": true,
+        "coreAnyCPU": true,
+        "realOfficeVerified": false
+      }
+    ],
+    "surface": {
+      "passed": true,
+      "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+      "editors": 3,
+      "approvals": 3,
+      "physicalClickAndTyping": true,
+      "invalidContractRecovery": true,
+      "error": null
+    },
+    "installation": {
+      "realOfficeVerified": false,
+      "officeInstalled": false,
+      "runner": "windows-2022",
+      "legacyEditorUpgradeCleanup": true,
+      "registry": [
+        {
+          "view": "Registry32",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+          "app": "Excel"
+        },
+        {
+          "view": "Registry32",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+          "app": "Word"
+        },
+        {
+          "view": "Registry32",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+          "app": "PowerPoint"
+        },
+        {
+          "view": "Registry64",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+          "app": "Excel"
+        },
+        {
+          "view": "Registry64",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+          "app": "Word"
+        },
+        {
+          "view": "Registry64",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+          "app": "PowerPoint"
+        }
+      ],
+      "installSeconds": 8.09,
+      "standaloneEditorsAbsent": true,
+      "passed": true,
+      "liveModelVerified": false,
+      "uninstallSeconds": 1.43,
+      "imageFeatures": false,
+      "reinstallSeconds": 5.34
+    }
+  },
+  "macClaudeCreation": {
+    "buildCommit": "239978cb07783712ece64131855ffa612d72a9d3",
+    "passed": true,
+    "liveProvider": true,
+    "provider": "claude",
+    "platform": "macOS",
+    "nativeOffice": "mock",
+    "realOfficeVerified": false,
+    "realWindowsClaudeVerified": false,
+    "proposals": [
+      "create_document"
+    ],
+    "nativeMockWrites": 1,
+    "sheets": 1,
+    "multilineCellProposed": true,
+    "finalTextDelivered": true,
+    "connectedAfterCompletion": true
+  },
+  "macClaudeCells": {
+    "buildCommit": "239978cb07783712ece64131855ffa612d72a9d3",
+    "passed": true,
+    "provider": "claude",
+    "liveProvider": true,
+    "platform": "macOS",
+    "nativeOffice": "mock",
+    "realOfficeVerified": false,
+    "realWindowsClaudeVerified": false,
+    "calls": [
+      "write_cells",
+      "set_formula"
+    ],
+    "literalTextProposed": true,
+    "numericValueProposed": true,
+    "generalFormulaProposed": true,
+    "finalTextDelivered": true
+  },
+  "browserConnection": {
+    "passed": true,
+    "scope": "browser mock WebView host",
+    "loginErrorClassified": true,
+    "retryAfterClick": true,
+    "successClearsError": true,
+    "silentCatalogFailureKeepsModels": true,
+    "manualCatalogRefreshClearsWarning": true,
+    "sendRemainsAvailable": true
+  },
+  "browserCheckpoint": {
+    "passed": true,
+    "candidateVersion": "0.8.5",
+    "scope": "browser with mock WebView host; not real Office or live Claude",
+    "results": [
+      {
+        "app": "excel",
+        "headerTextRemoved": true,
+        "copyFailureDisclosed": true,
+        "rejectionPreserved": true,
+        "explicitApproval": true,
+        "receiptShowsNoBackup": true,
+        "validationLocationVisible": true
+      },
+      {
+        "app": "word",
+        "headerTextRemoved": true,
+        "copyFailureDisclosed": true,
+        "rejectionPreserved": true,
+        "explicitApproval": true,
+        "receiptShowsNoBackup": true,
+        "validationLocationVisible": true
+      },
+      {
+        "app": "powerpoint",
+        "headerTextRemoved": true,
+        "copyFailureDisclosed": true,
+        "rejectionPreserved": true,
+        "explicitApproval": true,
+        "receiptShowsNoBackup": true,
+        "validationLocationVisible": true
+      }
+    ]
+  },
+  "integrity": {
+    "commit": "239978cb07783712ece64131855ffa612d72a9d3",
+    "exeSha256": "5b53baa1a9ca042ac22f624e75a32c189a083faa9c829897604f495dc47f65b2",
+    "exeBytes": 124580208,
+    "sourceSha256": "9fbde0f17b9726652d6bb872f7e88cce386404384a2eaaa625065ee72b452059",
+    "sourceFiles": 5448,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 19,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true
+  },
+  "realOffice2016Verified": false,
+  "realWindowsClaudeVerified": false,
+  "realWindowsChatGPTVerified": false,
+  "saveCopyAsUserEnvironmentRootCauseConfirmed": false,
+  "copyFailureBehavior": "Explicit checkpoint is unavailable warning; no copy retry for same document/run. No automatic writes. Review discloses no rollback copy and requires explicit apply before source comparison and independent cell/readback verification.",
+  "publicDownloadVerified": true,
+  "publicTagCommitVerified": true
+}

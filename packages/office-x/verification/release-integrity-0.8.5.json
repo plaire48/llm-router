@@ -1,0 +1,14 @@
+{
+  "commit": "239978cb07783712ece64131855ffa612d72a9d3",
+  "exeSha256": "5b53baa1a9ca042ac22f624e75a32c189a083faa9c829897604f495dc47f65b2",
+  "exeBytes": 124580208,
+  "sourceSha256": "9fbde0f17b9726652d6bb872f7e88cce386404384a2eaaa625065ee72b452059",
+  "sourceFiles": 5448,
+  "immutableGenOfficeFiles": 4582,
+  "immutableNubiFiles": 88,
+  "productAndTestSourceHashesChecked": 19,
+  "zipCRC": true,
+  "bothArchitectureEvidenceIncluded": true,
+  "publicDownloadVerified": true,
+  "publicTagCommitVerified": true
+}

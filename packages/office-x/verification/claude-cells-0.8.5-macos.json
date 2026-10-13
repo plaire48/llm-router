@@ -1,4 +1,5 @@
 {
+  "buildCommit": "239978cb07783712ece64131855ffa612d72a9d3",
   "passed": true,
   "provider": "claude",
   "liveProvider": true,
