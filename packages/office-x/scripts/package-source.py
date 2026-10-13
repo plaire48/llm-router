@@ -7,7 +7,7 @@ out=root/'artifacts'/f'office-x-{version}-source.zip';out.parent.mkdir(exist_ok=
 excluded={'node_modules','bin','obj','.git','.vs','.playwright-mcp','__pycache__','artifacts','releases','packages','target','workspace'}
 files=[]
 for directory,dirs,names in os.walk(root):
- dirs[:]=[d for d in dirs if (d not in excluded or (d=='bin' and 'vendor/genoffice' in str(Path(directory).relative_to(root))) or (d=='packages' and Path(directory).name in ['genoffice','nubi'])) and not (Path(directory)==root and d in ['runtime','.codex','.agents']) and not (Path(directory)==root/'installer' and d in ['stage','runtime','prerequisites','node-x64','node-x86','companion'])]
+ dirs[:]=[d for d in dirs if (d not in excluded or (d=='bin' and 'vendor/genoffice' in Path(directory).relative_to(root).as_posix()) or (d=='packages' and Path(directory).name in ['genoffice','nubi'])) and not (Path(directory)==root and d in ['runtime','.codex','.agents']) and not (Path(directory)==root/'installer' and d in ['stage','runtime','prerequisites','node-x64','node-x86','companion'])]
  for name in sorted(names):
   p=Path(directory)/name
   if (p.parent==root/'installer' and p.suffix=='.zip') or name=='.DS_Store' or name.startswith('.env') or p.suffix.lower() in ['.pfx','.p12','.user','.pyc']:continue
