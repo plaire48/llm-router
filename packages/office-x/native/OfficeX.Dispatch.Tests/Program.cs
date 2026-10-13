@@ -36,13 +36,19 @@ class Program {
   object app=null;
   try{
    Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
+   bool legacyFailed=false;string legacyException=null,legacyCode=null;
+   try{var window=((dynamic)app).ActiveWindow;}
+   catch(Exception e){legacyFailed=true;legacyException=e.GetType().Name;legacyCode="0x"+unchecked((uint)e.HResult).ToString("X8");}
+   Equal(true,legacyFailed);GetExcelFixtureStats(out int legacyInfo,out _,out _);Equal(true,legacyInfo>0);
+   Console.WriteLine("REPRO legacy dynamic Excel access fails: "+legacyException+" "+legacyCode+"; broken type-info calls="+legacyInfo);
+   Marshal.ReleaseComObject(app);app=null;Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
    // Both new sheets must be read back from native SAFEARRAY values.
    var draft=new DocumentDraft{Title="주간 매출",Sheets=new List<SheetContent>{
     new SheetContent{Name="매출",Rows=new List<List<string>>{new List<string>{"품목","금액"},new List<string>{"상품 A","1000"}}},
     new SheetContent{Name="일정",Rows=new List<List<string>>{new List<string>{"담당","날짜"},new List<string>{"누비","월요일"}}}}};
    using(var creationPort=new DocumentCreationPort(app,"excel",12345)){
     var creation=new DocumentCreation(creationPort,"excel",draft);var receipt=creation.Apply(creation.Plan.Id,true,default);
-    Equal("verified",receipt.Status);Equal(2,receipt.Count);Equal("Book1",receipt.Document);
+    if(receipt.Status!="verified")Console.Error.WriteLine(Wire.Json(receipt));Equal("verified",receipt.Status);Equal(2,receipt.Count);Equal("Book1",receipt.Document);
     creationPort.ActivateCreated();Equal(Wire.Hash(draft),Wire.Hash(creationPort.ReadCreated()));
    }
    using(var port=new OfficeAutomationPort(app,"excel",12345))using(var files=new OfficeFiles(app,"excel",()=>port)){
@@ -56,8 +62,12 @@ class Program {
     var receipt=session.Apply(plan.Id,true,default);Equal("verified",receipt.Status);Equal(1,receipt.CompletedWrites);
     Equal(Wire.Json(values),Wire.Json(port.Execute(new OfficeStep{Target="range",Member="Value2"},true)));
     files.CheckpointNow("입력 후");
+    before=session.Inspect(reads);var largeNumber=new JValue(5000000000L);
+    plan=session.Prepare(before.SnapshotId,"32비트 범위보다 큰 숫자 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=largeNumber}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=largeNumber}});
+    receipt=session.Apply(plan.Id,true,default);Equal("verified",receipt.Status);Equal(5000000000d,port.Execute(new OfficeStep{Target="range",Member="Value2"},true));
    }
-   GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(3,writes);Equal(4,copies);
+   GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(4,writes);Equal(4,copies);
+   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,largeIntegerReadback=true,realOfficeVerified=false}));
    Console.WriteLine("PASS Excel-shaped native COM with TYPE_E_INVDATAREAD: two-sheet creation, SAFEARRAY cell writes/readback, encrypted checkpoints; zero type-info calls. This fixture is not installed Excel.");
   }finally{if(app!=null)Marshal.ReleaseComObject(app);File.Delete(source);}
  }

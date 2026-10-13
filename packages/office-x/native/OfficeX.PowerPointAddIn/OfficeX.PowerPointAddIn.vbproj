@@ -16,7 +16,7 @@
     <Optimize>true</Optimize><DebugType>pdbonly</DebugType>
     <RegisterForComInterop>false</RegisterForComInterop>
     <GenerateManifests>true</GenerateManifests><SignManifests>true</SignManifests>
-    <ApplicationVersion>0.8.1.0</ApplicationVersion>
+    <ApplicationVersion>0.8.2.0</ApplicationVersion>
     <AutoIncrementApplicationRevision>false</AutoIncrementApplicationRevision>
     <ProductName>Office X</ProductName><FriendlyName>누비 Agent</FriendlyName>
     <OfficeApplicationDescription>Office X PowerPoint 2016 Agent</OfficeApplicationDescription>

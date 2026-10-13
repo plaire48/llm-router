@@ -9,7 +9,7 @@ namespace OfficeX.Core {
  public sealed class OfficeCheck {public OfficeStep Read {get;set;} public new JToken Equals {get;set;}}
  public sealed class OfficeObservation {public string SnapshotId {get;set;} public List<OfficeStep> Steps {get;set;} public List<object> Results {get;set;}}
  public sealed class OfficePlan {public string Kind {get;set;}="office_operations";public string Id {get;set;} public string Summary {get;set;} public OfficeObservation Before {get;set;} public List<OfficeStep> Steps {get;set;} public List<OfficeCheck> Checks {get;set;}}
- public sealed class OfficeExecutionReceipt {public string Kind {get;set;}="office_operations";public string PlanId {get;set;} public string Status {get;set;} public string Error {get;set;} public string FailedMember {get;set;} public string NativeCode {get;set;} public bool Mutated {get;set;} public int CompletedWrites {get;set;} public bool WriteResultUncertain {get;set;} public bool Saved {get;set;} public int Count {get;set;} public List<object> Results {get;set;}=new List<object>();public List<object> Checks {get;set;}=new List<object>();}
+ public sealed class OfficeExecutionReceipt {public string Kind {get;set;}="office_operations";public string PlanId {get;set;} public string Status {get;set;} public string Error {get;set;} public string FailedMember {get;set;} public string NativeCode {get;set;} public string ExceptionName {get;set;} public string FailureStage {get;set;} public bool Mutated {get;set;} public int CompletedWrites {get;set;} public bool WriteResultUncertain {get;set;} public bool Saved {get;set;} public int Count {get;set;} public List<object> Results {get;set;}=new List<object>();public List<object> Checks {get;set;}=new List<object>();}
  public interface IOfficeAutomationPort {void CheckSource();object Execute(OfficeStep step,bool readOnly);}
  public sealed class OfficeAutomationSession {
   readonly IOfficeAutomationPort port;readonly Dictionary<string,OfficeObservation> observations=new Dictionary<string,OfficeObservation>();readonly Dictionary<string,OfficePlan> plans=new Dictionary<string,OfficePlan>();bool stopped;
@@ -25,15 +25,16 @@ namespace OfficeX.Core {
   }
   public OfficeExecutionReceipt Apply(string id,bool approved,CancellationToken token)=>ApplyAsync(id,approved,token).GetAwaiter().GetResult();
   public async Task<OfficeExecutionReceipt> ApplyAsync(string id,bool approved,CancellationToken token){if(stopped||id==null||!plans.TryGetValue(id,out var plan))throw new OfficeFault("invalid_plan");plans.Remove(id);var r=new OfficeExecutionReceipt{PlanId=id,Status="rejected"};if(!approved){stopped=true;return r;}
-   try{token.ThrowIfCancellationRequested();port.CheckSource();var live=plan.Before.Steps.Select(s=>port.Execute(s,true)).ToList();if(Wire.Hash(live)!=Wire.Hash(plan.Before.Results))throw new OfficeFault("source_changed");
+   string stage="source_check",member=null;
+   try{token.ThrowIfCancellationRequested();port.CheckSource();stage="source_read";var live=new List<object>();foreach(var before in plan.Before.Steps){member=before.Member;live.Add(port.Execute(before,true));}if(Wire.Hash(live)!=Wire.Hash(plan.Before.Results))throw new OfficeFault("source_changed");
     // Yield only to an installed UI context. A synchronous STA caller without
     // one must not resume COM calls on a ThreadPool thread.
-    foreach(var step in plan.Steps){if(SynchronizationContext.Current!=null)await Task.Yield();token.ThrowIfCancellationRequested();bool write=OfficeCallPolicy.WritesDocument(step);if(write){r.Mutated=true;r.WriteResultUncertain=true;}r.Results.Add(port.Execute(step,false));r.Count++;if(write){r.CompletedWrites++;r.WriteResultUncertain=false;}}
-    foreach(var check in plan.Checks){if(SynchronizationContext.Current!=null)await Task.Yield();token.ThrowIfCancellationRequested();var actual=port.Execute(check.Read,true);bool matches=Equivalent(actual==null?JValue.CreateNull():JToken.FromObject(actual),check.Equals);r.Checks.Add(new{read=check.Read,actual,expected=check.Equals,passed=matches});if(!matches)throw new OfficeFault("readback_mismatch");}
+    foreach(var step in plan.Steps){stage="execute_step";member=step.Member;if(SynchronizationContext.Current!=null)await Task.Yield();token.ThrowIfCancellationRequested();bool write=OfficeCallPolicy.WritesDocument(step);if(write){r.Mutated=true;r.WriteResultUncertain=true;}r.Results.Add(port.Execute(step,false));r.Count++;if(write){r.CompletedWrites++;r.WriteResultUncertain=false;}}
+    foreach(var check in plan.Checks){stage="readback";member=check.Read.Member;if(SynchronizationContext.Current!=null)await Task.Yield();token.ThrowIfCancellationRequested();var actual=port.Execute(check.Read,true);bool matches=Equivalent(actual==null?JValue.CreateNull():JToken.FromObject(actual),check.Equals);r.Checks.Add(new{read=check.Read,actual,expected=check.Equals,passed=matches});if(!matches)throw new OfficeFault("readback_mismatch");}
     r.Status="verified";observations.Clear();plans.Clear();
    }catch(OperationCanceledException){r.Status=r.Mutated?"partial":"cancelled";r.Error="cancelled";stopped=true;}
-   catch(OfficeFault e){if(e.InvocationStarted==false&&r.CompletedWrites==0){r.Mutated=false;r.WriteResultUncertain=false;}r.Status=r.Mutated?"partial":"conflict";r.Error=e.Message;r.FailedMember=e.Member;r.NativeCode=e.NativeCode;stopped=!OfficeCallPolicy.CanReplan(r);}
-   catch{r.Status=r.Mutated?"partial":"failed";r.Error="native_execution_failed";stopped=true;}
+   catch(OfficeFault e){if(e.InvocationStarted==false){r.WriteResultUncertain=false;if(r.CompletedWrites==0)r.Mutated=false;}r.Status=r.Mutated?"partial":"conflict";r.Error=e.Message;r.FailedMember=e.Member??member;r.NativeCode=e.NativeCode;r.ExceptionName=e.ExceptionName;r.FailureStage=stage;stopped=!OfficeCallPolicy.CanReplan(r);}
+   catch(Exception e){r.Status=r.Mutated?"partial":"failed";r.Error="native_execution_failed";r.FailedMember=member;r.NativeCode="0x"+unchecked((uint)e.HResult).ToString("X8");r.ExceptionName=e.GetType().Name;r.FailureStage=stage;stopped=true;}
    return r;
   }
  }

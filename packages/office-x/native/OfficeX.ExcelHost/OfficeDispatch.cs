@@ -17,7 +17,11 @@ namespace OfficeX.ExcelHost {
   }
   [DllImport("oleaut32.dll")]static extern int VariantClear(IntPtr variant);
   public static object Get(object target,string member,params object[] args)=>Invoke(target,member,"get",args);
+  public static object Call(object target,string member,params object[] args)=>Invoke(target,member,"call",args);
+  public static void Set(object target,string member,object value)=>Invoke(target,member,"set",new[]{value});
   public static object Invoke(object target,string member,string action,object[] args){
+   bool started=false;
+   try{
    var dispatch=target as Dispatch;if(dispatch==null)throw new OfficeFault("office_dispatch_unavailable",member,invocationStarted:false);
    var iid=Guid.Empty;var ids=new int[1];int hr=dispatch.GetIDsOfNames(ref iid,new[]{member},1,1033,ids);
    if(hr<0)throw new OfficeFault(OfficeCallPolicy.ErrorCode(hr),member,hr,false);
@@ -28,7 +32,7 @@ namespace OfficeX.ExcelHost {
     var parameters=new DISPPARAMS{rgvarg=variants,cArgs=count,rgdispidNamedArgs=named,cNamedArgs=setting?1:0};var exception=new EXCEPINFO();object result;uint argumentError;
     bool accessor=!setting&&OfficeCallPolicy.ReadCall(member);
     ushort flags=(ushort)(setting?4:action=="call"&&!accessor?1:2);
-    hr=dispatch.Invoke(ids[0],ref iid,1033,flags,ref parameters,out result,ref exception,out argumentError);
+    started=true;hr=dispatch.Invoke(ids[0],ref iid,1033,flags,ref parameters,out result,ref exception,out argumentError);
     // Item and Range are property getters in some Office objects and methods in
     // others. Some dispatch servers reject combined METHOD | PROPERTYGET flags.
     // A read-only accessor may try METHOD only after the getter was not found.
@@ -37,6 +41,7 @@ namespace OfficeX.ExcelHost {
     if(hr<0){int code=exception.scode<0?exception.scode:hr;throw new OfficeFault(OfficeCallPolicy.ErrorCode(code),member,code,OfficeCallPolicy.BeforeInvocation(code)?false:(bool?)null);}
     return result;
    }finally{for(int i=0;i<initialized;i++)VariantClear(IntPtr.Add(variants,i*size));if(variants!=IntPtr.Zero)Marshal.FreeCoTaskMem(variants);if(named!=IntPtr.Zero)Marshal.FreeCoTaskMem(named);}
+   }catch(OfficeFault){throw;}catch(Exception error){throw new OfficeFault("office_operation_failed",member,error.HResult,started?(bool?)null:false,error.GetType().Name);}
   }
  }
 }

@@ -12,20 +12,21 @@ namespace OfficeX.ExcelHost {
   readonly List<Tuple<int,int>> wordRanges=new List<Tuple<int,int>>();
   readonly List<int> wordTables=new List<int>();
   static readonly Dictionary<string,int> Styles=new Dictionary<string,int>{{"Normal",-1},{"Title",-63},{"Heading1",-2},{"Heading2",-3}};
-  sealed class Scope:IDisposable {readonly List<object> all=new List<object>();public dynamic Keep(object o){if(o!=null&&Marshal.IsComObject(o))all.Add(o);return o;}public void Dispose(){for(int i=all.Count-1;i>=0;i--)Marshal.ReleaseComObject(all[i]);}}
+  sealed class Scope:IDisposable {readonly List<object> all=new List<object>();public object Hold(object o){if(o!=null&&Marshal.IsComObject(o))all.Add(o);return o;}public dynamic Keep(object o)=>Hold(o);public void Dispose(){for(int i=all.Count-1;i>=0;i--)Marshal.ReleaseComObject(all[i]);}}
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
-  public DocumentCreationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;using(var c=new Scope()){dynamic doc=c.Keep(Source());sourceId=Identity(doc);}}
+  public DocumentCreationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;using(var c=new Scope()){object doc=c.Hold(Source());sourceId=Identity(doc);}}
   object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
-  public void CheckSource(){using(var c=new Scope()){dynamic win=c.Keep(application.ActiveWindow),doc=c.Keep(Source());if((int)win.HWND!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
-  public string CreatedName=>created==null?null:(string)((dynamic)created).Name;
-  public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){dynamic doc=created;if(app=="powerpoint"){dynamic windows=c.Keep(doc.Windows),window=c.Keep(windows.Item(1));window.Activate();}else doc.Activate();}}
+  public void CheckSource(){using(var c=new Scope()){object win=c.Hold(OfficeDispatch.Get((object)application,"ActiveWindow")),doc=c.Hold(Source());if(Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
+  public string CreatedName=>created==null?null:Convert.ToString(OfficeDispatch.Get(created,"Name"));
+  public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){dynamic doc=created;if(app=="powerpoint"){dynamic windows=c.Keep(doc.Windows),window=c.Keep(windows.Item(1));window.Activate();}else OfficeDispatch.Call(created,"Activate");}}
   public void Create(CreationPlan value,CancellationToken token){
    if(created!=null)throw new OfficeFault("writes_stopped_for_this_run");plan=Wire.Clone(value);
    using(var c=new Scope()){
-    dynamic collection=c.Keep(app=="word"?application.Documents:app=="powerpoint"?application.Presentations:application.Workbooks);
+    object collection=c.Hold(OfficeDispatch.Get((object)application,app=="word"?"Documents":app=="powerpoint"?"Presentations":"Workbooks"));
     created=OfficeDispatch.Invoke((object)collection,"Add","call",app=="word"?new object[0]:new object[]{app=="powerpoint"?-1:-4167});
-    dynamic doc=created,properties=c.Keep(doc.BuiltInDocumentProperties),title=c.Keep(properties.Item("Title"));title.Value=plan.Content.Title;
-    if(app=="word")CreateWord(c,doc,token);else if(app=="powerpoint")CreateSlides(c,doc,token);else CreateSheets(c,doc,token);
+    object properties=c.Hold(OfficeDispatch.Get(created,"BuiltInDocumentProperties")),title=c.Hold(OfficeDispatch.Get(properties,"Item","Title"));OfficeDispatch.Set(title,"Value",plan.Content.Title);
+    dynamic doc=created;
+    if(app=="word")CreateWord(c,doc,token);else if(app=="powerpoint")CreateSlides(c,doc,token);else CreateSheets(c,created,token);
    }
   }
   void CreateWord(Scope c,dynamic doc,CancellationToken token){
@@ -47,18 +48,23 @@ namespace OfficeX.ExcelHost {
    dynamic setup=c.Keep(doc.PageSetup);setup.SlideWidth=960f;setup.SlideHeight=540f;dynamic slides=c.Keep(doc.Slides);
    foreach(var item in plan.Content.Slides){token.ThrowIfCancellationRequested();dynamic slide=c.Keep(slides.Add((int)slides.Count+1,12)),shapes=c.Keep(slide.Shapes);Box(c,shapes,item.Title,38,86,true);Box(c,shapes,string.Join("\r",item.Body),145,340,false);}
   }
-  void CreateSheets(Scope c,dynamic doc,CancellationToken token){
-   dynamic sheets=c.Keep(doc.Worksheets);
-   while((int)sheets.Count<plan.Content.Sheets.Count){dynamic last=c.Keep(sheets.Item((int)sheets.Count));c.Keep(sheets.Add(After:last));}
-   for(int i=1;i<=(int)sheets.Count;i++){dynamic sheet=c.Keep(sheets.Item(i));sheet.Name="Nubi_"+Guid.NewGuid().ToString("N").Substring(0,12);}
-   for(int i=0;i<plan.Content.Sheets.Count;i++){token.ThrowIfCancellationRequested();var item=plan.Content.Sheets[i];dynamic sheet=c.Keep(sheets.Item(i+1));sheet.Name=item.Name;
-    dynamic range=c.Keep(sheet.Range["A1",Region.CellAddress(item.Rows.Count,item.Rows[0].Count)]);range.NumberFormat="@";var values=new object[item.Rows.Count,item.Rows[0].Count];
-    for(int r=0;r<item.Rows.Count;r++)for(int col=0;col<item.Rows[r].Count;col++)values[r,col]=item.Rows[r][col];range.Value2=values;
-    dynamic head=c.Keep(sheet.Range["A1",Region.CellAddress(1,item.Rows[0].Count)]),font=c.Keep(head.Font),fill=c.Keep(head.Interior),columns=c.Keep(range.Columns);font.Bold=true;fill.Color=0xF8EFE6;columns.ColumnWidth=20;range.WrapText=true;dynamic rows=c.Keep(range.Rows);rows.AutoFit();
+  void CreateSheets(Scope c,object doc,CancellationToken token){
+   object sheets=c.Hold(OfficeDispatch.Get(doc,"Worksheets"));
+   int Count()=>Convert.ToInt32(OfficeDispatch.Get(sheets,"Count"));
+   while(Count()<plan.Content.Sheets.Count){object last=c.Hold(OfficeDispatch.Get(sheets,"Item",Count()));c.Hold(OfficeDispatch.Call(sheets,"Add",Type.Missing,last));}
+   for(int i=1;i<=Count();i++){object sheet=c.Hold(OfficeDispatch.Get(sheets,"Item",i));OfficeDispatch.Set(sheet,"Name","Nubi_"+Guid.NewGuid().ToString("N").Substring(0,12));}
+   for(int i=0;i<plan.Content.Sheets.Count;i++){
+    token.ThrowIfCancellationRequested();var item=plan.Content.Sheets[i];object sheet=c.Hold(OfficeDispatch.Get(sheets,"Item",i+1));OfficeDispatch.Set(sheet,"Name",item.Name);
+    object range=c.Hold(OfficeDispatch.Get(sheet,"Range","A1",Region.CellAddress(item.Rows.Count,item.Rows[0].Count)));
+    OfficeDispatch.Set(range,"NumberFormat","@");var values=new object[item.Rows.Count,item.Rows[0].Count];
+    for(int r=0;r<item.Rows.Count;r++)for(int col=0;col<item.Rows[r].Count;col++)values[r,col]=item.Rows[r][col];
+    OfficeDispatch.Set(range,"Value2",values);
+    object head=c.Hold(OfficeDispatch.Get(sheet,"Range","A1",Region.CellAddress(1,item.Rows[0].Count))),font=c.Hold(OfficeDispatch.Get(head,"Font")),fill=c.Hold(OfficeDispatch.Get(head,"Interior")),columns=c.Hold(OfficeDispatch.Get(range,"Columns")),rows=c.Hold(OfficeDispatch.Get(range,"Rows"));
+    OfficeDispatch.Set(font,"Bold",true);OfficeDispatch.Set(fill,"Color",0xF8EFE6);OfficeDispatch.Set(columns,"ColumnWidth",20);OfficeDispatch.Set(range,"WrapText",true);OfficeDispatch.Call(rows,"AutoFit");
    }
   }
   public DocumentDraft ReadCreated(){using(var c=new Scope()){
-   dynamic doc=created,properties=c.Keep(doc.BuiltInDocumentProperties),title=c.Keep(properties.Item("Title"));var actual=new DocumentDraft{Title=Convert.ToString(title.Value)};
+   object properties=c.Hold(OfficeDispatch.Get(created,"BuiltInDocumentProperties")),title=c.Hold(OfficeDispatch.Get(properties,"Item","Title"));var actual=new DocumentDraft{Title=Convert.ToString(OfficeDispatch.Get(title,"Value"))};dynamic doc=created;
    if(app=="word"){
     actual.Paragraphs=new List<DocumentPart>();
     for(int i=0;i<wordRanges.Count;i++){
@@ -71,8 +77,12 @@ namespace OfficeX.ExcelHost {
     actual.Slides=new List<SlideContent>();dynamic slides=c.Keep(doc.Slides);
     for(int i=1;i<=(int)slides.Count;i++){dynamic slide=c.Keep(slides.Item(i)),shapes=c.Keep(slide.Shapes),a=c.Keep(shapes.Item(1)),b=c.Keep(shapes.Item(2)),af=c.Keep(a.TextFrame),bf=c.Keep(b.TextFrame),at=c.Keep(af.TextRange),bt=c.Keep(bf.TextRange);string body=(string)bt.Text??"";actual.Slides.Add(new SlideContent{Title=(string)at.Text??"",Body=body.Length==0?new List<string>():body.Split('\r').ToList()});}
    }else{
-    actual.Sheets=new List<SheetContent>();dynamic sheets=c.Keep(doc.Worksheets);
-    for(int i=1;i<=(int)sheets.Count;i++){dynamic sheet=c.Keep(sheets.Item(i));var expected=plan.Content.Sheets[i-1];dynamic range=c.Keep(sheet.Range["A1",Region.CellAddress(expected.Rows.Count,expected.Rows[0].Count)]);object raw=range.Value2;var values=raw as Array;var rows=new List<List<string>>();for(int r=0;r<expected.Rows.Count;r++){var row=new List<string>();for(int col=0;col<expected.Rows[r].Count;col++)row.Add(Convert.ToString(values==null?raw:values.GetValue(r+values.GetLowerBound(0),col+values.GetLowerBound(1)))??"");rows.Add(row);}actual.Sheets.Add(new SheetContent{Name=(string)sheet.Name,Rows=rows});}
+    actual.Sheets=new List<SheetContent>();object sheets=c.Hold(OfficeDispatch.Get(created,"Worksheets"));
+    for(int i=1;i<=Convert.ToInt32(OfficeDispatch.Get(sheets,"Count"));i++){
+     object sheet=c.Hold(OfficeDispatch.Get(sheets,"Item",i));var expected=plan.Content.Sheets[i-1];object range=c.Hold(OfficeDispatch.Get(sheet,"Range","A1",Region.CellAddress(expected.Rows.Count,expected.Rows[0].Count)));object raw=OfficeDispatch.Get(range,"Value2");var values=raw as Array;var rows=new List<List<string>>();
+     for(int r=0;r<expected.Rows.Count;r++){var row=new List<string>();for(int col=0;col<expected.Rows[r].Count;col++)row.Add(Convert.ToString(values==null?raw:values.GetValue(r+values.GetLowerBound(0),col+values.GetLowerBound(1)))??"");rows.Add(row);}
+     actual.Sheets.Add(new SheetContent{Name=Convert.ToString(OfficeDispatch.Get(sheet,"Name")),Rows=rows});
+    }
    }
    return actual;
   }}

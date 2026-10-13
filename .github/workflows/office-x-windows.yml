@@ -21,6 +21,13 @@ jobs:
           foreach($architecture in @('x64','x86')){
             ./scripts/Test-NativeDispatch.ps1 -Architecture $architecture
           }
+      - name: Preserve native dispatch regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: office-x-native-dispatch-verification
+          retention-days: 7
+          path: packages/office-x/verification/native-dispatch-*.json
   windows:
     needs: native-com
     runs-on: windows-2022
