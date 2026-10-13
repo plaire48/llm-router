@@ -13,3 +13,5 @@ Native COM fixture의 Sheets.Name 허용 오류를 제거했다. 엄격한 오�
 OfficeGeometry는 Excel ColumnWidth 문자 단위 0..255, RowHeight 포인트 0..409와 PowerPoint AddTextbox의 다섯 인수/포인트 단위를 검사한다. format_cells가 실제 Range를 읽고 전체 열/행 범위를 요약해 dimension 체크와 Value2/Formula 보존 검사를 제출한다. excel_dimension은 명시적인 정책으로 최대 0.15 문자/0.5 포인트만 허용하며 실제/예상/비교 방식을 영수증에 남긴다. office_single은 기대값의 정확한 Single 표현만 인정하고 느슨한 epsilon을 사용하지 않는다. Count/텍스트/셀 값에는 두 비교 방식을 허용하지 않는다.
 
 네이티브 모의 검사에 읽기로 생성되는 계획 핸들, 늦은 지원 불가 멤버, 문서 루트의 잘못된 ColumnWidth, Word/PPT 배치 사전 거절, PPT Single 폰트 크기를 추가했다. 실제 Office가 없는 CI이므로 전체 COM 모델과 사용자 환경의 쓰기/저장/연결 성공을 증명하지 않는다.
+
+스칼라 결과를 같은 id에 다시 읽으면 이전 COM 핸들을 제거한다. Count 등을 객체 핸들로 재사용하는 계획은 쓰기 전에 거절한다. 반대로 Add 뒤 처음 존재할 명시적 Item 인덱스는 사전 검사에서 객체를 만들지 않고 실행 후 확인하므로 정상적인 구조 변경 기능을 유지한다.
