@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "scope": "owned browser fixtures, no actual Office or account",
+  "cases": [
+    {
+      "app": "excel",
+      "viewport": {
+        "width": 280,
+        "height": 480
+      },
+      "saveApproval": true,
+      "requestedPathVisible": true,
+      "filePersistenceSeparated": true,
+      "ocrDisclosure": true,
+      "inputUsable": true,
+      "geometry": {
+        "overflow": false,
+        "chatBottom": 287,
+        "inputTop": 308
+      }
+    },
+    {
+      "app": "excel",
+      "viewport": {
+        "width": 420,
+        "height": 760
+      },
+      "saveApproval": true,
+      "requestedPathVisible": true,
+      "filePersistenceSeparated": true,
+      "ocrDisclosure": true,
+      "inputUsable": true,
+      "geometry": {
+        "overflow": false,
+        "chatBottom": 607,
+        "inputTop": 628
+      }
+    },
+    {
+      "app": "word",
+      "viewport": {
+        "width": 280,
+        "height": 480
+      },
+      "saveApproval": true,
+      "requestedPathVisible": true,
+      "filePersistenceSeparated": true,
+      "ocrDisclosure": true,
+      "inputUsable": true,
+      "geometry": {
+        "overflow": false,
+        "chatBottom": 287,
+        "inputTop": 308
+      }
+    },
+    {
+      "app": "word",
+      "viewport": {
+        "width": 420,
+        "height": 760
+      },
+      "saveApproval": true,
+      "requestedPathVisible": true,
+      "filePersistenceSeparated": true,
+      "ocrDisclosure": true,
+      "inputUsable": true,
+      "geometry": {
+        "overflow": false,
+        "chatBottom": 607,
+        "inputTop": 628
+      }
+    },
+    {
+      "app": "powerpoint",
+      "viewport": {
+        "width": 280,
+        "height": 480
+      },
+      "saveApproval": true,
+      "requestedPathVisible": true,
+      "filePersistenceSeparated": true,
+      "ocrDisclosure": true,
+      "inputUsable": true,
+      "geometry": {
+        "overflow": false,
+        "chatBottom": 287,
+        "inputTop": 308
+      }
+    },
+    {
+      "app": "powerpoint",
+      "viewport": {
+        "width": 420,
+        "height": 760
+      },
+      "saveApproval": true,
+      "requestedPathVisible": true,
+      "filePersistenceSeparated": true,
+      "ocrDisclosure": true,
+      "inputUsable": true,
+      "geometry": {
+        "overflow": false,
+        "chatBottom": 607,
+        "inputTop": 628
+      }
+    }
+  ]
+}

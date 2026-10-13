@@ -20,9 +20,14 @@ try {
   return @{file=[IO.Path]::GetFileName($Path);status=$result.status;engines=$result.engines;quality=$result.quality;warnings=$result.warnings;sha256=$result.sha256}
  }
  $rows+=Convert-Installed $html @('First Markdown','Original content 1200')
- $python=Join-Path $env:LOCALAPPDATA 'OfficeX/DocumentRuntime/markitdown-v1/Scripts/python.exe'
- & $python (Join-Path $projectRoot 'tests/fixtures/markdown-documents.py') $temp
- if($LASTEXITCODE){throw 'Document corpus generation failed'}
+ # Test document writers are not production converter dependencies.
+ $corpus=Join-Path $projectRoot 'tests/fixtures/markdown-corpus.zip'
+ $manifest=Get-Content (Join-Path $projectRoot 'tests/fixtures/markdown-corpus.json') -Raw|ConvertFrom-Json
+ if(!$manifest.synthetic -or (Get-FileHash $corpus).Hash.ToLower() -ne $manifest.sha256){throw 'Synthetic Markdown corpus checksum mismatch'}
+ Expand-Archive $corpus $temp -Force
+ foreach($entry in $manifest.files.PSObject.Properties){
+  if((Get-FileHash (Join-Path $temp $entry.Name)).Hash.ToLower() -ne $entry.Value){throw "Synthetic document checksum mismatch: $($entry.Name)"}
+ }
  $rows+=Convert-Installed (Join-Path $temp 'report.docx') @('원문 보존','서울','머리글 보존')
  $rows+=Convert-Installed (Join-Path $temp 'book.xlsx') @('SUM(B2:B3)','먼 셀 값','2026-10-14','A7:C7')
  $rows+=Convert-Installed (Join-Path $temp 'deck.pptx') @('누비 발표','첫 번째 본문','발표자 노트 보존')

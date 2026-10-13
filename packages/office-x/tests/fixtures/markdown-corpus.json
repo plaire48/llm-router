@@ -1,0 +1,12 @@
+{
+  "synthetic": true,
+  "generator": "markdown-documents.py",
+  "sha256": "10fc5a0d35ce974908084485e9238a581ef6b90430af72c3e3f3de3c3a01532f",
+  "files": {
+    "report.docx": "ba42c2f52f5c5cc7862c6da7094295824c936d274b9c7dfb01fbb3f42482cfc9",
+    "book.xlsx": "a57630731088440791daece9724ea71b1c7924f418b4f5fa456326e55a634912",
+    "deck.pptx": "abf6cfcfff9a70d4c347add802903a180a1a34a26e3ec17c329ed4fd7b685e53",
+    "scanned.pdf": "02a4e2c9f77c9cb0c8a4067a016bae9c214dc826d7c9c229f19b5ed7265b954e",
+    "content.html": "3f1b69ba49399ab3c2350a6c3daf253caa2f13445290c10164a92e342058f930"
+  }
+}
