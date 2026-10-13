@@ -4,6 +4,8 @@ import { nubiTransport } from './nubi-transport';
 import { Conversations } from './conversations';
 // @ts-expect-error Nubi preserves its original JavaScript modules.
 import { officeProviders, publicProviderState } from './nubi-providers.mjs';
+// @ts-expect-error Office-only connection adapter preserves upstream modules.
+import {restoreManualConnection,providerCommandError} from './provider-connection.mjs';
 import { providerTransport, validateConfig } from './transport';
 import {OfficeServices,Artifacts} from './services';
 import {extendedOfficeSkill} from './genoffice-skill';
@@ -49,9 +51,9 @@ async function providerCommand(msg:Record<string,any>){
       let expired=false,timer:ReturnType<typeof setTimeout>|undefined;
       const connect=async()=>{
         if(savedConnections.has(arg)){
-          const record=savedConnections.get(arg);savedConnections.delete(arg);
-          await providers.restoreConnections([record],arg);if(expired)throw Error('cancelled');
-          const restored=providers.status();if(restored.connected&&restored.provider===arg)return restored;
+          const record=savedConnections.get(arg);
+          const restored=await restoreManualConnection(providers,record,arg,{cancelled:()=>expired});if(expired)throw Error('cancelled');
+          savedConnections.delete(arg);if(restored)return restored;
         }
         if(expired)throw Error('cancelled');return providers.login(arg);
       };
@@ -80,7 +82,7 @@ async function receive(msg: Record<string, any>) {
   }
   if(msg.type==='provider'){
     try{const result=await providerCommand(msg);send({type:'reply',id:msg.id,result});}
-    catch(e){send({type:'reply',id:msg.id,error:['worker_busy','connection_timeout','claude_cli_missing','claude_cli_failed','claude_cli_timeout','claude_cli_update','claude_login_required','browser_unavailable'].includes((e as Error).message)?(e as Error).message:'connection_failed'});}return;
+    catch(e){send({type:'reply',id:msg.id,operation:msg.method,error:providerCommandError(msg.method,e)});}return;
   }
   if(msg.type==='clear_conversation'&&!active){conversations.clear(String(msg.conversationId));return;}
 
@@ -106,7 +108,7 @@ async function receive(msg: Record<string, any>) {
         const callId = randomUUID();
         const cancel = () => { const p=pending.get(callId); pending.delete(callId); p?.cleanup(); reject(new Error('cancelled')); };
         const timeout = setTimeout(cancel, 10 * 60 * 1000);
-        pending.set(callId,{resolve,reject,cleanup:()=>{clearTimeout(timeout);signal?.removeEventListener('abort',cancel);}});
+        pending.set(callId,{resolve:(result)=>{if(result.documentTarget==='current'||result.documentTarget==='new')context.documentTarget=result.documentTarget;if(result.documentId){context.documentId=result.documentId;context.targetId=result.targetId||'document';context.selectionAvailable=false;delete context.snapshotId;delete context.address;delete context.worksheet;delete context.worksheetId;delete context.cells;delete context.selection;context.document=result.document;}resolve(result);},reject,cleanup:()=>{clearTimeout(timeout);signal?.removeEventListener('abort',cancel);}});
         signal?.addEventListener('abort',cancel,{once:true});
         send({type:'tool',runId:id,id:callId,name,input});
       });

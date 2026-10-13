@@ -16,6 +16,8 @@ namespace OfficeX.ExcelHost {
   readonly object application;readonly string app;readonly Func<OfficeAutomationPort> binding;
   readonly string folder;readonly Dictionary<string,Checkpoint> checkpoints=new Dictionary<string,Checkpoint>();
   sealed class Checkpoint {public string Id,Label,Name,Extension,Hash,Path,State,Validation;public DateTime At;}
+  string failedCheckpointDocument;JObject failedCheckpoint;
+  public void ResetCheckpointFailure(){failedCheckpointDocument=null;failedCheckpoint=null;}
   public string Folder=>folder;
   public OfficeFiles(object application,string app,Func<OfficeAutomationPort> binding){this.application=application;this.app=app;this.binding=binding;folder=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"OfficeX","Work",Guid.NewGuid().ToString("N"));Directory.CreateDirectory(folder);}
   OfficeFiles(object application,string app,Func<OfficeAutomationPort> binding,string folder,Dictionary<string,Checkpoint> checkpoints){this.application=application;this.app=app;this.binding=binding;this.folder=folder;this.checkpoints=checkpoints;}
@@ -52,9 +54,11 @@ namespace OfficeX.ExcelHost {
   // A refused backup is not an attempted document edit. Present this result
   // in the existing approval form; do not pretend a rollback point exists.
   public object PrepareCheckpoint(string label){
+   binding().CheckSource();string document=binding().DocumentId;if(failedCheckpointDocument==document&&failedCheckpoint!=null)return failedCheckpoint.DeepClone();
    try{var result=Wire.Object(CheckpointNow(label));result["available"]=true;return result;}
-   catch(OfficeFault e)when(e.Member=="SaveCopyAs"){return new{available=false,error="checkpoint_copy_unavailable",failedMember=e.Member,nativeCode=e.NativeCode,mutated=false};}
+   catch(OfficeFault e)when(e.Member=="SaveCopyAs"){OfficeDiagnostics.Record(e,app,"checkpoint_before_write");failedCheckpointDocument=document;failedCheckpoint=Wire.Object(new{available=false,error="checkpoint_copy_unavailable",failedMember=e.Member,nativeCode=e.NativeCode,documentId=document,mutated=false});return failedCheckpoint.DeepClone();}
   }
+  public object RequestCheckpoint(string label){var result=Wire.Object(PrepareCheckpoint(label));if((bool?)result["available"]==false){result.Remove("error");result["warning"]="checkpoint_copy_unavailable";result["status"]="unavailable";result["canContinueEditing"]=true;result["recovery"]="No backup was created. Do not retry checkpoint_document this run. Native cell and Office edits still read, review and verify changes. Their review explicitly asks whether to apply without a rollback copy.";}else result["status"]="verified";return result;}
   public object ListCheckpoints()=>checkpoints.Values.OrderByDescending(x=>x.At).Select(c=>new{id=c.Id,label=c.Label,document=c.Name,createdAt=c.At.ToString("o"),restoresAs="new_document"}).ToArray();
   public object ExportCopy(){var state=State();var path=Copy();return new{status="verified",path,format=Path.GetExtension(path).TrimStart('.'),sourceState=state,document=binding().DocumentName};}
   public object ExportPdf(CancellationToken token){binding().CheckSource();token.ThrowIfCancellationRequested();var path=FreshPath(".pdf");object doc=binding().BoundDocument;if(app=="word")OfficeDispatch.Call(doc,"ExportAsFixedFormat",path,17);else if(app=="powerpoint")OfficeDispatch.Call(doc,"ExportAsFixedFormat",path,2);else OfficeDispatch.Call(doc,"ExportAsFixedFormat",0,path);CheckedPath(path,".pdf");return new{status="verified",path,bytes=new FileInfo(path).Length};}

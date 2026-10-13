@@ -6,7 +6,7 @@ import './model-form.css';
 
 // Use the Workspace question-form tokens and deferred single-choice pattern.
 // Browsing a provider or model never changes the active conversation model.
-export function ModelForm({data,providerLabels,disabled,loading,connectingProvider,connectionError,onSelect,onRefresh,onLogin,onLogout,onCancelLogin,onClose,onTools}) {
+export function ModelForm({data,providerLabels,disabled,loading,connectingProvider,connectionError,catalogProblem,onSelect,onRefresh,onLogin,onLogout,onCancelLogin,onClose,onTools}) {
  const [provider,setProvider]=useState(data.activeProvider),[choice,setChoice]=useState(''),[query,setQuery]=useState(''),[saving,setSaving]=useState(false),[error,setError]=useState('');
  const id=useId(),rows=useRef(null),request=useRef(false),refresh=useRef(onRefresh),refreshed=useRef(null);refresh.current=onRefresh;
  const connection=data.connections?.[provider]||{},connected=connection.present&&!connection.expired&&!connection.rejected;
@@ -24,6 +24,7 @@ export function ModelForm({data,providerLabels,disabled,loading,connectingProvid
  return <DetailPanel title="모델 선택" className="deck-dialog nubi-decision-dialog nubi-model-form" variant="modal" hideHelp busy={saving} initialFocus='[role="radio"][aria-checked="true"]' onClose={onClose} footer={footer}>
   <div className="nubi-question-form model-form-fields">
    {problem&&<CxNotice tone="danger">{problem}</CxNotice>}
+   {catalogProblem?.provider===provider&&<CxNotice tone="warning">{catalogProblem.message}{connected&&models.length>0?' 기존 모델 목록을 유지했습니다.':''}</CxNotice>}
    <fieldset className="model-form-field"><legend>계정</legend><div className="model-form-providers" role="radiogroup" aria-label="모델 제공자" onKeyDown={keyboard}>
     {Object.entries(providerLabels).map(([key,label])=><CxButton key={key} className="model-form-provider" role="radio" aria-label={label} aria-checked={provider===key} tabIndex={provider===key?0:-1} disabled={blocked} onClick={()=>browse(key)}><ProviderIcon provider={key}/><strong>{label}</strong><Icon name={provider===key?'check':'chevronRight'} size={16}/></CxButton>)}
    </div></fieldset>

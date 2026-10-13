@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "scope": "browser mock WebView host",
+  "loginErrorClassified": true,
+  "retryAfterClick": true,
+  "successClearsError": true,
+  "silentCatalogFailureKeepsModels": true,
+  "manualCatalogRefreshClearsWarning": true,
+  "sendRemainsAvailable": true
+}

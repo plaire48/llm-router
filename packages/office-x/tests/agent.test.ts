@@ -34,6 +34,14 @@ describe('real GenOffice AgentLoop with native Office skill',()=>{
     await skill.executeTool(call('set_formula'));await skill.executeTool(call('set_formula'));await skill.executeTool(call('run_shell'));
     expect(native).toHaveBeenCalledTimes(1);
   });
+  it('supports values and general formulas across verified batches, then stops on partial result',async()=>{
+    const native=vi.fn(async()=>({status:'verified',mutated:true} as Record<string,unknown>));const skill=excelSkill(native,{});
+    expect((await skill.executeTool(call('write_cells',{operations:[{address:'Z20',value:'문자열'}]}))).isError).toBe(false);
+    expect((await skill.executeTool(call('set_formula',{operations:[{address:'B4',formula:'=SUM(A1:A3)'}]}))).isError).toBe(false);
+    native.mockResolvedValueOnce({status:'partial',mutated:true,error:'readback_mismatch'});
+    expect((await skill.executeTool(call('write_cells'))).isError).toBe(true);
+    expect((await skill.executeTool(call('set_formula'))).output).toContain('writes_stopped');expect(native).toHaveBeenCalledTimes(3);
+  });
   it('cancellation reaches a waiting native approval operation',async()=>{
     let entered!:()=>void;const ready=new Promise<void>(r=>entered=r);let aborted=false;
     const run=startAgent({transport:scripted([{call:call('read_selection')}]),request:'읽기',context:{},event:()=>{},

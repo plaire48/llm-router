@@ -86,7 +86,7 @@ async (page) => {
   await page.waitForFunction(()=>window.officeFixture.sent.filter(m=>m.method==='reasoning').length===3);
   await page.waitForFunction(()=>{const slider=document.querySelector('.nubi-reasoning-slider');return slider&&!slider.disabled&&slider.getAttribute('aria-valuetext')==='Medium';});
   await page.getByRole('button',{name:'추론 창 닫기',exact:true}).click();
-  await page.getByText('모델 연결을 완료하지 못했습니다.',{exact:true}).waitFor();
+  await page.getByText('추론 설정을 완료하지 못했습니다. 다시 시도해 주세요.',{exact:true}).waitFor();
   await page.getByRole('textbox',{name:'메시지',exact:true}).fill('중지 동작 확인');
   await page.getByRole('button',{name:'보내기',exact:true}).click();
   if(!(await page.getByRole('button',{name:'추론 정도',exact:true}).isDisabled()))throw Error('busy reasoning enabled');

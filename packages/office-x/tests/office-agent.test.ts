@@ -27,3 +27,5 @@ it('stops repeated native failures even when successful guide reads alternate wi
  const run=startAgent({transport,request:'값을 수정해줘',context:{app:'excel'},native,event(){}});
  await expect(run.result).rejects.toThrow('office_repeated_tool_failure');expect(native).toHaveBeenCalledTimes(3);expect(turn).toBe(6);
 });
+
+it('current-document destination clarification is not an unverified document mutation',async()=>{const skill=officeSkill(async()=>({status:'redirected',mutated:false,documentTarget:'current',recovery:'use write_cells'}),{app:'excel'});const result=await skill.executeTool(call('create_document'));expect(result.isError).toBe(false);expect(result.mutated).toBe(false);expect(skill.verifyResponse?.('셀 입력을 완료했습니다.',[])).toBeNull();});

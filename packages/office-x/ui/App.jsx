@@ -28,14 +28,14 @@ import {ModelForm} from './ModelForm.jsx';
 import {Services} from './Services.jsx';
 import {outcome,inferDocumentTarget,toolFailure,documentInputFailure} from './run-outcome.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
-const toolNames={web_search:'웹 자료 검색',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',inspect_office_members:'지원 기능 확인',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
+const toolNames={web_search:'웹 자료 검색',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',inspect_office_members:'지원 기능 확인',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',write_cells:'셀 입력',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
 function App(){
   const greeting=useGreeting();
   const [host,setHost]=useState('excel');
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.8.4');
-  const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({});
+  const [version,setVersion]=useState('0.8.5');
+  const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({}),[catalogProblem,setCatalogProblem]=useState(null);
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
   const [target,setTarget]=useState('현재 문서에서 작업합니다'),[status,setStatus]=useState(''),[review,setReview]=useState(null),[loading,setLoading]=useState(false);
@@ -50,7 +50,7 @@ function App(){
       if(m.type==='connection_storage_warning'){setError('보관한 일부 연결 설정을 읽지 못했습니다. 로그인은 다시 진행할 수 있습니다.');return;}
       if(m.type==='services_state'){setServices(m.state);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.4');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.5');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&(['start','demo','rollback'].includes(m.operation)||!run.current)){setBusy(false);setReview(null);setQuestion(null);run.current=null;updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
@@ -77,7 +77,7 @@ function App(){
     if(available){send({type:'ready'});requestAnimationFrame(()=>send({type:'ui_rendered'}));}return unsubscribe;
   },[]);
   useEffect(()=>{if(ready||!available)return;const timer=setTimeout(()=>{setLost(true);setError('Agent 연결을 확인해주세요. 다시 연결할 수 있습니다.');},15000);return()=>clearTimeout(timer);},[ready]);
-  async function action(method,input){setError('');try{return await command(method,input);}catch(e){setError(e.message);throw e;}}
+  async function action(method,input,{silent=false}={}){if(!silent){setError('');setDiagnostics(null);}try{return await command(method,input);}catch(e){if(!silent){setError(e.message);setDiagnostics({operation:e.method||method,code:e.code||'command_failed',provider:labels[input]?input:labels[input?.provider]?input.provider:provider.provider});}throw e;}}
   async function login(id){if(!ready||controlBusy||provider.authBusy||provider.pending)return;if(id==='fabrix'){setDialog('fabrix');return;}setLoginProvider(id);setControlBusy(true);try{return await action('login',id);}catch{return false;}finally{setControlBusy(false);setLoginProvider(null);}}
   function demo(){
     if(busy)return;setError('');setBusy(true);started.current=performance.now();
@@ -90,7 +90,7 @@ function App(){
     setConversations(rows=>rows.map(c=>c.id!==active.id?c:{...c,title:c.messages.length?c.title:text.slice(0,32),messages:[...c.messages,{role:'user',text,at:new Date().toISOString()},{role:'assistant',text:'',model:provider.models?.find(m=>m.id===provider.model)?.label||provider.model,timing:{elapsedMs:0,startedAt:new Date().toISOString()}}]}));
     try{send({type:'start',conversationId:active.id,request:text,documentTarget});setDraft('');}catch(e){setBusy(false);setError(e.message);}
   }
-  async function refresh(input){setLoading(true);try{await action('refreshModels',input||{});}finally{setLoading(false);}}
+  async function refresh(input={}){setLoading(true);try{await action('refreshModels',input,{silent:!!input.silent});setCatalogProblem(null);}catch(e){if(input.silent)setCatalogProblem({provider:input.provider||provider.provider,message:e.message});throw e;}finally{setLoading(false);}}
   async function reasoningApi(method,{input}) {
     if(method!=='provider'||busy||input.expectedProvider!==provider.provider||input.expectedModel!==provider.model)throw Error('reasoning_changed');
     setControlBusy(true);try{return await action('reasoning',input.effort);}finally{setControlBusy(false);}
@@ -103,7 +103,7 @@ function App(){
     </div></header>
     {!available&&<CxNotice tone="warning">미리보기 화면입니다. Windows Office에서 실행하세요.</CxNotice>}
     {lost&&<CxButton onClick={()=>{setLost(false);setError('');send({type:'ready'});}}>Agent 다시 연결</CxButton>}
-    {error&&<CxNotice tone="danger">{error}{diagnostics&&<CxButton onClick={()=>navigator.clipboard.writeText(JSON.stringify(diagnostics,null,2)).catch(()=>{})}>오류 정보 복사</CxButton>}</CxNotice>}
+    {error&&<CxNotice tone="danger"><span>{error}</span>{diagnostics&&<CxButton onClick={()=>navigator.clipboard.writeText(JSON.stringify(diagnostics,null,2)).catch(()=>{})}>오류 정보 복사</CxButton>}</CxNotice>}
     {providerLoginError(provider)&&<CxNotice tone="danger">{providerLoginError(provider)}</CxNotice>}
     {!provider.connected&&!active.messages.length?<div className="login-scroll"><NubiLogin providerLabels={labels} intro={{title:greeting,description:'사용할 모델을 연결하세요.'}} pending={data.pending} checkingProvider={!ready?'initializing':controlBusy||provider.authBusy?loginProvider||'initializing':null} onLogin={login} onCancel={()=>void action('cancelLogin').catch(()=>{})}>
       <details className="connection-help"><summary>연결 안내</summary><p>{app.name} / 누비 Agent {version}</p><p>Claude 연결에는 Claude Code가 필요합니다.</p><p>인증 정보는 Windows와 각 서비스의 인증 도구에서 관리합니다.</p><CxButton disabled={!available||busy} onClick={demo}>모델 없이 도구 확인</CxButton></details>
@@ -141,7 +141,7 @@ function App(){
     {dialog==='services'&&<Services state={services} call={(method,input)=>command(method,input,'services')} onClose={()=>setDialog(null)}/>}
     {dialog==='target'&&<DetailPanel title="어디에 만들까요?" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={()=>{setDialog(null);setPendingRequest('');}}><p>현재 문서를 수정하거나 새 문서를 열어 작성합니다.</p><div className="target-choices"><CxButton onClick={()=>submit('current')}><strong>현재 문서</strong><span>지금 열린 문서에 적용</span></CxButton><CxButton onClick={()=>submit('new')}><strong>새 문서</strong><span>새 창에서 작성하고 Agent 이어가기</span></CxButton></div></DetailPanel>}
     {dialog==='checkpoints'&&<DetailPanel title="문서 복원" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={()=>setDialog(null)}><p className="form-help">복원할 시점을 선택하세요. 새 창에 복원됩니다.</p>{checkpoints.length?checkpoints.map(c=><CxButton className="checkpoint-row" key={c.id} onClick={()=>{setDialog(null);started.current=performance.now();setBusy(true);setConversations(rows=>rows.map(row=>row.id===active.id?{...row,messages:[...row.messages,{role:'user',text:'문서 복원: '+c.label},{role:'assistant',text:''}]}:row));send({type:'rollback',checkpointId:c.id,conversationId:active.id});}}>{c.label} / {c.document}</CxButton>):<p className="muted">아직 복원 지점이 없습니다.</p>}</DetailPanel>}
-    {dialog==='models'&&<ModelForm data={data} loading={loading} connectingProvider={loginProvider} connectionError={error} disabled={busy||!ready||controlBusy||!!provider.authBusy} providerLabels={labels} onClose={()=>setDialog(null)} onTools={()=>setDialog('services')} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
+    {dialog==='models'&&<ModelForm data={data} loading={loading} connectingProvider={loginProvider} connectionError={error} catalogProblem={catalogProblem} disabled={busy||!ready||controlBusy||!!provider.authBusy} providerLabels={labels} onClose={()=>setDialog(null)} onTools={()=>setDialog('services')} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
     {dialog==='fabrix'&&<Fabrix onClose={()=>setDialog(null)} onConnect={async values=>{await action('connect',{provider:'fabrix',...values});setDialog(null);}}/>}
   </div></main></div>;
 }

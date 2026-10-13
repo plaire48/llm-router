@@ -1,37 +1,26 @@
 {
-  "version": "0.8.4",
-  "scope": "source, browser fixtures and Windows COM/WebView2/install tests; real Office 2016 not verified",
+  "version": "0.8.5",
+  "scope": "source and fixtures; real Office 2016 unavailable",
   "source": {
     "buildPassed": true,
     "typecheckPassed": true,
-    "testsPassed": 79,
+    "testsPassed": 90,
     "testsSkippedOnMac": 4,
-    "nativeCoreTestsPassed": 82,
+    "nativeCoreTestsPassed": 88,
     "nativeHostCompilePassed": true,
     "vendorGenOfficeFiles": 4582,
-    "vendorNubiFiles": 88,
-    "windowsTestsPassed": 83
+    "vendorNubiFiles": 88
   },
   "ui": {
-    "scope": "browser with mock WebView host",
-    "apps": [
-      "excel",
-      "word",
-      "powerpoint"
-    ],
-    "headerTitleRemoved": true,
-    "checkpointFailureDisclosedBeforeApproval": true,
-    "explicitNoBackupApproval": true,
-    "inputLocationAndReasonVisible": true,
-    "width320Passed": true
+    "scope": "browser mock WebView host",
+    "loginErrorClassified": true,
+    "manualReconnectVerified": true,
+    "silentCatalogWarningVerified": true
   },
-  "windowsBuildVerified": true,
-  "windowsInstallVerified": true,
+  "windowsBuildVerified": false,
+  "windowsInstallVerified": false,
   "realOffice2016Verified": false,
   "realWindowsClaudeVerified": false,
   "realWindowsChatGPTVerified": false,
-  "saveCopyAsUserEnvironmentRootCauseConfirmed": false,
-  "copyFailureBehavior": "No automatic document mutation. Disclose no rollback copy in existing review; proceed only after explicit apply choice with source comparison and independent readback.",
-  "buildCommit": "e0f6ef6bf291b5e2e2ac94b6a7886ddbc77dccc7",
-  "ci": "https://github.com/plaire48/llm-router/actions/runs/38383081772"
+  "saveCopyAsUserEnvironmentRootCauseConfirmed": false
 }

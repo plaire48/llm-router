@@ -9,7 +9,7 @@ $output=Join-Path (Get-Location) 'native/OfficeX.Dispatch.Tests/bin/Release/net4
 & dotnet build native/OfficeX.Dispatch.Tests -t:Rebuild -c Release "-p:PlatformTarget=$Architecture"
 if($LASTEXITCODE){throw 'Native dispatch test compile failed'}
 $definition=Join-Path $output 'ExcelFixture.def'
-"EXPORTS`nCreateExcelFixture`nGetExcelFixtureStats`nSetExcelFixtureCopyFailure"|Set-Content $definition -Encoding ascii
+"EXPORTS`nCreateExcelFixture`nGetExcelFixtureStats`nSetExcelFixtureCopyFailure`nGetExcelFixtureCopyAttempts"|Set-Content $definition -Encoding ascii
 $command="call `"$compilerEnvironment`" $Architecture && `"$compiler`" /nologo /LD /EHsc /std:c++17 native\OfficeX.Dispatch.Tests\ExcelFixture.cpp /Fo`"$output\ExcelFixture.obj`" /link /MACHINE:$Architecture /OUT:`"$output\ExcelFixture.dll`" /DEF:`"$definition`" /IMPLIB:`"$output\ExcelFixture.lib`" oleaut32.lib ole32.lib"
 & cmd.exe /d /s /c $command
 if($LASTEXITCODE){throw 'Excel-shaped COM fixture compile failed'}

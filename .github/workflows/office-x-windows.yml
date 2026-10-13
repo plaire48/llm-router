@@ -49,6 +49,11 @@ jobs:
         run: ./scripts/Build-Windows.ps1 -InstallBuildTools
       - name: Install, reinstall and uninstall
         run: ./scripts/Test-WindowsInstall.ps1
+      - name: Include both architecture dispatch evidence in source
+        uses: actions/download-artifact@v4
+        with:
+          name: office-x-native-dispatch-verification
+          path: packages/office-x/verification
       - name: Package source
         run: |
           python scripts/package-source.py

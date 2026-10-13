@@ -33,11 +33,13 @@ class Program {
  [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl,CharSet=CharSet.Unicode)]static extern int CreateExcelFixture(string source,[MarshalAs(UnmanagedType.IDispatch)]out object application);
  [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl)]static extern void GetExcelFixtureStats(out int typeInfo,out int writes,out int copies);
  [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl)]static extern void SetExcelFixtureCopyFailure(int code);
+ [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl)]static extern int GetExcelFixtureCopyAttempts();
  static void RefusedCopyRegression(string source){
   Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out var app));
   try{using(var port=new OfficeAutomationPort(app,"excel",12345))using(var files=new OfficeFiles(app,"excel",()=>port)){
    SetExcelFixtureCopyFailure(unchecked((int)0x800A03EC));
    var checkpoint=Wire.Object(files.PrepareCheckpoint("셀 입력 전"));Equal(false,(bool)checkpoint["available"]);Equal(false,(bool)checkpoint["mutated"]);Equal("SaveCopyAs",(string)checkpoint["failedMember"]);Equal("0x800A03EC",(string)checkpoint["nativeCode"]);Equal(0,((JArray)Wire.Object(new{list=files.ListCheckpoints()})["list"]).Count);Equal(0,Directory.GetFiles(files.Folder).Length);
+   var warning=Wire.Object(files.RequestCheckpoint("다시 백업 요청"));Equal("unavailable",(string)warning["status"]);Equal(null,warning["error"]);Equal(true,(bool)warning["canContinueEditing"]);Equal(1,GetExcelFixtureCopyAttempts());
    GetExcelFixtureStats(out _,out int beforeWrites,out _);Equal(0,beforeWrites);
    var session=new OfficeAutomationSession(port);var reads=new List<OfficeStep>{new OfficeStep{Id="sheets",Member="Worksheets"},new OfficeStep{Id="sheet",Target="sheets",Member="Item",Args=new JArray(1)},new OfficeStep{Id="range",Target="sheet",Member="Range",Args=new JArray("A1","B2")},new OfficeStep{Target="range",Member="Value2"}};
    var before=session.Inspect(reads);var values=new JArray(new JArray("항목","값"),new JArray("사본 실패 후 입력",42));var plan=session.Prepare(before.SnapshotId,"명시적 승인 후 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=values}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=values}});
@@ -64,7 +66,9 @@ class Program {
     var creation=new DocumentCreation(creationPort,"excel",draft);var receipt=creation.Apply(creation.Plan.Id,true,default);
     if(receipt.Status!="verified")Console.Error.WriteLine(Wire.Json(receipt));Equal("verified",receipt.Status);Equal(2,receipt.Count);Equal("Book1",receipt.Document);
     creationPort.ActivateCreated();Equal(Wire.Hash(creation.Plan.Content),Wire.Hash(creationPort.ReadCreated()));Equal("",creationPort.ReadCreated().Sheets[0].Rows[1][2]);Equal("상품 A\n세부 항목\t확인",creationPort.ReadCreated().Sheets[0].Rows[1][0]);
-    using(var rebound=new OfficeAutomationPort(app,"excel",12345)){Equal(creationPort.CreatedDocumentId,rebound.DocumentId);rebound.CheckSource();}
+    using(var rebound=new OfficeAutomationPort(app,"excel",12345)){Equal(creationPort.CreatedDocumentId,rebound.DocumentId);rebound.CheckSource();
+     using(var backups=new OfficeFiles(app,"excel",()=>rebound)){SetExcelFixtureCopyFailure(unchecked((int)0x800A03EC));var unavailable=Wire.Object(backups.RequestCheckpoint("새 문서 입력 전"));Equal("unavailable",(string)unavailable["status"]);var cells=new OfficeAutomationSession(rebound);var literals=ExcelCellWrites.Prepare(cells,JObject.Parse("{operations:[{address:'Z20',value:'=1+1'},{address:'Z21',value:42},{address:'Z22',value:true},{address:'Z23',value:null}]}"),null);Equal("verified",cells.Apply(literals.Id,true,default).Status);var formula=ExcelCellWrites.Prepare(cells,JObject.Parse("{operations:[{address:'Z24',formula:'=SUM(A1:A3)'}]}"),null);Equal("verified",cells.Apply(formula.Id,true,default).Status);Equal(1,GetExcelFixtureCopyAttempts());SetExcelFixtureCopyFailure(0);}
+    }
    }
    using(var port=new OfficeAutomationPort(app,"excel",12345))using(var files=new OfficeFiles(app,"excel",()=>port)){
     OfficeDispatch.Set(port.BoundDocument,"Name","renamed.csv");
@@ -96,7 +100,7 @@ class Program {
     plan=session.Prepare(before.SnapshotId,"32비트 범위보다 큰 숫자 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=largeNumber}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=largeNumber}});
     receipt=session.Apply(plan.Id,true,default);Equal("verified",receipt.Status);Equal(5000000000d,port.Execute(new OfficeStep{Target="range",Member="Value2"},true));
    }
-   GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(4,writes);Equal(2,copies);
+   GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(9,writes);Equal(2,copies);
    Marshal.ReleaseComObject(app);app=null;RefusedCopyRegression(source);
    foreach(var host in new[]{"word","powerpoint"}){
     Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
@@ -109,7 +113,7 @@ class Program {
    using(var binaryPort=new OfficeAutomationPort(app,"excel",12345))using(var binaryFiles=new OfficeFiles(app,"excel",()=>binaryPort)){
     var binaryCheckpoint=Wire.Object(binaryFiles.CheckpointNow("Excel 97-2003 형식 사본"));Equal(true,(bool)binaryCheckpoint["encrypted"]);Equal(true,binaryFiles.State().Length==64);
    }
-   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,multilineCellReadback=true,raggedRowsPadded=true,refusedCopyAllowsReviewedWrite=true,largeIntegerReadback=true,wordCreation=true,powerpointCreation=true,newDocumentIdentity=true,formatMismatchReproduced=true,checkpointFormatMatched=true,wordCheckpoint=true,powerpointCheckpoint=true,propertyPaths=true,propertyCallAliases=true,deniedPathBlocked=true,readMutationBlocked=true,binaryCheckpoint=true,hostAnyCPU=true,coreAnyCPU=true,realOfficeVerified=false}));
+   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,multilineCellReadback=true,raggedRowsPadded=true,refusedCopyAllowsReviewedWrite=true,explicitCheckpointWarning=true,repeatedCheckpointNotRetried=true,newDocumentValuesAndGeneralFormulas=true,literalFormulaTextPreserved=true,largeIntegerReadback=true,wordCreation=true,powerpointCreation=true,newDocumentIdentity=true,formatMismatchReproduced=true,checkpointFormatMatched=true,wordCheckpoint=true,powerpointCheckpoint=true,propertyPaths=true,propertyCallAliases=true,deniedPathBlocked=true,readMutationBlocked=true,binaryCheckpoint=true,hostAnyCPU=true,coreAnyCPU=true,realOfficeVerified=false}));
    Console.WriteLine("PASS Excel-shaped native COM with TYPE_E_INVDATAREAD: two-sheet creation, SAFEARRAY cell writes/readback, encrypted checkpoints; zero type-info calls. This fixture is not installed Excel.");
   }finally{if(app!=null)Marshal.ReleaseComObject(app);File.Delete(source);}
  }
