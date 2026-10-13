@@ -185,7 +185,7 @@ namespace OfficeX.ExcelHost
                         catch(Exception e){result=new {ok=false,error="native_execution_failed",diagnostics=OfficeDiagnostics.Record(e,app,currentStage)};}
                         finally {nativeBusy=false;if(!running)SetBusy(false);}
                     }
-                    try{var toolDiagnostics=OfficeDiagnostics.RecordResult(result,app,currentStage,(string)message["name"]);if(toolDiagnostics!=null){var envelope=Wire.Object(result);envelope["diagnostics"]=Wire.Object(toolDiagnostics);result=envelope;}}catch{}
+                    try{var toolDiagnostics=OfficeDiagnostics.RecordResult(result,app,currentStage,(string)message["name"]);if(toolDiagnostics!=null){var envelope=Wire.Object(result);if(envelope["diagnostics"]==null)envelope["diagnostics"]=Wire.Object(toolDiagnostics);result=envelope;}}catch{}
                     try {worker?.Send(new {type="tool_result",runId=currentRun,id,result});}catch{Cancel();Finish("문서 실행 결과 전달 실패. 변경 내역을 확인해 주세요.");}
                     break;
                 case "done":

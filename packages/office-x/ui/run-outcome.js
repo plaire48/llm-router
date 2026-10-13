@@ -15,5 +15,5 @@ export function toolFailure(execution){
  const safe=value=>typeof value==='string'&&/^[A-Za-z_][A-Za-z0-9_]{0,100}$/.test(value)?value:undefined;
  const code=safe(result?.error);if(!code)return null;
  const source=result.diagnostics||{};
- return {code,tool:safe(execution.name),member:safe(result.failedMember||source.member),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||source.nativeCode||'')?result.nativeCode||source.nativeCode:undefined,stage:safe(source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
+ return {code,tool:safe(execution.name),member:safe(result.failedMember||source.member),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||source.nativeCode||'')?result.nativeCode||source.nativeCode:undefined,exception:safe(source.exception),stage:safe(source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
 }

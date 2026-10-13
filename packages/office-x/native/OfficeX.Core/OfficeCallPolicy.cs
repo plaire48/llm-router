@@ -12,6 +12,6 @@ namespace OfficeX.Core {
   public static void Validate(string member,bool readOnly,string action){if(!Exposed(member))throw new OfficeFault(member?.Contains(".")==true?"office_member_path_not_supported":"office_member_unavailable",member,invocationStarted:false);if(readOnly&&(action=="set"||action=="call"&&!ReadCall(member)))throw new OfficeFault("office_read_requires_get",member,invocationStarted:false);}
   public static bool BeforeInvocation(int hresult)=>hresult==unchecked((int)0x80028018)||hresult==unchecked((int)0x80020003)||hresult==unchecked((int)0x80020006)||hresult==unchecked((int)0x8002000E);
   public static string ErrorCode(int hresult)=>hresult==unchecked((int)0x80020003)||hresult==unchecked((int)0x80020006)?"office_member_not_found":hresult==unchecked((int)0x8002000E)?"office_argument_count":"office_operation_failed";
-  public static bool CanReplan(OfficeExecutionReceipt r)=>!r.Mutated&&r.CompletedWrites==0&&!r.WriteResultUncertain&&new[]{"office_member_not_found","office_member_unavailable","office_member_path_not_supported","office_argument_invalid","office_argument_count","office_read_requires_get","office_target_unknown"}.Contains(r.Error);
+  public static bool CanReplan(OfficeExecutionReceipt r)=>!r.Mutated&&r.CompletedWrites==0&&!r.WriteResultUncertain&&new[]{"office_member_not_found","office_member_unavailable","office_member_path_not_supported","office_argument_invalid","office_argument_count","office_read_requires_get","office_target_unknown","office_object_id_required"}.Contains(r.Error);
  }
 }
