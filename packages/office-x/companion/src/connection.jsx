@@ -15,7 +15,8 @@ import '../../vendor/nubi/packages/nubi-desktop/design/workspace-identity.css';
 import '../../vendor/nubi/packages/nubi-desktop/design/workspace-typography.css';
 import '../../vendor/nubi/packages/nubi-desktop/design/workspace-dialogs.css';
 import './connection.css';
-function Connection(){const [state,setState]=useState({providers:[],initializing:true}),[error,setError]=useState(''),[models,setModels]=useState(false),[busy,setBusy]=useState(false),[services,setServices]=useState(false),[fabrix,setFabrix]=useState(false),[values,setValues]=useState({endpoint:'',clientKey:'',token:''});const data=modelData(state);
+function Connection(){const [state,setState]=useState({providers:[],initializing:true}),[error,setError]=useState(''),[models,setModels]=useState(location.hash==='#models'),[busy,setBusy]=useState(false),[services,setServices]=useState(false),[fabrix,setFabrix]=useState(false),[values,setValues]=useState({endpoint:'',clientKey:'',token:''});const data=modelData(state);
+ useEffect(()=>window.nubiOffice.onOpenModelForm?.(()=>setModels(true)),[]);
  useEffect(()=>{window.nubiOffice.status().then(setState).catch(()=>setError('연결 상태를 확인하지 못했습니다.'));return window.nubiOffice.subscribe(setState);},[]);
  async function action(method,value){setError('');if(method!=='cancelLogin')setBusy(true);try{const result=await window.nubiOffice.command(method,value);setState(result);return result;}catch{setError('연결을 확인해주세요. Claude는 로그인한 Claude Code가 필요합니다.');throw Error('connection_failed');}finally{setBusy(false);}}
  const login=p=>p==='fabrix'?setFabrix(true):action('login',p).catch(()=>{});
@@ -24,7 +25,7 @@ function Connection(){const [state,setState]=useState({providers:[],initializing
  <CxButton onClick={()=>setServices(true)}>검색과 이미지 설정</CxButton><label className="preference"><input type="checkbox" checked={state.preferred!==false} onChange={e=>action('preferred',e.target.checked).catch(()=>{})}/>편집기에서 누비 연결 사용</label><p className="hint">끄면 GenOffice의 원본 서비스 설정을 사용합니다.</p>
  {services&&<Services state={state.services||{}} onClose={()=>setServices(false)} call={(method,input)=>action('services',{method,input})}/>}
  {fabrix&&<DetailPanel title="FabriX 연결" variant="modal" hideHelp onClose={()=>setFabrix(false)}><form onSubmit={async e=>{e.preventDefault();try{await action('connect',{provider:'fabrix',...values});setFabrix(false);}catch{}}}>{[['endpoint','서버 주소','url'],['clientKey','클라이언트 키','password'],['token','접속 토큰','password']].map(([key,label,type])=><label className="connection-field" key={key}>{label}<CxInput required type={type} autoComplete="off" value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})}/></label>)}<CxButton type="submit" variant="primary" busy={busy}>연결</CxButton></form></DetailPanel>}
- {models&&<ModelForm data={data} providerLabels={labels} disabled={busy} onClose={()=>setModels(false)} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>action('refreshModels',input)} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/>}
+ {models&&!state.initializing&&<ModelForm data={data} providerLabels={labels} disabled={busy} onClose={()=>setModels(false)} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>action('refreshModels',input)} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/>}
  </section></main>;
 }
 createRoot(document.getElementById('root')).render(<Connection/>);

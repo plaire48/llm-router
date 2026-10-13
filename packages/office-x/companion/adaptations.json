@@ -27,6 +27,16 @@
       "adaptedSha256": "bca702c06bc9c5e3f603c44f60e245370e2a916be1701262eb696effd4763d8c"
     },
     {
+      "path": "apps/shell/src/main/index.ts",
+      "sourceSha256": "bca702c06bc9c5e3f603c44f60e245370e2a916be1701262eb696effd4763d8c",
+      "adaptedSha256": "77bae7eb9c97c112234ef2f87b205b62975358f849f7769b95521e3123e3da9e"
+    },
+    {
+      "path": "packages/ui/src/AiModelPicker.tsx",
+      "sourceSha256": "3411a48cd4d6f18e12c12f8f0e09e8192cd7149a6cbf1ba5a699fdeda7fc58c2",
+      "adaptedSha256": "20c4aa346aef4a84ca439d104a535d58d24c9317f40cb3fed092e85ccb78cc91"
+    },
+    {
       "path": "apps/shell/src/preload/index.ts",
       "sourceSha256": "ff9f2cc92951445736199c7adcafee36dcb1f87e4f4d853a9de20d5b1382fea9",
       "adaptedSha256": "12486771ba98fec347c3c7d63b7b3930337485afa86eef4c521fcf1fa6750a17"

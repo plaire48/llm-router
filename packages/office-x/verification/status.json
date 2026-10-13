@@ -5,7 +5,7 @@
   "sourceChecks": {
     "genofficeHashes": 4582,
     "nubiHashes": 88,
-    "unitTestsPassed": 66,
+    "unitTestsPassed": 67,
     "unitTestsSkipped": 4,
     "nativeCoreTests": 72,
     "stdioMockIntegration": "passed",
@@ -41,9 +41,16 @@
     "upstreamPdfEditorTests": 955,
     "upstreamPdfEditorSkipped": 2,
     "upstreamXlsxGatewayTests": 248,
-    "originalEditorTestsPassed": 4675,
+    "originalEditorTestsPassed": 7490,
     "npm10CleanInstall": "passed",
-    "officeFeatureBrowserFlows": 9
+    "officeFeatureBrowserFlows": 9,
+    "upstreamSlidesEditorTests": 1422,
+    "upstreamSlidesEditorSkipped": 5,
+    "upstreamMarkdownEditorTests": 1069,
+    "upstreamHtmlEditorTests": 324,
+    "companionConnectionBrowserFlows": 10,
+    "modelSelectionCX": "Nubi Workspace deferred single-choice workflow form",
+    "modelFormCatalogRefreshWithoutProviderSwitch": "passed"
   },
   "windowsVstoBuildVerified": false,
   "windowsInstallerVerified": false,

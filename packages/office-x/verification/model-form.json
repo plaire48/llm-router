@@ -1,0 +1,15 @@
+{
+  "version": "0.7.0",
+  "reference": "existing Nubi Workspace question-form and modal CX tokens",
+  "implementation": "ui/ModelForm.jsx shared by all three Office panes and companion",
+  "browserWidths": [
+    320,
+    460
+  ],
+  "browserFlows": 10,
+  "providerChangesOnlyOnApply": true,
+  "cancelRetainsSelection": true,
+  "keyboardNavigation": true,
+  "inactiveCatalogRefreshRetainsActiveProvider": true,
+  "scope": "Mock WebView/account browser and provider unit fixtures; live accounts and Office pane not verified"
+}
