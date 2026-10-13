@@ -6,7 +6,7 @@ ExcelWorksheets는 실제 Worksheet 목록과 핸들/스냅샷을 페이지로 �
 
 Native COM fixture의 Sheets.Name 허용 오류를 제거했다. 엄격한 오류 재현, 늦은 컬렉션 Name 거절/쓰기 없음, 목록/추가/이름 변경, 첫 시트 보존과 명시적 핸들 재연결을 검증한다. Core 모의 포트는 차트 이름 중복, chart-only workbook, 페이지, 원본 변경, 실제 불일치와 재실행 방지도 검사한다. 기존 GenOffice 원본은 변경하지 않는다.
 
-검증 결과와 Windows 설치 파일 정보는 빌드 후 기록한다. 실제 Windows Office 2016과 사용자 오류의 전체 호출 스택은 미관측이다.
+검증 기록: [release-0.8.9.json](../verification/release-0.8.9.json). Windows 빌드/설치 검사와 모의 Office 실행이 통과했고 실제 Office 검증은 별도로 남는다. 실제 Windows Office 2016과 사용자 오류의 전체 호출 스택은 미관측이다.
 
 배치 전 COM 멤버 검사: BeginPreflight/EndPreflight의 임시 핸들 집합으로 실제 객체와 읽기 단계의 반환 객체를 바인딩한다. GetIDsOfNames만으로 리프 멤버를 확인하고 타입 라이브러리/시험 쓰기를 사용하지 않는다. 임시 COM 참조는 성공/실패 모두 해제한다. 미래의 Add 반환 객체, 이미 쓴 뒤 존재할 인덱스, 미래 참조 인수는 정적 인수 검사만 수행하고 실제 실행/읽기 검사에서 확인한다. GetIDsOfNames는 해당 객체의 이름 존재를 확인하지만 모든 인수 시그니처나 보호/저장 상태를 증명하지 않는다.
 

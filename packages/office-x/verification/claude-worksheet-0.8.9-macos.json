@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "buildCommit": "201cdcfbc1307e87412e0460e370358d5718bc79",
+  "buildCommit": "3fa5f86c49665eb93d5271f454e8aad8413d4f86",
   "provider": "claude",
   "liveProvider": true,
   "platform": "macOS",

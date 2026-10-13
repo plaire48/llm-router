@@ -1,0 +1,204 @@
+{
+  "version": "0.8.9",
+  "buildCommit": "3fa5f86c49665eb93d5271f454e8aad8413d4f86",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38414913230",
+  "installer": {
+    "name": "Nubi-Office-X-0.8.9-Setup.exe",
+    "sha256": "8d3f67338e095c24ae6b05643ee90a9cb665766883a44ca68f9a4c7ce093a0d0",
+    "bytes": 124611536
+  },
+  "source": {
+    "sha256": "1462d39667d30f9fe1ba023eaf1283186dfb678f2d7c7c5e089e16750b8a957f",
+    "files": 5489,
+    "sourceHashesChecked": 63
+  },
+  "sourceTests": {
+    "macOSPassed": 123,
+    "macOSSkipped": 4,
+    "windowsPassed": 127
+  },
+  "coreTests": 132,
+  "worksheetTools": {
+    "listAddRename": true,
+    "otherSheetsPreserved": true,
+    "chartNameCollisionsPreflight": true,
+    "chartOnlyWorkbook": true,
+    "collectionNameRejectedBeforeWrites": true
+  },
+  "preflight": {
+    "actualMemberLookup": true,
+    "noTypeLibraryRequired": true,
+    "readOnlyPlannedHandles": true,
+    "scalarCannotRetainOldHandles": true,
+    "noSpeculativeWrites": true,
+    "futureIndexedObjectsSupported": true,
+    "scope": "Current objects and objects resolvable by readonly getters; future mutation results deferred. Member names checked, not every signature or protection state."
+  },
+  "formatCells": {
+    "properties": [
+      "NumberFormat",
+      "Font.Bold",
+      "WrapText",
+      "ColumnWidth",
+      "RowHeight"
+    ],
+    "columnWidthUnits": "characters 0..255",
+    "rowHeightUnits": "points 0..409",
+    "explicitRoundingPolicy": {
+      "columnWidthCharacters": 0.15,
+      "rowHeightPoints": 0.5
+    },
+    "valueAndFormulaPreservationChecks": true
+  },
+  "powerpoint": {
+    "addTextboxArgumentsPreflight": true,
+    "geometryUnits": "points",
+    "singlePrecisionReadback": "exact Single representation only"
+  },
+  "nativeReadbackTypes": {
+    "wordPowerpointBooleanToMinusOneZero": true,
+    "mixedStatesNeverVerifyUniformValue": true,
+    "singleGeometryAndExcelLayoutComparersAddedByHost": true,
+    "countCellValuesAndTextNotAdapted": true
+  },
+  "blockedWrites": {
+    "originalCausePreserved": true,
+    "noAutomaticWriteReplay": true,
+    "partialAndUncertainWritesStillStop": true
+  },
+  "nativeCOM": {
+    "architectures": [
+      "x64",
+      "x86"
+    ],
+    "scope": "Office-shaped IDispatch fixtures; not installed Office"
+  },
+  "claude": {
+    "passed": true,
+    "buildCommit": "3fa5f86c49665eb93d5271f454e8aad8413d4f86",
+    "provider": "claude",
+    "liveProvider": true,
+    "platform": "macOS",
+    "nativeOffice": "JavaScript fixture",
+    "realOfficeVerified": false,
+    "realWindowsClaudeVerified": false,
+    "initialSheets": 3,
+    "finalSheets": 3,
+    "otherSheetsPreserved": true,
+    "intendedSheetRenamed": true,
+    "cellValueVerified": true,
+    "numberFormatVerified": true,
+    "columnWidthVerified": true,
+    "rowHeightVerified": true,
+    "finalTextDelivered": true,
+    "calls": [
+      "read_worksheets",
+      "rename_worksheet",
+      "write_cells",
+      "format_cells"
+    ]
+  },
+  "browser": {
+    "passed": true,
+    "version": "0.8.9",
+    "testedProductCommit": "201cdcfbc1307e87412e0460e370358d5718bc79",
+    "scope": "Playwright with mock WebView2 host; not real Office",
+    "generalUI": {
+      "manualLoginReadiness": true,
+      "claudeModelPicker": true,
+      "typingAndClicks": true,
+      "nativeReviewPayload": true,
+      "busyGuards": true,
+      "startupErrorRecovery": true
+    },
+    "countUI": {
+      "expectedActualCounts": true,
+      "blockedWritePreservesOriginalFailure": true,
+      "copiedFaultsOmitCellValues": true
+    },
+    "connectionUI": {
+      "retryAfterClick": true,
+      "successClearsError": true,
+      "catalogWarningDoesNotBlockSending": true
+    },
+    "identity": {
+      "states": 12,
+      "cssPropertiesPerState": 77,
+      "allThreeAppsMatch": true,
+      "scope": "shared CSS fixture"
+    },
+    "pageErrors": []
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "officeInstalled": false,
+    "liveModelVerified": false,
+    "installSeconds": 9.4,
+    "realOfficeVerified": false,
+    "legacyEditorUpgradeCleanup": true,
+    "reinstallSeconds": 5.37,
+    "imageFeatures": false,
+    "passed": true,
+    "uninstallSeconds": 1.39,
+    "standaloneEditorsAbsent": true,
+    "registry": [
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      }
+    ],
+    "runner": "windows-2022"
+  },
+  "integrity": {
+    "commit": "3fa5f86c49665eb93d5271f454e8aad8413d4f86",
+    "exeSha256": "8d3f67338e095c24ae6b05643ee90a9cb665766883a44ca68f9a4c7ce093a0d0",
+    "exeBytes": 124611536,
+    "sourceSha256": "1462d39667d30f9fe1ba023eaf1283186dfb678f2d7c7c5e089e16750b8a957f",
+    "sourceFiles": 5489,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 63,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true
+  },
+  "boundaries": {
+    "realOffice2016Verified": false,
+    "realWindowsClaudeVerified": false,
+    "allUserReportedRootsConfirmed": false,
+    "everyGenOfficeOperationMappedAndExecutedInRealOffice": false
+  }
+}

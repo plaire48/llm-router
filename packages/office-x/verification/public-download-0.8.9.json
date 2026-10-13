@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "anonymousDownload": true,
+  "sha256": "8d3f67338e095c24ae6b05643ee90a9cb665766883a44ca68f9a4c7ce093a0d0",
+  "bytes": 124611536,
+  "release": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.9-beta.1",
+  "tagCommit": "3fa5f86c49665eb93d5271f454e8aad8413d4f86",
+  "assets": 15
+}

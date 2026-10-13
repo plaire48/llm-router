@@ -23,3 +23,9 @@ PowerPoint AddTextbox의 다섯 인수와 포인트 단위를 먼저 검사합�
 참고: [Excel 열 너비](https://learn.microsoft.com/en-us/office/vba/api/excel.range.columnwidth), [Excel 한도](https://support.microsoft.com/en-us/excel/excel-specifications-and-limits), [PowerPoint AddTextbox](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.shapes.addtextbox), [PowerPoint Font.Size](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.font.size).
 
 반환 타입 참고: [Word Font.Bold](https://learn.microsoft.com/en-us/office/vba/api/word.font.bold), [PowerPoint Font.Bold](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.font.bold).
+
+[Windows 빌드와 검사](https://github.com/plaire48/llm-router/actions/runs/38414913230) 통과: 소스 127개, 코어 132개, x86/x64 네이티브 COM 모의 검사, 설치된 세 앱 채팅창 클릭/입력 검사. Office가 없는 Windows VM에서 설치 9.4초, 재설치 5.37초입니다. 실제 Office 내부 쓰기/저장 검증은 아닙니다.
+
+실제 macOS Claude 연결과 GenOffice AgentLoop에서 시트 목록 조회, 지정한 두 번째 시트만 이름 변경, A1 값 42, 표시 형식 0.00, 열 너비/행 높이 적용과 최종 응답 전달을 모의 Excel로 확인했습니다.
+
+설치 파일 SHA-256: 8d3f67338e095c24ae6b05643ee90a9cb665766883a44ca68f9a4c7ce093a0d0. 124611536바이트. 소스 파일 5489개, GenOffice 4582개와 누비 88개 원본 및 제품/테스트 소스 63개 해시를 대조했습니다. 상세 범위는 release-0.8.9.json을 참고하세요.
