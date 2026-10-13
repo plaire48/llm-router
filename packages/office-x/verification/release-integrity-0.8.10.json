@@ -1,0 +1,26 @@
+{
+  "commit": "d2e2f3fb01d70bb387e61742ab6e1785db20f13c",
+  "exeSha256": "b7729f5c85f13241a6744297af7a54e552d0d303a8fd922ed4ebcb569efcddb6",
+  "exeBytes": 124612706,
+  "sourceSha256": "d990f3c53cecc23b8827cc1af247e374bb01a146b2d1367f2c9cc8bed0f97aea",
+  "sourceFiles": 5525,
+  "immutableGenOfficeFiles": 4582,
+  "immutableNubiFiles": 88,
+  "productAndTestSourceHashesChecked": 64,
+  "zipCRC": true,
+  "bothArchitectureEvidenceIncluded": true,
+  "uiPayloadMatchesBrowserTestedBuild": {
+    "app.css": {
+      "sameAsBrowserVerifiedBuild": true,
+      "sha256": "ca3f110e109e175713e7962a397f2bf30ccc928941fcac885c00cc7beefd11be"
+    },
+    "app.js": {
+      "sameAsBrowserVerifiedBuild": true,
+      "sha256": "4f36cb40b06c0e9d474155879ffe525181d404a6922348ab48abfe02722a07a8"
+    },
+    "index.html": {
+      "sameAsBrowserVerifiedBuild": true,
+      "sha256": "46354a529f3f1e83da276643fe5f3116c5d1f5749cfd98ccc2d2749a9ddf4b55"
+    }
+  }
+}

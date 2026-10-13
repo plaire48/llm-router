@@ -14,3 +14,7 @@ GenOffice 문서 도구와 VSTO 실행 구조를 유지합니다. 사용자가 �
 검증 범위: 현재 Workspace CSS 참조와 공통 모달 스타일 비교, 세 앱의 5종 모달과 280/320/420px 폭 및 짧은 창, 키보드 이동·포커스 복귀, 모델 선택 지연 적용, 검색/FabriX 하단 폼 제출, 연결 중 닫기 방지를 모의 WebView 호스트에서 검사했습니다. 소스 테스트와 Windows 빌드·설치 검증 결과는 릴리즈 증빙에 기록합니다.
 
 실제 Windows Office 2016 환경에 접근할 수 없어 VSTO 안의 실사용과 사용자 계정의 Claude/ChatGPT 연결은 확인하지 못했습니다. 이 릴리즈는 해당 검증을 완료했다고 주장하지 않습니다.
+
+[Windows 빌드와 검사](https://github.com/plaire48/llm-router/actions/runs/38425932270) 통과: 소스 127개, 코어 132개, x86/x64 COM 모의 검사, 설치된 세 앱 채팅창 클릭/입력 검사. Office가 없는 Windows VM에서 설치 8.06초, 재설치 5.3초입니다. 실제 Office 내부 실사용 증빙은 아닙니다.
+
+설치 파일 SHA-256: b7729f5c85f13241a6744297af7a54e552d0d303a8fd922ed4ebcb569efcddb6. 124612706바이트. GenOffice 4582개와 누비 88개 원본 및 변경 제품/테스트 소스 해시를 대조했습니다. 상세 범위는 release-0.8.10.json을 참고하세요.

@@ -7,3 +7,5 @@
 검증 기록: `verification/modal-identity-0.8.10.json`, `verification/cx-audit/current-reference-sources.json`. 현재 Workspace CSS를 렌더링한 참조이며 실제 Electron 화면 증빙은 아니다. 입력칸은 Workspace에 선언된 폰트 체인을 직접 적용해 원본의 루트에서 계산된 폰트 축약 속성이 별도 폰트를 상속하는 차이를 없앴다.
 
 실제 Windows Office 2016 및 사용자 계정 모델 실행은 접근 가능한 환경이 없어 미검증이다.
+
+0.8.10 공개 설치 파일은 Windows 소스 127개와 코어 132개, x86/x64 모의 COM, 설치된 WebView2 클릭·입력·복구 검사, 설치/재설치/제거가 통과했다. 설치 파일과 소스 ZIP 및 UI 빌드 해시는 `verification/release-0.8.10.json`에 기록했다. 설치는 Office 없는 Windows VM에서 8.06초였다.

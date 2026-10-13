@@ -1,12 +1,12 @@
 {
-  "version": "0.8.9",
-  "state": "beta_published_limited_validation",
-  "buildCommit": "3fa5f86c49665eb93d5271f454e8aad8413d4f86",
+  "version": "0.8.10",
+  "state": "published",
+  "buildCommit": "d2e2f3fb01d70bb387e61742ab6e1785db20f13c",
   "realOfficeVerified": false,
   "realWindowsClaudeVerified": false,
+  "modalFixtures": 45,
   "coreTests": 132,
   "windowsSourceTests": 127,
-  "ci": "https://github.com/plaire48/llm-router/actions/runs/38414913230",
-  "release": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.9-beta.1",
-  "anonymousInstallerDownloadVerified": true
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38425932270",
+  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.10-beta.1"
 }
