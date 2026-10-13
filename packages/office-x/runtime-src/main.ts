@@ -110,7 +110,7 @@ async function receive(msg: Record<string, any>) {
     publish();send({type:'done',runId:id,result});
   } catch(e) {
     const code=(e as Error).message;
-    send({type:'error',runId:id,error:/^(claude_[a-z_]+|rate_limited|provider_response_failed|no_credential)$/.test(code)?code:'agent_failed'});
+    send({type:'error',runId:id,error:/^(office_repeated_tool_failure|claude_[a-z_]+|rate_limited|provider_response_failed|no_credential)$/.test(code)?code:'agent_failed'});
   } finally { if (active?.id === id) active=undefined; stopPending(); }
 }
 

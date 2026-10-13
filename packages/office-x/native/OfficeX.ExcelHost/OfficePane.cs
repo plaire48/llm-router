@@ -63,6 +63,7 @@ namespace OfficeX.ExcelHost
         private readonly PaneText request=new PaneText(),answer=new PaneText(),status=new PaneText(),target=new PaneText(),outcome=new PaneText();
         private readonly ChatSurface surface;
         private string conversationId, reviewId;
+        private void EnsureUiContext(){if(InvokeRequired)throw new OfficeFault("office_thread_required",invocationStarted:false);var context=SynchronizationContext.Current;if(context==null||context.GetType()==typeof(SynchronizationContext))SynchronizationContext.SetSynchronizationContext(new WindowsFormsSynchronizationContext());}
         public OfficePane(object application,string root,int windowHandle,string app="excel") {
             Dock=DockStyle.Fill;this.root=root;this.app=app;this.application=application;this.windowHandle=windowHandle;
             if(app=="excel")port=new ExcelPort((Excel.Application)application,windowHandle);else textPort=new TextPort(application,app,windowHandle);
@@ -76,9 +77,10 @@ namespace OfficeX.ExcelHost
         private void Publish() {SendSurface(new {type="view",running,runId,conversationId,status=status.Text,text=answer.Text,outcome=outcome.Text,target=target.Text});}
         private async void ReceiveUi(JObject message) {
             try {
+                EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.0"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.1"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
@@ -152,7 +154,7 @@ namespace OfficeX.ExcelHost
         }
         private void Dispatch(Action action) {
             if(IsDisposed||!IsHandleCreated)return;
-            try {BeginInvoke(new Action(()=>{if(!IsDisposed)action();}));}catch(InvalidOperationException){}
+            try {BeginInvoke(new Action(()=>{if(!IsDisposed){EnsureUiContext();action();}}));}catch(InvalidOperationException){}
         }
         private async void HandleMessage(JObject message) {
             var type=(string)message["type"];
@@ -183,6 +185,7 @@ namespace OfficeX.ExcelHost
                         catch(Exception e){result=new {ok=false,error="native_execution_failed",diagnostics=OfficeDiagnostics.Record(e,app,currentStage)};}
                         finally {nativeBusy=false;if(!running)SetBusy(false);}
                     }
+                    try{var toolDiagnostics=OfficeDiagnostics.RecordResult(result,app,currentStage,(string)message["name"]);if(toolDiagnostics!=null){var envelope=Wire.Object(result);envelope["diagnostics"]=Wire.Object(toolDiagnostics);result=envelope;}}catch{}
                     try {worker?.Send(new {type="tool_result",runId=currentRun,id,result});}catch{Cancel();Finish("문서 실행 결과 전달 실패. 변경 내역을 확인해 주세요.");}
                     break;
                 case "done":

@@ -26,7 +26,7 @@ import {officeApps} from './office-apps.js';
 import {useGreeting} from './useGreeting.js';
 import {ModelForm} from './ModelForm.jsx';
 import {Services} from './Services.jsx';
-import {outcome,inferDocumentTarget} from './run-outcome.js';
+import {outcome,inferDocumentTarget,toolFailure} from './run-outcome.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
 const toolNames={web_search:'웹 자료 검색',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',inspect_office_members:'지원 기능 확인',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
 function App(){
@@ -34,7 +34,7 @@ function App(){
   const [host,setHost]=useState('excel');
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.8.0');
+  const [version,setVersion]=useState('0.8.1');
   const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({});
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
@@ -49,7 +49,7 @@ function App(){
       if(m.type==='handoff'){const request=typeof m.request==='string'?m.request:'';const id=m.conversationId||crypto.randomUUID();started.current=performance.now();current.current=id;run.current=m.runId||null;setHost(m.app||'excel');setTarget(m.target||'현재 문서에서 작업합니다');setBusy(!!m.running);setConversations([{id,title:request.slice(0,32)||'문서 작업',messages:request?[{role:'user',text:request},{role:'assistant',text:typeof m.text==='string'?m.text:'',target:m.target,model:m.model||'누비'}]:[]}]);setIndex(0);return;}
       if(m.type==='services_state'){setServices(m.state);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.0');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.1');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&(['start','demo','rollback'].includes(m.operation)||!run.current)){setBusy(false);setReview(null);setQuestion(null);run.current=null;updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
@@ -62,6 +62,7 @@ function App(){
       if(m.type==='phase')setStatus(({requesting:'응답 준비 중',thinking:'요청 검토 중',responding:'답변 작성 중','tool-input':'문서 작업 준비 중','tool-running':'문서 도구 실행 중'})[m.data.kind]||'작업 중');
       if(m.type==='tool')setStatus(toolNames[m.name||m.data]||'문서 도구 실행 중');
       if(m.type==='review')setReview(m);
+      if(m.type==='tool_executed'){const fault=toolFailure(m.data);if(fault)setConversations(rows=>rows.map(c=>c.id!==current.current?c:{...c,messages:c.messages.map((reply,i)=>i===c.messages.length-1&&reply.role==='assistant'?{...reply,toolFaults:[...(reply.toolFaults||[]),fault].slice(-20)}:reply)}));return;}
       if(m.type==='receipt')setConversations(rows=>rows.map(c=>c.id!==current.current?c:{...c,messages:c.messages.map((reply,i)=>i===c.messages.length-1&&reply.role==='assistant'?{...reply,receipt:m.receipt,receipts:[...(reply.receipts||[]),m.receipt]}:reply)}));
       if(m.type==='sources')updateReply({sources:m.data.items});
       if(m.type==='artifacts')updateReply({artifacts:m.data.items});
@@ -119,6 +120,7 @@ function App(){
           {m.artifacts?.length>0&&<div className="artifact-grid">{m.artifacts.map(a=><figure key={a.artifactId}>{a.preview&&<img src={a.preview} alt={a.name}/>}<figcaption>{a.name}</figcaption></figure>)}</div>}
           {m.receipt?.nativeCode&&<p className="muted">{m.receipt.failedMember} 호출 실패 {m.receipt.nativeCode} {m.receipt.completedWrites===0?'입력 완료 미확인':''}</p>}
           {(m.failed||m.receipt?.status==='partial')&&<CxNotice tone={result.tone}>{result.notice}<CxButton disabled={busy} onClick={()=>{send({type:'inspect'});setDraft(result.documentVerified?'현재 문서에서 작업 결과를 확인하고 남은 작업만 이어서 처리해줘':'현재 문서의 실제 값을 다시 읽고 요청한 작업을 계획해줘');}}>문서 확인 후 이어서 요청</CxButton></CxNotice>}
+          {m.toolFaults?.length>0&&<details className="tool-errors"><summary>실행 오류 정보</summary><p>{toolNames[m.toolFaults.at(-1).tool]||'문서 작업'} / {m.toolFaults.at(-1).member||m.toolFaults.at(-1).code} {m.toolFaults.at(-1).nativeCode}</p><CxButton onClick={()=>navigator.clipboard.writeText(JSON.stringify({app:host,version,failures:m.toolFaults},null,2)).catch(()=>setError('오류 정보를 복사하지 못했습니다.'))}>문서 작업 오류 복사</CxButton></details>}
           {m.incomplete&&!m.failed&&<p className="muted">응답을 마치지 못했습니다. 문서 결과를 확인하세요.</p>}
           {m.cancelled&&<p className="muted">중지했습니다. 적용된 변경은 유지됩니다.</p>}
           {m.role==='assistant'&&<footer className="message-actions"><ResponseTime label="" timing={m.timing} live={busy&&i===active.messages.length-1}/>{m.text&&<ActionButton action="copy" label="답변 복사" iconOnly onClick={()=>navigator.clipboard.writeText(m.text).catch(()=>setError('답변을 선택해서 복사해 주세요.'))}/>}</footer>}

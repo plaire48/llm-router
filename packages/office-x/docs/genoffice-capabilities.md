@@ -1,4 +1,4 @@
-# GenOffice 기능 대응 — 0.8.0
+# GenOffice 기능 대응 — 0.8.1
 
 원본 기준: genspark-ai/genoffice `438d9c65709952490c970beaa2599ef45e74431f`. 원본 4,582개 파일과 라이선스는 보존한다. 제품에는 별도 편집기를 설치하지 않는다. 원본 AgentLoop와 composeSkills, 실제 파일 엔진을 Office 작업창의 백그라운드 실행부로 사용한다. 누비는 채팅·계정·모델 transport와 CX를 제공한다.
 
@@ -22,3 +22,5 @@
 변경은 승인·스냅샷·재조회 검증을 거친다. 실패한 COM 쓰기는 자동 재실행하지 않는다. 이미 확인한 문서 변경과 후속 모델 응답 실패는 별도로 표시한다. COM 객체는 VSTO 안에서만 사용하고 UI/Agent에는 값 기반 계약을 전달한다.
 
 Windows CI는 실제 WinForms WebView2에서 C# 계약, Windows 마우스 클릭과 키보드 입력, 오류 복구를 검사한다. Office 프로그램 내부와 실제 계정 모델은 이 검사에 포함되지 않는다. `Test-OfficeRuntime.ps1`로 Office PC에서 문서 입력·렌더링·복원을 확인할 수 있다.
+
+동기 호출은 UI 컨텍스트가 없을 때 소유 스레드를 유지한다. VSTO 메시지 경로에서는 Windows Forms UI 컨텍스트를 설치해 승인 후 COM 호출을 유지한다. 읽기 전용 호출은 완료한 쓰기로 집계하지 않는다. 동일한 네이티브 오류 세 번 반복 시 Agent를 중단하고 진단 정보 복사를 제공한다.

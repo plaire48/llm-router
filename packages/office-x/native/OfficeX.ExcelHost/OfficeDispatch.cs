@@ -26,13 +26,14 @@ namespace OfficeX.ExcelHost {
     if(count>0){variants=Marshal.AllocCoTaskMem(size*count);for(int i=0;i<size*count;i++)Marshal.WriteByte(variants,i,0);for(int i=0;i<count;i++){Marshal.GetNativeVariantForObject(args[count-1-i],IntPtr.Add(variants,i*size));initialized++;}}
     bool setting=action=="set";if(setting){named=Marshal.AllocCoTaskMem(4);Marshal.WriteInt32(named,-3);}
     var parameters=new DISPPARAMS{rgvarg=variants,cArgs=count,rgdispidNamedArgs=named,cNamedArgs=setting?1:0};var exception=new EXCEPINFO();object result;uint argumentError;
-    ushort flags=(ushort)(setting?4:action=="call"?1:2);
+    bool accessor=!setting&&OfficeCallPolicy.ReadCall(member);
+    ushort flags=(ushort)(setting?4:action=="call"&&!accessor?1:2);
     hr=dispatch.Invoke(ids[0],ref iid,1033,flags,ref parameters,out result,ref exception,out argumentError);
     // Item and Range are property getters in some Office objects and methods in
     // others. Some dispatch servers reject combined METHOD | PROPERTYGET flags.
     // A read-only accessor may try METHOD only after the getter was not found.
     // Mutations are invoked exactly once, regardless of their result.
-    if(action=="get"&&OfficeCallPolicy.ReadCall(member)&&hr==unchecked((int)0x80020003)){exception=new EXCEPINFO();hr=dispatch.Invoke(ids[0],ref iid,1033,1,ref parameters,out result,ref exception,out argumentError);}
+    if(accessor&&hr==unchecked((int)0x80020003)){exception=new EXCEPINFO();hr=dispatch.Invoke(ids[0],ref iid,1033,1,ref parameters,out result,ref exception,out argumentError);}
     if(hr<0){int code=exception.scode<0?exception.scode:hr;throw new OfficeFault(OfficeCallPolicy.ErrorCode(code),member,code,OfficeCallPolicy.BeforeInvocation(code)?false:(bool?)null);}
     return result;
    }finally{for(int i=0;i<initialized;i++)VariantClear(IntPtr.Add(variants,i*size));if(variants!=IntPtr.Zero)Marshal.FreeCoTaskMem(variants);if(named!=IntPtr.Zero)Marshal.FreeCoTaskMem(named);}
