@@ -25,6 +25,7 @@ foreach($file in @('OfficeX.ExcelAddIn.vsto','OfficeX.WordAddIn.vsto','OfficeX.P
 if($LASTEXITCODE){throw 'Bundled Node cannot run'}
 & native/OfficeX.Surface.Tests/bin/Release/net472/OfficeX.Surface.Tests.exe "$installPath/OfficeX"
 if($LASTEXITCODE){throw 'Installed native WebView2 screen regression failed'}
+./scripts/Test-DocumentRuntime.ps1 -OfficeRoot "$installPath/OfficeX" -NodePath "$installPath/OfficeX/runtime/node.exe"
 if(Test-Path "$installPath/OfficeX/companion"){throw 'Retired standalone editor installed'}
 $legacy=Join-Path $installPath 'OfficeX/companion'
 New-Item $legacy -ItemType Directory -Force|Out-Null

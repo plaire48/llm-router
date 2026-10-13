@@ -53,7 +53,7 @@ namespace OfficeX.ExcelHost
                 try{DocumentWindowChanged?.Invoke(handle);}catch{SendSurface(new{type="document_follow_warning",runId,document=name});}
             }finally{next?.Dispose();nextCreation?.Dispose();if(window!=null&&System.Runtime.InteropServices.Marshal.IsComObject(window))System.Runtime.InteropServices.Marshal.ReleaseComObject(window);}
         }
-        private object RunContext(){var context=Wire.Object(Context);context["artifactRoot"]=files.Folder;context["documentTarget"]=documentTarget;return context;}
+        private object RunContext(){var context=Wire.Object(Context);context["artifactRoot"]=files.Folder;context["documentTarget"]=documentTarget;context["exportFolders"]=Wire.Object(new{desktop=Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),documents=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),downloads=System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),"Downloads")});return context;}
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hwnd);
@@ -91,7 +91,7 @@ namespace OfficeX.ExcelHost
                 EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question","context"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.11"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastContext!=null)surface.Send(lastContext);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.12"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastContext!=null)surface.Send(lastContext);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":surface.Send(new{type="reply",id=(string)message["id"],error="feature_removed"});break;
@@ -216,7 +216,7 @@ namespace OfficeX.ExcelHost
             if(new[]{"web_search","read_web_page","open_genoffice_editor","insert_image","image_search","generate_image","analyze_media"}.Contains(name))throw new OfficeFault("feature_removed");
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
-            if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
+            if(writesStopped&&name!="read_document_for_markdown"&&name!="save_markdown"&&name!="save_artifact"&&name!="select_input_file"&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="ask_clarification"){
                 var questions=input["questions"] as JArray;if(questions==null||questions.Count<1||questions.Count>3||questions.Any(q=>q["question"]?.Type!=JTokenType.String||((string)q["question"]).Length>500||q["options"] is JArray opts&&opts.Count>6))throw new OfficeFault("question_invalid");
                 questionId=Guid.NewGuid().ToString("N");questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);pendingQuestion=Wire.Object(new{type="question",runId,questionId,questions});SendSurface(pendingQuestion);
@@ -228,7 +228,22 @@ namespace OfficeX.ExcelHost
             if(name=="export_document_pdf")return files.ExportPdf(cancelToken);
             if(name=="select_input_file")return files.SelectInput();
             if(name=="render_slides")return files.RenderSlides((int?)input["first"]??1,(int?)input["count"]??6,(int?)input["width"]??1280,cancelToken);
-            if(name=="save_artifact")return files.SaveArtifact((string)input["path"],(string)input["name"]);
+            if(name=="save_artifact"){
+                if(input["quality"]!=null&&System.IO.Path.GetExtension((string)input["path"])==".md"){
+                    string chosen=files.PickMarkdownDestination((string)input["path"],(string)input["name"]);if(chosen==null)return new{kind="save_markdown",status="rejected",saved=false};
+                    await files.CheckMarkdownSourceAsync((string)input["expectedSourceHash"],(string)input["expectedDocumentId"],cancelToken);
+                    return await Task.Run(()=>files.SaveMarkdown((string)input["path"],chosen,cancelToken),cancelToken);
+                }
+                return files.SaveArtifact((string)input["path"],(string)input["name"]);
+            }
+            if(name=="read_document_for_markdown")return await files.ReadForMarkdownAsync(cancelToken);
+            if(name=="save_markdown"){
+                string destination=OfficeFiles.MarkdownDestination((string)input["destination"]);files.CheckedPath((string)input["path"],".md");
+                var planId=Guid.NewGuid().ToString("N");bool exists=System.IO.File.Exists(destination);
+                if(!await AwaitReview(planId,new{kind="file_operation",name,summary=$"Markdown 저장\n{destination}"+(exists?"\n기존 파일을 교체합니다.":""),destination,overwrite=exists,quality=input["quality"],warnings=input["warnings"]}))return new{kind="save_markdown",status="rejected",saved=false,mutated=false};
+                await files.CheckMarkdownSourceAsync((string)input["expectedSourceHash"],(string)input["expectedDocumentId"],cancelToken);
+                return await Task.Run(()=>files.SaveMarkdown((string)input["path"],destination,cancelToken),cancelToken);
+            }
             if(new[]{"rollback_document","import_slides","open_artifact","import_word_content"}.Contains(name)){
                 var planId=Guid.NewGuid().ToString("N");string summary=name=="rollback_document"?"문서 전체 스냅샷을 새 창에 복원합니다. 현재 문서는 그대로 유지됩니다.":(string)input["summary"]??"문서에 변경을 적용합니다.";
                 if(!await AwaitReview(planId,new{kind="file_operation",summary,name})){writesStopped=true;return new{status="rejected",mutated=false};}

@@ -27,7 +27,9 @@ jobs:
         with:
           name: office-x-native-dispatch-verification
           retention-days: 7
-          path: packages/office-x/verification/native-dispatch-*.json
+          path: |
+            packages/office-x/verification/native-dispatch-*.json
+            packages/office-x/verification/native-markdown-*.json
   windows:
     needs: native-com
     runs-on: windows-2022
@@ -61,6 +63,7 @@ jobs:
           retention-days: 7
           path: |
             packages/office-x/verification/native-*.json
+            packages/office-x/verification/installed-markdown.json
             packages/office-x/releases/installer-build.json
             packages/office-x/releases/install-smoke.json
       - name: Stage release for review

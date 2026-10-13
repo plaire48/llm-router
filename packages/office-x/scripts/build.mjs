@@ -9,6 +9,8 @@ const runtime=await build({metafile:true,entryPoints:['runtime-src/main.ts'], ou
 await mkdir('dist/licenses', {recursive:true});
 await copyFile('node_modules/@e2e/cx-design-system/fonts/OFL.txt','dist/licenses/Noto-Sans-KR-OFL.txt');
 await copyFile('node_modules/@embedpdf/pdfium/dist/pdfium.wasm','dist/worker/pdfium.wasm');
+await cp('document-runtime','dist/worker/document-runtime',{recursive:true,filter:path=>!path.includes('__pycache__')&&!path.endsWith('.pyc')});
+await build({entryPoints:['tools-src/document-engine-probe.ts'],outfile:'dist/cli/document-engine-probe.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',loader:{'.md':'text'},define:{'import.meta.url':'__probeModuleUrl'},banner:{js:'const __probeModuleUrl=require("node:url").pathToFileURL(__filename).href;'}});
 await build({entryPoints:['tools-src/genoffice-engine.ts'],outfile:'dist/cli/genoffice-engine.cjs',bundle:true,platform:'node',target:'node22',format:'cjs',jsx:'automatic',external:['jsdom','electron','mermaid'],define:{'import.meta.url':'__engineModuleUrl'},banner:{js:'const __engineModuleUrl=require("node:url").pathToFileURL(__filename).href;'},loader:{'.css':'empty','.woff2':'empty','.woff':'empty','.ttf':'empty','.png':'empty','.svg':'empty','.md':'text'},plugins:[{name:'original-raw',setup(b){b.onResolve({filter:/\?raw$/},a=>({path:resolve(a.resolveDir,a.path.replace(/\?raw$/,'')),namespace:'raw'}));b.onLoad({filter:/.*/,namespace:'raw'},async a=>({contents:await (await import('node:fs/promises')).readFile(a.path,'utf8'),loader:'text'}));}}]});
 await mkdir('dist/wasm',{recursive:true});
 await copyFile('dist/worker/pdfium.wasm','dist/wasm/pdfium.wasm');

@@ -150,3 +150,5 @@ details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-captio
 .office-host .tool-errors summary{cursor:pointer;padding-block:6px;}
 
 @media(max-width:300px){.office-host .office-shell .composer textarea.aipro-message-input{max-height:64px;}}
+
+.receipt-export p { margin:4px 0 0; font-size:var(--cx-font-size-sm,14px); line-height:1.5; overflow-wrap:anywhere; }

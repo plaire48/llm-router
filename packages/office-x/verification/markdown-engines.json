@@ -1,0 +1,169 @@
+{
+  "platform": "darwin",
+  "actualOffice": false,
+  "actualConverters": true,
+  "ocr": true,
+  "rows": [
+    {
+      "file": "report.docx",
+      "status": "verified",
+      "engines": [
+        "genoffice",
+        "markitdown"
+      ],
+      "quality": {
+        "sourceUnits": 10,
+        "verifiedUnits": 10,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "counts": {
+        "blocks": 4,
+        "notes": 1,
+        "tables": 1
+      },
+      "sourceSha256": "94173ce0f27b5a5d05bc81ae1eaf930297621b52ed60f1299edc1ceafa939bba",
+      "markdownSha256": "a87a3e8c5745c8c6224e28fef910e58b20532be5a892d611c3d3b877968c2d99"
+    },
+    {
+      "file": "book.xlsx",
+      "status": "verified",
+      "engines": [
+        "genoffice",
+        "markitdown"
+      ],
+      "quality": {
+        "sourceUnits": 21,
+        "verifiedUnits": 21,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "counts": {
+        "sheets": 2,
+        "cells": 10,
+        "formulas": 1,
+        "tables": 0
+      },
+      "sourceSha256": "a3dbbf7ec31f5701102d91a4e8dc5894c29dcf6b499592e6b908b7123934851a",
+      "markdownSha256": "9135479f0c4d78c9fe4ce66622a289b00dbe55b47507f97ae62406ebeb7f7cdc"
+    },
+    {
+      "file": "deck.pptx",
+      "status": "verified",
+      "engines": [
+        "genoffice",
+        "markitdown"
+      ],
+      "quality": {
+        "sourceUnits": 7,
+        "verifiedUnits": 7,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "counts": {
+        "slides": 1,
+        "notes": 1,
+        "tables": 1
+      },
+      "sourceSha256": "78d0a0006cbb985e42ddce0900651be619cb5f29cec47e111a78550b7edae4ef",
+      "markdownSha256": "f353c7661c2cac4dbab8e5fb13e3401e5b18bbb36518670d297ba15a83897ca5"
+    },
+    {
+      "file": "content.html",
+      "status": "verified",
+      "engines": [
+        "markitdown"
+      ],
+      "quality": {
+        "sourceUnits": 4,
+        "verifiedUnits": 4,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "counts": {
+        "tables": 0
+      },
+      "sourceSha256": "3f1b69ba49399ab3c2350a6c3daf253caa2f13445290c10164a92e342058f930",
+      "markdownSha256": "f95f7e906ea186dfa1f85a3921ebfedae34bde35272b030402d8faae56035d20"
+    },
+    {
+      "file": "digital.pdf",
+      "status": "verified",
+      "engines": [
+        "genoffice",
+        "docling"
+      ],
+      "quality": {
+        "sourceUnits": 4,
+        "verifiedUnits": 4,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true,
+        "ocr": {
+          "used": false,
+          "recognizedRegions": null,
+          "minimumConfidence": null
+        }
+      },
+      "warnings": [],
+      "counts": {
+        "pages": 2,
+        "tables": 0
+      },
+      "sourceSha256": "ad2620c02a0956d5c4c904a77c76425b9271001cc1d3c22fa13f9f6853c2b3c8",
+      "markdownSha256": "1adc80c8b54c95ee1b61c1d7d7bf6231c0d4cbf294ec9e3189e001e26772e37d"
+    },
+    {
+      "file": "report.docx",
+      "route": "docling",
+      "result": {
+        "sourceUnits": 10,
+        "verifiedUnits": 10,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true,
+        "ocr": {
+          "used": false,
+          "recognizedRegions": null,
+          "minimumConfidence": null
+        }
+      }
+    },
+    {
+      "file": "scanned.pdf",
+      "status": "partial",
+      "engines": [
+        "genoffice",
+        "docling"
+      ],
+      "quality": {
+        "sourceUnits": 1,
+        "verifiedUnits": 1,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": false,
+        "ocr": {
+          "used": true,
+          "recognizedRegions": null,
+          "minimumConfidence": 0.9989116666666665
+        }
+      },
+      "warnings": [
+        "OCR로 읽은 내용은 글자·숫자를 원문과 대조해 주세요."
+      ],
+      "counts": {
+        "pages": 1,
+        "tables": 0
+      },
+      "markdownSha256": "3b56b5c8ac84031fce3b246546e303db2c243f74ffba52a205be0c23e35ce96d"
+    }
+  ]
+}

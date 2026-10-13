@@ -19,6 +19,9 @@ namespace OfficeX.ExcelHost {
   public static void RequireMember(object target,string member){var dispatch=target as Dispatch;if(dispatch==null)throw new OfficeFault("office_dispatch_unavailable",member,invocationStarted:false);var iid=Guid.Empty;var ids=new int[1];int hr=dispatch.GetIDsOfNames(ref iid,new[]{member},1,1033,ids);if(hr<0)throw new OfficeFault(OfficeCallPolicy.ErrorCode(hr),member,hr,false);}
   public static object Get(object target,string member,params object[] args)=>Invoke(target,member,"get",args);
   public static object Call(object target,string member,params object[] args)=>Invoke(target,member,"call",args);
+  // Office Find is a read-only method, not a property accessor. Used only by
+  // typed native readers; this does not expand the agent's mutation surface.
+  public static object Find(object range,params object[] args)=>Invoke(range,"Find","read_method",args);
   public static void Set(object target,string member,object value)=>Invoke(target,member,"set",new[]{value});
   public static object Invoke(object target,string member,string action,object[] args){
    bool started=false;
@@ -32,7 +35,7 @@ namespace OfficeX.ExcelHost {
     bool setting=action=="set";if(setting){named=Marshal.AllocCoTaskMem(4);Marshal.WriteInt32(named,-3);}
     var parameters=new DISPPARAMS{rgvarg=variants,cArgs=count,rgdispidNamedArgs=named,cNamedArgs=setting?1:0};var exception=new EXCEPINFO();object result;uint argumentError;
     bool accessor=!setting&&OfficeCallPolicy.ReadCall(member);
-    ushort flags=(ushort)(setting?4:action=="call"&&!accessor?1:2);
+    ushort flags=(ushort)(setting?4:action=="read_method"||action=="call"&&!accessor?1:2);
     started=true;hr=dispatch.Invoke(ids[0],ref iid,1033,flags,ref parameters,out result,ref exception,out argumentError);
     // Item and Range are property getters in some Office objects and methods in
     // others. Some dispatch servers reject combined METHOD | PROPERTYGET flags.

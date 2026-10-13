@@ -23,6 +23,7 @@ try {
  if($LASTEXITCODE){throw 'Immutable sources and Office adapter hashes failed'}
  & npm.cmd run build
  if($LASTEXITCODE){throw 'UI/worker build failed'}
+ ./scripts/Prepare-DocumentRuntime.ps1
  & npm.cmd run typecheck
  if($LASTEXITCODE){throw 'Typecheck failed'}
  & npm.cmd test

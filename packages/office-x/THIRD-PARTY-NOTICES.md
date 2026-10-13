@@ -56,3 +56,9 @@ by these third-party notices.
 Microsoft.Web.WebView2 1.0.3240.44 is governed by its Microsoft package terms;
 LICENSE and NOTICE are retained in licenses/. The Evergreen Runtime is an
 external prerequisite and is not bundled in this source archive.
+
+## Local document conversion
+
+Microsoft MarkItDown 0.1.8 (MIT) and Docling 2.138.0 (MIT), with RapidOCR and their dependencies, are installed on demand into separate user-local Python environments. Exact dependency versions and hashes are in document-runtime/requirements-*.txt. Source links: https://github.com/microsoft/markitdown and https://github.com/docling-project/docling. These tools operate on approved local document artifacts; no LLM/cloud converter or plugin is enabled. Model assets retain their upstream terms.
+
+Astral uv 0.13.0 (MIT or Apache-2.0) is bundled as the environment provisioner, with its original licenses in the document runtime. Python 3.12.12 is provisioned on demand from uv managed Python distributions and retains Python and distribution dependency terms. Truststore 0.10.5 (MIT) enables native OS certificate verification. No HTTPS verification is disabled.

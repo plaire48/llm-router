@@ -2,4 +2,5 @@
 <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net472</TargetFramework><LangVersion>latest</LangVersion></PropertyGroup>
 <ItemGroup><ProjectReference Include="../OfficeX.ExcelHost/OfficeX.ExcelHost.csproj" GlobalPropertiesToRemove="PlatformTarget" /><PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />
 <Reference Include="Microsoft.CSharp" /><Reference Include="System.IO.Compression" /><Reference Include="System.IO.Compression.FileSystem" /></ItemGroup>
+<ItemGroup><Reference Include="System.Windows.Forms" /></ItemGroup>
 </Project>

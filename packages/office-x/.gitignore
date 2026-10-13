@@ -9,6 +9,7 @@ runtime/
 .env*
 !.env.example
 artifacts/
+__pycache__/
 
 .playwright-mcp/
 companion/workspace/
