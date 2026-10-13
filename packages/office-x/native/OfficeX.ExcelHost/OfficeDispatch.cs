@@ -12,7 +12,7 @@ namespace OfficeX.ExcelHost {
   interface Dispatch {
    [PreserveSig]int GetTypeInfoCount(out uint count);
    [PreserveSig]int GetTypeInfo(uint index,uint lcid,out ITypeInfo info);
-   [PreserveSig]int GetIDsOfNames(ref Guid iid,[MarshalAs(UnmanagedType.LPArray,ArraySubType=UnmanagedType.LPWStr)]string[] names,uint count,uint lcid,[Out] int[] ids);
+   [PreserveSig]int GetIDsOfNames(ref Guid iid,[MarshalAs(UnmanagedType.LPArray,ArraySubType=UnmanagedType.LPWStr,SizeParamIndex=2)]string[] names,uint count,uint lcid,[Out,MarshalAs(UnmanagedType.LPArray,ArraySubType=UnmanagedType.I4,SizeParamIndex=2)] int[] ids);
    [PreserveSig]int Invoke(int id,ref Guid iid,uint lcid,ushort flags,ref DISPPARAMS args,[MarshalAs(UnmanagedType.Struct)]out object result,ref EXCEPINFO exception,out uint argumentError);
   }
   [DllImport("oleaut32.dll")]static extern int VariantClear(IntPtr variant);

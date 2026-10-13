@@ -7,7 +7,25 @@ on:
 permissions:
   contents: write
 jobs:
+  native-com:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/office-x
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exercise native COM dispatch in both Office process architectures
+        run: |
+          foreach($architecture in @('x64','x86')){
+            dotnet build native/OfficeX.Dispatch.Tests -c Release -p:PlatformTarget=$architecture
+            if($LASTEXITCODE){throw 'Native COM regression compile failed'}
+            & native/OfficeX.Dispatch.Tests/bin/Release/net472/OfficeX.Dispatch.Tests.exe
+            if($LASTEXITCODE){throw "Native COM regression failed ($architecture)"}
+          }
   windows:
+    needs: native-com
     runs-on: windows-2022
     timeout-minutes: 120
     defaults:
