@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using OfficeX.Core;
 namespace OfficeX.ExcelHost {
  // Structured Office Object Model calls, never eval, C#, VBA or a shell.
- sealed class OfficeAutomationPort:IOfficeAutomationPort,IDisposable {
+ sealed class OfficeAutomationPort:IOfficeAutomationPort,IOfficePreflightPort,IDisposable {
   readonly int threadId=Thread.CurrentThread.ManagedThreadId;
   readonly dynamic application;readonly string app;readonly int hwnd;readonly string sourceId;
   readonly Dictionary<string,object> objects=new Dictionary<string,object>();readonly List<object> acquired=new List<object>();
@@ -24,6 +24,18 @@ namespace OfficeX.ExcelHost {
   public void CheckSource(){object win=null,doc=null;try{win=OfficeDispatch.Get((object)application,"ActiveWindow");doc=Source();if(win==null||doc==null||Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
   static void Release(object o){if(o!=null&&Marshal.IsComObject(o))Marshal.ReleaseComObject(o);}
   object Arg(JToken value,string path)=>OfficeArguments.Convert(value,id=>objects.TryGetValue(id,out var found)?found:null,path);
+  public void ValidateInput(OfficeStep step,ISet<string> plannedObjects){
+   if(step.Id=="document")throw new OfficeFault("office_object_id_required",step.Member,invocationStarted:false);
+   string target=step.Target??"document";var prefixes=new string[0];
+   if(!objects.ContainsKey(target)&&!plannedObjects.Contains(target)){
+    var parts=target.Split('.');
+    if(parts.Length>=2&&(objects.ContainsKey(parts[0])||plannedObjects.Contains(parts[0])))prefixes=parts.Skip(1).ToArray();
+    else if((app=="excel"?new[]{"Worksheets","Sheets","ActiveSheet"}:app=="word"?new[]{"Content","Tables","Sections","Styles"}:new[]{"Slides","PageSetup"}).Contains(parts[0],StringComparer.OrdinalIgnoreCase))prefixes=parts;
+    else throw new OfficeFault("office_target_unknown",step.Member,invocationStarted:false);
+    OfficeCallPolicy.Validate(String.Join(".",prefixes),true,"get");
+   }
+   try{OfficeArguments.ValidateInput(step,app,prefixes,id=>objects.ContainsKey(id)||plannedObjects.Contains(id)?new object():null);}catch(OfficeFault e){throw new OfficeFault(e.Message,e.Member??step.Member,e.NativeCode==null?(int?)null:unchecked((int)Convert.ToUInt32(e.NativeCode.Substring(2),16)),false,e.ExceptionName,e.InputPath,e.InputRule);}
+  }
   public object Execute(OfficeStep step,bool readOnly){
    if(Thread.CurrentThread.ManagedThreadId!=threadId)throw new OfficeFault("office_thread_required");
    OfficeCallPolicy.Validate(step.Member,readOnly,step.Action);

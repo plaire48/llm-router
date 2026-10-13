@@ -7,3 +7,7 @@ OfficeCountChecks는 Count의 숫자 기대값과 delta를 검증한다. delta�
 Office skill의 도구 스키마와 안내는 equals 또는 Count 전용 delta를 지원한다. 쓰기 전 개수 오류는 native 상태를 읽고 계획을 수정한다. UI에는 안전한 정수 Count 정보만 표시/복사하며 다른 검사에 포함된 문서 내용을 오류 요약에 포함하지 않는다.
 
 실제 Windows Office 2016과 사용자 오류의 기대값/실제값은 미관측이다. 설치, WinForms WebView2, Core 모의 포트, 네이티브 IDispatch fixture, 실제 모델 연결 검증은 각각 별도 범위다.
+
+배치 전체 단계와 checks의 인자 구조/Item 선택자/명시적 indexed path/대상 핸들을 승인 전에 검사한다. 이후 단계의 Item 누락으로 앞선 셀 쓰기가 partial이 되는 경로를 차단한다. 실제 COM 객체 해석과 반환 객체 종류, 새 핸들 유효성은 실행 중 확인하며 임의의 인덱스를 보충하지 않는다. 공통 receipt 추적은 후속 쓰기 차단 시 첫 실패의 멤버, 코드, 안전한 Count 결과를 유지한다.
+
+format_cells는 주소와 선택적 시트 이름으로 실제 Range를 재조회하고 NumberFormat/Font.Bold/WrapText를 검증한다. 같은 승인/원본 비교/receipt 경로를 사용하며 서식 후 Value2와 Formula 보존을 함께 검사한다. 범위는 공통 읽기 제한 101행/20열로 나누고 다른 고급 서식은 inspect_office/execute_office_operations로 계속 제공한다.

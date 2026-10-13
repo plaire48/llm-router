@@ -264,10 +264,10 @@ namespace OfficeX.ExcelHost
                 var after=Wire.Object(automation.Inspect(reads));after["calculated"]=true;after["calculationDone"]=true;after["mutated"]=false;after["address"]=address;return after;
             }
             if(writesStopped&&new[]{"create_document","execute_office_operations","replace_blocks","replace_text","set_formula"}.Contains(name))throw new OfficeFault("writes_stopped_for_this_run");
-            if(name=="execute_office_operations"||name=="write_cells"||name=="set_formula"||name=="merge_cells"){
+            if(name=="execute_office_operations"||name=="write_cells"||name=="set_formula"||name=="merge_cells"||name=="format_cells"){
                 OfficePlan plan;
                 if(name=="execute_office_operations")plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
-                else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=name=="merge_cells"?ExcelRangeTools.PrepareMerge(automation,input,fallbackContext==null?session?.Context.Worksheet:null):ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
+                else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=name=="format_cells"?ExcelCellFormats.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null):name=="merge_cells"?ExcelRangeTools.PrepareMerge(automation,input,fallbackContext==null?session?.Context.Worksheet:null):ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
                 status.Text="문서 변경안을 확인해 주세요.";
                 currentStage="checkpoint_before_write";var checkpoint=files.PrepareCheckpoint(plan.Summary);currentStage="native_"+name;var approved=await AwaitReview(plan.Id,plan,checkpoint);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);var result=Wire.Object(receipt);result["checkpoint"]=Wire.Object(checkpoint);SendSurface(new{type="receipt",runId,receipt=result});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return result;

@@ -4,6 +4,16 @@ using Newtonsoft.Json.Linq;
 namespace OfficeX.Core {
  public static class OfficeArguments {
   public static void ValidateItem(System.Collections.Generic.List<object> args){if(args.Count==0||args[0]==null||args[0]==Type.Missing)throw new OfficeFault("office_argument_count","Item",unchecked((int)0x8002000E),false,inputPath:"args[0]",inputRule:"item_index_required");}
+  // Validate shapes/selectors before approval and before any batch writes.
+  // Reference identity is checked at execution: a later step can create it.
+  public static void ValidateInput(OfficeStep step,string app,System.Collections.Generic.IEnumerable<string> targetPrefixes=null,Func<string,object> reference=null){
+   var marker=new object();reference=reference??(_=>marker);
+   var args=(step.Args??new JArray()).Select((v,i)=>Convert(v,reference,"args["+i+"]")).ToList();
+   if(step.Action=="set")Convert(step.Value,reference,"value");
+   var members=step.Member.Split('.');
+   OfficePath.Resolve(marker,(targetPrefixes??Enumerable.Empty<string>()).Concat(members.Take(members.Length-1)),args,app,(_,member,selectors)=>marker);
+   if(String.Equals(members.Last(),"Item",StringComparison.OrdinalIgnoreCase))ValidateItem(args);
+  }
   public static object Convert(JToken value,Func<string,object> reference,string path="value"){
    OfficeFault Invalid(string rule)=>new OfficeFault("office_argument_invalid",invocationStarted:false,inputPath:path,inputRule:rule);
    if(value==null||value.Type==JTokenType.Null)return null;
