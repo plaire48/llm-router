@@ -2,7 +2,7 @@ import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import {CxButton,ActionButton,Icon,DetailPanel,CxInput,CxNotice} from '@e2e/cx-design-system';
+import {CxButton,ActionButton,Icon,CxInput,CxNotice} from '@e2e/cx-design-system';
 import {NubiLogin,NubiComposerInput,NubiComposerBar} from '../vendor/nubi/extensions/aipro-chat/src/NubiSurfaces.jsx';
 import {ModelPicker} from '../vendor/nubi/extensions/aipro-chat/src/ChatControls.jsx';
 import {NubiLogo} from '../vendor/nubi/extensions/aipro-chat/src/AgentMark.jsx';
@@ -21,11 +21,14 @@ import '../vendor/nubi/packages/nubi-desktop/electron-app/ios-tokens.css';
 import '../vendor/nubi/packages/nubi-desktop/design/workspace-typography.css';
 import '../vendor/nubi/packages/nubi-desktop/design/workspace-density.css';
 import '../vendor/nubi/packages/nubi-desktop/design/workspace-dialogs.css';
+import './office-tokens.css';
 import './office.css';
 import {officeApps} from './office-apps.js';
 import {useGreeting} from './useGreeting.js';
 import {ModelForm} from './ModelForm.jsx';
 import {Services} from './Services.jsx';
+import {OfficeDialog} from './OfficeDialog.jsx';
+import './office-dialog.css';
 import {outcome,inferDocumentTarget,toolFailure,documentInputFailure} from './run-outcome.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
 const toolNames={web_search:'웹 자료 검색',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',inspect_office_members:'지원 기능 확인',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_cells:'셀 내용 읽기',read_worksheets:'시트 목록 읽기',add_worksheet:'시트 추가 및 확인',rename_worksheet:'시트 이름 변경 및 확인',merge_cells:'셀 병합 및 확인',format_cells:'셀 서식 변경 및 확인',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',write_cells:'셀 입력',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
@@ -34,7 +37,7 @@ function App(){
   const [host,setHost]=useState('excel');
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.8.9');
+  const [version,setVersion]=useState('0.8.10');
   const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({}),[catalogProblem,setCatalogProblem]=useState(null);
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
@@ -50,7 +53,7 @@ function App(){
       if(m.type==='connection_storage_warning'){setError('보관한 일부 연결 설정을 읽지 못했습니다. 로그인은 다시 진행할 수 있습니다.');return;}
       if(m.type==='services_state'){setServices(m.state);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.9');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.10');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&(['start','demo','rollback'].includes(m.operation)||!run.current)){setBusy(false);setReview(null);setQuestion(null);run.current=null;updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
@@ -139,16 +142,16 @@ function App(){
       </div></section></div>
     </>}
     {dialog==='services'&&<Services state={services} call={(method,input)=>command(method,input,'services')} onClose={()=>setDialog(null)}/>}
-    {dialog==='target'&&<DetailPanel title="어디에 만들까요?" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={()=>{setDialog(null);setPendingRequest('');}}><p>현재 문서를 수정하거나 새 문서를 열어 작성합니다.</p><div className="target-choices"><CxButton onClick={()=>submit('current')}><strong>현재 문서</strong><span>지금 열린 문서에 적용</span></CxButton><CxButton onClick={()=>submit('new')}><strong>새 문서</strong><span>새 창에서 작성하고 Agent 이어가기</span></CxButton></div></DetailPanel>}
-    {dialog==='checkpoints'&&<DetailPanel title="문서 복원" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={()=>setDialog(null)}><p className="form-help">복원할 시점을 선택하세요. 새 창에 복원됩니다.</p>{checkpoints.length?checkpoints.map(c=><CxButton className="checkpoint-row" key={c.id} onClick={()=>{setDialog(null);started.current=performance.now();setBusy(true);setConversations(rows=>rows.map(row=>row.id===active.id?{...row,messages:[...row.messages,{role:'user',text:'문서 복원: '+c.label},{role:'assistant',text:''}]}:row));send({type:'rollback',checkpointId:c.id,conversationId:active.id});}}>{c.label} / {c.document}</CxButton>):<p className="muted">아직 복원 지점이 없습니다.</p>}</DetailPanel>}
+    {dialog==='target'&&<OfficeDialog icon="file" title="어디에 만들까요?" className="office-form deck-dialog nubi-decision-dialog" onClose={()=>{setDialog(null);setPendingRequest('');}}><p>현재 문서를 수정하거나 새 문서를 열어 작성합니다.</p><div className="target-choices"><CxButton onClick={()=>submit('current')}><strong>현재 문서</strong><span>지금 열린 문서에 적용</span></CxButton><CxButton onClick={()=>submit('new')}><strong>새 문서</strong><span>새 창에서 작성하고 Agent 이어가기</span></CxButton></div></OfficeDialog>}
+    {dialog==='checkpoints'&&<OfficeDialog icon="clockRewind" title="문서 복원" className="office-form deck-dialog nubi-decision-dialog" onClose={()=>setDialog(null)}><p className="form-help">복원할 시점을 선택하세요. 새 창에 복원됩니다.</p>{checkpoints.length?checkpoints.map(c=><CxButton className="checkpoint-row" key={c.id} onClick={()=>{setDialog(null);started.current=performance.now();setBusy(true);setConversations(rows=>rows.map(row=>row.id===active.id?{...row,messages:[...row.messages,{role:'user',text:'문서 복원: '+c.label},{role:'assistant',text:''}]}:row));send({type:'rollback',checkpointId:c.id,conversationId:active.id});}}><strong>{c.label}</strong><span>{c.document}</span></CxButton>):<p className="muted">아직 복원 지점이 없습니다.</p>}</OfficeDialog>}
     {dialog==='models'&&<ModelForm data={data} loading={loading} connectingProvider={loginProvider} connectionError={error} catalogProblem={catalogProblem} disabled={busy||!ready||controlBusy||!!provider.authBusy} providerLabels={labels} onClose={()=>setDialog(null)} onTools={()=>setDialog('services')} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
     {dialog==='fabrix'&&<Fabrix onClose={()=>setDialog(null)} onConnect={async values=>{await action('connect',{provider:'fabrix',...values});setDialog(null);}}/>}
   </div></main></div>;
 }
 function Fabrix({onClose,onConnect}){
   const [values,setValues]=useState({endpoint:'',clientKey:'',token:''}),[busy,setBusy]=useState(false),[error,setError]=useState('');
-  return <DetailPanel title="FabriX 연결" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={busy?undefined:onClose}><form onSubmit={async e=>{e.preventDefault();setBusy(true);try{await onConnect(values);}catch(e){setError(e.message);}finally{setBusy(false);}}}>
-    {error&&<CxNotice tone="danger">{error}</CxNotice>}{[['endpoint','서버 주소','url'],['clientKey','클라이언트 키','password'],['token','접속 토큰','password']].map(([key,label,type])=><label className="connection-field" key={key}>{label}<CxInput required type={type} autoComplete="off" value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})}/></label>)}<CxButton type="submit" variant="primary" busy={busy}>연결</CxButton></form></DetailPanel>;
+  return <OfficeDialog icon="sliders" title="FabriX 연결" className="office-form deck-dialog nubi-decision-dialog" busy={busy} onClose={onClose} footer={<><CxButton disabled={busy} onClick={onClose}>취소</CxButton><CxButton type="submit" form="office-fabrix-form" variant="primary" busy={busy}>연결</CxButton></>}><form id="office-fabrix-form" className="office-connection-form" onSubmit={async e=>{e.preventDefault();setBusy(true);try{await onConnect(values);}catch(e){setError(e.message);}finally{setBusy(false);}}}>
+    {error&&<CxNotice tone="danger">{error}</CxNotice>}{[['endpoint','서버 주소','url'],['clientKey','클라이언트 키','password'],['token','접속 토큰','password']].map(([key,label,type])=><label className="connection-field" key={key}>{label}<CxInput required type={type} autoComplete="off" value={values[key]} onChange={e=>setValues({...values,[key]:e.target.value})}/></label>)}</form></OfficeDialog>;
 }
 class ScreenBoundary extends React.Component {
   state={failed:false};

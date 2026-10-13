@@ -1,28 +1,38 @@
-:root:has(.desktop-shell) .cx-panel-backdrop>.nubi-model-form{width:min(480px,100%);max-height:calc(100dvh - 24px)}
-.nubi-model-form .model-form-fields{display:grid;gap:var(--cx-space-5,20px);min-width:0}
-.model-form-field{border:0;padding:0;margin:0;min-width:0;display:grid;gap:var(--cx-space-3,12px)}
-.model-form-field legend{padding:0 0 var(--cx-space-2,8px);font-weight:var(--nubi-weight-emphasis,600);color:var(--nubi-text-primary);font-size:var(--deck-type-body,15px)}
-.model-form-providers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--cx-space-2,8px)}
-.nubi-model-form .model-form-provider.cx-kit-button{height:auto;min-height:44px;display:flex;gap:var(--cx-space-2,8px);padding:var(--cx-space-3,12px);background:var(--nubi-surface-inset);border:0;color:var(--nubi-text-primary);text-align:left}
-.model-form-provider strong{flex:1;min-width:0;font-size:var(--deck-type-body,15px)}
-.nubi-model-form .model-form-provider[aria-checked=true]{background:var(--nubi-surface-selected);color:var(--nubi-text-action)}
-.nubi-model-form .model-form-provider>svg{flex:none}
-.nubi-model-form .model-form-provider:not([aria-checked=true])>svg:last-child{visibility:hidden}
-.model-form-models{max-height:min(280px,34dvh);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
-.nubi-model-form .model-form-option.cx-kit-button{width:100%;text-align:left;height:auto;white-space:normal;min-height:44px}
-:root:has(.desktop-shell) .nubi-model-form .question-option-copy{display:grid;gap:2px;min-width:0}
-:root:has(.desktop-shell) .nubi-model-form .question-option-copy strong{white-space:normal;overflow-wrap:anywhere;font-size:var(--deck-type-body,15px);line-height:1.5}
-:root:has(.desktop-shell) .nubi-model-form .question-option-copy>span{display:block;font-size:var(--deck-type-caption,13px);color:var(--nubi-text-secondary)}
-.nubi-model-form .model-form-account-actions{display:flex;gap:var(--cx-space-2,8px);flex-wrap:wrap}
-.nubi-model-form .model-form-account-actions .cx-kit-button{font-size:var(--deck-type-caption,13px);min-height:32px;padding:6px 8px;background:transparent;color:var(--nubi-text-secondary)}
-.model-form-status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--nubi-text-secondary);font-size:var(--deck-type-body,15px)}
-.model-form-empty{padding:12px 0;color:var(--nubi-text-secondary)}
-:root:has(.desktop-shell) .nubi-model-form>.cx-panel-footer{justify-content:flex-end}
-.nubi-model-form [role=radio]:focus-visible{outline:2px solid var(--nubi-text-action);outline-offset:2px}
-@media(max-width:380px){:root:has(.desktop-shell) .nubi-model-form .model-form-provider.cx-kit-button{padding:10px 8px;gap:6px}.nubi-model-form .model-form-provider strong{font-size:14px}}
-/* The same Workspace hierarchy in VSTO and the original editor model form. */
-:root:has(.desktop-shell) .nubi-model-form{font-family:var(--nubi-font-family);color:var(--nubi-text-primary)}
-:root:has(.desktop-shell) .nubi-model-form .cx-panel-title{font-size:18px;font-weight:600;line-height:1.5}
-.nubi-model-form .model-form-provider strong,.nubi-model-form .question-option-copy strong{font-weight:600}
-.nubi-model-form .model-form-provider[aria-checked=true]{box-shadow:inset 0 0 0 1px var(--nubi-text-action)}
-.nubi-model-form .model-form-tools{margin-right:auto}
+.nubi-model-form .model-form-fields{display:grid;gap:var(--cx-space-6);min-width:0;}
+.nubi-model-form .model-form-field{display:grid;gap:12px;}
+.nubi-model-form .model-form-field legend{padding:0 0 8px;}
+.model-form-providers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+:root:has(.office-host) .nubi-model-form .model-form-provider.cx-kit-button{display:flex;justify-content:flex-start;gap:8px;height:auto;min-height:48px;padding:10px 12px;text-align:left;background:var(--office-surface-inset);border:1px solid transparent;color:var(--office-ink);}
+.model-form-provider strong{flex:1;min-width:0;font-size:var(--office-type-body);font-weight:500;line-height:22px;}
+.model-form-provider>svg{flex:none;}
+.model-form-provider:not([aria-checked=true])>svg:last-child{visibility:hidden;}
+:root:has(.office-host) .nubi-model-form .model-form-provider[aria-checked=true]{background:var(--office-selected);border-color:var(--office-action);color:var(--office-action);}
+.model-form-provider[aria-checked=true] strong{font-weight:600;}
+.model-form-models{max-height:min(280px,32dvh);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px 3px;}
+.model-form-options{display:grid;gap:4px;}
+:root:has(.office-host) .nubi-model-form .model-form-option.cx-kit-button{display:flex;align-items:center;justify-content:flex-start;width:100%;gap:12px;height:auto;min-height:56px;text-align:left;white-space:normal;padding:10px 12px;border:1px solid transparent;background:var(--office-paper);color:var(--office-ink);}
+:root:has(.office-host) .nubi-model-form .model-form-option[aria-checked=true]{background:var(--office-selected);color:var(--office-action);}
+.model-form-option-copy{display:grid;gap:2px;min-width:0;flex:1;}
+.model-form-option-copy strong{font-size:15px;line-height:24px;font-weight:400;color:var(--office-ink);white-space:normal;overflow-wrap:anywhere;word-break:keep-all;}
+.model-form-option[aria-checked=true] strong{font-weight:600;color:var(--office-action);}
+.model-form-option-copy>span{font-size:var(--office-type-meta);line-height:var(--office-leading-meta);font-weight:400;color:var(--office-muted);}
+.model-form-check{display:grid;place-items:center;flex:none;width:18px;height:18px;border:0;border-radius:5px;color:var(--office-paper);background:var(--office-line);}
+.model-form-option[aria-checked=true] .model-form-check{background:var(--office-action);border-color:var(--office-action);}
+:root:has(.office-host) .nubi-model-form .model-form-option:hover:not(:disabled){background:var(--office-surface-inset);transform:none;}
+:root:has(.office-host) .nubi-model-form .model-form-option[aria-checked=true]:hover:not(:disabled){background:var(--office-selected);}
+.model-form-account-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-top:1px solid var(--office-line);padding-top:12px;}
+:root:has(.office-host) .nubi-model-form .model-form-account-actions :is(.cx-kit-button,.cx-action-button){padding:4px 0;border:0;background:transparent;color:var(--office-muted);font-size:13px;min-height:32px;font-weight:500;}
+.model-form-account-actions :is(.cx-kit-button,.cx-action-button):last-child{margin-left:auto;}
+.model-form-status{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:var(--office-type-body);line-height:22px;color:var(--office-muted);padding:16px;background:var(--office-surface-inset);border-radius:var(--office-control-radius);}
+.model-form-empty{padding:16px 0;color:var(--office-muted);font-size:var(--office-type-body);line-height:22px;}
+@media(max-width:340px){:root:has(.office-host) .nubi-model-form .model-form-provider.cx-kit-button{padding:10px 8px;gap:6px;}}
+
+/* Workspace's wide inline question copy becomes two readable lines in Office.
+   Do not inherit compact-form ellipsis or hide context in narrow panes. */
+:root:has(.office-host) .nubi-model-form .model-form-option-copy{display:grid;gap:2px;min-width:0;}
+:root:has(.office-host) .nubi-model-form .model-form-option-copy :is(strong,span){white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;}
+:root:has(.office-host) .nubi-model-form .model-form-option-copy strong{font-weight:var(--nubi-weight-regular);color:var(--nubi-text-primary);}
+:root:has(.office-host) .nubi-model-form .model-form-option[aria-checked=true] strong{font-weight:var(--nubi-weight-emphasis);color:var(--nubi-text-action);}
+
+:root:has(.office-host) .nubi-model-form .model-form-provider strong{font-weight:var(--nubi-weight-label);}
+:root:has(.office-host) .nubi-model-form .model-form-provider[aria-checked=true] strong{font-weight:var(--nubi-weight-emphasis);}

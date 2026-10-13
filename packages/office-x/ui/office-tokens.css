@@ -1,0 +1,31 @@
+/* Office aliases to the current Nubi Workspace identity contract.
+   Reference: llm_router/packages/nubi-desktop/design/workspace-identity.css
+   and workspace-dialogs.css, inspected 2026-10-14. Vendor stays immutable. */
+:root {
+ --office-font:var(--nubi-font-family);
+ --office-ink:var(--nubi-text-primary);
+ --office-muted:var(--nubi-text-secondary);
+ --office-meta:var(--nubi-text-meta);
+ --office-paper:var(--nubi-surface-base);
+ --office-surface-inset:var(--nubi-surface-inset);
+ --office-line:var(--deck-line);
+ --office-action:var(--nubi-text-action);
+ --office-selected:var(--nubi-surface-selected);
+ --office-action-hover:var(--deck-action-hover);
+ --office-type-title:var(--deck-type-heading);
+ --office-type-body:var(--deck-type-body);
+ --office-type-label:var(--deck-type-body);
+ --office-type-meta:var(--deck-type-caption);
+ --office-leading:var(--deck-line-body);
+ --office-leading-meta:var(--deck-line-caption);
+ --office-weight-body:var(--nubi-weight-regular);
+ --office-weight-label:var(--nubi-weight-label);
+ --office-weight-focus:var(--nubi-weight-emphasis);
+ --office-dialog-inset:var(--cx-space-6);
+ --office-dialog-radius:var(--nubi-dialog-radius);
+ --office-control-radius:var(--nubi-work-control-radius);
+ --office-control-height:var(--nubi-work-control-height);
+ --office-dialog-shadow:var(--nubi-dialog-shadow);
+}
+/* Width is the only host adaptation; typography and surfaces remain shared. */
+@media(max-width:480px){:root{--office-dialog-inset:var(--cx-space-4);}}

@@ -1,0 +1,41 @@
+{
+  "scope": "Current local Workspace CSS source, not live Electron",
+  "files": [
+    {
+      "file": "/Users/ganadi/Documents/office_x/node_modules/@e2e/cx-design-system/dist/styles.css",
+      "sha256": "fb7dfefaa4714477d5e3913fa546022db7c76adfa75bd0138b4f40288412637a"
+    },
+    {
+      "file": "/Users/ganadi/Documents/office_x/node_modules/@e2e/cx-design-system/fonts/font.css",
+      "sha256": "1c2b994316b94d52a77622ef463f5fd4f6aae15619d536f9380353f57977d920"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/extensions/aipro-chat/design/agent-deck.css",
+      "sha256": "79cea93bce49a2bf675a65c971691309906e741c9b5a586ec094b92df02acc65"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/extensions/aipro-chat/src/app.css",
+      "sha256": "1e43fb818976e9b90b13a7bd4e4ab6d27c67a3f28a73b36c2f22e831ef4fa8f2"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-identity.css",
+      "sha256": "2a2c2d75e6d26393efc80dc301efaf61e344cf33e81d2f6de095cfd99175b305"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/electron-app/ios-tokens.css",
+      "sha256": "5b649794adc954c54ef903a9cdf61706c7ee2e0dc9b5354246dc15c139774a5b"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-typography.css",
+      "sha256": "2aa1b4934c8a1ea4f838cc41a0dd1f2b5379b7962e2f65ed56a094bb067c5f0d"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-density.css",
+      "sha256": "51adaf4cafb3ce3df2293cc67ddc63f968d56c4411e2cf3642c0fbdd40726d3a"
+    },
+    {
+      "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-dialogs.css",
+      "sha256": "d28b3012abf7687f722e96d3a97cb5e643cfd336189827e9c8b037138f16f873"
+    }
+  ]
+}

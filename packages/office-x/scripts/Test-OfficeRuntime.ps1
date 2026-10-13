@@ -48,7 +48,7 @@ foreach($kind in @('word','excel','powerpoint')){
  }
 }
 [Threading.Thread]::CurrentThread.CurrentCulture=$originalCulture
-$record=@{version='0.8.9';scope='live Office COM through the installed host; not VSTO pane or live LLM';passed=(@($results|Where-Object {!$_.passed}).Count -eq 0);results=$results}
+$record=@{version='0.8.10';scope='live Office COM through the installed host; not VSTO pane or live LLM';passed=(@($results|Where-Object {!$_.passed}).Count -eq 0);results=$results}
 $record|ConvertTo-Json -Depth 20|Set-Content $OutputPath -Encoding UTF8
 $record|ConvertTo-Json -Depth 20
 if(!$record.passed){exit 1}

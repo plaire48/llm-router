@@ -71,14 +71,12 @@ button,input,textarea,select { font:inherit; }
 .review table { width:100%; border-collapse:collapse; text-align:left; font:var(--deck-font-caption); }
 .review :is(td,th) { padding:var(--cx-space-1); }
 .review-actions { display:flex; justify-content:flex-end; gap:var(--nubi-action-gap); margin-top:var(--cx-space-3); }
-.receipt { display:grid; gap:var(--cx-space-1); margin-top:var(--cx-space-3); padding:var(--cx-space-2) var(--cx-space-3); border-left:3px solid var(--nubi-text-warning); background:var(--nubi-surface-warning); font:var(--deck-font-caption); }
+.receipt { display:grid; gap:var(--cx-space-1); margin-top:var(--cx-space-3); padding:var(--cx-space-2) var(--cx-space-3); border:1px solid var(--nubi-text-warning);border-radius:var(--deck-control-radius); background:var(--nubi-surface-warning); font:var(--deck-font-caption); }
 .receipt[data-status=verified] { border-color:var(--nubi-text-success); background:var(--nubi-surface-success); }
 .receipt[data-status=verified]>strong { color:var(--nubi-text-success); }
 .receipt[data-status=rejected] { border-color:var(--deck-sub); background:var(--deck-section-surface); }
 .receipt span { color:var(--deck-sub); }
 .latest { align-self:center; flex:none; font:var(--deck-font-caption); }
-.checkpoint-row { display:block; width:100%; margin-top:var(--cx-space-2); text-align:left; overflow:hidden; text-overflow:ellipsis; }
-.connection-field { display:grid; gap:var(--cx-space-2); margin-bottom:var(--cx-space-4); }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-caption); }
 @media(max-width:340px) { .office-shell { --office-inset:var(--cx-space-3); } .office-shell .nubi-beta { display:none; } .office-shell .agent-intro h1 { font-size:21px; } }
@@ -112,27 +110,16 @@ details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-captio
 .review-text dd { margin:var(--cx-space-1) 0 var(--cx-space-3); font:var(--deck-font-body); color:var(--deck-ink); }
 .review-block+.review-block { border-top:1px solid var(--deck-line); padding-top:var(--cx-space-3); }
 
-.services-form fieldset{border:0;padding:0;margin:16px 0;display:grid;gap:12px}.services-form legend{font-weight:700;margin-bottom:10px}.services-form label{display:grid;gap:6px;font-weight:600}.services-form select{min-height:40px;border:1px solid var(--border-color,#dce2e8);border-radius:8px;background:var(--surface,#fff);font:inherit;color:inherit;padding:8px}.target-choices{display:grid;gap:10px}.target-choices button{display:flex;align-items:flex-start;flex-direction:column;gap:4px;white-space:normal}.target-choices span{font-weight:400;font-size:12px}.source-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.source-link{border:0;background:none;color:var(--accent,#2164BD);font:inherit;padding:0;cursor:pointer;text-align:left;text-decoration:underline}.artifact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.artifact-grid figure{margin:0;min-width:0}.artifact-grid img{width:100%;height:auto;border:1px solid #e0e5eb;border-radius:8px}.artifact-grid figcaption{font-size:12px;margin-top:4px;overflow-wrap:anywhere}.topbar .header-actions{gap:4px}.topbar .header-actions button{flex-shrink:0}
+.source-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.source-link{border:0;background:none;color:var(--accent,#2164BD);font:inherit;padding:0;cursor:pointer;text-align:left;text-decoration:underline}.artifact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}.artifact-grid figure{margin:0;min-width:0}.artifact-grid img{width:100%;height:auto;border:1px solid #e0e5eb;border-radius:8px}.artifact-grid figcaption{font-size:12px;margin-top:4px;overflow-wrap:anywhere}.topbar .header-actions{gap:4px}.topbar .header-actions button{flex-shrink:0}
 
-.question-choice{display:flex;gap:8px;align-items:center;padding:6px 0}.review fieldset{border:0;margin:0 0 12px;padding:0}.review legend{font-weight:700;margin-bottom:8px}
+.question-choice{display:flex;gap:8px;align-items:center;padding:6px 0}.review fieldset{border:0;margin:0 0 12px;padding:0}.review legend{font-weight:600;margin-bottom:8px}
 
 .office-recovery{padding:24px;color:#253047;background:#f8fafc;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;font-size:14px;line-height:1.7;min-height:100vh;box-sizing:border-box}.office-recovery strong{font-size:16px}.office-recovery button{padding:9px 16px;border:0;border-radius:8px;background:#3182f6;color:white;font:inherit;font-weight:600;cursor:pointer}
 /* Compact Office forms share Workspace type, surface and emphasis tokens. */
 .office-shell .header-actions .cx-kit-button{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:6px 9px;font-size:13px;font-weight:600;color:var(--nubi-text-secondary)}
-:root:has(.office-host) .office-form{width:min(480px,100%);font-family:var(--nubi-font-family);font-size:15px;line-height:1.6;color:var(--nubi-text-primary)}
-:root:has(.office-host) .office-form .cx-panel-title{font-size:18px;font-weight:600;line-height:1.5}
-.office-form .cx-panel-body{min-width:0;overflow-x:hidden}
-.office-form :is(label,legend){font-size:14px;font-weight:600;color:var(--nubi-text-primary)}
-.office-form :is(input,select){font-size:15px;font-weight:400;min-height:42px;color:var(--nubi-text-primary);background:var(--nubi-surface-inset);border-color:var(--nubi-border-default,#dce2e8)}
-.office-form .form-help,.office-form .muted{font-size:13px;line-height:1.6;color:var(--nubi-text-secondary)}
-.office-form .target-choices{gap:10px;margin-top:16px}
-.office-form .target-choices .cx-kit-button{padding:14px 16px;min-height:70px;background:var(--nubi-surface-inset);border:1px solid transparent;color:var(--nubi-text-primary);box-shadow:none;text-align:left}
-.office-form .target-choices .cx-kit-button:hover,.office-form .target-choices .cx-kit-button:focus-visible{background:var(--nubi-surface-selected);border-color:var(--nubi-text-action)}
-.office-form .target-choices strong{font-size:15px;font-weight:600;line-height:1.5}
-.office-form .target-choices span{font-size:13px;line-height:1.6;color:var(--nubi-text-secondary)}
 .office-question-form{font-family:var(--nubi-font-family);font-size:15px;line-height:1.6}
 .office-question-form legend{font-size:15px;font-weight:600;line-height:1.6;color:var(--nubi-text-primary)}
-.office-question-form .question-choice{padding:10px 12px;margin-block:6px;background:var(--nubi-surface-inset);border-radius:8px;line-height:1.5}
+.office-question-form .question-choice{padding:10px 12px;margin-block:6px;background:var(--nubi-surface-inset);border-radius:var(--deck-control-radius);line-height:1.5}
 .office-question-form .question-choice:has(:checked){color:var(--nubi-text-action);background:var(--nubi-surface-selected);font-weight:600}
 .office-question-form input[type=radio]{accent-color:var(--nubi-text-action);width:16px;height:16px;flex:none}
 .office-question-form :is(input,button){font-family:inherit}
