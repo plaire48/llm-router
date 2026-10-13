@@ -11,6 +11,8 @@ Agent가 현재 Office 문서나 선택한 파일 전체를 읽어 요청한 위
 
 사용 예: **“현재 통합문서를 바탕화면의 매출 분석.md로 저장해 줘.”**
 
-실제 DOCX·XLSX·PPTX·HTML·PDF 변환과 한국어 OCR 테스트가 macOS에서 통과했습니다. Windows 설치본 변환 및 COM 검증은 배포 빌드에서 별도로 실행합니다. Windows 빌드·설치·COM 테스트는 실제 Excel/Word/PowerPoint 2016 및 실계정 Claude/ChatGPT 연결 검증을 대신하지 않습니다. 현재 실제 Office 호스트는 연결되지 않았습니다.
+Windows 설치본에서 변환 엔진 최초 준비, 실제 DOCX·XLSX·PPTX·HTML 변환과 한국어 PDF OCR을 통과했습니다. 32·64비트 COM 테스트, 실제 Windows WebView2 클릭·입력, 설치·재설치·제거도 통과했습니다. 테스트 환경의 설치는 9.05초였으며 엔진 최초 준비를 포함한 변환 검증은 약 136초였습니다. macOS에서는 디지털 PDF 분석도 확인했습니다. Windows 빌드·설치·COM 테스트는 실제 Excel/Word/PowerPoint 2016 및 실계정 Claude/ChatGPT 연결 검증을 대신하지 않습니다. 현재 실제 Office 호스트는 연결되지 않았습니다.
 
-자세한 처리 범위와 제한: docs/markdown-export.md
+[처리 범위와 제한](https://github.com/plaire48/llm-router/blob/1cb37f06322cb56949325b5954c91b259b31e2da/packages/office-x/docs/markdown-export.md)
+
+[Windows 빌드와 검증](https://github.com/plaire48/llm-router/actions/runs/38479267500)

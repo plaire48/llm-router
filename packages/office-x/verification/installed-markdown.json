@@ -1,0 +1,100 @@
+{
+  "seconds": 135.5851369,
+  "actualConverters": true,
+  "rows": [
+    {
+      "sha256": "e9a8f5ce9a7e7ba1694fe2fb1a8d8ea4166355ee0c458fd6e1f9c1c53e95c30f",
+      "quality": {
+        "sourceUnits": 2,
+        "verifiedUnits": 2,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "file": "first.html",
+      "engines": [
+        "markitdown"
+      ],
+      "status": "verified"
+    },
+    {
+      "sha256": "a87a3e8c5745c8c6224e28fef910e58b20532be5a892d611c3d3b877968c2d99",
+      "quality": {
+        "sourceUnits": 10,
+        "verifiedUnits": 10,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "file": "report.docx",
+      "engines": [
+        "genoffice",
+        "markitdown"
+      ],
+      "status": "verified"
+    },
+    {
+      "sha256": "9135479f0c4d78c9fe4ce66622a289b00dbe55b47507f97ae62406ebeb7f7cdc",
+      "quality": {
+        "sourceUnits": 21,
+        "verifiedUnits": 21,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "file": "book.xlsx",
+      "engines": [
+        "genoffice",
+        "markitdown"
+      ],
+      "status": "verified"
+    },
+    {
+      "sha256": "f353c7661c2cac4dbab8e5fb13e3401e5b18bbb36518670d297ba15a83897ca5",
+      "quality": {
+        "sourceUnits": 7,
+        "verifiedUnits": 7,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": true
+      },
+      "warnings": [],
+      "file": "deck.pptx",
+      "engines": [
+        "genoffice",
+        "markitdown"
+      ],
+      "status": "verified"
+    },
+    {
+      "sha256": "3b56b5c8ac84031fce3b246546e303db2c243f74ffba52a205be0c23e35ce96d",
+      "quality": {
+        "sourceUnits": 1,
+        "verifiedUnits": 1,
+        "missingUnits": 0,
+        "empty": false,
+        "complete": false,
+        "ocr": {
+          "used": true,
+          "recognizedRegions": null,
+          "minimumConfidence": 0.998925
+        }
+      },
+      "warnings": [
+        "OCR로 읽은 내용은 글자·숫자를 원문과 대조해 주세요."
+      ],
+      "file": "scanned.pdf",
+      "engines": [
+        "genoffice",
+        "docling"
+      ],
+      "status": "partial"
+    }
+  ],
+  "passed": true,
+  "actualInstalledRuntime": true,
+  "actualOffice": false
+}

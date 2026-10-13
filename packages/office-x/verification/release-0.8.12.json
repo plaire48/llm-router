@@ -1,0 +1,469 @@
+{
+  "version": "0.8.12",
+  "buildCommit": "1cb37f06322cb56949325b5954c91b259b31e2da",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38479267500",
+  "sourceTests": {
+    "macOSPassed": 146,
+    "macOSSkipped": 5,
+    "windowsPassed": 150,
+    "windowsSkipped": 1
+  },
+  "coreTests": 132,
+  "actualInstalledConverters": {
+    "seconds": 135.5851369,
+    "actualConverters": true,
+    "rows": [
+      {
+        "sha256": "e9a8f5ce9a7e7ba1694fe2fb1a8d8ea4166355ee0c458fd6e1f9c1c53e95c30f",
+        "quality": {
+          "sourceUnits": 2,
+          "verifiedUnits": 2,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "file": "first.html",
+        "engines": [
+          "markitdown"
+        ],
+        "status": "verified"
+      },
+      {
+        "sha256": "a87a3e8c5745c8c6224e28fef910e58b20532be5a892d611c3d3b877968c2d99",
+        "quality": {
+          "sourceUnits": 10,
+          "verifiedUnits": 10,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "file": "report.docx",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "status": "verified"
+      },
+      {
+        "sha256": "9135479f0c4d78c9fe4ce66622a289b00dbe55b47507f97ae62406ebeb7f7cdc",
+        "quality": {
+          "sourceUnits": 21,
+          "verifiedUnits": 21,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "file": "book.xlsx",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "status": "verified"
+      },
+      {
+        "sha256": "f353c7661c2cac4dbab8e5fb13e3401e5b18bbb36518670d297ba15a83897ca5",
+        "quality": {
+          "sourceUnits": 7,
+          "verifiedUnits": 7,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "file": "deck.pptx",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "status": "verified"
+      },
+      {
+        "sha256": "3b56b5c8ac84031fce3b246546e303db2c243f74ffba52a205be0c23e35ce96d",
+        "quality": {
+          "sourceUnits": 1,
+          "verifiedUnits": 1,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": false,
+          "ocr": {
+            "used": true,
+            "recognizedRegions": null,
+            "minimumConfidence": 0.998925
+          }
+        },
+        "warnings": [
+          "OCR로 읽은 내용은 글자·숫자를 원문과 대조해 주세요."
+        ],
+        "file": "scanned.pdf",
+        "engines": [
+          "genoffice",
+          "docling"
+        ],
+        "status": "partial"
+      }
+    ],
+    "passed": true,
+    "actualInstalledRuntime": true,
+    "actualOffice": false
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "legacyEditorUpgradeCleanup": true,
+    "imageFeatures": false,
+    "reinstallSeconds": 6.35,
+    "officeInstalled": false,
+    "registry": [
+      {
+        "app": "Excel",
+        "view": "Registry32",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal"
+      },
+      {
+        "app": "Word",
+        "view": "Registry32",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal"
+      },
+      {
+        "app": "PowerPoint",
+        "view": "Registry32",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal"
+      },
+      {
+        "app": "Excel",
+        "view": "Registry64",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal"
+      },
+      {
+        "app": "Word",
+        "view": "Registry64",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal"
+      },
+      {
+        "app": "PowerPoint",
+        "view": "Registry64",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal"
+      }
+    ],
+    "runner": "windows-2022",
+    "uninstallSeconds": 2.1,
+    "liveModelVerified": false,
+    "standaloneEditorsAbsent": true,
+    "passed": true,
+    "installSeconds": 9.05,
+    "realOfficeVerified": false
+  },
+  "integrity": {
+    "buildCommit": "1cb37f06322cb56949325b5954c91b259b31e2da",
+    "exeSha256": "b85b5eb9446c77e9caeff13fccdb26e62e95539470ff41680d4668e97fd07c0b",
+    "exeBytes": 140008554,
+    "sourceSha256": "d6be23637e5961363bc60dabc6a77601d8436e0c03d66f34a4881062adf3cbeb",
+    "sourceFiles": 5597,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productSourceHashesChecked": 74,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true,
+    "installedConvertersVerified": true,
+    "actualOffice": false
+  },
+  "ui": {
+    "passed": true,
+    "scope": "owned browser fixtures, no actual Office or account",
+    "cases": [
+      {
+        "app": "excel",
+        "viewport": {
+          "width": 280,
+          "height": 480
+        },
+        "saveApproval": true,
+        "requestedPathVisible": true,
+        "filePersistenceSeparated": true,
+        "ocrDisclosure": true,
+        "inputUsable": true,
+        "geometry": {
+          "overflow": false,
+          "chatBottom": 287,
+          "inputTop": 308
+        }
+      },
+      {
+        "app": "excel",
+        "viewport": {
+          "width": 420,
+          "height": 760
+        },
+        "saveApproval": true,
+        "requestedPathVisible": true,
+        "filePersistenceSeparated": true,
+        "ocrDisclosure": true,
+        "inputUsable": true,
+        "geometry": {
+          "overflow": false,
+          "chatBottom": 607,
+          "inputTop": 628
+        }
+      },
+      {
+        "app": "word",
+        "viewport": {
+          "width": 280,
+          "height": 480
+        },
+        "saveApproval": true,
+        "requestedPathVisible": true,
+        "filePersistenceSeparated": true,
+        "ocrDisclosure": true,
+        "inputUsable": true,
+        "geometry": {
+          "overflow": false,
+          "chatBottom": 287,
+          "inputTop": 308
+        }
+      },
+      {
+        "app": "word",
+        "viewport": {
+          "width": 420,
+          "height": 760
+        },
+        "saveApproval": true,
+        "requestedPathVisible": true,
+        "filePersistenceSeparated": true,
+        "ocrDisclosure": true,
+        "inputUsable": true,
+        "geometry": {
+          "overflow": false,
+          "chatBottom": 607,
+          "inputTop": 628
+        }
+      },
+      {
+        "app": "powerpoint",
+        "viewport": {
+          "width": 280,
+          "height": 480
+        },
+        "saveApproval": true,
+        "requestedPathVisible": true,
+        "filePersistenceSeparated": true,
+        "ocrDisclosure": true,
+        "inputUsable": true,
+        "geometry": {
+          "overflow": false,
+          "chatBottom": 287,
+          "inputTop": 308
+        }
+      },
+      {
+        "app": "powerpoint",
+        "viewport": {
+          "width": 420,
+          "height": 760
+        },
+        "saveApproval": true,
+        "requestedPathVisible": true,
+        "filePersistenceSeparated": true,
+        "ocrDisclosure": true,
+        "inputUsable": true,
+        "geometry": {
+          "overflow": false,
+          "chatBottom": 607,
+          "inputTop": 628
+        }
+      }
+    ]
+  },
+  "uiBundle": {
+    "passed": true,
+    "platformBuildUIByteIdentical": true,
+    "uiFilesCompared": 140,
+    "installedWindowsRuntimeVerified": true,
+    "actualOffice": false
+  },
+  "macOSConverters": {
+    "platform": "darwin",
+    "actualOffice": false,
+    "actualConverters": true,
+    "ocr": true,
+    "rows": [
+      {
+        "file": "report.docx",
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "quality": {
+          "sourceUnits": 10,
+          "verifiedUnits": 10,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "counts": {
+          "blocks": 4,
+          "notes": 1,
+          "tables": 1
+        },
+        "sourceSha256": "94173ce0f27b5a5d05bc81ae1eaf930297621b52ed60f1299edc1ceafa939bba",
+        "markdownSha256": "a87a3e8c5745c8c6224e28fef910e58b20532be5a892d611c3d3b877968c2d99"
+      },
+      {
+        "file": "book.xlsx",
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "quality": {
+          "sourceUnits": 21,
+          "verifiedUnits": 21,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "counts": {
+          "sheets": 2,
+          "cells": 10,
+          "formulas": 1,
+          "tables": 0
+        },
+        "sourceSha256": "a3dbbf7ec31f5701102d91a4e8dc5894c29dcf6b499592e6b908b7123934851a",
+        "markdownSha256": "9135479f0c4d78c9fe4ce66622a289b00dbe55b47507f97ae62406ebeb7f7cdc"
+      },
+      {
+        "file": "deck.pptx",
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "quality": {
+          "sourceUnits": 7,
+          "verifiedUnits": 7,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "counts": {
+          "slides": 1,
+          "notes": 1,
+          "tables": 1
+        },
+        "sourceSha256": "78d0a0006cbb985e42ddce0900651be619cb5f29cec47e111a78550b7edae4ef",
+        "markdownSha256": "f353c7661c2cac4dbab8e5fb13e3401e5b18bbb36518670d297ba15a83897ca5"
+      },
+      {
+        "file": "content.html",
+        "status": "verified",
+        "engines": [
+          "markitdown"
+        ],
+        "quality": {
+          "sourceUnits": 4,
+          "verifiedUnits": 4,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "counts": {
+          "tables": 0
+        },
+        "sourceSha256": "3f1b69ba49399ab3c2350a6c3daf253caa2f13445290c10164a92e342058f930",
+        "markdownSha256": "f95f7e906ea186dfa1f85a3921ebfedae34bde35272b030402d8faae56035d20"
+      },
+      {
+        "file": "digital.pdf",
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "docling"
+        ],
+        "quality": {
+          "sourceUnits": 4,
+          "verifiedUnits": 4,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true,
+          "ocr": {
+            "used": false,
+            "recognizedRegions": null,
+            "minimumConfidence": null
+          }
+        },
+        "warnings": [],
+        "counts": {
+          "pages": 2,
+          "tables": 0
+        },
+        "sourceSha256": "ad2620c02a0956d5c4c904a77c76425b9271001cc1d3c22fa13f9f6853c2b3c8",
+        "markdownSha256": "1adc80c8b54c95ee1b61c1d7d7bf6231c0d4cbf294ec9e3189e001e26772e37d"
+      },
+      {
+        "file": "report.docx",
+        "route": "docling",
+        "result": {
+          "sourceUnits": 10,
+          "verifiedUnits": 10,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true,
+          "ocr": {
+            "used": false,
+            "recognizedRegions": null,
+            "minimumConfidence": null
+          }
+        }
+      },
+      {
+        "file": "scanned.pdf",
+        "status": "partial",
+        "engines": [
+          "genoffice",
+          "docling"
+        ],
+        "quality": {
+          "sourceUnits": 1,
+          "verifiedUnits": 1,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": false,
+          "ocr": {
+            "used": true,
+            "recognizedRegions": null,
+            "minimumConfidence": 0.9989116666666665
+          }
+        },
+        "warnings": [
+          "OCR로 읽은 내용은 글자·숫자를 원문과 대조해 주세요."
+        ],
+        "counts": {
+          "pages": 1,
+          "tables": 0
+        },
+        "markdownSha256": "3b56b5c8ac84031fce3b246546e303db2c243f74ffba52a205be0c23e35ce96d"
+      }
+    ]
+  },
+  "boundaries": {
+    "realOffice2016Verified": false,
+    "realWindowsClaudeVerified": false,
+    "realProviderLoginTestedThisRelease": false
+  }
+}
