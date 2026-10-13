@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.7.1",
   "date": "2026-10-13",
   "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
   "sourceChecks": {
@@ -7,7 +7,7 @@
     "nubiHashes": 88,
     "unitTestsPassed": 67,
     "unitTestsSkipped": 4,
-    "nativeCoreTests": 72,
+    "nativeCoreTests": 73,
     "stdioMockIntegration": "passed",
     "net472HostCrossCompile": "passed",
     "creationOperationBrowserFlows": 6,
@@ -53,16 +53,23 @@
     "modelFormCatalogRefreshWithoutProviderSwitch": "passed",
     "upstreamUiTests": 165,
     "windowsUnitTestsPassed": 71,
-    "sharedModelSettingsEditors": 6
+    "sharedModelSettingsEditors": 6,
+    "nativeCamelCaseReviewRegression": true,
+    "nativeWireBrowserApps": 3,
+    "screenRecoveryWithoutDocumentReplay": true,
+    "headerActions": [
+      "model",
+      "rollback"
+    ]
   },
-  "windowsVstoBuildVerified": true,
-  "windowsInstallerVerified": true,
+  "windowsVstoBuildVerified": false,
+  "windowsInstallerVerified": false,
   "officeRuntimeVerified": false,
   "liveModelVerified": false,
   "genofficeFullProductParityVerified": false,
-  "releasePublished": true,
-  "windowsBuildVerified": true,
-  "windowsInstallVerified": true,
+  "releasePublished": false,
+  "windowsBuildVerified": false,
+  "windowsInstallVerified": false,
   "companionEditorsIncluded": [
     "docs",
     "sheets",
@@ -73,9 +80,7 @@
   ],
   "realOfficeVerified": false,
   "upstreamFiles": 4582,
-  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.0-beta.1",
-  "buildCommit": "0996619061aca36c55984eecc91935ce4b5fbf22",
-  "sourcePackageCommit": "46f93c2d3fe699677f9b1f0e798832228ab389be",
-  "windowsRun": 38339944981,
-  "companionRuntimeVerified": true
+  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.1-beta.1",
+  "companionRuntimeVerified": false,
+  "previousRelease": "office-x-v0.7.0-beta.1"
 }

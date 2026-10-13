@@ -40,6 +40,7 @@ jobs:
           retention-days: 7
           path: |
             packages/office-x/verification/companion-*.json
+            packages/office-x/verification/native-*.json
             packages/office-x/releases/installer-build.json
             packages/office-x/releases/install-smoke.json
       - name: Stage release for review

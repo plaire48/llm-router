@@ -31,6 +31,12 @@ try {
  if($LASTEXITCODE){throw 'Native core tests failed'}
  & dotnet build native/OfficeX.ExcelHost -c Release
  if($LASTEXITCODE){throw 'Native host build failed'}
+ & dotnet build native/OfficeX.Dispatch.Tests -c Release
+ if($LASTEXITCODE){throw 'IDispatch test build failed'}
+ & native/OfficeX.Dispatch.Tests/bin/Release/net472/OfficeX.Dispatch.Tests.exe
+ if($LASTEXITCODE){throw 'Windows IDispatch regression failed'}
+ & dotnet build native/OfficeX.Surface.Tests -c Release
+ if($LASTEXITCODE){throw 'Native WebView2 regression build failed'}
  $interop=@{}
  foreach($entry in @(@('MicrosoftOfficeCore','15.0.0','Office.dll','OfficeCorePath'),@('Microsoft.Office.Interop.Excel','15.0.4795.1001','Microsoft.Office.Interop.Excel.dll','ExcelInteropPath'),@('Microsoft.Office.Interop.Word','15.0.4797.1004','Microsoft.Office.Interop.Word.dll','WordInteropPath'),@('Microsoft.Office.Interop.PowerPoint','15.0.4420.1018','Microsoft.Office.Interop.PowerPoint.dll','PowerPointInteropPath'))){
   & $NuGetPath install $entry[0] -Version $entry[1] -OutputDirectory native/packages -NonInteractive

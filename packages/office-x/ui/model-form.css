@@ -20,3 +20,9 @@
 :root:has(.desktop-shell) .nubi-model-form>.cx-panel-footer{justify-content:flex-end}
 .nubi-model-form [role=radio]:focus-visible{outline:2px solid var(--nubi-text-action);outline-offset:2px}
 @media(max-width:380px){:root:has(.desktop-shell) .nubi-model-form .model-form-provider.cx-kit-button{padding:10px 8px;gap:6px}.nubi-model-form .model-form-provider strong{font-size:14px}}
+/* The same Workspace hierarchy in VSTO and the original editor model form. */
+:root:has(.desktop-shell) .nubi-model-form{font-family:var(--nubi-font-family);color:var(--nubi-text-primary)}
+:root:has(.desktop-shell) .nubi-model-form .cx-panel-title{font-size:18px;font-weight:600;line-height:1.5}
+.nubi-model-form .model-form-provider strong,.nubi-model-form .question-option-copy strong{font-weight:600}
+.nubi-model-form .model-form-provider[aria-checked=true]{box-shadow:inset 0 0 0 1px var(--nubi-text-action)}
+.nubi-model-form .model-form-tools{margin-right:auto}

@@ -50,7 +50,7 @@ async (page) => {
   if(await page.evaluate(()=>window.officeFixture.sent.some(m=>m.type==='start')))throw Error('IME sent too early');
   await page.getByRole('button',{name:'보내기',exact:true}).click();
   await page.getByRole('button',{name:'변경 적용',exact:true}).waitFor();
-  if(!(await page.getByRole('button',{name:'새 대화',exact:true}).isDisabled()))throw Error('busy conversation switch enabled');
+  if(!(await page.getByRole('button',{name:'연결 설정',exact:true}).isDisabled()))throw Error('busy model switch enabled');
   await page.evaluate(()=>window.officeFixture.receive({type:'text',runId:'fixture-run',data:Array(60).fill('스크롤 동작 확인 문장입니다.').join('\n\n')}));
   await page.waitForFunction(()=>{const v=document.querySelector('.conversation');return v.scrollHeight>v.clientHeight+200&&v.scrollHeight-v.scrollTop-v.clientHeight<25;});
   await page.locator('.conversation').evaluate(v=>{v.scrollTop=0;v.dispatchEvent(new Event('scroll',{bubbles:true}));});
@@ -60,10 +60,7 @@ async (page) => {
   await page.getByRole('button',{name:'변경 적용',exact:true}).click();
   await page.getByText('수식 검증 완료',{exact:true}).waitFor();
   await page.screenshot({path:'/Users/ganadi/Documents/office_x/verification/chat-result.png'});
-  await page.getByRole('button',{name:'새 대화',exact:true}).click();
-  await page.getByRole('button',{name:'대화 이력',exact:true}).click();
-  await page.getByRole('button',{name:'수량과 단가를 곱해서 금액 열을 채워줘.',exact:true}).click();
-  await page.getByText('수식 검증 완료',{exact:true}).waitFor();
+  for(const name of ['새 대화','대화 이력','검색과 이미지 설정','GenOffice 편집기 열기'])if(await page.getByRole('button',{name,exact:true}).count())throw Error('removed header action remains: '+name);
   await page.getByRole('button',{name:'연결 설정',exact:true}).click();
   await page.getByRole('radio',{name:'Claude',exact:true}).click();
   await page.getByRole('button',{name:'연결',exact:true}).click();
@@ -100,5 +97,5 @@ async (page) => {
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
   if(overflow)throw Error('horizontal overflow at 320px');
   if(errors.length)throw Error(errors.join('\n'));
-  return {passed:['provider login fixture','model search and selection','IME composition','native approval payload','busy guards','verified receipt','new conversation and history','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
+  return {passed:['provider login fixture','model search and selection','IME composition','native approval payload','busy guards','verified receipt','simplified header without new/history/image/external buttons','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
 }

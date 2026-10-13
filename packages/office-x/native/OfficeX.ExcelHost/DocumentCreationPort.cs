@@ -15,7 +15,7 @@ namespace OfficeX.ExcelHost {
   sealed class Scope:IDisposable {readonly List<object> all=new List<object>();public dynamic Keep(object o){if(o!=null&&Marshal.IsComObject(o))all.Add(o);return o;}public void Dispose(){for(int i=all.Count-1;i>=0;i--)Marshal.ReleaseComObject(all[i]);}}
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   public DocumentCreationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;using(var c=new Scope()){dynamic doc=c.Keep(Source());sourceId=Identity(doc);}}
-  object Source()=>app=="word"?application.ActiveDocument:app=="powerpoint"?application.ActivePresentation:application.ActiveWorkbook;
+  object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
   public void CheckSource(){using(var c=new Scope()){dynamic win=c.Keep(application.ActiveWindow),doc=c.Keep(Source());if((int)win.HWND!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
   public string CreatedName=>created==null?null:(string)((dynamic)created).Name;
   public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){dynamic doc=created;if(app=="powerpoint"){dynamic windows=c.Keep(doc.Windows),window=c.Keep(windows.Item(1));window.Activate();}else doc.Activate();}}
@@ -23,7 +23,7 @@ namespace OfficeX.ExcelHost {
    if(created!=null)throw new OfficeFault("writes_stopped_for_this_run");plan=Wire.Clone(value);
    using(var c=new Scope()){
     dynamic collection=c.Keep(app=="word"?application.Documents:app=="powerpoint"?application.Presentations:application.Workbooks);
-    created=app=="word"?collection.Add():app=="powerpoint"?collection.Add(-1):collection.Add(-4167);
+    created=OfficeDispatch.Invoke((object)collection,"Add","call",app=="word"?new object[0]:new object[]{app=="powerpoint"?-1:-4167});
     dynamic doc=created,properties=c.Keep(doc.BuiltInDocumentProperties),title=c.Keep(properties.Item("Title"));title.Value=plan.Content.Title;
     if(app=="word")CreateWord(c,doc,token);else if(app=="powerpoint")CreateSlides(c,doc,token);else CreateSheets(c,doc,token);
    }

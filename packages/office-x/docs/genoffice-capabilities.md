@@ -1,4 +1,4 @@
-# GenOffice 기능 대응 — 0.7.0
+# GenOffice 기능 대응 — 0.7.1
 
 기준: genspark-ai/genoffice, commit `438d9c65709952490c970beaa2599ef45e74431f`. 원본 저장소의 4,582개 파일을 수정하지 않고 사용한다. Agent는 원본 AgentLoop와 composeSkills이며 누비는 UI·로그인·모델 transport를 제공한다.
 

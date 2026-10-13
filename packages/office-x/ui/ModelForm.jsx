@@ -6,7 +6,7 @@ import './model-form.css';
 
 // Use the Workspace question-form tokens and deferred single-choice pattern.
 // Browsing a provider or model never changes the active conversation model.
-export function ModelForm({data,providerLabels,disabled,loading,onSelect,onRefresh,onLogin,onLogout,onCancelLogin,onClose}) {
+export function ModelForm({data,providerLabels,disabled,loading,onSelect,onRefresh,onLogin,onLogout,onCancelLogin,onClose,onTools}) {
  const [provider,setProvider]=useState(data.activeProvider),[choice,setChoice]=useState(''),[query,setQuery]=useState(''),[saving,setSaving]=useState(false),[error,setError]=useState('');
  const id=useId(),rows=useRef(null),request=useRef(false),refresh=useRef(onRefresh),refreshed=useRef(null);refresh.current=onRefresh;
  const connection=data.connections?.[provider]||{},connected=connection.present&&!connection.expired&&!connection.rejected;
@@ -20,7 +20,7 @@ export function ModelForm({data,providerLabels,disabled,loading,onSelect,onRefre
  function browse(next){if(blocked)return;setProvider(next);setChoice('');setQuery('');setError('');}
  function keyboard(event){if(!['ArrowDown','ArrowUp','ArrowRight','ArrowLeft','Home','End'].includes(event.key))return;const group=event.currentTarget,buttons=[...group.querySelectorAll('[role="radio"]:not(:disabled)')],index=buttons.indexOf(document.activeElement);if(index<0||!buttons.length)return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?buttons.length-1:(index+(['ArrowDown','ArrowRight'].includes(event.key)?1:-1)+buttons.length)%buttons.length;buttons[next].focus();buttons[next].click();}
  const problem=error||(!pending&&data.report?.provider===provider&&data.report.error!=='login_closed'?ERROR_TEXT[data.report.error]:'')||catalog?.errorMessage;
- const footer=<><CxButton disabled={saving} onClick={onClose}>취소</CxButton><CxButton variant="primary" busy={saving} disabled={blocked||!valid} onClick={()=>perform(async()=>{if(await onSelect(selected,provider))onClose();else setError('모델을 적용하지 못했습니다. 다시 시도해주세요.');})}>적용</CxButton></>;
+ const footer=<>{onTools&&<CxButton className="model-form-tools" onClick={onTools} disabled={blocked}><Icon name="sliders" size={16}/>도구 연결</CxButton>}<CxButton disabled={saving} onClick={onClose}>취소</CxButton><CxButton variant="primary" busy={saving} disabled={blocked||!valid} onClick={()=>perform(async()=>{if(await onSelect(selected,provider))onClose();else setError('모델을 적용하지 못했습니다. 다시 시도해주세요.');})}>적용</CxButton></>;
  return <DetailPanel title="모델 선택" className="deck-dialog nubi-decision-dialog nubi-model-form" variant="modal" hideHelp busy={saving} initialFocus='[role="radio"][aria-checked="true"]' onClose={onClose} footer={footer}>
   <div className="nubi-question-form model-form-fields">
    {problem&&<CxNotice tone="danger">{problem}</CxNotice>}

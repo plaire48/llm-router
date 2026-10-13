@@ -6,6 +6,18 @@ using OfficeX.Core;
 using Newtonsoft.Json.Linq;
 
 var tests=new (string,Action)[] {
+    ("native task-pane review and receipt preserve the camelCase wire contract",()=>{
+      var draft=new DocumentDraft{Title="매출",Sheets=new List<SheetContent>{new SheetContent{Name="매출",Rows=new List<List<string>>{new List<string>{"품목","금액"},new List<string>{"샘플","1000"}}}}};
+      var review=Wire.Object(new{type="review",runId="native-run",planId="native-plan",plan=new CreationPlan{Id="native-plan",App="excel",Content=draft}});
+      var transmitted=JObject.Parse(Wire.Json(review));Equal("create_document",(string)transmitted["plan"]["kind"]);Equal("매출",(string)transmitted["plan"]["content"]["sheets"][0]["name"]);Equal(null,transmitted["plan"]["Kind"]);
+      var receipt=Wire.Object(new{type="receipt",runId="native-run",receipt=new CreationReceipt{Status="verified",Mutated=true,Count=1}});Equal("verified",(string)receipt["receipt"]["status"]);Equal(true,(bool)receipt["receipt"]["mutated"]);
+      var context=Wire.Object(new Snapshot{Workbook="통합문서",Address="A1"});Equal("통합문서",(string)context["workbook"]);
+      var operation=Wire.Object(new{plan=new OfficePlan{Steps=new List<OfficeStep>{new OfficeStep{Action="set",Member="Text",Value="값"}}}});Equal("Text",(string)operation["plan"]["steps"][0]["member"]);
+      var packets=new List<object>();foreach(var app in new[]{"excel","word","powerpoint"}){
+        var content=app=="excel"?draft:app=="word"?new DocumentDraft{Title="보고서",Paragraphs=new List<DocumentPart>{new DocumentPart{Style="Title",Text="보고서"}}}:new DocumentDraft{Title="발표",Slides=new List<SlideContent>{new SlideContent{Title="목적",Body=new List<string>{"업무 개선"}}}};
+        packets.Add(new{app,review=Wire.Object(new{type="review",runId="native-run",planId="native-plan",target=app,plan=new CreationPlan{Id="native-plan",App=app,Content=content}}),receipt=Wire.Object(new{type="receipt",runId="native-run",receipt=new CreationReceipt{PlanId="native-plan",Status="verified",Mutated=true,Document="새 문서",Count=1}})});
+      }System.IO.Directory.CreateDirectory("verification");System.IO.File.WriteAllText("verification/native-wire.json",Wire.Json(packets));
+    }),
     ("unsupported member before invocation can be replanned without reporting a write",()=>{var p=new FakeAutomationPort{WriteFault=new OfficeFault("office_member_not_found","Formula2",unchecked((int)0x80020003),false)};var s=new OfficeAutomationSession(p);var read=s.Inspect(OfficeReads());var plan=s.Prepare(read.SnapshotId,"입력",OfficeWrites("new"),OfficeChecks("new"));var r=s.Apply(plan.Id,true,default);Equal(false,r.Mutated);Equal(0,p.Writes);Equal(true,OfficeCallPolicy.CanReplan(r));Fault("invalid_plan",()=>s.Apply(plan.Id,true,default));p.WriteFault=null;read=s.Inspect(OfficeReads());plan=s.Prepare(read.SnapshotId,"지원 멤버로 입력",OfficeWrites("new"),OfficeChecks("new"));Equal("verified",s.Apply(plan.Id,true,default).Status);Equal(1,p.Writes);}),
     ("real partial writes cannot be replanned as an unsupported-member retry",()=>{var r=new OfficeExecutionReceipt{Error="office_member_not_found",Status="partial",Mutated=true,CompletedWrites=1};Equal(false,OfficeCallPolicy.CanReplan(r));}),
     ("dotted paths fail before invocation while normal document content stays available",()=>{Equal(true,OfficeCallPolicy.Exposed("Value2"));try{OfficeCallPolicy.Validate("Font.Bold",false,"set");throw new Exception("expected fault");}catch(OfficeFault e){Equal("office_member_path_not_supported",e.Message);Equal(false,e.InvocationStarted);Equal("Font.Bold",e.Member);}}),

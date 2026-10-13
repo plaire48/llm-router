@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Linq;
 
 namespace OfficeX.Core
 {
@@ -18,6 +19,7 @@ namespace OfficeX.Core
             ContractResolver = new CamelCasePropertyNamesContractResolver(), Culture = CultureInfo.InvariantCulture,
             TypeNameHandling = TypeNameHandling.None, MaxDepth = 32 };
         public static string Json(object value) => JsonConvert.SerializeObject(value, Settings);
+        public static JObject Object(object value) => JObject.Parse(Json(value));
         public static T Clone<T>(T value) => JsonConvert.DeserializeObject<T>(Json(value), Settings);
         public static string Hash(object value) {
             using (var hash = SHA256.Create()) return BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Json(value)))).Replace("-", "");

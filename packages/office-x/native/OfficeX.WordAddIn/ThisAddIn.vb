@@ -51,6 +51,7 @@ Partial Public Class ThisAddIn
         Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
         If Not panes.TryGetValue(newHandle, pane) Then
             Dim control = CreateControl(newHandle)
+            AddHandler control.SurfaceReady, Sub() HideSourcePane(source, control)
             control.FollowSession(source)
             pane = CustomTaskPanes.Add(control, "누비 Agent", window)
             pane.Width = 420
@@ -60,8 +61,12 @@ Partial Public Class ThisAddIn
             If control IsNot Nothing AndAlso Not control.IsRunning Then control.FollowSession(source)
         End If
         pane.Visible = True
+    End Sub
+
+    Private Sub HideSourcePane(source As OfficeX.ExcelHost.OfficePane, readyControl As OfficeX.ExcelHost.OfficePane)
+        If readyControl.IsDisposed Then Return
         For Each other In panes.Values
-            If Object.ReferenceEquals(other.Control, source) AndAlso Not Object.ReferenceEquals(other, pane) Then other.Visible = False
+            If Object.ReferenceEquals(other.Control, source) AndAlso Not Object.ReferenceEquals(other.Control, readyControl) Then other.Visible = False
         Next
     End Sub
 

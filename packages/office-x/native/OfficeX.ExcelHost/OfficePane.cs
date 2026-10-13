@@ -32,16 +32,17 @@ namespace OfficeX.ExcelHost
         private readonly List<OfficePane> followers=new List<OfficePane>();
         private JObject lastProvider,lastReceipt,lastServices;
         public event Action<int> DocumentWindowChanged;
+        public event Action SurfaceReady;
         public bool IsRunning=>running;
         private JObject handoffState,pendingReview;
         private readonly List<JObject> followMessages=new List<JObject>();
-        private JObject HandoffState()=>JObject.FromObject(new{type="handoff",app,conversationId,runId,request=request.Text,text=answer.Text,target=target.Text,running,model=(string)lastProvider?["state"]?["model"]});
-        public void FollowSession(OfficePane owner){if(ReferenceEquals(owner,this))return;followMessages.Clear();files=owner.files?.Fork(()=>automationPort);if(files!=null)surface.SetAssetsRoot(files.Folder);followOwner=owner;owner.followers.Add(this);handoffState=owner.HandoffState();lastProvider=owner.lastProvider;lastServices=owner.lastServices;lastReceipt=owner.lastReceipt;ReplayFollow();}
+        private JObject HandoffState()=>Wire.Object(new{type="handoff",app,conversationId,runId,request=request.Text,text=answer.Text,target=target.Text,running,model=(string)lastProvider?["state"]?["model"]});
+        public void FollowSession(OfficePane owner){if(ReferenceEquals(owner,this))return;followMessages.Clear();files=owner.files?.Fork(()=>automationPort);if(files!=null)surface.SetAssetsRoot(files.Folder);followOwner=owner;owner.followers.Add(this);handoffState=owner.HandoffState();runId=owner.runId;conversationId=owner.conversationId;request.Text=owner.request.Text;answer.Text=owner.answer.Text;lastProvider=owner.lastProvider;lastServices=owner.lastServices;lastReceipt=owner.lastReceipt;ReplayFollow();}
         private void ReplayFollow(){if(handoffState==null)return;if(followOwner!=null)handoffState=followOwner.HandoffState();surface.Send(handoffState);if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);if(lastReceipt!=null&&!followMessages.Any(m=>(string)m["type"]=="receipt"))surface.Send(lastReceipt);foreach(var message in followMessages)surface.Send(message);if(followOwner?.pendingQuestion!=null)surface.Send(followOwner.pendingQuestion);if(followOwner?.pendingReview!=null)surface.Send(followOwner.pendingReview);}
         private void RememberFollow(JObject message){var type=(string)message["type"];if(type=="provider_state")lastProvider=(JObject)message.DeepClone();if(type=="services_state")lastServices=(JObject)message.DeepClone();if(type=="receipt")lastReceipt=(JObject)message.DeepClone();if(new[]{"receipt","sources","artifacts","done","error","disconnected"}.Contains(type)){followMessages.Add((JObject)message.DeepClone());if(followMessages.Count>200)followMessages.RemoveAt(0);}if(followOwner!=null)handoffState=followOwner.HandoffState();}
-        private void SendSurface(object value){var message=JObject.FromObject(value);if((string)message["type"]=="artifacts"&&files!=null&&message["data"]?["items"] is JArray items){foreach(JObject item in items){var path=(string)item["previewPath"];if(path==null)continue;try{files.CheckedPath(path,".png",".jpg",".jpeg",".gif",".webp");item["preview"]="https://office-x-assets.local/"+Uri.EscapeDataString(System.IO.Path.GetFileName(path));}catch{}item.Remove("previewPath");}}if((string)message["type"]=="provider_state")lastProvider=(JObject)message.DeepClone();if((string)message["type"]=="services_state")lastServices=(JObject)message.DeepClone();if((string)message["type"]=="receipt")lastReceipt=(JObject)message.DeepClone();surface.Send(message);foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.RememberFollow(message);follower.surface.Send(message);}}
+        private void SendSurface(object value){var message=Wire.Object(value);if((string)message["type"]=="artifacts"&&files!=null&&message["data"]?["items"] is JArray items){foreach(JObject item in items){var path=(string)item["previewPath"];if(path==null)continue;try{files.CheckedPath(path,".png",".jpg",".jpeg",".gif",".webp");item["preview"]="https://office-x-assets.local/"+Uri.EscapeDataString(System.IO.Path.GetFileName(path));}catch{}item.Remove("previewPath");}}if((string)message["type"]=="provider_state")lastProvider=(JObject)message.DeepClone();if((string)message["type"]=="services_state")lastServices=(JObject)message.DeepClone();if((string)message["type"]=="receipt")lastReceipt=(JObject)message.DeepClone();RememberFollow(message);surface.Send(message);foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.RememberFollow(message);follower.surface.Send(message);}}
         private void RebindActiveDocument(){dynamic window=((dynamic)application).ActiveWindow;int handle=(int)window.HWND;if(System.Runtime.InteropServices.Marshal.IsComObject(window))System.Runtime.InteropServices.Marshal.ReleaseComObject(window);creationPort?.Dispose();creationPort=new DocumentCreationPort(application,app,handle);automationPort?.Dispose();automationPort=new OfficeAutomationPort(application,app,handle);automation=new OfficeAutomationSession(automationPort);createdDuringRun=true;fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};target.Text=automationPort.DocumentName;try{DocumentWindowChanged?.Invoke(handle);}catch{SendSurface(new{type="document_follow_warning",runId,document=target.Text});}}
-        private object RunContext(){var context=JObject.FromObject(Context);context["artifactRoot"]=files.Folder;context["documentTarget"]=documentTarget;return context;}
+        private object RunContext(){var context=Wire.Object(Context);context["artifactRoot"]=files.Folder;context["documentTarget"]=documentTarget;return context;}
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hwnd);
@@ -63,11 +64,11 @@ namespace OfficeX.ExcelHost
         private readonly ChatSurface surface;
         private string conversationId, reviewId;
         public OfficePane(object application,string root,int windowHandle,string app="excel") {
-            this.root=root;this.app=app;this.application=application;this.windowHandle=windowHandle;
+            Dock=DockStyle.Fill;this.root=root;this.app=app;this.application=application;this.windowHandle=windowHandle;
             if(app=="excel")port=new ExcelPort((Excel.Application)application,windowHandle);else textPort=new TextPort(application,app,windowHandle);
             surface=new ChatSurface(root);Controls.Add(surface);
             surface.Message+=ReceiveUi;
-            surface.Failed+=()=>Cancel();
+            surface.Failed+=()=>OfficeDiagnostics.Record(new OfficeFault("chat_surface_failed"),app,"chat_surface");
             status.TextChanged+=(_,__)=>Publish();
             answer.TextChanged+=(_,__)=>Publish();
             outcome.TextChanged+=(_,__)=>Publish();
@@ -78,7 +79,9 @@ namespace OfficeX.ExcelHost
             try {
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.7.0"});EnsureWorker();if(handoffState!=null)ReplayFollow();else Publish();break;
+                    case "ready":surface.Send(new {type="host",app,version="0.7.1"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ui_rendered":SurfaceReady?.Invoke();break;
+                    case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
                         if(running||nativeBusy)throw new OfficeFault("worker_busy");EnsureWorker();worker.Send(new{type="services",id=(string)message["id"],method=(string)message["method"],input=message["input"]});break;
                     case "open_source":
@@ -179,7 +182,7 @@ namespace OfficeX.ExcelHost
                         try {currentStage="native_"+(string)message["name"];result=await Native((string)message["name"],message["input"] as JObject??new JObject());}
                         catch(OfficeFault e){OfficeDiagnostics.Record(e,app,currentStage);result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,invocationStarted=e.InvocationStarted,recovery=e.InvocationStarted==false?"No call was made. Use inspect_office_members and the native guide; root document is not Application. Use dedicated file tools for Save/Open/Export.":null};status.Text=Explain(e.Message);}
                         catch(OperationCanceledException){result=new {ok=false,status="cancelled"};}
-                        catch{result=new {ok=false,error="native_execution_failed"};}
+                        catch(Exception e){result=new {ok=false,error="native_execution_failed",diagnostics=OfficeDiagnostics.Record(e,app,currentStage)};}
                         finally {nativeBusy=false;if(!running)SetBusy(false);}
                     }
                     try {worker?.Send(new {type="tool_result",runId=currentRun,id,result});}catch{Cancel();Finish("문서 실행 결과 전달 실패. 변경 내역을 확인해 주세요.");}
@@ -198,7 +201,7 @@ namespace OfficeX.ExcelHost
             if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="ask_clarification"){
                 var questions=input["questions"] as JArray;if(questions==null||questions.Count<1||questions.Count>3||questions.Any(q=>q["question"]?.Type!=JTokenType.String||((string)q["question"]).Length>500||q["options"] is JArray opts&&opts.Count>6))throw new OfficeFault("question_invalid");
-                questionId=Guid.NewGuid().ToString("N");questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);pendingQuestion=JObject.FromObject(new{type="question",runId,questionId,questions});SendSurface(pendingQuestion);
+                questionId=Guid.NewGuid().ToString("N");questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);pendingQuestion=Wire.Object(new{type="question",runId,questionId,questions});SendSurface(pendingQuestion);
                 using(cancelToken.Register(()=>questionAnswer?.TrySetCanceled()))try{var answers=await questionAnswer.Task;return new{answers};}finally{questionAnswer=null;questionId=null;pendingQuestion=null;SendSurface(new{type="question_closed",runId});}
             }
             if(name=="list_checkpoints")return files.ListCheckpoints();
@@ -217,7 +220,7 @@ namespace OfficeX.ExcelHost
                 else if(name=="open_artifact")receipt=files.OpenArtifact((string)input["path"],(string)input["sourceState"],cancelToken);
                 else if(name=="import_slides")receipt=files.ImportSlides((string)input["path"],(string)input["mode"]??"new",(int?)input["slide"]??0,(string)input["sourceState"],cancelToken);
                 else if(name=="import_word_content")receipt=files.ImportWordContent((string)input["path"],(string)input["expectedTextHash"],cancelToken);else receipt=files.InsertImage((string)input["path"],input,cancelToken);
-                var r=JObject.FromObject(receipt);
+                var r=Wire.Object(receipt);
                 if((bool?)r["mutated"]==true&&(name=="rollback_document"||name=="open_artifact"||name=="import_slides"&&(string)input["mode"]=="new")){try{RebindActiveDocument();}catch{r["status"]="partial";r["error"]="created_document_binding_failed";r["followUpAvailable"]=false;}}
                 if((string)r["status"]=="verified"&&name=="import_slides"&&input["expectedTextHashes"] is JArray expected){
                     var actual=JArray.FromObject(files.ReadSlideText());int offset=(string)input["mode"]=="append"?actual.Count-expected.Count:(string)input["mode"]=="regenerate"?(int?)input["slide"]??0:0;
@@ -283,7 +286,7 @@ namespace OfficeX.ExcelHost
         private async Task<bool> AwaitReview(string id,object plan) {
             if(createdDuringRun&&followers.Count==0)SetForegroundWindow(new IntPtr(windowHandle));
             reviewId=id;
-            pendingReview=JObject.FromObject(new {type="review",runId,planId=id,plan,target=target.Text});SendSurface(pendingReview);
+            pendingReview=Wire.Object(new {type="review",runId,planId=id,plan,target=target.Text});SendSurface(pendingReview);
             approval=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using(cancellation.Token.Register(()=>approval?.TrySetResult(false))) {
                 try{var accepted=await approval.Task;if(accepted&&createdDuringRun)automationPort.FocusSource();return accepted;}finally{approval=null;reviewId=null;pendingReview=null;SendSurface(new {type="review_closed"});}
@@ -318,7 +321,7 @@ namespace OfficeX.ExcelHost
             if(running)try{worker?.Send(new {type="cancel",runId});}catch{}
             status.Text="중지 요청됨. 이미 적용한 변경은 자동 복구하지 않습니다.";
         }
-        private void Finish(string text) {running=false;status.Text=text;foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.handoffState=HandoffState();follower.followOwner=null;follower.files=files?.Fork(()=>follower.automationPort);follower.EnsureWorker();}followers.Clear();cancellation?.Cancel();SetBusy(nativeBusy);approval?.TrySetResult(false);}
+        private void Finish(string text) {running=false;status.Text=text;foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.handoffState=HandoffState();follower.runId=runId;follower.conversationId=conversationId;follower.request.Text=request.Text;follower.answer.Text=answer.Text;follower.target.Text=target.Text;follower.followOwner=null;follower.files=files?.Fork(()=>follower.automationPort);if(follower.surface.IsReady)follower.EnsureWorker();}followers.Clear();cancellation?.Cancel();SetBusy(nativeBusy);approval?.TrySetResult(false);}
         private static string Explain(string code) {
             if(code=="companion_unavailable")return "별도 편집기를 설치한 뒤 다시 열어주세요.";
             if(code=="companion_start_failed")return "편집기를 열지 못했습니다. 설치 상태를 확인해주세요.";

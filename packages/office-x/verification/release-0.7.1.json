@@ -1,0 +1,15 @@
+{
+  "version": "0.7.1",
+  "whitePaneReproduced": {
+    "exception": "Cannot read properties of undefined (reading map)",
+    "beforeRootText": "",
+    "cause": "JObject.FromObject preserved PascalCase nested C# plan, bypassing the camelCase wire serializer",
+    "fix": "Wire.Object uses Wire.Json before building JObject"
+  },
+  "nativeCoreTests": 73,
+  "nativeWireBrowserApps": 3,
+  "screenRecoveryWithoutReplayingWrites": true,
+  "net472CrossCompile": true,
+  "officeRuntimeVerified": false,
+  "liveModelVerified": false
+}
