@@ -11,3 +11,5 @@ Office skill의 도구 스키마와 안내는 equals 또는 Count 전용 delta�
 배치 전체 단계와 checks의 인자 구조/Item 선택자/명시적 indexed path/대상 핸들을 승인 전에 검사한다. 이후 단계의 Item 누락으로 앞선 셀 쓰기가 partial이 되는 경로를 차단한다. 실제 COM 객체 해석과 반환 객체 종류, 새 핸들 유효성은 실행 중 확인하며 임의의 인덱스를 보충하지 않는다. 공통 receipt 추적은 후속 쓰기 차단 시 첫 실패의 멤버, 코드, 안전한 Count 결과를 유지한다.
 
 format_cells는 주소와 선택적 시트 이름으로 실제 Range를 재조회하고 NumberFormat/Font.Bold/WrapText를 검증한다. 같은 승인/원본 비교/receipt 경로를 사용하며 서식 후 Value2와 Formula 보존을 함께 검사한다. 범위는 공통 읽기 제한 101행/20열로 나누고 다른 고급 서식은 inspect_office/execute_office_operations로 계속 제공한다.
+
+0.8.8 공개 후보 26ac2488babd5d8c9a9bb17790e191c00ae23015: CI 38405564386 성공, Windows 소스 123개/코어 118개/x86/x64 COM fixture/설치된 WebView2 검사 통과. 설치 12.97초, 재설치 8.48초. 실제 macOS Claude + 모의 Office 시나리오는 Count 오류 수정, 시트 추가 1회, 값 42와 표시 형식 0.00, 최종 응답 전달을 확인했다. 실제 Office 2016과 Windows Claude는 미검증. 릴리즈 asset에 release-0.8.8.json과 각 범위의 증거를 포함한다.

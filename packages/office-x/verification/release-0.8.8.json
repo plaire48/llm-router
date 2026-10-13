@@ -1,0 +1,173 @@
+{
+  "version": "0.8.8",
+  "buildCommit": "26ac2488babd5d8c9a9bb17790e191c00ae23015",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38405564386",
+  "installer": {
+    "name": "Nubi-Office-X-0.8.8-Setup.exe",
+    "sha256": "1b039729252aaf7425928a4522896d727cec45d6b3635d64062a951e5d7d8d0a",
+    "bytes": 124601888
+  },
+  "source": {
+    "sha256": "4e8b573aa174e1348575c4cf0218f7aef30e89b6fbfd2bfdb0d4030f40792272",
+    "files": 5475,
+    "sourceHashesChecked": 60
+  },
+  "sourceTests": {
+    "macOSPassed": 119,
+    "macOSSkipped": 4,
+    "windowsPassed": 123
+  },
+  "coreTests": 118,
+  "countChecks": {
+    "initialSheetsOneAndThree": true,
+    "relativeCountFromOriginals": true,
+    "wrongExpectationsRejectedBeforeWrites": true,
+    "allCompletedReadbacksPreserved": true,
+    "realMismatchesRemainUnverified": true
+  },
+  "preflight": {
+    "lateItemSelectors": true,
+    "indexedPathSelectors": true,
+    "argumentShapes": true,
+    "knownAndPriorPlannedTargets": true,
+    "scope": "shape and selector checks before native execution; actual COM binding can still fail"
+  },
+  "formatCells": {
+    "properties": [
+      "NumberFormat",
+      "Font.Bold",
+      "WrapText"
+    ],
+    "nativeRangeResolvedByHost": true,
+    "valueAndFormulaPreservationChecks": true
+  },
+  "blockedWrites": {
+    "originalCausePreserved": true,
+    "noAutomaticWriteReplay": true,
+    "newUserRequestStartsWithFreshContext": true
+  },
+  "nativeCOM": {
+    "architectures": [
+      "x64",
+      "x86"
+    ],
+    "scope": "Excel-shaped IDispatch fixture; not installed Office"
+  },
+  "claude": {
+    "passed": true,
+    "buildCommit": "26ac2488babd5d8c9a9bb17790e191c00ae23015",
+    "provider": "claude",
+    "liveProvider": true,
+    "platform": "macOS",
+    "nativeOffice": "JavaScript fixture",
+    "realOfficeVerified": false,
+    "realWindowsClaudeVerified": false,
+    "initialSheets": 3,
+    "finalSheets": 4,
+    "approvedAdds": 1,
+    "correctedCountPlan": true,
+    "cellValueVerified": true,
+    "numberFormatVerified": true,
+    "formatCellsUsed": true,
+    "finalTextDelivered": true,
+    "calls": [
+      "inspect_office",
+      "execute_office_operations",
+      "inspect_office",
+      "execute_office_operations",
+      "format_cells"
+    ]
+  },
+  "browser": {
+    "passed": true,
+    "version": "0.8.8",
+    "buildCommit": "26ac2488babd5d8c9a9bb17790e191c00ae23015",
+    "scope": "Playwright mock WebView2 host; not real Office",
+    "generalUI": {
+      "manualLoginReadiness": true,
+      "claudeModelPicker": true,
+      "typingAndClicks": true,
+      "nativeReviewPayload": true,
+      "busyGuards": true,
+      "startupErrorRecovery": true
+    },
+    "countUI": {
+      "expectedActualCounts": true,
+      "blockedWritePreservesOriginalFailure": true,
+      "copiedFaultsOmitCellValues": true
+    },
+    "pageErrors": []
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "uninstallSeconds": 2.2,
+    "registry": [
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      }
+    ],
+    "passed": true,
+    "officeInstalled": false,
+    "imageFeatures": false,
+    "standaloneEditorsAbsent": true,
+    "realOfficeVerified": false,
+    "reinstallSeconds": 8.48,
+    "liveModelVerified": false,
+    "legacyEditorUpgradeCleanup": true,
+    "runner": "windows-2022",
+    "installSeconds": 12.97
+  },
+  "integrity": {
+    "commit": "26ac2488babd5d8c9a9bb17790e191c00ae23015",
+    "exeSha256": "1b039729252aaf7425928a4522896d727cec45d6b3635d64062a951e5d7d8d0a",
+    "exeBytes": 124601888,
+    "sourceSha256": "4e8b573aa174e1348575c4cf0218f7aef30e89b6fbfd2bfdb0d4030f40792272",
+    "sourceFiles": 5475,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 60,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true
+  },
+  "boundaries": {
+    "realOffice2016Verified": false,
+    "realWindowsClaudeVerified": false,
+    "userOriginalCountExpectedAndActualObserved": false,
+    "allUserReportedRootsConfirmed": false
+  }
+}

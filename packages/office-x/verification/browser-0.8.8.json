@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "version": "0.8.8",
+  "buildCommit": "26ac2488babd5d8c9a9bb17790e191c00ae23015",
+  "scope": "Playwright mock WebView2 host; not real Office",
+  "generalUI": {
+    "manualLoginReadiness": true,
+    "claudeModelPicker": true,
+    "typingAndClicks": true,
+    "nativeReviewPayload": true,
+    "busyGuards": true,
+    "startupErrorRecovery": true
+  },
+  "countUI": {
+    "expectedActualCounts": true,
+    "blockedWritePreservesOriginalFailure": true,
+    "copiedFaultsOmitCellValues": true
+  },
+  "pageErrors": []
+}

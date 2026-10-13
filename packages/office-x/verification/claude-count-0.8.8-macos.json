@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "buildCommit": "26ac2488babd5d8c9a9bb17790e191c00ae23015",
+  "provider": "claude",
+  "liveProvider": true,
+  "platform": "macOS",
+  "nativeOffice": "JavaScript fixture",
+  "realOfficeVerified": false,
+  "realWindowsClaudeVerified": false,
+  "initialSheets": 3,
+  "finalSheets": 4,
+  "approvedAdds": 1,
+  "correctedCountPlan": true,
+  "cellValueVerified": true,
+  "numberFormatVerified": true,
+  "formatCellsUsed": true,
+  "finalTextDelivered": true,
+  "calls": [
+    "inspect_office",
+    "execute_office_operations",
+    "inspect_office",
+    "execute_office_operations",
+    "format_cells"
+  ]
+}
