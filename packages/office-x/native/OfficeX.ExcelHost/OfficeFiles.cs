@@ -31,13 +31,14 @@ namespace OfficeX.ExcelHost {
    return Wire.Hash(observations);
   }finally{Release(collection);}}
   static string WordXml(object doc){object content=null;try{content=OfficeDispatch.Get(doc,"Content");return Convert.ToString(OfficeDispatch.Get(content,"WordOpenXML"));}finally{Release(content);}}
-  public string State(){binding().CheckSource();object doc=binding().BoundDocument;if(app=="word")return Hash(Encoding.UTF8.GetBytes(WordXml(doc)));var path=Copy();try{if(app=="excel"){
+  public string State(){binding().CheckSource();object doc=binding().BoundDocument;if(app=="word")return Hash(Encoding.UTF8.GetBytes(WordXml(doc)));var path=Copy();try{return CopyState(path);}finally{File.Delete(path);}}
+  string CopyState(string path){if(app=="word")return Hash(File.ReadAllBytes(path));if(app=="excel"){
     // SaveCopyAs preserves the original format; Excel 97-2003 is OLE, not ZIP.
     // Preserve its bytes for source comparison instead of failing before cell writes.
     byte[] header=new byte[8];using(var file=File.OpenRead(path))file.Read(header,0,header.Length);
     bool ole=header.SequenceEqual(new byte[]{0xD0,0xCF,0x11,0xE0,0xA1,0xB1,0x1A,0xE1});
     if(ole||new[]{".csv",".txt",".xml",".html",".htm"}.Contains(Path.GetExtension(path),StringComparer.OrdinalIgnoreCase))return Hash(File.ReadAllBytes(path));
-   }using(var zip=ZipFile.OpenRead(path)){var bytes=new MemoryStream();foreach(var e in zip.Entries.OrderBy(x=>x.FullName,StringComparer.Ordinal)){if(e.FullName=="docProps/core.xml"||e.FullName.StartsWith("docProps/thumbnail"))continue;var name=Encoding.UTF8.GetBytes(e.FullName);bytes.Write(name,0,name.Length);using(var source=e.Open())source.CopyTo(bytes);}return Hash(bytes.ToArray());}}finally{File.Delete(path);}}
+   }using(var zip=ZipFile.OpenRead(path)){var bytes=new MemoryStream();foreach(var e in zip.Entries.OrderBy(x=>x.FullName,StringComparer.Ordinal)){if(e.FullName=="docProps/core.xml"||e.FullName.StartsWith("docProps/thumbnail"))continue;var name=Encoding.UTF8.GetBytes(e.FullName);bytes.Write(name,0,name.Length);using(var source=e.Open())source.CopyTo(bytes);}return Hash(bytes.ToArray());}}
   string Copy(){binding().CheckSource();object doc=binding().BoundDocument;bool macros=false;try{macros=Convert.ToBoolean(OfficeDispatch.Get(doc,"HasVBProject"));}catch(OfficeFault){}string extension=app=="word"?".xml":app=="powerpoint"?(macros?".pptm":".pptx"):Path.GetExtension(Convert.ToString(OfficeDispatch.Get(doc,"Name")));if(app=="excel"){
     // SaveCopyAs keeps the workbook's native FileFormat; a Name suffix is not
     // proof of that format (renamed files and unsaved templates can differ).
@@ -47,7 +48,13 @@ namespace OfficeX.ExcelHost {
    try{if(app=="word")File.WriteAllText(path,WordXml(doc),new UTF8Encoding(false));else if(app=="powerpoint")OfficeDispatch.Call(doc,"SaveCopyAs",path,macros?25:24);else OfficeDispatch.Call(doc,"SaveCopyAs",path);
    if(!File.Exists(path)||new FileInfo(path).Length==0)throw new OfficeFault("checkpoint_failed");return path;}catch{try{if(File.Exists(path))File.Delete(path);}catch{}throw;}
   }
-  public object CheckpointNow(string label){var path=Copy();try{var data=File.ReadAllBytes(path);var c=new Checkpoint{Id=Guid.NewGuid().ToString("N"),Label=(label??"문서 변경 전").Substring(0,Math.Min(200,(label??"문서 변경 전").Length)),Name=binding().DocumentName,Extension=Path.GetExtension(path),Hash=Hash(data),State=State(),Validation=ValidateDocument(binding().BoundDocument),At=DateTime.UtcNow};c.Path=FreshPath(".checkpoint");File.WriteAllBytes(c.Path,ProtectedData.Protect(data,null,DataProtectionScope.CurrentUser));checkpoints.Add(c.Id,c);return new{id=c.Id,label=c.Label,document=c.Name,createdAt=c.At.ToString("o"),encrypted=true};}finally{File.Delete(path);}}
+  public object CheckpointNow(string label){var path=Copy();try{var data=File.ReadAllBytes(path);var c=new Checkpoint{Id=Guid.NewGuid().ToString("N"),Label=(label??"문서 변경 전").Substring(0,Math.Min(200,(label??"문서 변경 전").Length)),Name=binding().DocumentName,Extension=Path.GetExtension(path),Hash=Hash(data),State=CopyState(path),Validation=ValidateDocument(binding().BoundDocument),At=DateTime.UtcNow};c.Path=FreshPath(".checkpoint");File.WriteAllBytes(c.Path,ProtectedData.Protect(data,null,DataProtectionScope.CurrentUser));checkpoints.Add(c.Id,c);return new{id=c.Id,label=c.Label,document=c.Name,createdAt=c.At.ToString("o"),encrypted=true};}finally{File.Delete(path);}}
+  // A refused backup is not an attempted document edit. Present this result
+  // in the existing approval form; do not pretend a rollback point exists.
+  public object PrepareCheckpoint(string label){
+   try{var result=Wire.Object(CheckpointNow(label));result["available"]=true;return result;}
+   catch(OfficeFault e)when(e.Member=="SaveCopyAs"){return new{available=false,error="checkpoint_copy_unavailable",failedMember=e.Member,nativeCode=e.NativeCode,mutated=false};}
+  }
   public object ListCheckpoints()=>checkpoints.Values.OrderByDescending(x=>x.At).Select(c=>new{id=c.Id,label=c.Label,document=c.Name,createdAt=c.At.ToString("o"),restoresAs="new_document"}).ToArray();
   public object ExportCopy(){var state=State();var path=Copy();return new{status="verified",path,format=Path.GetExtension(path).TrimStart('.'),sourceState=state,document=binding().DocumentName};}
   public object ExportPdf(CancellationToken token){binding().CheckSource();token.ThrowIfCancellationRequested();var path=FreshPath(".pdf");object doc=binding().BoundDocument;if(app=="word")OfficeDispatch.Call(doc,"ExportAsFixedFormat",path,17);else if(app=="powerpoint")OfficeDispatch.Call(doc,"ExportAsFixedFormat",path,2);else OfficeDispatch.Call(doc,"ExportAsFixedFormat",0,path);CheckedPath(path,".pdf");return new{status="verified",path,bytes=new FileInfo(path).Length};}

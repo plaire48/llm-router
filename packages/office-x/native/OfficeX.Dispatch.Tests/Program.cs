@@ -32,6 +32,18 @@ class Program {
  static void AssertAnyCPU(Assembly assembly){assembly.ManifestModule.GetPEKind(out var kind,out var machine);Equal(false,(kind&PortableExecutableKinds.Required32Bit)!=0);Equal(false,(kind&PortableExecutableKinds.PE32Plus)!=0);}
  [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl,CharSet=CharSet.Unicode)]static extern int CreateExcelFixture(string source,[MarshalAs(UnmanagedType.IDispatch)]out object application);
  [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl)]static extern void GetExcelFixtureStats(out int typeInfo,out int writes,out int copies);
+ [DllImport("ExcelFixture.dll",CallingConvention=CallingConvention.Cdecl)]static extern void SetExcelFixtureCopyFailure(int code);
+ static void RefusedCopyRegression(string source){
+  Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out var app));
+  try{using(var port=new OfficeAutomationPort(app,"excel",12345))using(var files=new OfficeFiles(app,"excel",()=>port)){
+   SetExcelFixtureCopyFailure(unchecked((int)0x800A03EC));
+   var checkpoint=Wire.Object(files.PrepareCheckpoint("셀 입력 전"));Equal(false,(bool)checkpoint["available"]);Equal(false,(bool)checkpoint["mutated"]);Equal("SaveCopyAs",(string)checkpoint["failedMember"]);Equal("0x800A03EC",(string)checkpoint["nativeCode"]);Equal(0,((JArray)Wire.Object(new{list=files.ListCheckpoints()})["list"]).Count);Equal(0,Directory.GetFiles(files.Folder).Length);
+   GetExcelFixtureStats(out _,out int beforeWrites,out _);Equal(0,beforeWrites);
+   var session=new OfficeAutomationSession(port);var reads=new List<OfficeStep>{new OfficeStep{Id="sheets",Member="Worksheets"},new OfficeStep{Id="sheet",Target="sheets",Member="Item",Args=new JArray(1)},new OfficeStep{Id="range",Target="sheet",Member="Range",Args=new JArray("A1","B2")},new OfficeStep{Target="range",Member="Value2"}};
+   var before=session.Inspect(reads);var values=new JArray(new JArray("항목","값"),new JArray("사본 실패 후 입력",42));var plan=session.Prepare(before.SnapshotId,"명시적 승인 후 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=values}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=values}});
+   Equal("verified",session.Apply(plan.Id,true,default).Status);Equal(Wire.Json(values),Wire.Json(port.Execute(new OfficeStep{Target="range",Member="Value2"},true)));GetExcelFixtureStats(out int info,out int writes,out _);Equal(0,info);Equal(1,writes);
+  }}finally{Marshal.ReleaseComObject(app);}
+ }
  static void ExcelDocumentRegression(){
   var source=Path.Combine(Path.GetTempPath(),Guid.NewGuid().ToString("N")+".xlsx");
   using(var zip=ZipFile.Open(source,ZipArchiveMode.Create)){using(var writer=new StreamWriter(zip.CreateEntry("xl/workbook.xml").Open()))writer.Write("<workbook/>");}
@@ -46,12 +58,12 @@ class Program {
    Marshal.ReleaseComObject(app);app=null;Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
    // Both new sheets must be read back from native SAFEARRAY values.
    var draft=new DocumentDraft{Title="주간 매출",Sheets=new List<SheetContent>{
-    new SheetContent{Name="매출",Rows=new List<List<string>>{new List<string>{"품목","금액"},new List<string>{"상품 A","1000"}}},
+    new SheetContent{Name="매출",Rows=new List<List<string>>{new List<string>{"품목","금액","비고"},new List<string>{"상품 A\n세부 항목\t확인","1000"}}},
     new SheetContent{Name="일정",Rows=new List<List<string>>{new List<string>{"담당","날짜"},new List<string>{"누비","월요일"}}}}};
    using(var creationPort=new DocumentCreationPort(app,"excel",12345)){
     var creation=new DocumentCreation(creationPort,"excel",draft);var receipt=creation.Apply(creation.Plan.Id,true,default);
     if(receipt.Status!="verified")Console.Error.WriteLine(Wire.Json(receipt));Equal("verified",receipt.Status);Equal(2,receipt.Count);Equal("Book1",receipt.Document);
-    creationPort.ActivateCreated();Equal(Wire.Hash(draft),Wire.Hash(creationPort.ReadCreated()));
+    creationPort.ActivateCreated();Equal(Wire.Hash(creation.Plan.Content),Wire.Hash(creationPort.ReadCreated()));Equal("",creationPort.ReadCreated().Sheets[0].Rows[1][2]);Equal("상품 A\n세부 항목\t확인",creationPort.ReadCreated().Sheets[0].Rows[1][0]);
     using(var rebound=new OfficeAutomationPort(app,"excel",12345)){Equal(creationPort.CreatedDocumentId,rebound.DocumentId);rebound.CheckSource();}
    }
    using(var port=new OfficeAutomationPort(app,"excel",12345))using(var files=new OfficeFiles(app,"excel",()=>port)){
@@ -84,8 +96,8 @@ class Program {
     plan=session.Prepare(before.SnapshotId,"32비트 범위보다 큰 숫자 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=largeNumber}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=largeNumber}});
     receipt=session.Apply(plan.Id,true,default);Equal("verified",receipt.Status);Equal(5000000000d,port.Execute(new OfficeStep{Target="range",Member="Value2"},true));
    }
-   GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(4,writes);Equal(4,copies);
-   Marshal.ReleaseComObject(app);app=null;
+   GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(4,writes);Equal(2,copies);
+   Marshal.ReleaseComObject(app);app=null;RefusedCopyRegression(source);
    foreach(var host in new[]{"word","powerpoint"}){
     Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
     var content=host=="word"?new DocumentDraft{Title="보고서",Paragraphs=new List<DocumentPart>{new DocumentPart{Style="Title",Text="제목"},new DocumentPart{Style="Normal",Text="본문"}}}:new DocumentDraft{Title="발표",Slides=new List<SlideContent>{new SlideContent{Title="소개",Body=new List<string>{"목표","일정"}},new SlideContent{Title="결론",Body=new List<string>{"다음 단계"}}}};
@@ -97,7 +109,7 @@ class Program {
    using(var binaryPort=new OfficeAutomationPort(app,"excel",12345))using(var binaryFiles=new OfficeFiles(app,"excel",()=>binaryPort)){
     var binaryCheckpoint=Wire.Object(binaryFiles.CheckpointNow("Excel 97-2003 형식 사본"));Equal(true,(bool)binaryCheckpoint["encrypted"]);Equal(true,binaryFiles.State().Length==64);
    }
-   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,largeIntegerReadback=true,wordCreation=true,powerpointCreation=true,newDocumentIdentity=true,formatMismatchReproduced=true,checkpointFormatMatched=true,wordCheckpoint=true,powerpointCheckpoint=true,propertyPaths=true,propertyCallAliases=true,deniedPathBlocked=true,readMutationBlocked=true,binaryCheckpoint=true,hostAnyCPU=true,coreAnyCPU=true,realOfficeVerified=false}));
+   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,multilineCellReadback=true,raggedRowsPadded=true,refusedCopyAllowsReviewedWrite=true,largeIntegerReadback=true,wordCreation=true,powerpointCreation=true,newDocumentIdentity=true,formatMismatchReproduced=true,checkpointFormatMatched=true,wordCheckpoint=true,powerpointCheckpoint=true,propertyPaths=true,propertyCallAliases=true,deniedPathBlocked=true,readMutationBlocked=true,binaryCheckpoint=true,hostAnyCPU=true,coreAnyCPU=true,realOfficeVerified=false}));
    Console.WriteLine("PASS Excel-shaped native COM with TYPE_E_INVDATAREAD: two-sheet creation, SAFEARRAY cell writes/readback, encrypted checkpoints; zero type-info calls. This fixture is not installed Excel.");
   }finally{if(app!=null)Marshal.ReleaseComObject(app);File.Delete(source);}
  }

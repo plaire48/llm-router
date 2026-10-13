@@ -11,7 +11,6 @@ button,input,textarea,select { font:inherit; }
 .header-actions { display:flex; align-items:center; gap:var(--cx-space-1); }
 .office-shell .header-actions button { background:transparent; color:var(--deck-sub); border:0; box-shadow:none; }
 .office-shell .header-actions button:hover { background:var(--deck-blue-soft); color:var(--deck-blue-deep); }
-.office-shell .nubi-logo-title { font:var(--deck-font-label); color:var(--deck-teal); }
 .office-shell .nubi-logo { gap:var(--cx-space-2); }
 .office-shell .nubi-beta { padding:0; background:transparent; color:var(--nubi-note-ink); }
 .agent-mark { position:relative; display:inline-grid; width:var(--agent-size); height:var(--agent-size); }

@@ -91,7 +91,7 @@ namespace OfficeX.ExcelHost
                 EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.3"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.4"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
@@ -193,7 +193,7 @@ namespace OfficeX.ExcelHost
                     else {
                         nativeBusy=true;
                         try {currentStage="native_"+(string)message["name"];result=await Native((string)message["name"],message["input"] as JObject??new JObject());}
-                        catch(OfficeFault e){OfficeDiagnostics.Record(e,app,currentStage);result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,exceptionName=e.ExceptionName,invocationStarted=e.InvocationStarted,recovery=e.InvocationStarted==false?"No call was made. Use inspect_office_members and the native guide; root document is not Application. Use dedicated file tools for Save/Open/Export.":null};status.Text=Explain(e.Message);}
+                        catch(OfficeFault e){OfficeDiagnostics.Record(e,app,currentStage);result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,exceptionName=e.ExceptionName,invocationStarted=e.InvocationStarted,inputPath=e.InputPath,inputRule=e.InputRule,recovery=e.Message=="document_content_invalid"?"No document was created or changed. Correct the indicated inputPath according to inputRule and the create_document schema, then propose corrected content for review. Preserve the requested data; never truncate it silently. For content above the creation limits, create a bounded starter and continue with inspected Office operations.":e.InvocationStarted==false?"No call was made. Use inspect_office_members and the native guide; root document is not Application. Use dedicated file tools for Save/Open/Export.":null};status.Text=Explain(e.Message);}
                         catch(OperationCanceledException){result=new {ok=false,status="cancelled"};}
                         catch(Exception e){result=new {ok=false,error="native_execution_failed",diagnostics=OfficeDiagnostics.Record(e,app,currentStage)};}
                         finally {nativeBusy=false;if(!running)SetBusy(false);}
@@ -252,8 +252,8 @@ namespace OfficeX.ExcelHost
             if(name=="execute_office_operations"){
                 var plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
                 status.Text="문서 변경안을 확인해 주세요.";
-                var approved=await AwaitReview(plan.Id,plan);if(approved){currentStage="checkpoint_before_write";files.CheckpointNow(plan.Summary);currentStage="native_execute_office_operations";}var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
-                writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);SendSurface(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return receipt;
+                currentStage="checkpoint_before_write";var checkpoint=files.PrepareCheckpoint(plan.Summary);currentStage="native_execute_office_operations";var approved=await AwaitReview(plan.Id,plan,checkpoint);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
+                writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);var result=Wire.Object(receipt);result["checkpoint"]=Wire.Object(checkpoint);SendSurface(new{type="receipt",runId,receipt=result});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return result;
             }
             if(name=="create_document"){
                 if(documentTarget!="new")throw new OfficeFault("target_current_use_office_operations");
@@ -297,10 +297,10 @@ namespace OfficeX.ExcelHost
             status.Text="빈 셀 "+plan.Operations.Count+"개의 변경안을 확인해 주세요.";
             return AwaitReview(plan.Id,plan);
         }
-        private async Task<bool> AwaitReview(string id,object plan) {
+        private async Task<bool> AwaitReview(string id,object plan,object checkpoint=null) {
             if(createdDuringRun&&followers.Count==0)SetForegroundWindow(new IntPtr(windowHandle));
             reviewId=id;
-            pendingReview=Wire.Object(new {type="review",runId,planId=id,plan,target=target.Text});SendSurface(pendingReview);
+            pendingReview=Wire.Object(new {type="review",runId,planId=id,plan,checkpoint,target=target.Text});SendSurface(pendingReview);
             approval=new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             using(cancellation.Token.Register(()=>approval?.TrySetResult(false))) {
                 try{var accepted=await approval.Task;if(accepted&&createdDuringRun)automationPort.FocusSource();return accepted;}finally{approval=null;reviewId=null;pendingReview=null;SendSurface(new {type="review_closed"});}
@@ -339,6 +339,7 @@ namespace OfficeX.ExcelHost
         private static string Explain(string code) {
             switch(code) {
                 case "open_document_required":return "작업할 문서를 먼저 열어 주세요.";
+                case "document_content_invalid":return "문서 작성 내용의 형식을 확인하고 있습니다. 아직 문서를 변경하지 않았습니다.";
                 case "office_member_unavailable":case "office_member_not_found":return "이 문서의 지원 멤버를 다시 확인하고 작업 방법을 조정합니다.";
                 case "write_out_of_scope":return "읽기는 주변 범위까지 가능합니다. 수정할 셀은 선택한 뒤 다시 요청해 주세요.";
                 case "source_changed":return "문서가 변경됐습니다. 범위를 다시 확인해 주세요.";

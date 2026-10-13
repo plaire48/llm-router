@@ -8,7 +8,7 @@
 // Excel-shaped native IDispatch server whose type library is deliberately broken.
 // Exercises the production host without installing Office or pretending this is Excel.
 struct Object;
-struct State { Object* active=nullptr; std::wstring copySource; int typeInfoCalls=0, valueWrites=0, copies=0; };
+struct State { Object* active=nullptr; std::wstring copySource; int typeInfoCalls=0, valueWrites=0, copies=0; HRESULT copyFailure=S_OK; };
 struct Object: IDispatch {
  State* state; LONG refs=1; std::wstring kind, name, address; VARIANT data;
  Object* document=nullptr;int start=0,end=0,style=-1;std::wstring text=L"\r";
@@ -72,7 +72,7 @@ struct Object: IDispatch {
   if((member==L"Value2"||member==L"Formula")&&kind==L"range"){if(set){++state->valueWrites;VariantClear(&data);return VariantCopy(&data,&arg(p->cArgs-1));}return VariantCopy(r,&data);}
   if(member==L"CountLarge"&&kind==L"range"){r->vt=VT_R8;r->dblVal=1;if(data.vt&VT_ARRAY){LONG a,b,c,d;SafeArrayGetLBound(data.parray,1,&a);SafeArrayGetUBound(data.parray,1,&b);SafeArrayGetLBound(data.parray,2,&c);SafeArrayGetUBound(data.parray,2,&d);r->dblVal=double(b-a+1)*(d-c+1);}return S_OK;}
   if(member==L"Address"){Text(r,address);return S_OK;}
-  if(member==L"SaveCopyAs"){if(p->cArgs<1||arg(0).vt!=VT_BSTR)return DISP_E_BADPARAMCOUNT;if(kind==L"book"){std::wstring file=arg(0).bstrVal;if(file.size()<5||file.substr(file.size()-5)!=L".xlsx")return HRESULT(0x800A03EC);}++state->copies;return CopyFileW(state->copySource.c_str(),arg(0).bstrVal,FALSE)?S_OK:HRESULT_FROM_WIN32(GetLastError());}
+  if(member==L"SaveCopyAs"){if(FAILED(state->copyFailure))return state->copyFailure;if(p->cArgs<1||arg(0).vt!=VT_BSTR)return DISP_E_BADPARAMCOUNT;if(kind==L"book"){std::wstring file=arg(0).bstrVal;if(file.size()<5||file.substr(file.size()-5)!=L".xlsx")return HRESULT(0x800A03EC);}++state->copies;return CopyFileW(state->copySource.c_str(),arg(0).bstrVal,FALSE)?S_OK:HRESULT_FROM_WIN32(GetLastError());}
   if(member==L"AutoFit")return S_OK;
   if(member==L"NumberFormat"||member==L"Bold"||member==L"Color"||member==L"ColumnWidth"||member==L"WrapText"||member==L"Size"||member==L"RGB"||member==L"Text"||member==L"WordWrap"||member==L"AutoSize"||member==L"SlideWidth"||member==L"SlideHeight"||member==L"Left"||member==L"Top"||member==L"Width"||member==L"Height"){auto property=Child(L"property:"+member);if(set){if(p->cArgs!=1)return DISP_E_BADPARAMCOUNT;VariantClear(&property->data);return VariantCopy(&property->data,&arg(0));}return VariantCopy(r,&property->data);}
   return DISP_E_MEMBERNOTFOUND;
@@ -81,3 +81,5 @@ struct Object: IDispatch {
 static State state;
 extern "C" __declspec(dllexport) HRESULT __cdecl CreateExcelFixture(const wchar_t* copySource,IDispatch** app){state=State();state.copySource=copySource;*app=new Object(&state,L"app");return S_OK;}
 extern "C" __declspec(dllexport) void __cdecl GetExcelFixtureStats(int* typeInfo,int* writes,int* copies){*typeInfo=state.typeInfoCalls;*writes=state.valueWrites;*copies=state.copies;}
+
+extern "C" __declspec(dllexport) void __cdecl SetExcelFixtureCopyFailure(int code){state.copyFailure=static_cast<HRESULT>(code);}

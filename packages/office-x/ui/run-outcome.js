@@ -16,5 +16,15 @@ export function toolFailure(execution){
  const safeMember=value=>typeof value==='string'&&value.length<=100&&/^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(value)?value:undefined;
  const code=safe(result?.error);if(!code)return null;
  const source=result.diagnostics||{};
- return {code,tool:safe(execution.name),member:safeMember(result.failedMember||source.member),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||source.nativeCode||'')?result.nativeCode||source.nativeCode:undefined,exception:safe(result.exceptionName||source.exception),stage:safe(result.failureStage||source.failureStage||source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
+ const path=result.inputPath||source.inputPath;
+ return {code,tool:safe(execution.name),member:safeMember(result.failedMember||source.member),inputPath:typeof path==='string'&&path.length<=150&&/^[A-Za-z_][A-Za-z0-9_]*(\[\d{1,3}\]|\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(path)?path:undefined,inputRule:safe(result.inputRule||source.inputRule),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||source.nativeCode||'')?result.nativeCode||source.nativeCode:undefined,exception:safe(result.exceptionName||source.exception),stage:safe(result.failureStage||source.failureStage||source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
+}
+export function documentInputFailure(fault){
+ if(fault?.code!=='document_content_invalid')return '';
+ const path=fault.inputPath||'',cell=/^sheets\[(\d+)\]\.rows\[(\d+)\](?:\[(\d+)\])?$/.exec(path),sheet=/^sheets\[(\d+)\]\.name$/.exec(path);
+ const location=cell?`${+cell[1]+1}번째 시트 ${+cell[2]+1}행${cell[3]!==undefined?` ${+cell[3]+1}열`:''}`:sheet?`${+sheet[1]+1}번째 시트 이름`:path==='title'?'문서 제목':'문서 내용';
+ const reasons={sheet_name_invalid:'Excel에서 사용할 수 없는 시트 이름입니다.',sheet_name_duplicate:'같은 시트 이름이 중복되었습니다.',unsupported_control_character:'지원하지 않는 제어 문자가 포함되어 있습니다.',row_required:'행에 셀 내용이 필요합니다.',text_required:'셀 내용은 텍스트로 전달해야 합니다.',title_required:'문서 제목이 필요합니다.'};
+ const limit=/^max_(length|rows|columns|sheets|content)_(\d+)$/.exec(fault.inputRule||''),units={length:'자',rows:'행',columns:'열',sheets:'개 시트',content:'자'};
+ const reason=reasons[fault.inputRule]||(limit?`한 번에 ${limit[2]}${units[limit[1]]}까지 작성할 수 있습니다.`:'작성 형식을 다시 확인해야 합니다.');
+ return `${location}: ${reason} 아직 문서를 변경하지 않았습니다.`;
 }

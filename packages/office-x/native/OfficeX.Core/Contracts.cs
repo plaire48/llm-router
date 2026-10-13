@@ -10,8 +10,8 @@ using Newtonsoft.Json.Linq;
 namespace OfficeX.Core
 {
     public sealed class OfficeFault : Exception {
-        public string Member {get;} public string NativeCode {get;} public bool? InvocationStarted {get;} public string ExceptionName {get;}
-        public OfficeFault(string code,string member=null,int? nativeCode=null,bool? invocationStarted=null,string exceptionName=null) : base(code) {Member=member;NativeCode=nativeCode.HasValue?"0x"+unchecked((uint)nativeCode.Value).ToString("X8"):null;InvocationStarted=invocationStarted;ExceptionName=exceptionName;}
+        public string Member {get;} public string NativeCode {get;} public bool? InvocationStarted {get;} public string ExceptionName {get;} public string InputPath {get;} public string InputRule {get;}
+        public OfficeFault(string code,string member=null,int? nativeCode=null,bool? invocationStarted=null,string exceptionName=null,string inputPath=null,string inputRule=null) : base(code) {Member=member;NativeCode=nativeCode.HasValue?"0x"+unchecked((uint)nativeCode.Value).ToString("X8"):null;InvocationStarted=invocationStarted;ExceptionName=exceptionName;InputPath=inputPath;InputRule=inputRule;}
     }
     public static class Wire
     {
