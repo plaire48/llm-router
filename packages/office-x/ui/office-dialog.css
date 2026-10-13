@@ -1,7 +1,7 @@
 /* This layer owns every Office modal, including body portals. Content forms
    own their internal layout, never the outer title/footer or type hierarchy. */
-:root:has(.office-host) .cx-panel-backdrop:has(.office-dialog){padding:12px;background:var(--deck-overlay);backdrop-filter:none;}
-:root:has(.office-host) .cx-panel-backdrop>.office-dialog{
+:root:has(.office-host) .cx-panel-backdrop:has(:is(.office-dialog,.context-dialog)){padding:12px;background:var(--deck-overlay);backdrop-filter:none;}
+:root:has(.office-host) .cx-panel-backdrop>:is(.office-dialog,.context-dialog){
  --nubi-modal-inset:var(--office-dialog-inset);
  --cx-font-family:var(--office-font);
  --cx-field-height:var(--office-control-height);
@@ -17,16 +17,16 @@
  color:var(--office-ink);background:var(--office-paper);border:0;
  border-radius:var(--office-dialog-radius);box-shadow:var(--office-dialog-shadow);font-synthesis:none;
 }
-:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-header{
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-header{
  flex:none;align-items:center;gap:var(--nubi-work-control-gap);padding:var(--nubi-modal-title-inset) var(--office-dialog-inset) var(--nubi-modal-block);border:0;background:var(--office-paper);
 }
-:root:has(.office-host) .office-dialog .cx-panel-header h2{min-height:var(--nubi-modal-title-height);display:flex;margin:0;font-size:var(--office-type-title);line-height:var(--deck-line-heading);font-weight:600;color:var(--office-ink);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog) .cx-panel-header h2{min-height:var(--nubi-modal-title-height);display:flex;margin:0;font-size:var(--office-type-title);line-height:var(--deck-line-heading);font-weight:600;color:var(--office-ink);}
 .office-dialog-title{display:flex;align-items:center;gap:var(--nubi-work-control-gap);min-width:0;}
 .office-dialog-title>span:last-child{min-width:0;word-break:keep-all;overflow-wrap:anywhere;}
 .office-dialog-symbol{display:grid;place-items:center;flex:none;width:var(--nubi-dialog-symbol-size);height:var(--nubi-dialog-symbol-size);border-radius:var(--office-control-radius);background:var(--office-selected);color:var(--office-action);}
 :root:has(.office-host) .office-dialog .cx-panel-header-actions [data-action=close]{width:var(--office-control-height);min-width:var(--office-control-height);height:var(--office-control-height);min-height:var(--office-control-height);border-radius:var(--office-control-radius);color:var(--office-muted);}
-:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;gap:var(--nubi-modal-section-gap);padding:var(--nubi-modal-body-block) var(--office-dialog-inset);background:var(--office-paper);}
-:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer{flex:none;display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px;padding:var(--cx-space-3) var(--office-dialog-inset) var(--nubi-dialog-footer-inset);border:0;background:var(--office-paper);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-body{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;gap:var(--nubi-modal-section-gap);padding:var(--nubi-modal-body-block) var(--office-dialog-inset);background:var(--office-paper);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-footer{flex:none;display:flex;align-items:center;justify-content:flex-end;flex-wrap:nowrap;gap:8px;padding:var(--cx-space-3) var(--office-dialog-inset) var(--nubi-dialog-footer-inset);border:0;background:var(--office-paper);}
 :root:has(.office-host) .office-dialog :is(p,label,legend,summary){line-height:var(--office-leading);word-break:keep-all;overflow-wrap:anywhere;}
 :root:has(.office-host) .office-dialog :is(p,fieldset){margin:0;}
 :root:has(.office-host) .office-dialog fieldset{padding:0;border:0;min-width:0;}
@@ -37,9 +37,9 @@
 :root:has(.office-host) .office-dialog input::placeholder{color:var(--office-meta);opacity:1;}
 :root:has(.office-host) .office-dialog :is(.cx-kit-input,.cx-input-shell,select):focus-within{border-color:var(--office-action);outline:2px solid var(--office-selected);outline-offset:2px;}
 :root:has(.office-host) .office-dialog :is(.cx-kit-button,.cx-action-button){min-height:var(--office-control-height);border-radius:var(--office-control-radius);font-weight:500;box-shadow:none;background-image:none;}
-:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer .cx-kit-button{padding:8px 14px;min-width:60px;color:var(--office-muted);background:var(--office-paper);border:1px solid var(--office-line);}
-:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer .cx-kit-button.cx-button--primary{background:var(--office-action);color:var(--office-paper);font-weight:600;border-color:var(--office-action);}
-:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer .cx-kit-button.cx-button--primary:hover:not(:disabled){background:var(--office-action-hover);color:var(--office-paper);border-color:var(--office-action-hover);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-footer .cx-kit-button{padding:8px 14px;min-width:60px;color:var(--office-muted);background:var(--office-paper);border:1px solid var(--office-line);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-footer .cx-kit-button.cx-button--primary{background:var(--office-action);color:var(--office-paper);font-weight:600;border-color:var(--office-action);}
+:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-footer .cx-kit-button.cx-button--primary:hover:not(:disabled){background:var(--office-action-hover);color:var(--office-paper);border-color:var(--office-action-hover);}
 :root:has(.office-host) .office-dialog .cx-kit-button:disabled{opacity:.45;cursor:not-allowed;}
 :root:has(.office-host) .office-dialog :is(button,select,input):focus-visible{outline:2px solid var(--office-action);outline-offset:3px;}
 :root:has(.office-host) .office-dialog .model-form-tools{margin-right:auto;border-color:transparent;background:transparent;padding-inline:0;color:var(--office-muted);font-size:var(--office-type-meta);min-width:0;}
@@ -58,7 +58,7 @@
 .office-dialog .checkpoint-row span{font-size:var(--office-type-meta);line-height:var(--office-leading-meta);color:var(--office-muted);overflow-wrap:anywhere;}
 :root:has(.office-host) .office-dialog .checkpoint-row:hover:not(:disabled){background:var(--office-selected);border-color:var(--office-action);}
 .office-dialog ::selection{background:var(--office-selected);color:var(--office-ink);}
-@media(max-height:540px){:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-header{padding-block:12px;}:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer{padding-block:12px;}}
+@media(max-height:540px){:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-header{padding-block:12px;}:root:has(.office-host) :is(.office-dialog,.context-dialog).deck-dialog>.cx-panel-footer{padding-block:12px;}}
 @media(forced-colors:active){:root:has(.office-host) .office-dialog{border:1px solid CanvasText;}.office-dialog-symbol{border:1px solid Highlight;}}
 /* Workspace can abbreviate titles in wide sheets. Office must retain the
    whole destination question when its host narrows to 280px. */

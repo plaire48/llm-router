@@ -30,17 +30,17 @@ namespace OfficeX.ExcelHost
         private OfficeFiles files;
         private OfficePane followOwner;
         private readonly List<OfficePane> followers=new List<OfficePane>();
-        private JObject lastProvider,lastReceipt,lastServices;
+        private JObject lastProvider,lastReceipt,lastContext;
         public event Action<int> DocumentWindowChanged;
         public event Action SurfaceReady;
         public bool IsRunning=>running;
         private JObject handoffState,pendingReview;
         private readonly List<JObject> followMessages=new List<JObject>();
         private JObject HandoffState()=>Wire.Object(new{type="handoff",app,conversationId,runId,request=request.Text,text=answer.Text,target=target.Text,running,model=(string)lastProvider?["state"]?["model"]});
-        public void FollowSession(OfficePane owner){if(ReferenceEquals(owner,this))return;followMessages.Clear();files=owner.files?.Fork(()=>automationPort);if(files!=null)surface.SetAssetsRoot(files.Folder);followOwner=owner;owner.followers.Add(this);handoffState=owner.HandoffState();runId=owner.runId;conversationId=owner.conversationId;request.Text=owner.request.Text;answer.Text=owner.answer.Text;lastProvider=owner.lastProvider;lastServices=owner.lastServices;lastReceipt=owner.lastReceipt;ReplayFollow();}
-        private void ReplayFollow(){if(handoffState==null)return;if(followOwner!=null)handoffState=followOwner.HandoffState();surface.Send(handoffState);if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);if(lastReceipt!=null&&!followMessages.Any(m=>(string)m["type"]=="receipt"))surface.Send(lastReceipt);foreach(var message in followMessages)surface.Send(message);if(followOwner?.pendingQuestion!=null)surface.Send(followOwner.pendingQuestion);if(followOwner?.pendingReview!=null)surface.Send(followOwner.pendingReview);}
-        private void RememberFollow(JObject message){var type=(string)message["type"];if(type=="provider_state")lastProvider=(JObject)message.DeepClone();if(type=="services_state")lastServices=(JObject)message.DeepClone();if(type=="receipt")lastReceipt=(JObject)message.DeepClone();if(new[]{"receipt","sources","artifacts","done","error","disconnected"}.Contains(type)){followMessages.Add((JObject)message.DeepClone());if(followMessages.Count>200)followMessages.RemoveAt(0);}if(followOwner!=null)handoffState=followOwner.HandoffState();}
-        private void SendSurface(object value){var message=Wire.Object(value);if((string)message["type"]=="artifacts"&&files!=null&&message["data"]?["items"] is JArray items){foreach(JObject item in items){var path=(string)item["previewPath"];if(path==null)continue;try{files.CheckedPath(path,".png",".jpg",".jpeg",".gif",".webp");item["preview"]="https://office-x-assets.local/"+Uri.EscapeDataString(System.IO.Path.GetFileName(path));}catch{}item.Remove("previewPath");}}if((string)message["type"]=="provider_state")lastProvider=(JObject)message.DeepClone();if((string)message["type"]=="services_state")lastServices=(JObject)message.DeepClone();if((string)message["type"]=="receipt")lastReceipt=(JObject)message.DeepClone();RememberFollow(message);surface.Send(message);foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.RememberFollow(message);follower.surface.Send(message);}}
+        public void FollowSession(OfficePane owner){if(ReferenceEquals(owner,this))return;followMessages.Clear();files=owner.files?.Fork(()=>automationPort);if(files!=null)surface.SetAssetsRoot(files.Folder);followOwner=owner;owner.followers.Add(this);handoffState=owner.HandoffState();runId=owner.runId;conversationId=owner.conversationId;request.Text=owner.request.Text;answer.Text=owner.answer.Text;lastProvider=owner.lastProvider;lastContext=owner.lastContext;lastReceipt=owner.lastReceipt;ReplayFollow();}
+        private void ReplayFollow(){if(handoffState==null)return;if(followOwner!=null)handoffState=followOwner.HandoffState();surface.Send(handoffState);if(lastProvider!=null)surface.Send(lastProvider);if(lastContext!=null)surface.Send(lastContext);if(lastReceipt!=null&&!followMessages.Any(m=>(string)m["type"]=="receipt"))surface.Send(lastReceipt);foreach(var message in followMessages)surface.Send(message);if(followOwner?.pendingQuestion!=null)surface.Send(followOwner.pendingQuestion);if(followOwner?.pendingReview!=null)surface.Send(followOwner.pendingReview);}
+        private void RememberFollow(JObject message){var type=(string)message["type"];if(type=="provider_state")lastProvider=(JObject)message.DeepClone();if(type=="context_state")lastContext=(JObject)message.DeepClone();if(type=="receipt")lastReceipt=(JObject)message.DeepClone();if(new[]{"receipt","sources","artifacts","done","error","disconnected"}.Contains(type)){followMessages.Add((JObject)message.DeepClone());if(followMessages.Count>200)followMessages.RemoveAt(0);}if(followOwner!=null)handoffState=followOwner.HandoffState();}
+        private void SendSurface(object value){var message=Wire.Object(value);if((string)message["type"]=="artifacts"&&files!=null&&message["data"]?["items"] is JArray items){foreach(JObject item in items){var path=(string)item["previewPath"];if(path==null)continue;try{files.CheckedPath(path,".png",".jpg",".jpeg",".gif",".webp");item["preview"]="https://office-x-assets.local/"+Uri.EscapeDataString(System.IO.Path.GetFileName(path));}catch{}item.Remove("previewPath");}}if((string)message["type"]=="provider_state")lastProvider=(JObject)message.DeepClone();if((string)message["type"]=="context_state")lastContext=(JObject)message.DeepClone();if((string)message["type"]=="receipt")lastReceipt=(JObject)message.DeepClone();RememberFollow(message);surface.Send(message);foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.RememberFollow(message);follower.surface.Send(message);}}
         private void RebindActiveDocument(string expectedDocumentId=null){
             object window=null;OfficeAutomationPort next=null;DocumentCreationPort nextCreation=null;
             try{
@@ -89,13 +89,16 @@ namespace OfficeX.ExcelHost
         private async void ReceiveUi(JObject message) {
             try {
                 EnsureUiContext();
-                if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
+                if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question","context"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.10"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.11"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastContext!=null)surface.Send(lastContext);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
-                    case "services":
-                        if(running||nativeBusy)throw new OfficeFault("worker_busy");EnsureWorker();worker.Send(new{type="services",id=(string)message["id"],method=(string)message["method"],input=message["input"]});break;
+                    case "services":surface.Send(new{type="reply",id=(string)message["id"],error="feature_removed"});break;
+                    case "context":
+                        var contextMethod=(string)message["method"];
+                        if(contextMethod!="status"&&contextMethod!="cancel"&&(running||nativeBusy))throw new OfficeFault("worker_busy");
+                        EnsureWorker();worker.Send(new{type="context",id=(string)message["id"],method=contextMethod,input=message["input"]});break;
                     case "open_source":
                         if(Uri.TryCreate((string)message["url"],UriKind.Absolute,out var sourceUrl)&&new[]{"https","http"}.Contains(sourceUrl.Scheme)&&string.IsNullOrEmpty(sourceUrl.UserInfo))System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(sourceUrl.AbsoluteUri){UseShellExecute=true});break;
                     case "checkpoints":
@@ -174,14 +177,14 @@ namespace OfficeX.ExcelHost
                 worker?.Send(new {type="vault_result",id=(string)message["id"],ok});return;
             }
             if(type=="ready") {
-                var records=new JArray();string selected=null;JToken services=null;bool storageWarning=false;
+                var records=new JArray();string selected=null;bool storageWarning=false;
                 foreach(var name in new[]{"aipro","chatgpt","fabrix","claude"})try{var record=ProtectedVault.Read("provider:"+name);if(record!=null)records.Add(record);}catch{storageWarning=true;}
                 try{selected=(string)ProtectedVault.Read("provider:active");}catch{storageWarning=true;}
-                try{services=ProtectedVault.Read("services");}catch{storageWarning=true;}
-                worker?.Send(new{type="init",records,selected,services});
+
+                worker?.Send(new{type="init",records,selected});
                 if(storageWarning)SendSurface(new{type="connection_storage_warning"});return;
             }
-            if(type=="provider_state"||type=="services_state"){if(followOwner==null)SendSurface(message);return;}if(type=="reply"){surface.Send(message);return;}
+            if(type=="provider_state"||type=="context_state"||type=="context_compacting"){if(followOwner==null)SendSurface(message);return;}if(type=="reply"){SendSurface(message);return;}
             if((string)message["runId"]!=runId||!running)return;
             SendSurface(message);
             switch((string)message["type"]) {
@@ -204,13 +207,13 @@ namespace OfficeX.ExcelHost
                 case "done":
                     answer.Text=(string)message["result"]?["text"]??answer.Text;
                     Finish((bool?)message["result"]?["cancelled"]==true?"중지되었습니다. 이미 적용한 변경은 유지됩니다.":
-                        (bool?)message["result"]?["turnLimit"]==true?"실행 한도에 도달했습니다. 완료 여부를 확인해 주세요.":"Agent 응답이 끝났습니다. 문서 검증 결과를 확인하세요.");break;
+                        message["result"]?["recovery"]!=null?"확인된 변경과 남은 작업을 보존했습니다. 이어서 요청할 수 있습니다.":(bool?)message["result"]?["turnLimit"]==true?"실행 한도에 도달했습니다. 완료 여부를 확인해 주세요.":"Agent 응답이 끝났습니다. 문서 검증 결과를 확인하세요.");break;
                 case "error": Finish("Agent 실행을 완료하지 못했습니다. 연결 설정과 문서 결과를 확인해 주세요.");break;
             }
         }
         private async Task<object> Native(string name,JObject input) {using(new OfficeCulture()){return await NativeCore(name,input);}}
         private async Task<object> NativeCore(string name,JObject input) {
-            if(new[]{"open_genoffice_editor","insert_image","image_search","generate_image","analyze_media"}.Contains(name))throw new OfficeFault("feature_removed");
+            if(new[]{"web_search","read_web_page","open_genoffice_editor","insert_image","image_search","generate_image","analyze_media"}.Contains(name))throw new OfficeFault("feature_removed");
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
             if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");

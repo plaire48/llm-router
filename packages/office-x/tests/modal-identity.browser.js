@@ -17,7 +17,7 @@ async(page)=>{
   // The two selection groups remain deferred until Apply. Arrows and focus trap work.
   await p.getByRole('radio',{name:'Claude Sonnet 업무 문서 분석과 작성',exact:true}).focus();await p.keyboard.press('ArrowDown');if((await p.getByRole('radio',{name:'Claude Sonnet 1',exact:true}).getAttribute('aria-checked'))!=='true')throw Error('radio navigation');if(await p.evaluate(()=>sent.some(m=>m.type==='provider'&&(m.method==='model'||m.method==='select'))))throw Error('selection applied before Apply');
   await p.getByRole('button',{name:'닫기',exact:true}).focus();await p.keyboard.press('Shift+Tab');if(!(await p.getByRole('dialog').evaluate(e=>e.contains(document.activeElement))))throw Error('focus escaped');await p.keyboard.press('Escape');await p.getByRole('dialog').waitFor({state:'hidden'});if(!(await p.getByRole('button',{name:'연결 설정',exact:true}).evaluate(e=>e===document.activeElement)))throw Error('focus not restored');
-  await p.getByRole('button',{name:'연결 설정',exact:true}).click();await p.getByRole('button',{name:'웹 검색',exact:true}).click();await audit('search');await p.getByLabel('검색 서비스',{exact:true}).selectOption('tavily');await p.getByRole('button',{name:'저장',exact:true}).click();await p.getByRole('dialog').waitFor({state:'hidden'});if(!(await p.evaluate(()=>sent.some(m=>m.type==='services'&&m.input?.search?.provider==='tavily'))))throw Error('footer Save did not submit form');
+
   await p.getByRole('button',{name:'문서 복원',exact:true}).click();await audit('restore');await p.getByRole('button',{name:'닫기',exact:true}).click();
   await p.locator('textarea').fill('문서 만들어줘');await p.getByRole('button',{name:'보내기',exact:true}).click();await audit('target');if(await p.evaluate(()=>sent.some(m=>m.type==='start')))throw Error('target missing');await p.getByRole('button',{name:'닫기',exact:true}).click();
   await p.getByRole('button',{name:'연결 설정',exact:true}).click();await p.getByRole('radio',{name:'FabriX',exact:true}).click();await p.getByRole('button',{name:'연결',exact:true}).click();await audit('fabrix');
@@ -25,5 +25,5 @@ async(page)=>{
   await ctx.close();
  }
  if(errors.length)throw Error(errors.join('\n'));
- return {passed:true,scope:'Mock WebView, current Workspace CSS reference; not live Electron or real Office',dialogStates:45,comparisons:1,checks:['current Workspace typography and modal chrome','primary action emphasis','no overflow at 280/320/420 widths','short-height body scroll with reachable footer','deferred selection and keyboard trap/restore','external footer form submission','busy Escape and Cancel guard'],reports};
+ return {passed:true,scope:'Mock WebView, current Workspace CSS reference; not live Electron or real Office',dialogStates:36,comparisons:1,checks:['current Workspace typography and modal chrome','primary action emphasis','no overflow at 280/320/420 widths','short-height body scroll with reachable footer','deferred selection and keyboard trap/restore','FabriX external footer submission','busy Escape and Cancel guard'],reports};
 }

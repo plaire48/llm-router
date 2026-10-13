@@ -1,11 +1,9 @@
-# 0.8.10 변경
+# 0.8.11 변경
 
-누비 Workspace의 현재 `ChatControls.jsx`, `workspace-identity.css`, `workspace-dialogs.css`를 대조해 Office 모달 공통 계약을 만들었다. 원본 vendor 파일은 변경하지 않았다.
+웹 검색 설정·서비스·Agent 도구와 오래된 호출을 제거했다. 원본 GenOffice AgentLoop, 문서 엔진, PPTX 편집·생성·렌더링·변환·복원 경로는 유지했다.
 
-모델, 웹 검색, FabriX, 문서 대상, 복원 폼이 같은 제목·본문·하단 버튼 위계를 사용한다. Office 폭에 필요한 줄바꿈과 스크롤만 별도로 처리한다. 전체 Office 문서 실행 도구와 GenOffice 기능 범위는 0.8.9와 같다.
+Workspace ReasoningPicker와 ContextMeter를 공통 작업창에 연결했다. 사용량은 모델 실측과 추정을 구분하며 남은 비율은 모델 문맥 한도 기준이다. 같은 문서에서 범위를 바꿔도 대화를 유지한다. 수동/자동 요약은 최근 요청을 유지하고 실패·취소 시 원문을 보존한다. Agent 도구 출력 정리와 대화 요약은 별도다.
 
-검증 기록: `verification/modal-identity-0.8.10.json`, `verification/cx-audit/current-reference-sources.json`. 현재 Workspace CSS를 렌더링한 참조이며 실제 Electron 화면 증빙은 아니다. 입력칸은 Workspace에 선언된 폰트 체인을 직접 적용해 원본의 루트에서 계산된 폰트 축약 속성이 별도 폰트를 상속하는 차이를 없앴다.
+반복된 문서 오류에는 지원 멤버·가이드·신선한 스냅샷으로 방법을 조정하도록 안내한다. 진행할 수 없으면 확인된 변경과 남은 작업을 보존해 후속 요청이 가능하다. 응답 오류는 한 번 복구하되 확인된 쓰기를 재실행하지 않으며 불확실한 쓰기 차단을 해제하지 않는다.
 
-실제 Windows Office 2016 및 사용자 계정 모델 실행은 접근 가능한 환경이 없어 미검증이다.
-
-0.8.10 공개 설치 파일은 Windows 소스 127개와 코어 132개, x86/x64 모의 COM, 설치된 WebView2 클릭·입력·복구 검사, 설치/재설치/제거가 통과했다. 설치 파일과 소스 ZIP 및 UI 빌드 해시는 `verification/release-0.8.10.json`에 기록했다. 설치는 Office 없는 Windows VM에서 8.06초였다.
+검증: 소스/타입 검사, 실제 worker stdio + 제공자 모의 테스트, 세 앱 공통 UI의 토큰·요약·취소·복구, 현재 Workspace CSS 참조와 36개 모달 상태. 실제 Windows Office 2016과 사용자 계정의 모델 연결은 접근 가능한 환경이 없어 미검증이다. Windows 설치 검증은 릴리즈 증빙에 별도로 기록한다.

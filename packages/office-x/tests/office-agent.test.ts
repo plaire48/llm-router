@@ -23,9 +23,9 @@ it('does not claim a failed creation is complete',async()=>{const skill=officeSk
 it('does not send local GenOffice guide reads to Office',async()=>{const native=vi.fn(async()=>({}));const skill=officeSkill(native,{app:'excel'});const r=await skill.executeTool(call('load_office_guide',{name:'sheets-pivot'}));expect(r.output).toContain('pivot');expect(native).not.toHaveBeenCalled();});
 it('stops repeated native failures even when successful guide reads alternate with errors',async()=>{
  let turn=0;const native=vi.fn(async()=>({ok:false,error:'office_member_not_found',failedMember:'Item',invocationStarted:false}));
- const transport:AgentTransport={stream(_req,cb){queueMicrotask(()=>{cb.onToolCall(turn++%2?call('inspect_office',{steps}):call('load_office_guide',{name:'native-excel'}));cb.onDone();});return {cancel(){}};}};
+ const transport:AgentTransport={stream(_req,cb){queueMicrotask(()=>{if(!_req.tools.length){cb.onDelta('지원 도구를 다시 확인해 이어갈 수 있습니다.');cb.onDone();return;}cb.onToolCall(turn++%2?call('inspect_office',{steps}):call('load_office_guide',{name:'native-excel'}));cb.onDone();});return {cancel(){}};}};
  const run=startAgent({transport,request:'값을 수정해줘',context:{app:'excel'},native,event(){}});
- await expect(run.result).rejects.toThrow('office_repeated_tool_failure');expect(native).toHaveBeenCalledTimes(3);expect(turn).toBe(6);
+ const recovered=await run.result;expect(recovered.recovery?.code).toBe('office_repeated_tool_failure');expect(recovered.cancelled).toBe(false);expect(recovered.recovery?.verifiedWrites).toBe(0);expect(native).toHaveBeenCalledTimes(3);expect(turn).toBe(6);
 });
 
 it('current-document destination clarification is not an unverified document mutation',async()=>{const skill=officeSkill(async()=>({status:'redirected',mutated:false,documentTarget:'current',recovery:'use write_cells'}),{app:'excel'});const result=await skill.executeTool(call('create_document'));expect(result.isError).toBe(false);expect(result.mutated).toBe(false);expect(skill.verifyResponse?.('셀 입력을 완료했습니다.',[])).toBeNull();});

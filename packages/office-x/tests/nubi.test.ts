@@ -21,11 +21,11 @@ describe('Nubi to GenOffice boundary',()=>{
     controller.cancel();await new Promise(r=>setTimeout(r,15));expect(emitted).toEqual([]);
     await new Promise<void>(resolve=>nubiTransport({complete:async()=>{throw Error('secret-token');}}).stream({system:'',messages:[],tools:[]},{onDelta:()=>{},onToolCall:c=>emitted.push(c),onDone:resolve,onError:e=>{expect(e).not.toContain('secret-token');resolve();}}));expect(emitted).toEqual([]);
   });
-  it('seeds text history only for the same document and range',()=>{
+  it('seeds text history only for the same document while removing executable handles',()=>{
     const sessions=new Conversations(),scope={documentId:'a',worksheetId:'s',address:'A1:B3'};
     sessions.remember('conversation',scope,[{role:'user',text:'전 작업'},{role:'assistant',text:'확인',toolCalls:[{id:'old',name:'set_formula',input:{snapshotId:'old'}}]},{role:'tool',results:[{id:'old',name:'set_formula',output:'secret snapshot'}]}]);
     expect(sessions.history('conversation',scope)).toEqual([{role:'user',text:'전 작업'},{role:'assistant',text:'확인'}]);
-    expect(sessions.history('conversation',{...scope,documentId:'other'})).toEqual([]);expect(sessions.history('conversation',{...scope,address:'C1'})).toEqual([]);
+    expect(sessions.history('conversation',{...scope,address:'C1',worksheetId:'another'})).toHaveLength(2);expect(sessions.history('conversation',{...scope,documentId:'other'})).toEqual([]);
   });
   it('keeps every catalog model and uses connection id, not refresh time',()=>{
     const models=Array.from({length:50},(_,i)=>({id:'model-'+i,label:'모델 '+i}));

@@ -1,0 +1,8 @@
+{
+  "scope": "Final built UI tested with mocked WebView, not installed Office",
+  "files": {
+    "dist/ui/app.js": "854f3451460e362e8179c9959172a80840d75b00cbb5550a5c2802a2e606526b",
+    "dist/ui/app.css": "7e3efba156a5c6266928840888946a72c7ff0a886b8bbd267c6de7b49057cc13",
+    "dist/ui/index.html": "46354a529f3f1e83da276643fe5f3116c5d1f5749cfd98ccc2d2749a9ddf4b55"
+  }
+}

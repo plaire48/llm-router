@@ -27,6 +27,8 @@ try {
  if($LASTEXITCODE){throw 'Typecheck failed'}
  & npm.cmd test
  if($LASTEXITCODE){throw 'Unit tests failed'}
+ & node tests/context-worker.integration.mjs
+ if($LASTEXITCODE){throw 'Context usage/compression worker integration failed'}
  & node scripts/test-auth.mjs tests/claude.integration.mjs
  if($LASTEXITCODE){throw 'Claude login/catalog/GenOffice integration tests failed'}
  & dotnet run --project native/OfficeX.Core.Tests -c Release
