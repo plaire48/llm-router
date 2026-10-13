@@ -1,0 +1,47 @@
+
+> @genoffice/slides@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/companion/workspace/apps/slides
+
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+TypeError: fetch failed
+    at node:internal/deps/undici/undici:16416:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async FetchDownloader.download (file:///Users/ganadi/Documents/office_x/companion/workspace/node_modules/@electron/get/dist/FetchDownloader.js:46:30)
+    at async file:///Users/ganadi/Documents/office_x/companion/workspace/node_modules/@electron/get/dist/index.js:158:9
+    at async useAndRemoveDirectory (file:///Users/ganadi/Documents/office_x/companion/workspace/node_modules/@electron/get/dist/utils.js:10:18)
+    at async downloadArtifact (file:///Users/ganadi/Documents/office_x/companion/workspace/node_modules/@electron/get/dist/index.js:154:12)
+stdout | tests/print-window.test.ts
+Downloading Electron binary...
+
+ ❯ tests/print-window.test.ts (0 test)
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/print-window.test.ts [ tests/print-window.test.ts ]
+Error: Electron failed to install correctly. Please delete `node_modules/electron` and run "npx install-electron --no" manually.
+ ❯ getElectronPath ../../node_modules/electron/index.js:43:13
+ ❯ Object.<anonymous> ../../node_modules/electron/index.js:52:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 134 passed (135)
+      Tests  1420 passed | 5 skipped (1425)
+   Start at  10:57:33
+   Duration  24.54s (transform 29.66s, setup 0ms, import 57.31s, tests 34.99s, environment 96.94s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/ganadi/Documents/office_x/companion/workspace/apps/slides
+npm error workspace @genoffice/slides@0.1.0
+npm error location /Users/ganadi/Documents/office_x/companion/workspace/apps/slides
+npm error command failed
+npm error command sh -c vitest run

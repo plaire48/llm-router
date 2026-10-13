@@ -1,0 +1,23 @@
+
+> @genoffice/markdown@0.1.0 test
+> vitest run --config vitest.nubi-verification.config.ts
+
+
+ RUN  v4.1.11 /private/tmp/office-x-genoffice-upstream/apps/markdown
+
+11:10:05 AM [vite] (client) warning: Duplicate key "loadURL" in object literal
+33 |      loadFile: vi.fn(),
+34 |      loadURL: vi.fn(),
+35 |      loadURL: vi.fn(),
+   |      ^
+36 |      once: vi.fn((event: string, listener: () => void) => listeners.set(event, listener)),
+37 |      send: vi.fn(),
+
+  Plugin: vite:esbuild
+  File: /private/tmp/office-x-genoffice-upstream/apps/markdown/tests/close-asset-cleanup.test.ts
+
+ Test Files  48 passed (48)
+      Tests  1069 passed (1069)
+   Start at  11:10:02
+   Duration  19.07s (transform 5.53s, setup 0ms, import 13.51s, tests 37.84s, environment 21.71s)
+

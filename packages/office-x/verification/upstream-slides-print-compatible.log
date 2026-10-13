@@ -1,0 +1,13 @@
+
+> @genoffice/slides@0.1.0 test
+> vitest run tests/print-window.test.ts
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/companion/workspace/apps/slides
+
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  11:07:19
+   Duration  486ms (transform 69ms, setup 0ms, import 86ms, tests 9ms, environment 302ms)
+

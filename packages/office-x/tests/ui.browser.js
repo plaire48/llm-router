@@ -39,7 +39,9 @@ async (page) => {
   await page.getByRole('button',{name:'선택 범위 확인',exact:true}).click();
   await page.getByRole('button',{name:'모델 변경',exact:true}).click();
   await page.getByRole('textbox',{name:'모델 검색',exact:true}).fill('Sol');
-  await page.getByRole('button',{name:'Sol 테스트 모델',exact:true}).click();
+  await page.getByRole('radio',{name:'Sol 테스트 모델',exact:true}).click();
+  if(await page.evaluate(()=>officeFixture.sent.some(m=>m.method==='model')))throw Error('model was applied before confirmation');
+  await page.getByRole('button',{name:'적용',exact:true}).click();
   await page.getByRole('textbox',{name:'모델 검색',exact:true}).waitFor({state:'detached'});
   await page.getByRole('textbox',{name:'메시지',exact:true}).fill('수량과 단가를 곱해서 금액 열을 채워줘.');
   await page.waitForFunction(()=>!document.querySelector('[aria-label=보내기]').disabled);
@@ -63,9 +65,10 @@ async (page) => {
   await page.getByRole('button',{name:'수량과 단가를 곱해서 금액 열을 채워줘.',exact:true}).click();
   await page.getByText('수식 검증 완료',{exact:true}).waitFor();
   await page.getByRole('button',{name:'연결 설정',exact:true}).click();
-  await page.getByRole('tab',{name:'Claude',exact:true}).click();
+  await page.getByRole('radio',{name:'Claude',exact:true}).click();
   await page.getByRole('button',{name:'연결',exact:true}).click();
-  await page.getByRole('button',{name:'Opus 테스트 모델',exact:true}).click();
+  await page.getByRole('radio',{name:'Opus 테스트 모델',exact:true}).click();
+  await page.getByRole('button',{name:'적용',exact:true}).click();
   await page.getByRole('textbox',{name:'모델 검색',exact:true}).waitFor({state:'detached'});
   await page.screenshot({path:'/Users/ganadi/Documents/office_x/verification/readability-chat.png'});
   await page.getByRole('button',{name:'추론 정도',exact:true}).click();

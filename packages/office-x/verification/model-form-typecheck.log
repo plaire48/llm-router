@@ -1,0 +1,4 @@
+
+> office-x@0.7.0 typecheck
+> tsc --noEmit
+

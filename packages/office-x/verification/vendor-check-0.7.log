@@ -1,0 +1,6 @@
+
+> office-x@0.7.0 verify:vendor
+> node scripts/verify-vendor.mjs
+
+Verified 4582 upstream files: 438d9c65709952490c970beaa2599ef45e74431f
+Verified 88 Nubi working-tree files: 7dbaf0f6cdb3ea938e09b743b2d8bc31ce8d953e

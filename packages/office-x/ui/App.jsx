@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {CxButton,ActionButton,Icon,DetailPanel,CxInput,CxNotice} from '@e2e/cx-design-system';
 import {NubiLogin,NubiComposerInput,NubiComposerBar} from '../vendor/nubi/extensions/aipro-chat/src/NubiSurfaces.jsx';
-import {ModelPicker,ModelSelection} from '../vendor/nubi/extensions/aipro-chat/src/ChatControls.jsx';
+import {ModelPicker} from '../vendor/nubi/extensions/aipro-chat/src/ChatControls.jsx';
 import {NubiLogo} from '../vendor/nubi/extensions/aipro-chat/src/AgentMark.jsx';
 import {ReasoningPicker} from '../vendor/nubi/packages/nubi-desktop/ui/ReasoningPicker.jsx';
 import {ResponseTime} from '../vendor/nubi/packages/nubi-desktop/ui/ResponseTime.jsx';
@@ -24,6 +24,7 @@ import '../vendor/nubi/packages/nubi-desktop/design/workspace-dialogs.css';
 import './office.css';
 import {officeApps} from './office-apps.js';
 import {useGreeting} from './useGreeting.js';
+import {ModelForm} from './ModelForm.jsx';
 import {Services} from './Services.jsx';
 import {outcome,inferDocumentTarget} from './run-outcome.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
@@ -139,7 +140,7 @@ function App(){
     {dialog==='services'&&<Services state={services} call={(method,input)=>command(method,input,'services')} onClose={()=>setDialog(null)}/>}
     {dialog==='target'&&<DetailPanel title="어디에 만들까요?" variant="modal" hideHelp onClose={()=>{setDialog(null);setPendingRequest('');}}><p>현재 문서를 수정하거나 새 문서를 열어 작성합니다.</p><div className="target-choices"><CxButton onClick={()=>submit('current')}><strong>현재 문서</strong><span>지금 열린 문서에 적용</span></CxButton><CxButton onClick={()=>submit('new')}><strong>새 문서</strong><span>새 창에서 작성하고 Agent 이어가기</span></CxButton></div></DetailPanel>}
     {dialog==='checkpoints'&&<DetailPanel title="문서 복원" variant="modal" hideHelp onClose={()=>setDialog(null)}><p>전체 스냅샷을 새 창에 복원합니다. 현재 문서는 유지됩니다.</p>{checkpoints.length?checkpoints.map(c=><CxButton className="history-row" key={c.id} onClick={()=>{setDialog(null);started.current=performance.now();setBusy(true);setConversations(rows=>rows.map(row=>row.id===active.id?{...row,messages:[...row.messages,{role:'user',text:'문서 복원: '+c.label},{role:'assistant',text:''}]}:row));send({type:'rollback',checkpointId:c.id,conversationId:active.id});}}>{c.label} / {c.document}</CxButton>):<p className="muted">아직 복원 지점이 없습니다.</p>}</DetailPanel>}
-    {dialog==='models'&&<ModelSelection data={data} loading={loading} disabled={busy} providerLabels={labels} showProviderNames showActionLabels selectWhileLoading onClose={()=>setDialog(null)} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onProviderSelect={id=>action('select',id)} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
+    {dialog==='models'&&<ModelForm data={data} loading={loading} disabled={busy} providerLabels={labels} onClose={()=>setDialog(null)} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
     {dialog==='history'&&<DetailPanel title="대화 이력" variant="modal" hideHelp onClose={()=>setDialog(null)}><p className="muted">창을 닫으면 대화가 지워집니다.</p><CxButton onClick={newChat}>새 대화</CxButton>{conversations.map((c,i)=><CxButton className="history-row" key={c.id} aria-pressed={index===i} onClick={()=>{setIndex(i);setDialog(null);setDraft('');}}>{c.title}</CxButton>)}</DetailPanel>}
     {dialog==='fabrix'&&<Fabrix onClose={()=>setDialog(null)} onConnect={async values=>{await action('connect',{provider:'fabrix',...values});setDialog(null);}}/>}
   </div></main></div>;

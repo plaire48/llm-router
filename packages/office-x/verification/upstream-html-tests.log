@@ -1,0 +1,13 @@
+
+> @genoffice/html@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/companion/workspace/apps/html
+
+
+ Test Files  37 passed (37)
+      Tests  324 passed (324)
+   Start at  10:57:33
+   Duration  10.84s (transform 4.51s, setup 0ms, import 9.26s, tests 4.02s, environment 61.97s)
+

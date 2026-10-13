@@ -1,0 +1,69 @@
+
+> @genoffice/markdown@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/companion/workspace/apps/markdown
+
+10:57:36 AM [vite] (client) warning: Duplicate key "loadURL" in object literal
+33 |      loadFile: vi.fn(),
+34 |      loadURL: vi.fn(),
+35 |      loadURL: vi.fn(),
+   |      ^
+36 |      once: vi.fn((event: string, listener: () => void) => listeners.set(event, listener)),
+37 |      send: vi.fn(),
+
+  Plugin: vite:esbuild
+  File: /Users/ganadi/Documents/office_x/companion/workspace/apps/markdown/tests/close-asset-cleanup.test.ts
+fatal: not a git repository (or any of the parent directories): .git
+ ❯ tests/source-splice.test.ts (13 tests | 1 failed) 1755ms
+     × round-trips every markdown file in the repository 48ms
+fatal: not a git repository (or any of the parent directories): .git
+ ❯ tests/roundtrip-serializer.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/roundtrip-serializer.test.ts [ tests/roundtrip-serializer.test.ts ]
+Error: Command failed: git ls-files -z *.md
+fatal: not a git repository (or any of the parent directories): .git
+
+ ❯ tests/roundtrip-serializer.test.ts:124:16
+    122| // Exercise the actual loading path and validate the resulting editor …
+    123| const root = resolve(import.meta.dirname, '../../..')
+    124| const corpus = execFileSync('git', ['ls-files', '-z', '*.md'], { cwd: …
+       |                ^
+    125|   .split('\0')
+    126|   .filter(Boolean)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/source-splice.test.ts > source splice > round-trips every markdown file in the repository
+Error: Command failed: git rev-parse --show-toplevel
+fatal: not a git repository (or any of the parent directories): .git
+
+ ❯ tests/source-splice.test.ts:260:18
+    258|   // 294 topic bodies, which is what pushed it over on this branch.
+    259|   it('round-trips every markdown file in the repository', { timeout: 1…
+    260|     const root = execSync('git rev-parse --show-toplevel', { encoding:…
+       |                  ^
+    261|     const files = execSync('git ls-files -- "*.md"', { cwd: root, enco…
+    262|       .split('\n')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 46 passed (48)
+      Tests  1 failed | 599 passed (600)
+   Start at  10:57:33
+   Duration  16.57s (transform 14.22s, setup 0ms, import 30.62s, tests 30.96s, environment 65.70s)
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/ganadi/Documents/office_x/companion/workspace/apps/markdown
+npm error workspace @genoffice/markdown@0.1.0
+npm error location /Users/ganadi/Documents/office_x/companion/workspace/apps/markdown
+npm error command failed
+npm error command sh -c vitest run

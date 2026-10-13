@@ -29,7 +29,7 @@ try {
   $env:CSC_IDENTITY_AUTO_DISCOVERY='false'
   Push-Location apps/shell
   try {
-   & npx electron-builder --win --x64 --dir --publish never -c.extraMetadata.version=$env:GENOFFICE_APP_VERSION -c.extraMetadata.productName='Nubi GenOffice'
+   & npx electron-builder --win --x64 --dir --publish never
    if($LASTEXITCODE){throw 'Companion Windows package failed'}
    $resources=Join-Path (Get-Location) 'release/win-unpacked/resources'
    Copy-Item "$root/dist/companion" "$resources/nubi" -Recurse -Force

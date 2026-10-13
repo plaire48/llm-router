@@ -24,7 +24,7 @@ const tokens=await readFile('companion/src/nubi-tokens.css','utf8');
 await patch('packages/ui/src/tokens.css',s=>'@import "./nubi-fonts/font.css";\n'+s+'\n'+tokens);
 await patch('apps/shell/src/renderer/src/tabbar.css',s=>s+'\n.nubi-connection-button{width:auto;min-width:48px;padding:0 10px;color:#3182F6;font-weight:650;font-family:var(--gs-font-sans);-webkit-app-region:no-drag;}\n');
 await patch('apps/shell/package.json',s=>{const p=JSON.parse(s);p.productName='Nubi GenOffice';return JSON.stringify(p,null,2)+'\n';});
-await patch('apps/shell/electron-builder.cjs',s=>once(once(once(s,"appId: 'com.genoffice.app'","appId: 'com.nubi.genoffice'"),"productName: 'GenOffice'","productName: 'Nubi GenOffice'"),"'x86_64-pc-windows-gnu'","'x86_64-pc-windows-msvc'"));
+await patch('apps/shell/electron-builder.cjs',s=>once(once(once(s,"appId: 'com.genoffice.app'","appId: 'com.nubi.genoffice'"),"productName: 'GenOffice'","productName: 'Nubi GenOffice',\n  extraMetadata: {version: process.env.GENOFFICE_APP_VERSION}"),"'x86_64-pc-windows-gnu'","'x86_64-pc-windows-msvc'"));
 // Prevent duplicate Rust builds: the packaging pass builds the explicit MSVC target.
 await patch('apps/sheets/package.json',s=>{const p=JSON.parse(s);p.scripts.build='electron-vite build';return JSON.stringify(p,null,2)+'\n';});
 await writeFile('companion/adaptations.json',JSON.stringify({commit:JSON.parse(await readFile('vendor/genoffice-source.json','utf8')).commit,changes},null,2)+'\n');

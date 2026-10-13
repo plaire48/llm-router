@@ -54,7 +54,7 @@
     {
       "path": "apps/shell/electron-builder.cjs",
       "sourceSha256": "949e6a09a8f973e85a4b426408845feb884f742c26ef254859bfbe721ad2ac7f",
-      "adaptedSha256": "5e23eec5c022b8fe0b185ce1d685a4b350ad18646f920e080e7e79556dcad377"
+      "adaptedSha256": "80718ff930b51914af5f70bd8b01b0b201840de65fea5db63412351d5e7493dd"
     },
     {
       "path": "apps/sheets/package.json",
