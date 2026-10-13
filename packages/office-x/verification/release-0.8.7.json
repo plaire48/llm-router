@@ -1,0 +1,126 @@
+{
+  "version": "0.8.7",
+  "buildCommit": "80cf8c1b3789e74173cd8002d95e3d75bf17a9a1",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38399840513",
+  "installer": {
+    "name": "Nubi-Office-X-0.8.7-Setup.exe",
+    "sha256": "dcd33bde3444f02defc655d2aac1260e77fe257679ed7c1b0510df1b9aa345dd",
+    "bytes": 124595406
+  },
+  "source": {
+    "sha256": "5eb9fa0ecff0c8f3d16dfcacd3eb59313aada0f8be3722e2c438be0240e3eaea",
+    "files": 5468,
+    "sourceHashesChecked": 52
+  },
+  "sourceTests": {
+    "macOSPassed": 111,
+    "macOSSkipped": 4,
+    "windowsPassed": 115
+  },
+  "coreTests": 105,
+  "newTaskPaneContractTests": {
+    "nonemptyCaption": true,
+    "compatibleTitleFallback": true,
+    "activeWindowOverloadFallback": true,
+    "boundedArgumentOnlyRetries": true,
+    "compactWidthFallback": true,
+    "defaultWidthFallback": true,
+    "scope": "injected rejecting factory/setter callbacks; not real Office VSTO"
+  },
+  "startupDiagnostics": {
+    "apps": [
+      "excel",
+      "word",
+      "powerpoint"
+    ],
+    "parameterIncluded": true,
+    "exceptionMessageExcluded": true,
+    "scope": "production diagnostic helper through native Windows test process"
+  },
+  "nativeCOM": {
+    "architectures": [
+      "x64",
+      "x86"
+    ],
+    "scope": "native Excel-shaped IDispatch fixture; not Office"
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "reinstallSeconds": 4.69,
+    "imageFeatures": false,
+    "runner": "windows-2022",
+    "installSeconds": 9.67,
+    "liveModelVerified": false,
+    "legacyEditorUpgradeCleanup": true,
+    "realOfficeVerified": false,
+    "standaloneEditorsAbsent": true,
+    "registry": [
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "app": "Excel",
+        "view": "Registry32"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "app": "Word",
+        "view": "Registry32"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "app": "PowerPoint",
+        "view": "Registry32"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "app": "Excel",
+        "view": "Registry64"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "app": "Word",
+        "view": "Registry64"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "app": "PowerPoint",
+        "view": "Registry64"
+      }
+    ],
+    "officeInstalled": false,
+    "uninstallSeconds": 1.36,
+    "passed": true
+  },
+  "integrity": {
+    "commit": "80cf8c1b3789e74173cd8002d95e3d75bf17a9a1",
+    "exeSha256": "dcd33bde3444f02defc655d2aac1260e77fe257679ed7c1b0510df1b9aa345dd",
+    "exeBytes": 124595406,
+    "sourceSha256": "5eb9fa0ecff0c8f3d16dfcacd3eb59313aada0f8be3722e2c438be0240e3eaea",
+    "sourceFiles": 5468,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 52,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true
+  },
+  "boundaries": {
+    "realOffice2016Verified": false,
+    "realVSTOPaneOpeningVerified": false,
+    "liveModelTestedThisCandidate": false,
+    "userExceptionParameterObserved": false,
+    "userArgumentExceptionRootCauseConfirmed": false
+  },
+  "publication": {
+    "url": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.7-beta.1",
+    "tagCommit": "80cf8c1b3789e74173cd8002d95e3d75bf17a9a1",
+    "publicDownloadSha256Verified": true,
+    "assets": 13
+  }
+}

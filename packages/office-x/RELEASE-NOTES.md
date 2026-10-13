@@ -11,3 +11,7 @@ Excel, Word, PowerPoint의 작업창 생성 코드를 함께 수정했습니다.
 Office 앱을 모두 닫고 EXE를 실행하세요. 실행 중인 Office는 이전 추가 기능을 계속 사용할 수 있습니다. 실제 Windows Office 2016 작업창에는 접근할 수 없어 그 환경에서의 열기 성공은 직접 확인하지 못했습니다. Windows 설치/화면 검사와 COM 모의 검사, 제목/창/너비 인자 거절 회귀 검사는 별도 범위입니다.
 
 참고: [Microsoft VSTO 작업창 생성과 창 인자](https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.tools.customtaskpanecollection.add?view=vsto-2022).
+
+[Windows 빌드 및 검사](https://github.com/plaire48/llm-router/actions/runs/38399840513)를 통과했습니다. 커밋 80cf8c1b3789e74173cd8002d95e3d75bf17a9a1의 Windows 소스 115개, 네이티브 코어 105개, x86/x64 COM 회귀 및 설치된 WebView2의 세 앱 클릭/입력 검사를 통과했습니다. Office 없는 Windows VM에서 설치 9.67초, 재설치 4.69초입니다. 실제 Office 작업창 열기 성공의 증거와는 구분합니다.
+
+설치 파일 SHA-256: dcd33bde3444f02defc655d2aac1260e77fe257679ed7c1b0510df1b9aa345dd. 설치 파일 124595406바이트, 소스 5468개 파일입니다. GenOffice 4582개와 누비 88개 원본, 소스 52개의 해시를 대조했습니다. 상세 범위는 release-0.8.7.json을 참고하세요.

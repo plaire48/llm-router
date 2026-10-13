@@ -1,7 +1,10 @@
 {
   "version": "0.8.7",
-  "state": "candidate_verification",
+  "state": "beta_published_limited_validation",
+  "buildCommit": "80cf8c1b3789e74173cd8002d95e3d75bf17a9a1",
   "realOfficeVerified": false,
   "realVSTOPaneVerified": false,
-  "expectedCoreTests": 105
+  "coreTests": 105,
+  "windowsSourceTests": 115,
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38399840513"
 }

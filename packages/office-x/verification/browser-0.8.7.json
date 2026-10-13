@@ -1,0 +1,18 @@
+{
+  "version": "0.8.7",
+  "buildCommit": "80cf8c1b3789e74173cd8002d95e3d75bf17a9a1",
+  "passed": true,
+  "scope": "browser with mock WebView host; not native Office task-pane creation",
+  "checks": [
+    "manual login readiness",
+    "model selection",
+    "IME composition",
+    "native review payload",
+    "typing during run",
+    "error recovery unlocks click/input",
+    "320px layout",
+    "Claude picker",
+    "rejected/verified receipt display"
+  ],
+  "pageErrors": []
+}
