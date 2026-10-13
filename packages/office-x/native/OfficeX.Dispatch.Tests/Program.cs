@@ -10,7 +10,7 @@ using OfficeX.Core;
 using OfficeX.ExcelHost;
 class Program {
  static void Equal(object a,object b){if(!object.Equals(a,b))throw new Exception("Expected "+a+", got "+b);}
- [STAThread]static void Main(){object dictionary=Activator.CreateInstance(Type.GetTypeFromProgID("Scripting.Dictionary",true));
+ [STAThread]static void Main(string[] args){if(args.Length>0)Equal(args[0],IntPtr.Size==8?"x64":"x86");Console.WriteLine("Native test process: "+(IntPtr.Size==8?"x64":"x86"));object dictionary=Activator.CreateInstance(Type.GetTypeFromProgID("Scripting.Dictionary",true));
   try{
    OfficeDispatch.Invoke(dictionary,"Add","call",new object[]{"name","누비"});Equal(1,OfficeDispatch.Get(dictionary,"Count"));Equal("누비",OfficeDispatch.Get(dictionary,"Item","name"));
    Equal("누비",OfficeDispatch.Invoke(dictionary,"Item","call",new object[]{"name"}));
