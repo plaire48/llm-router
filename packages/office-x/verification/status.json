@@ -7,7 +7,7 @@
     "nubiHashes": 88,
     "unitTestsPassed": 62,
     "unitTestsSkipped": 4,
-    "nativeCoreTests": 68,
+    "nativeCoreTests": 72,
     "stdioMockIntegration": "passed",
     "net472HostCrossCompile": "passed",
     "creationOperationBrowserFlows": 6,
@@ -18,7 +18,7 @@
       "propertiesPerState": 77,
       "matchesExcel": true
     },
-    "newGenofficeBrowserFlows": 8,
+    "newGenofficeBrowserFlows": 9,
     "realPdfConversionFormats": [
       "docx",
       "pptx",
@@ -31,7 +31,9 @@
     "upstreamPdf2docx": 822,
     "upstreamPptxEngine": 1253,
     "upstreamPptxEngineSkipped": 1,
-    "upstreamEnginesTotalPassed": 2829
+    "upstreamEnginesTotalPassed": 2829,
+    "memberPreInvocationRecoveryFixture": true,
+    "powerpointSelectionFallbackCrossCompiled": true
   },
   "windowsVstoBuildVerified": false,
   "windowsInstallerVerified": false,

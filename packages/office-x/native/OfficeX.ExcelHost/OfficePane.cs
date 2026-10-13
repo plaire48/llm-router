@@ -25,7 +25,7 @@ namespace OfficeX.ExcelHost
         private OfficeAutomationSession automation;
         private DocumentCreationPort creationPort;
         private bool writesStopped,createdDuringRun;
-        private string documentTarget="current";
+        private string documentTarget="current",currentStage="host";
         private OfficeFiles files;
         private OfficePane followOwner;
         private readonly List<OfficePane> followers=new List<OfficePane>();
@@ -106,12 +106,12 @@ namespace OfficeX.ExcelHost
                             approval?.TrySetResult((bool?)message["approved"]==true);break;
                     case "clear_conversation":if(!running)worker?.Send(new {type="clear_conversation",conversationId=(string)message["conversationId"]});break;
                 }
-            }catch(OfficeFault e){SendSurface(new {type="host_error",id=(string)message["id"],operation=(string)message["type"],error=Explain(e.Message)});}
-            catch{SendSurface(new {type="host_error",id=(string)message["id"],operation=(string)message["type"],error="작업을 시작하지 못했습니다. 연결과 문서 상태를 확인해 주세요."});}
+            }catch(OfficeFault e){SendSurface(new {type="host_error",id=(string)message["id"],operation=(string)message["type"],error=Explain(e.Message),diagnostics=OfficeDiagnostics.Record(e,app,currentStage)});}
+            catch(Exception e){SendSurface(new {type="host_error",id=(string)message["id"],operation=(string)message["type"],error=(app=="powerpoint"?"PowerPoint":app=="word"?"Word":"Excel")+" 작업을 준비하지 못했습니다. 오류 정보를 복사해 확인할 수 있습니다.",diagnostics=OfficeDiagnostics.Record(e,app,currentStage)});}
         }
         private void EnsureWorker() {
             if(worker!=null)return;
-            worker=new WorkerProcess(root);var owner=worker;
+            currentStage="worker_start";worker=new WorkerProcess(root);var owner=worker;
             worker.Message+=message=>Dispatch(()=>{if(ReferenceEquals(worker,owner))HandleMessage(message);});
             worker.Disconnected+=()=>Dispatch(()=>{
                 if(!ReferenceEquals(worker,owner))return;
@@ -123,11 +123,11 @@ namespace OfficeX.ExcelHost
         private void CaptureContext(){using(new OfficeCulture()){CaptureContextCore();}}
         private void CaptureContextCore(){
             automationPort?.Dispose();creationPort?.Dispose();
-            automationPort=new OfficeAutomationPort(application,app,windowHandle);automation=new OfficeAutomationSession(automationPort);
-            creationPort=new DocumentCreationPort(application,app,windowHandle);if(files==null)files=new OfficeFiles(application,app,()=>automationPort);surface.SetAssetsRoot(files.Folder);fallbackContext=null;writesStopped=false;createdDuringRun=false;
-            try{if(app=="excel")session=new ExcelSession(port);else textSession=new TextSession(textPort);}
+            currentStage="capture_document";automationPort=new OfficeAutomationPort(application,app,windowHandle);automation=new OfficeAutomationSession(automationPort);automationPort.CheckSource();
+            creationPort=null;if(files==null)files=new OfficeFiles(application,app,()=>automationPort);surface.SetAssetsRoot(files.Folder);fallbackContext=null;writesStopped=false;createdDuringRun=false;
+            currentStage="capture_selection";try{if(app=="excel")session=new ExcelSession(port);else textSession=new TextSession(textPort);}
             catch(OfficeFault e)when(new[]{"select_cells","single_range_required","range_limit","context_limit","select_text","text_block_limit","text_scope_invalid"}.Contains(e.Message)){fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,selectionReason=e.Message,documentToolsAvailable=true};}
-            catch(System.Runtime.InteropServices.COMException){fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};}
+            catch(Exception e){OfficeDiagnostics.Record(e,app,currentStage);fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};}
         }
         private void ShowContext() {if(fallbackContext!=null){target.Text=automationPort.DocumentName;return;}if(app=="excel"){var c=session.Context; target.Text=c.Workbook+" / "+c.Worksheet+" / "+c.Address;}else{var c=textSession.Context;target.Text=c.Document+" / "+c.Location;}}
         private void Begin() {
@@ -141,7 +141,7 @@ namespace OfficeX.ExcelHost
             if(string.IsNullOrWhiteSpace(request.Text)||request.Text.Length>8000)throw new OfficeFault("request_invalid");
             EnsureWorker();
             Begin();
-            try {worker.Send(new {type="start",runId,request=request.Text,context=RunContext(),conversationId});
+            try {currentStage="dispatch_request";worker.Send(new {type="start",runId,request=request.Text,context=RunContext(),conversationId});
                 SendSurface(new {type="started",runId,conversationId,target=target.Text});
                 status.Text="문서를 확인하고 작업을 계획합니다.";}
             catch {Finish("Agent 요청을 전달하지 못했습니다.");throw;}
@@ -173,8 +173,8 @@ namespace OfficeX.ExcelHost
                     if(nativeBusy) result=new {ok=false,error="native_busy"};
                     else {
                         nativeBusy=true;
-                        try {result=await Native((string)message["name"],message["input"] as JObject??new JObject());}
-                        catch(OfficeFault e){result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,invocationStarted=e.InvocationStarted};status.Text=Explain(e.Message);}
+                        try {currentStage="native_"+(string)message["name"];result=await Native((string)message["name"],message["input"] as JObject??new JObject());}
+                        catch(OfficeFault e){OfficeDiagnostics.Record(e,app,currentStage);result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,invocationStarted=e.InvocationStarted,recovery=e.InvocationStarted==false?"No call was made. Use inspect_office_members and the native guide; root document is not Application. Use dedicated file tools for Save/Open/Export.":null};status.Text=Explain(e.Message);}
                         catch(OperationCanceledException){result=new {ok=false,status="cancelled"};}
                         catch{result=new {ok=false,error="native_execution_failed"};}
                         finally {nativeBusy=false;if(!running)SetBusy(false);}
@@ -192,7 +192,7 @@ namespace OfficeX.ExcelHost
         private async Task<object> NativeCore(string name,JObject input) {
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
-            if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
+            if(writesStopped&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="ask_clarification"){
                 var questions=input["questions"] as JArray;if(questions==null||questions.Count<1||questions.Count>3||questions.Any(q=>q["question"]?.Type!=JTokenType.String||((string)q["question"]).Length>500||q["options"] is JArray opts&&opts.Count>6))throw new OfficeFault("question_invalid");
                 questionId=Guid.NewGuid().ToString("N");questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);pendingQuestion=JObject.FromObject(new{type="question",runId,questionId,questions});SendSurface(pendingQuestion);
@@ -225,17 +225,18 @@ namespace OfficeX.ExcelHost
                 lastReceipt=null;SendSurface(new{type="receipt",runId,receipt=r});writesStopped=(string)r["status"]!="verified";return r;
             }
             if(name=="save_document"){var saved=automationPort.Save((string)input["format"]=="pdf",cancelToken);SendSurface(new{type="receipt",runId,receipt=saved});return saved;}
+            if(name=="inspect_office_members")return automationPort.Members((string)input["target"],(string)input["query"],(int?)input["count"]??80);
             if(name=="inspect_office")return automation.Inspect(input["steps"]?.ToObject<List<OfficeStep>>());
             if(writesStopped&&new[]{"create_document","execute_office_operations","replace_blocks","replace_text","set_formula"}.Contains(name))throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="execute_office_operations"){
                 var plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
                 status.Text="문서 변경안을 확인해 주세요.";
                 var approved=await AwaitReview(plan.Id,plan);if(approved)files.CheckpointNow(plan.Summary);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
-                writesStopped=receipt.Status!="verified";SendSurface(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return receipt;
+                writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);SendSurface(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return receipt;
             }
             if(name=="create_document"){
                 if(documentTarget!="new")throw new OfficeFault("target_current_use_office_operations");
-                var creation=new DocumentCreation(creationPort,app,input.ToObject<DocumentDraft>());var plan=creation.Plan;
+                if(creationPort==null)creationPort=new DocumentCreationPort(application,app,windowHandle);var creation=new DocumentCreation(creationPort,app,input.ToObject<DocumentDraft>());var plan=creation.Plan;
                 status.Text="새 문서 내용을 확인해 주세요.";var approved=await AwaitReview(plan.Id,plan);var receipt=creation.Apply(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified";
                 SendSurface(new{type="receipt",runId,receipt});
@@ -316,6 +317,8 @@ namespace OfficeX.ExcelHost
         private void Finish(string text) {running=false;status.Text=text;foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.handoffState=HandoffState();follower.followOwner=null;follower.files=files?.Fork(()=>follower.automationPort);follower.EnsureWorker();}followers.Clear();cancellation?.Cancel();SetBusy(nativeBusy);approval?.TrySetResult(false);}
         private static string Explain(string code) {
             switch(code) {
+                case "open_document_required":return "작업할 문서를 먼저 열어 주세요.";
+                case "office_member_unavailable":case "office_member_not_found":return "이 문서의 지원 멤버를 다시 확인하고 작업 방법을 조정합니다.";
                 case "write_out_of_scope":return "읽기는 주변 범위까지 가능합니다. 수정할 셀은 선택한 뒤 다시 요청해 주세요.";
                 case "source_changed":return "문서가 변경됐습니다. 범위를 다시 확인해 주세요.";
                 case "document_closed":return "대상 문서 또는 시트가 닫혔습니다.";

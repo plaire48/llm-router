@@ -27,7 +27,7 @@ import {useGreeting} from './useGreeting.js';
 import {Services} from './Services.jsx';
 import {outcome,inferDocumentTarget} from './run-outcome.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
-const toolNames={web_search:'웹 자료 검색',image_search:'이미지 검색',generate_image:'이미지 생성',analyze_media:'미디어 확인',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',insert_image:'이미지 삽입',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
+const toolNames={web_search:'웹 자료 검색',image_search:'이미지 검색',generate_image:'이미지 생성',analyze_media:'미디어 확인',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',insert_image:'이미지 삽입',inspect_office_members:'지원 기능 확인',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
 function App(){
   const greeting=useGreeting();
   const [host,setHost]=useState('excel');
@@ -35,7 +35,7 @@ function App(){
   const app=officeApps[host]||officeApps.excel;
   const [version,setVersion]=useState('0.6.0');
   const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({});
-  const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false);
+  const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
   const [target,setTarget]=useState('현재 문서에서 작업합니다'),[status,setStatus]=useState(''),[review,setReview]=useState(null),[loading,setLoading]=useState(false);
   const composerInput=useRef(null),[controlBusy,setControlBusy]=useState(false);
@@ -50,7 +50,7 @@ function App(){
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
       if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.6.0');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
-      if(m.type==='host_error'){setError(m.error);if(m.operation==='ready')setLost(true);if(!m.id&&!run.current){setBusy(false);updateReply({failed:true,text:m.error});}return;}
+      if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&!run.current){setBusy(false);updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
       if(m.type==='view'){setTarget(m.target||'현재 문서에서 작업합니다');setStatus(m.status);setBusy(m.running);return;}
       if(m.type==='started'){run.current=m.runId;updateReply({target:m.target});return;}
@@ -103,7 +103,7 @@ function App(){
     </div></header>
     {!available&&<CxNotice tone="warning">미리보기 화면입니다. Windows Office에서 실행하세요.</CxNotice>}
     {lost&&<CxButton onClick={()=>{setLost(false);setError('');send({type:'ready'});}}>Agent 다시 연결</CxButton>}
-    {error&&<CxNotice tone="danger">{error}</CxNotice>}
+    {error&&<CxNotice tone="danger">{error}{diagnostics&&<CxButton onClick={()=>navigator.clipboard.writeText(JSON.stringify(diagnostics,null,2)).catch(()=>{})}>오류 정보 복사</CxButton>}</CxNotice>}
     {providerLoginError(provider)&&<CxNotice tone="danger">{providerLoginError(provider)}</CxNotice>}
     {!provider.connected&&!active.messages.length?<div className="login-scroll"><NubiLogin providerLabels={labels} intro={{title:greeting,description:'사용할 모델을 연결하세요.'}} pending={data.pending} checkingProvider={!ready&&available&&!lost?'aipro':null} onLogin={login} onCancel={()=>void action('cancelLogin').catch(()=>{})}>
       <details className="connection-help"><summary>연결 안내</summary><p>{app.name} / 누비 Agent {version}</p><p>Claude 연결에는 Claude Code가 필요합니다.</p><p>인증 정보는 Windows와 각 서비스의 인증 도구에서 관리합니다.</p><CxButton disabled={!available||busy} onClick={demo}>모델 없이 도구 확인</CxButton></details>

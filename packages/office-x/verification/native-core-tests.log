@@ -1,0 +1,73 @@
+PASS unsupported member before invocation can be replanned without reporting a write
+PASS real partial writes cannot be replanned as an unsupported-member retry
+PASS dotted paths fail before invocation while normal document content stays available
+PASS model execution escape remains unavailable and metadata errors are not write successes
+PASS type library failure before invocation reports no completed write
+PASS Excel rejection reports unverified attempt instead of entered values
+PASS automatic shape resize preserves other text block checks
+PASS shape geometry drift before approval blocks replacement
+PASS Office operations continue after verified edits
+PASS Office operations detect source drift before mutation
+PASS Office operations cannot replay rejected writes
+PASS Office operations enforce real readback
+PASS Office plan is immutable and requires fresh reads after success
+PASS Office writes require independent result checks
+PASS Office cancellation between steps stops remaining mutations
+PASS Office cancellation before execution leaves data intact
+PASS Word creation reads back paragraphs and tables
+PASS document creation never replays a partial COM result
+PASS document creation rejection never creates
+PASS document creation cancellation never creates
+PASS document creation detects wrong actual content
+PASS creation validates each app schema before dispatch
+PASS minimal splice preserves unchanged prefix and suffix including emoji
+PASS batch keeps each paragraph boundary and verifies every block
+PASS batch rejects a block outside pinned selection
+PASS batch cannot mix duplicate paragraph targets
+PASS batch checks readonly block before any write
+PASS batch rechecks all source blocks before writing
+PASS batch detects unexpected change to unedited paragraph
+PASS batch partial failure cannot replay applied paragraphs
+PASS batch approval is an immutable copy
+PASS batch cancellation before apply never writes
+PASS batch rejection never writes
+PASS text replacement verifies content and keeps unsaved
+PASS text source drift blocks writes
+PASS text other-content drift blocks writes
+PASS text rejection and replay never mutate
+PASS text cancellation before dispatch does not mutate
+PASS text uncertain COM failure cannot replay
+PASS text formatting drift fails independent readback
+PASS text mixed or complex selection stays readonly
+PASS text new paragraphs cannot expand mutation scope
+PASS three formulas are applied and independently read back
+PASS changed operand blocks the whole batch
+PASS changed target blocks the whole batch
+PASS document close never falls back to active workbook
+PASS approval rejection consumes the write without mutation
+PASS receipt replay never reapplies
+PASS cancel before apply writes nothing
+PASS second COM call failure reports attempted partial receipt
+PASS failed final readback is not success
+PASS wrong calculated result is not success
+PASS incomplete calculation is not success
+PASS non-target change after calculation is detected
+PASS caller cannot mutate reviewed plan
+PASS caller cannot mutate stored snapshot
+PASS single selected cell can read the surrounding table
+PASS single-cell write can use observed surrounding operands
+PASS expanded reads do not expand write authorization
+PASS read cannot switch to another worksheet identity
+PASS large surrounding reads remain bounded
+PASS surrounding window includes isolated cell and sheet edges
+PASS snapshot must include both operands
+PASS model supplied snapshot ID is rejected
+PASS external and executable formulas are unsupported
+PASS duplicate targets are rejected
+PASS existing formulas and empty strings are not blank targets
+PASS unsafe ranges fail closed
+PASS readonly and protected workbook reject proposals
+PASS numeric-looking strings are not numeric evidence
+PASS invalid and unbounded addresses reject
+PASS large cell context is rejected before model transfer
+72/72 core behavior tests passed; fake port, not Excel COM.

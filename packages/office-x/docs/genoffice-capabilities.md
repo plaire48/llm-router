@@ -4,7 +4,7 @@
 
 | 기능 | 연결한 실행 경로 | 검증 범위 |
 | --- | --- | --- |
-| Office 전체 내용·개체 읽기, 값·수식·서식·표·차트·피벗, 문단·목록·주석·머리말, 도형·슬라이드·노트 | inspect_office / execute_office_operations → 현재 문서의 Office Object Model | 실행 계약 68개; 실제 개체별 COM 미검증 |
+| Office 전체 내용·개체 읽기, 값·수식·서식·표·차트·피벗, 문단·목록·주석·머리말, 도형·슬라이드·노트 | inspect_office / execute_office_operations → 현재 문서의 Office Object Model | 실행 계약 72개; 실제 개체별 COM 미검증 |
 | 새 Word·Excel·PowerPoint 문서 생성 | create_document → 실제 Office 생성·내용 재조회·창 활성화·Agent 연결 | 모의 실행·화면 검사; 실제 창 전환 미검증 |
 | 웹·이미지 검색 및 출처 | 원본 ai-search의 Parallel·Serper·Serply·Tavily·Exa·Firecrawl 체인 | 실제 서비스 요청 경로 연결; 실제 서비스 응답 품질 미검증 |
 | 이미지 생성·수정과 이미지/영상/음성 분석 | 원본 ai-provider 미디어 프로토콜과 서비스 목록; DPAPI 연결 설정 | 모의 HTTP로 원본 생성 프로토콜과 실제 PNG 파일 확인; 실제 계정 미검증 |
@@ -35,3 +35,5 @@ Windows 빌드와 설치·재설치·삭제는 CI에서 수행한다. 설치 폴
 타입 라이브러리 오류의 문화권 근거: [Microsoft 자동화 오류 안내](https://support.microsoft.com/id-id/help/320369/bug-old-format-or-invalid-type-library-error-when-automating-excel). Claude 실패 분류: [공식 구조화 응답 문서](https://code.claude.com/docs/en/agent-sdk/structured-outputs).
 
 원본 엔진 회귀 검사: `npm run test:engines`. OOXML 스키마 검사는 xmllint가 필요하다. 원본 테스트는 원본 저장소의 node_modules 위치를 가정하므로 검사 스크립트가 개발 전용 의존성 링크를 만든다. 이 링크와 개발 의존성은 Windows 설치 파일에 포함하지 않는다.
+
+지원 멤버 오류는 `inspect_office_members`로 실제 COM 타입 정보의 멤버 이름과 인자 수를 조회한다. 호출 전 거부되고 완료한 쓰기가 없으면 새 관측값으로 계획을 고칠 수 있다. 실제 적용 여부가 불확실한 COM 오류는 재계획을 이유로 쓰기를 반복하지 않는다. PowerPoint 선택 조회 실패는 문서 전체 실행 경로로 전환하며, 원래 창과 문서의 바인딩 검사는 유지한다. 시작 오류의 단계·예외 종류·코드·진단 ID는 로컬 `OfficeX/Logs/host.jsonl`에 남기고 복사할 수 있다. 문서 내용·파일 경로·인증 정보·원본 예외 문자열은 이 로그에 넣지 않는다.
