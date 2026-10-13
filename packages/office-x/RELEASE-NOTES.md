@@ -10,3 +10,9 @@
 - 별도 GenOffice 편집기, 새 대화, 히스토리, 이미지 기능 제외는 유지합니다.
 
 기존 코드에서 실패하던 두 회귀를 재현했고 수정 후 네이티브 계약 76개가 통과했습니다. Windows 검사는 실제 IDispatch, STA 호출, 설치된 WebView2 마우스 클릭과 키보드 입력을 포함합니다. CI에는 Office 프로그램과 실제 모델 계정이 없으므로 사용자 Office 2016의 요청 성공으로 해석하지 않습니다.
+
+## Windows 검증 결과
+
+[CI38356380256](https://github.com/plaire48/llm-router/actions/runs/38356380256) 통과. 실제 Scripting.Dictionary COM에서 x86/x64 속성 조회·수정과 STA 실행, 읽기 호출 뒤 조회 실패의 쓰기0건 판정을 검사했습니다. Office COM 검사로 간주하지 않습니다. 설치된 WinForms WebView2의 클릭·키보드 입력, 오류 복구도 통과했습니다. 설치8.04초, 재설치5.16초, 삭제1.62초는 CI측정값입니다.
+
+배포 기준 커밋: `961a75b361ac0cef77a47a59d5644540bf874433`. 설치파일 SHA-256: `51648fbd4bc5c03d84cd5d11ad7ef5ce7bbda3ba1c8ceebd7b77010b078744b1`. 설치파일124,570,887바이트. 배포 소스 ZIP의 GenOffice4,582개·누비88개 원본 해시를 재검사했습니다. 실제 사용자 Office2016과 실제 모델 계정의 실패 원인은 오류 정보로 추가 확인해야 합니다.

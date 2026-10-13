@@ -1,0 +1,151 @@
+{
+  "version": "0.8.1",
+  "date": "2026-10-13",
+  "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
+  "product": {
+    "host": "Excel/Word/PowerPoint 2016 Windows VSTO",
+    "standaloneGenOfficeEditors": false,
+    "newConversationUI": false,
+    "historyUI": false,
+    "imageTools": false,
+    "retained": [
+      "GenOffice AgentLoop",
+      "native document read/edit/create",
+      "background DOCX/XLSX engines",
+      "PPTX generation/operations/audit",
+      "web search",
+      "PDF conversion",
+      "document rendering",
+      "whole-document rollback",
+      "Nubi account/model UI including Claude"
+    ]
+  },
+  "localChecks": {
+    "vendorHashes": 4582,
+    "nubiHashes": 88,
+    "unitPassed": 73,
+    "unitSkippedMacOS": 4,
+    "nativeCorePassed": 76,
+    "hostCrossCompile": true,
+    "browserChatFlows": 16,
+    "nativeContractApps": 3,
+    "creationAndEditBrowserFlows": 6,
+    "searchAndRecoveryBrowserFlows": 9,
+    "cxIdentityStates": 12,
+    "cxIdentityPropertiesPerState": 77,
+    "stdioIntegration": "mock provider and native Office",
+    "claudeIntegration": "mock CLI; no live account",
+    "readAccessorWriteCountRegression": "old code fails; revised code passes",
+    "synchronousThreadRegression": "old code fails; revised code passes",
+    "repeatedNativeErrors": "stopped after three matching failures despite successful guide reads"
+  },
+  "windowsChecks": {
+    "status": "passed",
+    "run": "https://github.com/plaire48/llm-router/actions/runs/38356380256",
+    "commit": "961a75b361ac0cef77a47a59d5644540bf874433",
+    "nativeComArchitectures": [
+      "x86",
+      "x64"
+    ],
+    "nativeComScope": "Scripting.Dictionary plus thread-bound STA execution and read/write accounting; not Office COM",
+    "installer": {
+      "standaloneEditors": false,
+      "realOfficeVerified": false,
+      "bytes": 124570887,
+      "commit": "961a75b361ac0cef77a47a59d5644540bf874433",
+      "compression": "zip/7, non-solid",
+      "manifestSigning": "self-signed preview",
+      "installerAuthenticode": "unsigned",
+      "components": [
+        "excel",
+        "word",
+        "powerpoint"
+      ],
+      "prerequisites": [
+        {
+          "source": "https://download.microsoft.com/download/5/d/2/5d24f8f8-efbb-4b63-aa33-3785e3104713/vstor_redist.exe",
+          "sha256": "CFE1A40BBE4A50022DB2164ABDB0154984E2CECB761A23CDC81CB5754F6E0A18",
+          "name": "vstor_redist.exe"
+        },
+        {
+          "source": "https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+          "sha256": "9B5CA0A259E6FC9B57230089258BB2EE1DE74A9ED52F88D06B4AC354A8A68C70",
+          "name": "MicrosoftEdgeWebview2Setup.exe"
+        },
+        {
+          "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x64.zip",
+          "sha256": "1177b4137ba5adaa56354ae40f1080c7450e8ae09cecb47da459d1c52ac99f97",
+          "name": "node-v22.23.2-win-x64.zip"
+        },
+        {
+          "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x86.zip",
+          "sha256": "725c9e2bdd1c2016b41c995a81f4fa36ce4e2ee565b7455d8f889182727df647",
+          "name": "node-v22.23.2-win-x86.zip"
+        }
+      ],
+      "imageFeatures": false,
+      "version": "0.8.1",
+      "liveModelVerified": false
+    },
+    "installation": {
+      "realOfficeVerified": false,
+      "officeInstalled": false,
+      "passed": true,
+      "imageFeatures": false,
+      "reinstallSeconds": 5.16,
+      "liveModelVerified": false,
+      "legacyEditorUpgradeCleanup": true,
+      "installSeconds": 8.04,
+      "runner": "windows-2022",
+      "uninstallSeconds": 1.62,
+      "registry": [
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+          "view": "Registry32",
+          "app": "Excel"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+          "view": "Registry32",
+          "app": "Word"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+          "view": "Registry32",
+          "app": "PowerPoint"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+          "view": "Registry64",
+          "app": "Excel"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+          "view": "Registry64",
+          "app": "Word"
+        },
+        {
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+          "view": "Registry64",
+          "app": "PowerPoint"
+        }
+      ],
+      "standaloneEditorsAbsent": true
+    },
+    "surface": {
+      "passed": true,
+      "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+      "editors": 3,
+      "approvals": 3,
+      "physicalClickAndTyping": true,
+      "invalidContractRecovery": true,
+      "error": null
+    },
+    "exeSha256": "51648fbd4bc5c03d84cd5d11ad7ef5ce7bbda3ba1c8ceebd7b77010b078744b1",
+    "sourceSha256": "07f48dd93072020457963f0f105e48113ee106f52a758393a2c059ac5253cd41",
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88
+  },
+  "realOffice2016Verified": false,
+  "liveModelVerified": false
+}
