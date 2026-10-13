@@ -335,6 +335,7 @@
     "runtime-src/snapshot-recovery.ts",
     "runtime-src/calculation-read.ts",
     "runtime-src/edit-receipts.ts",
+    "runtime-src/target-recovery.ts",
     "runtime-src/office-skill.ts",
     "runtime-src/text-skill.ts",
     "runtime-src/excel-skill.ts",

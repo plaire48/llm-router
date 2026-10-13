@@ -8,6 +8,7 @@ namespace OfficeX.Core {
    foreach(string member in members){
     int count=String.Equals(member,"Item",StringComparison.OrdinalIgnoreCase)?1:String.Equals(member,"Range",StringComparison.OrdinalIgnoreCase)?app=="word"?2:app=="excel"?1:0:0;
     if(args.Count<count)throw new OfficeFault("office_argument_count",member,invocationStarted:false,inputPath:"args",inputRule:"indexed_path_arguments_required");
+    if(String.Equals(member,"Item",StringComparison.OrdinalIgnoreCase))OfficeArguments.ValidateItem(args);
     var selectors=count==0?new object[0]:args.GetRange(0,count).ToArray();if(count>0)args.RemoveRange(0,count);
     target=get(target,member,selectors);
    }

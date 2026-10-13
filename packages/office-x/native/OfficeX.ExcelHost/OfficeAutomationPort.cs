@@ -43,6 +43,7 @@ namespace OfficeX.ExcelHost {
    target=ResolvePath(target,targetPath.Concat(memberPath.Take(memberPath.Length-1)),args);
    if(step.Action=="set")args.Add(setValue);
    string member=memberPath.Last();
+   if(String.Equals(member,"Item",StringComparison.OrdinalIgnoreCase))OfficeArguments.ValidateItem(step.Action=="set"?args.Take(args.Count-1).ToList():args);
    if(app=="excel"&&new[]{"Value","Value2","Formula","FormulaLocal","FormulaArray","Text"}.Contains(member,StringComparer.OrdinalIgnoreCase)){
     double size=0;try{size=Convert.ToDouble(OfficeDispatch.Get(target,"CountLarge"));}catch{}
     if(size>20000)throw new OfficeFault("context_limit");

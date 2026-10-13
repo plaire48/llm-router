@@ -3,6 +3,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 namespace OfficeX.Core {
  public static class OfficeArguments {
+  public static void ValidateItem(System.Collections.Generic.List<object> args){if(args.Count==0||args[0]==null||args[0]==Type.Missing)throw new OfficeFault("office_argument_count","Item",unchecked((int)0x8002000E),false,inputPath:"args[0]",inputRule:"item_index_required");}
   public static object Convert(JToken value,Func<string,object> reference,string path="value"){
    OfficeFault Invalid(string rule)=>new OfficeFault("office_argument_invalid",invocationStarted:false,inputPath:path,inputRule:rule);
    if(value==null||value.Type==JTokenType.Null)return null;

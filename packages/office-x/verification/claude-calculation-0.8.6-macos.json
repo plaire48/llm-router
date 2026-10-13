@@ -1,5 +1,5 @@
 {
-  "buildCommit": "368e95103b329e9e3d0ff226c44bf3a12bc6222a",
+  "buildCommit": "f6c83d03d3506044e0a0dc0b8b570ff7cfd64a80",
   "passed": true,
   "provider": "claude",
   "liveProvider": true,
@@ -8,13 +8,16 @@
   "realOfficeVerified": false,
   "realWindowsClaudeVerified": false,
   "calls": [
+    "read_cells",
     "write_cells",
     "set_formula",
     "merge_cells",
-    "calculate_and_read"
+    "calculate_and_read",
+    "read_cells"
   ],
   "rangeMergeProposed": true,
   "formulaProposed": true,
+  "boundDocumentReads": 2,
   "postCalculationRead": true,
   "finalTextDelivered": true
 }

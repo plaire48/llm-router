@@ -1,0 +1,19 @@
+{
+  "version": "0.8.6",
+  "buildCommit": "f6c83d03d3506044e0a0dc0b8b570ff7cfd64a80",
+  "passed": true,
+  "scope": "browser with mock WebView host; not native VSTO pane or Office",
+  "checks": {
+    "primaryChat": true,
+    "allThreeAppTypographyAndColors": true,
+    "identityStates": 12,
+    "stylePropertiesPerState": 77,
+    "width320": true,
+    "checkpointWarningAndExplicitReview": true,
+    "iconLabelRestored": true,
+    "connectionRetryAndCatalogPreservation": true,
+    "diagnosticCollapseExpandAndCopy": true,
+    "destinationAndRecoveryForms": true
+  },
+  "pageErrors": []
+}

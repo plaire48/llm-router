@@ -4,8 +4,8 @@
   "realOfficeVerified": false,
   "windowsUserModelVerified": false,
   "sourceTests": {
-    "passed": 106,
+    "passed": 111,
     "skipped": 4
   },
-  "coreTests": 98
+  "coreTests": 99
 }
