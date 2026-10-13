@@ -1,0 +1,19 @@
+{
+  "buildCommit": "d4280b9053b44a992d5fb388c4706984e489df86",
+  "passed": true,
+  "provider": "claude",
+  "liveProvider": true,
+  "platform": "macOS",
+  "nativeOffice": "mock",
+  "realOfficeVerified": false,
+  "realWindowsClaudeVerified": false,
+  "calls": [
+    "inspect_office",
+    "read_cells",
+    "execute_office_operations"
+  ],
+  "simulatedPreCallError": "office_argument_count Item 0x8002000E",
+  "readActualMockOriginal": true,
+  "correctedWriteVerified": true,
+  "finalTextDelivered": true
+}

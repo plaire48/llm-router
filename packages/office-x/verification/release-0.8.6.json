@@ -1,0 +1,117 @@
+{
+  "version": "0.8.6",
+  "buildCommit": "d4280b9053b44a992d5fb388c4706984e489df86",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38396459415",
+  "installer": {
+    "name": "Nubi-Office-X-0.8.6-Setup.exe",
+    "sha256": "a0600122c888b7113ec4c7ee6812a956511feb935507cc2f8cf96d0ee88b8da1",
+    "bytes": 124589800
+  },
+  "source": {
+    "sha256": "9d2f275a5642c177b94ffe204dda5bbc79c79e0496a950ce5fcbc76ec5384927",
+    "files": 5463,
+    "sourceHashesChecked": 61
+  },
+  "sourceTests": {
+    "macOSPassed": 111,
+    "macOSSkipped": 4,
+    "windowsPassed": 115
+  },
+  "coreTests": 99,
+  "nativeCOM": {
+    "architectures": [
+      "x64",
+      "x86"
+    ],
+    "server": "native Excel-shaped IDispatch fixture with broken type info; not Office",
+    "itemSelectors": true,
+    "indexedWorksheetRangePaths": true,
+    "calculationAndReadback": true,
+    "mergeAndUnmerge": true,
+    "referenceArguments": true,
+    "isoText": true,
+    "wordAndPowerPointCreation": true
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "uninstallSeconds": 1.66,
+    "officeInstalled": false,
+    "reinstallSeconds": 5.93,
+    "runner": "windows-2022",
+    "imageFeatures": false,
+    "realOfficeVerified": false,
+    "liveModelVerified": false,
+    "registry": [
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry32",
+        "app": "Excel"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry32",
+        "app": "Word"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry32",
+        "app": "PowerPoint"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry64",
+        "app": "Excel"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry64",
+        "app": "Word"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry64",
+        "app": "PowerPoint"
+      }
+    ],
+    "installSeconds": 8.37,
+    "passed": true,
+    "legacyEditorUpgradeCleanup": true,
+    "standaloneEditorsAbsent": true
+  },
+  "liveMacClaudeWithMockOffice": {
+    "itemFailureRecoveryAndFinalResponse": true,
+    "readWriteFormulaMergeCalculateAndFinalResponse": true
+  },
+  "integrity": {
+    "commit": "d4280b9053b44a992d5fb388c4706984e489df86",
+    "exeSha256": "a0600122c888b7113ec4c7ee6812a956511feb935507cc2f8cf96d0ee88b8da1",
+    "exeBytes": 124589800,
+    "sourceSha256": "9d2f275a5642c177b94ffe204dda5bbc79c79e0496a950ce5fcbc76ec5384927",
+    "sourceFiles": 5463,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 61,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true
+  },
+  "boundaries": {
+    "realOffice2016Verified": false,
+    "realVSTOPaneVisualVerified": false,
+    "realWindowsClaudeOrChatGPTVerified": false,
+    "userSaveCopyAsRootCauseConfirmed": false
+  },
+  "publication": {
+    "url": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.6-beta.1",
+    "tagCommit": "d4280b9053b44a992d5fb388c4706984e489df86",
+    "publicDownloadSha256Verified": true,
+    "assets": 15
+  }
+}

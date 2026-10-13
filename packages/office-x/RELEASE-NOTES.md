@@ -17,3 +17,9 @@
 Office 앱을 모두 종료한 뒤 EXE를 실행하세요. Windows 빌드·COM 테스트 객체·설치된 WebView2 검증과 실제 Office 2016 검증은 별개입니다. 연결 가능한 실제 Windows Office 환경이 없어 사용자 문서 작성/저장과 Windows Claude/ChatGPT 계정은 직접 검증하지 못했습니다.
 
 참고: [Microsoft Range.Calculate](https://learn.microsoft.com/en-us/office/vba/api/excel.range.calculate), [Range.Merge](https://learn.microsoft.com/en-us/office/vba/api/excel.range.merge), [VSTO 작업창 제목](https://learn.microsoft.com/en-us/dotnet/api/microsoft.office.tools.customtaskpanecollection.add?view=vsto-2022).
+
+[Windows 빌드 및 검사](https://github.com/plaire48/llm-router/actions/runs/38396459415)를 통과했습니다. 최종 커밋 d4280b9053b44a992d5fb388c4706984e489df86의 Windows 소스 115개, 네이티브 코어 99개, x86/x64 COM 회귀와 설치된 WebView2 세 앱 클릭·입력 검사를 통과했습니다. Office 없는 Windows VM에서 설치 8.37초, 재설치 5.93초입니다.
+
+동일 후보의 실제 macOS Claude는 모의 Item 0x8002000E 오류 뒤 실제 모의 원본을 다시 읽고 수정안 제출 후 최종 응답을 완료했습니다. 셀 읽기·문자/숫자·수식·병합·계산 결과 읽기 흐름도 완료했습니다. Office 동작은 모의 객체였으며 실제 Windows Office와 계정 실행 증거가 아닙니다.
+
+EXE SHA-256: a0600122c888b7113ec4c7ee6812a956511feb935507cc2f8cf96d0ee88b8da1. 설치 파일 124589800바이트, 소스 ZIP 5463개 파일입니다. GenOffice 4582개·누비 88개 원본과 변경 소스 61개의 해시를 대조했습니다. 범위와 한계는 첨부 release-0.8.6.json을 참고하세요.

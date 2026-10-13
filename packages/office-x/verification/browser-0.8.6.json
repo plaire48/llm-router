@@ -1,19 +1,103 @@
 {
   "version": "0.8.6",
-  "buildCommit": "f6c83d03d3506044e0a0dc0b8b570ff7cfd64a80",
+  "buildCommit": "d4280b9053b44a992d5fb388c4706984e489df86",
   "passed": true,
   "scope": "browser with mock WebView host; not native VSTO pane or Office",
-  "checks": {
-    "primaryChat": true,
-    "allThreeAppTypographyAndColors": true,
-    "identityStates": 12,
-    "stylePropertiesPerState": 77,
-    "width320": true,
-    "checkpointWarningAndExplicitReview": true,
-    "iconLabelRestored": true,
-    "connectionRetryAndCatalogPreservation": true,
-    "diagnosticCollapseExpandAndCopy": true,
-    "destinationAndRecoveryForms": true
-  },
-  "pageErrors": []
+  "reports": [
+    {
+      "test": "ui.browser.js",
+      "passed": [
+        "login request immediately displays progress",
+        "startup login disabled until ready",
+        "no automatic login",
+        "visible member and HRESULT",
+        "provider login fixture",
+        "model search and selection",
+        "IME composition",
+        "native approval payload",
+        "typing during a run",
+        "startup error unlocks input and clicks",
+        "busy send/model mutation guards",
+        "verified receipt",
+        "simplified header without new/history/image/external buttons",
+        "320px layout",
+        "Claude login and model picker",
+        "stream auto-scroll and latest jump",
+        "reasoning apply and reset",
+        "reasoning failure rollback",
+        "busy reasoning guard and stop",
+        "rejected receipt state"
+      ],
+      "pageErrors": []
+    },
+    {
+      "test": "office-identity.browser.js",
+      "passed": true,
+      "states": 12,
+      "propertiesPerState": 77,
+      "comparison": "Word and PowerPoint against Excel, shared CSS fixture only"
+    },
+    {
+      "test": "genoffice-ui.browser.js",
+      "scope": "mock WebView host; no live Office or Claude",
+      "passed": [
+        "destination choice before start",
+        "uncertain COM receipt does not claim inputs",
+        "fresh request reads actual values",
+        "late handoff retains verified creation despite Claude failure",
+        "search-only settings without image fields",
+        "whole-document rollback choice",
+        "Agent question form",
+        "320px layout",
+        "copy sanitized PowerPoint startup diagnostics",
+        "repeated errors stop and copied execution faults identify member/code"
+      ],
+      "pageErrors": []
+    },
+    {
+      "test": "checkpoint-ui.browser.js",
+      "passed": true,
+      "scope": "browser with mock WebView host; not real Office or live Claude",
+      "results": [
+        {
+          "app": "excel",
+          "iconLabelRestored": true,
+          "copyFailureDisclosed": true,
+          "rejectionPreserved": true,
+          "explicitApproval": true,
+          "receiptShowsNoBackup": true,
+          "validationLocationVisible": true
+        },
+        {
+          "app": "word",
+          "iconLabelRestored": true,
+          "copyFailureDisclosed": true,
+          "rejectionPreserved": true,
+          "explicitApproval": true,
+          "receiptShowsNoBackup": true,
+          "validationLocationVisible": true
+        },
+        {
+          "app": "powerpoint",
+          "iconLabelRestored": true,
+          "copyFailureDisclosed": true,
+          "rejectionPreserved": true,
+          "explicitApproval": true,
+          "receiptShowsNoBackup": true,
+          "validationLocationVisible": true
+        }
+      ]
+    },
+    {
+      "test": "connection-ui.browser.js",
+      "passed": true,
+      "scope": "browser with mock WebView host; no real Windows account",
+      "loginErrorClassified": true,
+      "retryAfterClick": true,
+      "successClearsError": true,
+      "silentCatalogFailureKeepsModels": true,
+      "manualCatalogRefreshClearsWarning": true,
+      "sendRemainsAvailable": true
+    }
+  ]
 }
