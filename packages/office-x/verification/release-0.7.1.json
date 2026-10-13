@@ -11,5 +11,79 @@
   "screenRecoveryWithoutReplayingWrites": true,
   "net472CrossCompile": true,
   "officeRuntimeVerified": false,
-  "liveModelVerified": false
+  "liveModelVerified": false,
+  "windowsComDispatch": {
+    "x64": "passed",
+    "x86": "passed",
+    "scope": "Scripting.Dictionary through the production IDispatch adapter, not Office COM"
+  },
+  "windowsRun": 38345573982,
+  "buildCommit": "470c95f0a4f99738e126ab02bf29a532069d7071",
+  "windowsInstallerVerified": true,
+  "nativeSurface": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "liveModelVerified": false,
+    "runner": "windows-2022",
+    "reinstallSeconds": 20.3,
+    "realOfficeVerified": false,
+    "registry": [
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      }
+    ],
+    "installSeconds": 24.18,
+    "officeInstalled": false,
+    "passed": true,
+    "uninstallSeconds": 2.89
+  },
+  "source": {
+    "artifact": "office-x-0.7.1-source.zip",
+    "files": 5579,
+    "bytes": 61199871,
+    "sha256": "c287abc50af3f3036d2e3a74707c698d4ab4e4dbedc17f2952314ad5b78c2607",
+    "kind": "source; not a Windows installer",
+    "windowsInstallerCommit": "470c95f0a4f99738e126ab02bf29a532069d7071",
+    "packagingOnlyChange": "Preserve original Nubi LF bytes and add Git attributes; compiled installer unchanged",
+    "originalGenofficeFilesVerified": 4582,
+    "originalNubiFilesVerified": 88,
+    "sourcePackageCommit": "ecd1313b06d834ad1350be1165009be2fa303b57"
+  },
+  "exeSha256": "8ef3be6d59071b8786983b054e4ed187c187453da54194209a99e808b42308a0",
+  "sourcePackageCommit": "ecd1313b06d834ad1350be1165009be2fa303b57",
+  "releasePublished": true,
+  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.1-beta.1"
 }

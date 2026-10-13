@@ -1,9 +1,8 @@
 {
-  "sharedOfficeVault": true,
   "liveModelsVerified": false,
   "exe": "Nubi GenOffice.exe",
-  "sha256": "B1E321AA3275E5E1D0361E200DA7D6346A9D1708447BA16ECEA07FC2150B0418",
-  "version": "0.7.0",
+  "sha256": "BF09B72DEF8EBE56AE7F76E85B50640B98109BBB0849A071B44C73D55F0BFFC8",
+  "version": "0.7.1",
   "editors": [
     "docs",
     "sheets",
@@ -11,5 +10,6 @@
     "pdf",
     "markdown",
     "html"
-  ]
+  ],
+  "sharedOfficeVault": true
 }

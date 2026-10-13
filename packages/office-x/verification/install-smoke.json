@@ -1,42 +1,42 @@
 {
-  "reinstallSeconds": 16.42,
-  "uninstallSeconds": 2.63,
-  "registry": [
-    {
-      "view": "Registry32",
-      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
-      "app": "Excel"
-    },
-    {
-      "view": "Registry32",
-      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
-      "app": "Word"
-    },
-    {
-      "view": "Registry32",
-      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
-      "app": "PowerPoint"
-    },
-    {
-      "view": "Registry64",
-      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
-      "app": "Excel"
-    },
-    {
-      "view": "Registry64",
-      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
-      "app": "Word"
-    },
-    {
-      "view": "Registry64",
-      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
-      "app": "PowerPoint"
-    }
-  ],
-  "officeInstalled": false,
-  "installSeconds": 21.52,
   "liveModelVerified": false,
   "runner": "windows-2022",
+  "reinstallSeconds": 20.3,
+  "realOfficeVerified": false,
+  "registry": [
+    {
+      "app": "Excel",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+      "view": "Registry32"
+    },
+    {
+      "app": "Word",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+      "view": "Registry32"
+    },
+    {
+      "app": "PowerPoint",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+      "view": "Registry32"
+    },
+    {
+      "app": "Excel",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+      "view": "Registry64"
+    },
+    {
+      "app": "Word",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+      "view": "Registry64"
+    },
+    {
+      "app": "PowerPoint",
+      "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+      "view": "Registry64"
+    }
+  ],
+  "installSeconds": 24.18,
+  "officeInstalled": false,
   "passed": true,
-  "realOfficeVerified": false
+  "uninstallSeconds": 2.89
 }

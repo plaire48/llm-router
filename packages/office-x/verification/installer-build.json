@@ -1,25 +1,4 @@
 {
-  "bytes": 367106661,
-  "liveModelVerified": false,
-  "version": "0.7.0",
-  "components": [
-    "excel",
-    "word",
-    "powerpoint",
-    "genoffice-companion"
-  ],
-  "editors": [
-    "docs",
-    "sheets",
-    "slides",
-    "pdf",
-    "markdown",
-    "html"
-  ],
-  "installerAuthenticode": "unsigned",
-  "manifestSigning": "self-signed preview",
-  "realOfficeVerified": false,
-  "compression": "zip/7, non-solid",
   "prerequisites": [
     {
       "name": "vstor_redist.exe",
@@ -42,5 +21,26 @@
       "sha256": "725c9e2bdd1c2016b41c995a81f4fa36ce4e2ee565b7455d8f889182727df647"
     }
   ],
-  "commit": "0996619061aca36c55984eecc91935ce4b5fbf22"
+  "manifestSigning": "self-signed preview",
+  "compression": "zip/7, non-solid",
+  "commit": "470c95f0a4f99738e126ab02bf29a532069d7071",
+  "realOfficeVerified": false,
+  "components": [
+    "excel",
+    "word",
+    "powerpoint",
+    "genoffice-companion"
+  ],
+  "bytes": 367112484,
+  "version": "0.7.1",
+  "installerAuthenticode": "unsigned",
+  "editors": [
+    "docs",
+    "sheets",
+    "slides",
+    "pdf",
+    "markdown",
+    "html"
+  ],
+  "liveModelVerified": false
 }

@@ -60,16 +60,20 @@
     "headerActions": [
       "model",
       "rollback"
+    ],
+    "windowsComArchitectures": [
+      "x86",
+      "x64"
     ]
   },
-  "windowsVstoBuildVerified": false,
-  "windowsInstallerVerified": false,
+  "windowsVstoBuildVerified": true,
+  "windowsInstallerVerified": true,
   "officeRuntimeVerified": false,
   "liveModelVerified": false,
   "genofficeFullProductParityVerified": false,
-  "releasePublished": false,
-  "windowsBuildVerified": false,
-  "windowsInstallVerified": false,
+  "releasePublished": true,
+  "windowsBuildVerified": true,
+  "windowsInstallVerified": true,
   "companionEditorsIncluded": [
     "docs",
     "sheets",
@@ -81,6 +85,10 @@
   "realOfficeVerified": false,
   "upstreamFiles": 4582,
   "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.1-beta.1",
-  "companionRuntimeVerified": false,
-  "previousRelease": "office-x-v0.7.0-beta.1"
+  "companionRuntimeVerified": true,
+  "previousRelease": "office-x-v0.7.0-beta.1",
+  "windowsRun": 38345573982,
+  "buildCommit": "470c95f0a4f99738e126ab02bf29a532069d7071",
+  "sourcePackageCommit": "ecd1313b06d834ad1350be1165009be2fa303b57",
+  "nativeWebView2Verified": true
 }
