@@ -3,10 +3,11 @@ import { build } from 'esbuild';
 import { resolve } from 'node:path';
 import { mkdir, copyFile, cp, writeFile } from 'node:fs/promises';
 const runtime=await build({metafile:true,entryPoints:['runtime-src/main.ts'], outfile:'dist/worker/main.cjs', bundle:true,
-  platform:'node', target:'node22', format:'cjs', legalComments:'linked', sourcemap:false,
+  platform:'node', target:'node22', format:'cjs', legalComments:'linked', sourcemap:false,loader:{'.md':'text'},
   define:{'import.meta.url':'__officeModuleUrl'},banner:{js:'const __officeModuleUrl = require("node:url").pathToFileURL(__filename).href;'},
   plugins:[{name:'nubi-wire-only',setup(b){b.onResolve({filter:/agent-runtime\.js$/},()=>({path:resolve('runtime-src/nubi-wire.mjs')}));}}]});
 await mkdir('dist/licenses', {recursive:true});
+await copyFile('node_modules/@embedpdf/pdfium/dist/pdfium.wasm','dist/worker/pdfium.wasm');
 for (const [source, name] of [['vendor/genoffice/LICENSE','GenOffice-LICENSE.txt'],
   ['vendor/genoffice/NOTICE','GenOffice-NOTICE.txt'],
   ['licenses/office-ai-agent-Apache-2.0.txt','office-ai-agent-LICENSE.txt'],

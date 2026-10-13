@@ -11,7 +11,7 @@ namespace OfficeX.ExcelHost
         private static readonly string Root=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),"OfficeX","Connections");
         private static readonly byte[] Entropy=Encoding.UTF8.GetBytes("OfficeX.Connections.v1");
         private static string FileFor(string key) {
-            if(key!="provider:active"&&key!="provider:aipro"&&key!="provider:chatgpt"&&key!="provider:fabrix"&&key!="provider:claude")throw new InvalidOperationException();
+            if(key!="services"&&key!="provider:active"&&key!="provider:aipro"&&key!="provider:chatgpt"&&key!="provider:fabrix"&&key!="provider:claude")throw new InvalidOperationException();
             return Path.Combine(Root,key.Replace(':','-')+".bin");
         }
         public static void Write(string key,JToken value) {

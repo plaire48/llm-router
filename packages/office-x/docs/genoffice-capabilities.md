@@ -1,36 +1,37 @@
-# GenOffice 기능 대응 — 0.5.0
+# GenOffice 기능 대응 — 0.6.0
 
-기준: genspark-ai/genoffice, commit 438d9c65709952490c970beaa2599ef45e74431f. 동일 커밋의 apps/docs, apps/sheets, apps/slides AI tools와 packages/cli를 직접 대조했다.
+기준: genspark-ai/genoffice, commit `438d9c65709952490c970beaa2599ef45e74431f`. 원본 12개 패키지, 842개 파일을 수정하지 않고 사용한다. Agent는 원본 AgentLoop와 composeSkills이며 누비는 UI·로그인·모델 transport를 제공한다.
 
-## 기능을 막던 구조
-
-0.4의 도구는 Excel 빈 셀 곱셈과 Word/PPT 단순 문단 교체에 한정됐다. 원본 AgentLoop 도입은 원본 문서 도구 전체 도입이 아니었다. 0.5는 임의의 기능별 허용 목록을 추가하는 대신, 고정된 현재 문서의 Office Object Model을 구조화한 get/set/call 실행기로 연결한다. 일반 셀, 문단, 표, 슬라이드 기능은 선택 영역, 빈 셀, 글꼴 혼합, 자동 크기 여부로 차단하지 않는다.
-
-| 원본 작업군 | Office X 실행 경로 | 증거 상태 |
+| 기능 | 연결한 실행 경로 | 검증 범위 |
 | --- | --- | --- |
-| 문서/시트/슬라이드 문맥 읽기와 범위 탐색 | inspect_office에서 Document/Workbook/Presentation과 하위 개체 읽기 | 모의 실행 계약 테스트, 네이티브 호스트 컴파일 |
-| 값/일반 수식, 표/피벗/차트, 필터/유효성/조건부 서식 | execute_office_operations → Excel Object Model | 호출 경로와 가이드 구현; 각 개체별 실제 Office 실행은 미검증 |
-| 문단/런/표/스타일/목록/주석/필드/개정/머리말/꼬리말 | 같은 실행기 → Word Object Model | 호출 경로와 가이드 구현; 개체별 실제 실행 미검증 |
-| 슬라이드/도형/텍스트/표/차트/정렬/그룹/노트 | 같은 실행기 → PowerPoint Object Model | 호출 경로와 가이드 구현; 개체별 실제 실행 미검증 |
-| 새 문서와 발표자료 작성 | create_document → Documents.Add/Presentations.Add/Workbooks.Add 및 실제 내용 재조회 | 계획·스키마·재조회 계약 테스트; 실제 COM 미검증 |
-| 저장과 PDF 출력 | save_document → Windows 저장 창과 Office SaveAs/ExportAsFixedFormat | 구현·컴파일; 실제 저장/재열기 미검증 |
-| Agent 실행, 취소, 압축, 도구 유효성, 응답 검증 | 원본 GenOffice AgentLoop와 composeSkills | 원본 소스 유지, 실제 루프의 모의 모델 테스트 |
-| 시트 디자인/작업 가이드, 슬라이드 품질 가이드 | load_office_guide가 원본 14개 문서를 제공; COM용 가이드 3개 추가 | 원본 해시 검증. 원본의 도구 이름은 COM 호출로 해석해야 함 |
-| 원본 generate_deck/regenerate_slide의 전체 작성·렌더링 파이프라인 | 아직 직접 이식하지 않음; 현재는 모델이 내용을 작성하고 Office가 생성 | 완전한 기능 동등성을 주장하지 않음 |
-| 웹 검색, 이미지 검색/생성, 미디어 분석 | 아직 서비스/원본 스킬 연결 안 됨 | 미구현 |
-| PDF/Markdown/HTML 별도 편집기·변환 | 아직 Office 추가 기능에 연결 안 됨 | 미구현 |
-| 원본 전체 스냅샷 롤백 | 아직 동일 기능 없음 | 미구현; Office 고유 실행 취소와도 동등성을 주장하지 않음 |
+| Office 전체 내용·개체 읽기, 값·수식·서식·표·차트·피벗, 문단·목록·주석·머리말, 도형·슬라이드·노트 | inspect_office / execute_office_operations → 현재 문서의 Office Object Model | 실행 계약 68개; 실제 개체별 COM 미검증 |
+| 새 Word·Excel·PowerPoint 문서 생성 | create_document → 실제 Office 생성·내용 재조회·창 활성화·Agent 연결 | 모의 실행·화면 검사; 실제 창 전환 미검증 |
+| 웹·이미지 검색 및 출처 | 원본 ai-search의 Parallel·Serper·Serply·Tavily·Exa·Firecrawl 체인 | 실제 서비스 요청 경로 연결; 실제 서비스 응답 품질 미검증 |
+| 이미지 생성·수정과 이미지/영상/음성 분석 | 원본 ai-provider 미디어 프로토콜과 서비스 목록; DPAPI 연결 설정 | 모의 HTTP로 원본 생성 프로토콜과 실제 PNG 파일 확인; 실제 계정 미검증 |
+| 이미지 삽입 | 파일 artifact → Word InlineShapes / Excel·PPT Shapes.AddPicture | 네이티브 구현·컴파일; 실제 삽입 미검증. Office 2016에 PNG/JPEG/GIF/BMP 삽입; WebP는 PNG/JPEG 변환 필요 |
+| 발표자료 전체 생성·한 장 재작성 | 원본 pipelines parsePageSpec / buildDeckPptx / auditDeck 및 현재 선택 모델 | 실제 원본 PPTX로 정확한 페이지 수 검사. Office가 읽은 텍스트 해시 재검사 경로 연결 |
+| 원본 PPTX 고급 작업 | 원본 pptx-ops registry / runTxn, 원본 parser·serializer | 모든 원본 작업 이름·가이드 노출. 현재 문서에는 슬라이드를 가져오고, 새 문서 선택 시 전체 파일을 엶. 모든 마스터·애니메이션·고급 개체의 Office 보존 미검증 |
+| 실제 문서 렌더링 | PPT Slide.Export → PNG; Word·Excel ExportAsFixedFormat → PDFium 페이지 PNG | 네이티브 컴파일·PDFium 실제 실행; Office 렌더링 미검증 |
+| PDF 변환 | 원본 pdf2docx → DOCX / PPTX / XLSX | 실제 PDF와 생성 ZIP 검사. 스캔·변환 저하·페이지 경고 반환; 원본 OCR 서비스는 별도 이식하지 않음 |
+| Markdown·HTML | marked·sanitize-html → 실제 artifact / 현재 Word 본문 InsertFile / 새 Word 파일 | 실제 변환·비활성 HTML·독립 텍스트 해시 검사 계약. 원본 Tiptap 편집기 UI는 제외 |
+| 전체 문서 롤백 | Word WordOpenXML / Excel SaveCopyAs / PPT SaveCopyAs → DPAPI 스냅샷 → 새 문서로 복원 → 파일 해시와 내용 재검사 | 네이티브 구현·컴파일. 기존 문서와 원본 파일 유지. 세션 종료 후 목록 재사용 없음; 모든 문서·VBA·고급 서식 보존 미검증 |
+| 저장·파일 가져오기 | Windows 파일 선택 및 저장 창; private artifact ID와 실제 파일 해시 | 네이티브 구현·컴파일; 사용자 선택 외 임의 경로 조회 불가 |
+| 품질 가이드·스타일 | 원본 시트/슬라이드 가이드, pptx-ops 작업 가이드와 스타일 템플릿 | 원본 해시 검증. 스타일 템플릿은 현재 작업창의 로컬 작업 폴더 |
 
-## 실행 계약
+## 문서 대상과 실행 결과
 
-모든 변경안은 네이티브가 소유한 읽기 관측값에 연결한다. 승인 전에 내용과 작업 요약을 보여주며, 승인 시 원문 재확인과 변경 후 독립 조회를 수행한다. 검증 성공 뒤 새 관측값으로 후속 작업할 수 있다. 거절·취소·충돌·부분 실패 이후 자동 재실행하지 않는다. 실행 결과가 없으면 완료로 표현하지 않는다.
+생성 위치가 애매한 요청은 현재 문서와 새 문서 중 선택한다. 현재 문서 선택은 기존 창에 적용한다. 새 파일을 열면 실제 새 문서에 실행 대상을 연결하고 새 작업창에 진행·승인·결과를 전달한다. 오래된 문서 관측값이나 다른 활성 창을 임의로 수정하지 않는다.
 
-실행 대상은 현재 문서에서 얻은 COM 참조다. 셸·VBA·매크로 실행과 Application/Parent 우회는 노출하지 않는다. 저장은 경로를 사용자가 정하는 전용 도구를 사용한다. 실제 Office가 반환하는 문서 보호·잠금·지원되지 않는 API는 그대로 처리한다. 조회 페이지와 한 번의 전송량에는 실행 안정성을 위한 크기 한도가 있으며 더 큰 작업은 나누어 처리한다.
+변경 전에 승인과 스냅샷을 거친다. 실패한 COM 쓰기는 자동 재실행하지 않는다. `0x80028018` 호출 전 실패는 입력 완료가 아니며, `0x800A03EC` 적용 여부가 불확실하면 부분 결과로 표시한다. 새 요청은 문서를 다시 읽고 계획한다. 문서 생성 성공과 이후 모델/렌더링 응답 실패는 별도 결과다.
 
-혼합 서식 문장 교체는 공통 앞뒤 문자열을 보존하고 바뀐 부분만 교체한다. 새 텍스트는 주변 서식을 따른다. 변경한 문자열의 모든 글자별 서식이 이전과 동일하다는 보장은 하지 않는다. 복잡한 개체는 공통 도구가 해당 구조를 직접 읽고 수정한다.
+복원은 현재 문서를 덮어쓰는 실행 취소가 아니다. 전체 스냅샷을 새 창에 연다. 암호화된 스냅샷 외 생성·가져오기·렌더링 파일은 `%LocalAppData%\OfficeX\Work`의 작업 폴더에 보관하며, 열려 있는 생성 파일을 보호하기 위해 자동 삭제하지 않는다. 사용자는 저장 창에서 결과를 최종 저장한다.
+
+Claude 채팅 로그인은 이미지 생성용 인증이 아니다. 검색은 키 없는 원본 Parallel 경로와 DuckDuckGo fallback을 사용할 수 있고, 이미지 생성·분석은 별도 서비스를 연결한다. Genspark 계정·클라우드, 원본 Electron 편집기, Workspace A2A는 이번 배포에 활성화하지 않았다.
 
 ## Windows 검증
 
-설치 빌드와 설치/재설치/삭제는 CI에서 수행한다. 실제 Office가 설치된 PC에서는 설치 폴더의 Test-OfficeRuntime.ps1으로 세 앱의 COM 실행을 검증할 수 있다. 이 스크립트는 새 임시 문서만 생성하고 저장하지 않고 닫으며, native-runtime JSON에 앱별 실제 결과를 기록한다. 실제 모델 판단 품질, VSTO 작업창 로드, 모든 Office 개체의 성공을 대신 증명하지 않는다.
+Windows 빌드와 설치·재설치·삭제는 CI에서 수행한다. 설치 폴더의 `Test-OfficeRuntime.ps1`은 Office PC에서 임시 문서의 입력·렌더링·스냅샷 복원을 실제 COM으로 검사한다. VSTO 창 표시와 실제 LLM 판단 품질은 별도 실환경 확인이 필요하다. 설치 성공이나 모의 테스트 결과를 실제 Office·모델 성공으로 합산하지 않는다.
 
-참고: [Word Documents.Add](https://learn.microsoft.com/en-us/office/vba/api/word.documents.add), [PowerPoint Slides.Add](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.slides.add), [TextRange.Characters](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.textrange.characters), [Excel Workbooks.Add](https://learn.microsoft.com/en-us/office/vba/api/excel.workbooks.add).
+타입 라이브러리 오류의 문화권 근거: [Microsoft 자동화 오류 안내](https://support.microsoft.com/id-id/help/320369/bug-old-format-or-invalid-type-library-error-when-automating-excel). Claude 실패 분류: [공식 구조화 응답 문서](https://code.claude.com/docs/en/agent-sdk/structured-outputs).
+
+원본 엔진 회귀 검사: `npm run test:engines`. OOXML 스키마 검사는 xmllint가 필요하다. 원본 테스트는 원본 저장소의 node_modules 위치를 가정하므로 검사 스크립트가 개발 전용 의존성 링크를 만든다. 이 링크와 개발 의존성은 Windows 설치 파일에 포함하지 않는다.

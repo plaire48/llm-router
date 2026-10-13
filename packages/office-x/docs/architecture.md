@@ -1,3 +1,7 @@
+# 0.6.0 현재 구성
+
+원본 GenOffice AgentLoop → 누비 인증 모델 transport → Office/native 도구와 원본 검색·미디어·PPTX·PDF 엔진을 연결한다. VSTO가 현재 문서·승인·실제 읽기 및 쓰기·DPAPI 스냅샷을 소유한다. 새 문서 생성 후 실행 대상을 재연결하고 새 작업창에 결과를 전달한다. UI는 누비 Workspace 원본 컴포넌트와 토큰을 공유한다. A2A는 아직 활성화하지 않았다. 아래는 초기 설계 기록이며 현재 범위는 [기능 대응](genoffice-capabilities.md)을 따른다.
+
 # Office X 아키텍처 초안
 
 작성일: 2026-10-13. 사용자가 제공한 VSTO + GenOffice 방향을 구현 가능한 책임 경계로 정리한 문서다. GenOffice 원본을 사용하는 첫 Excel 기능을 소스로 구현했다. 실제 지원 범위와 검증 결과는 [구현 결과](implementation-status.md)를 따른다. Windows 실환경 동작은 아직 검증하지 않았다.

@@ -6,6 +6,8 @@ $ErrorActionPreference='Stop'
 $hostAssembly=[Reflection.Assembly]::LoadFrom((Join-Path $InstallRoot 'OfficeX.ExcelHost.dll'))
 $portType=$hostAssembly.GetType('OfficeX.ExcelHost.OfficeAutomationPort',$true)
 $results=@()
+$originalCulture=[Threading.Thread]::CurrentThread.CurrentCulture
+[Threading.Thread]::CurrentThread.CurrentCulture=[Globalization.CultureInfo]::GetCultureInfo('en-US')
 function Read-Steps([string]$json){return ,([Newtonsoft.Json.JsonConvert]::DeserializeObject($json,[Collections.Generic.List[OfficeX.Core.OfficeStep]]))}
 foreach($kind in @('word','excel','powerpoint')){
  $application=$null;$document=$null;$port=$null
@@ -36,7 +38,8 @@ foreach($kind in @('word','excel','powerpoint')){
   $plan=$session.Prepare($snapshot.SnapshotId,'Disposable native Office verification',(Read-Steps $write),$checkList)
   $receipt=$session.Apply($plan.Id,$true,[Threading.CancellationToken]::None)
   if($receipt.Status -ne 'verified'){throw ([OfficeX.Core.Wire]::Json($receipt))}
-  $results+=@{app=$kind;passed=$true;receipt=([OfficeX.Core.Wire]::Json($receipt)|ConvertFrom-Json)}
+  $features=[OfficeX.ExcelHost.OfficeRuntimeDiagnostics]::CheckFeatures($application,$kind,$hwnd)
+  $results+=@{app=$kind;passed=$true;features=([OfficeX.Core.Wire]::Json($features)|ConvertFrom-Json);receipt=([OfficeX.Core.Wire]::Json($receipt)|ConvertFrom-Json)}
  }catch{$results+=@{app=$kind;passed=$false;error=$_.Exception.Message}}
  finally{
   if($port){$port.Dispose()}
@@ -44,7 +47,8 @@ foreach($kind in @('word','excel','powerpoint')){
   if($application){try{$remaining=if($kind -eq 'powerpoint'){$application.Presentations.Count}elseif($kind -eq 'word'){$application.Documents.Count}else{$application.Workbooks.Count};if($remaining -eq 0){$application.Quit()}}catch{};[void][Runtime.InteropServices.Marshal]::ReleaseComObject($application)}
  }
 }
-$record=@{version='0.5.0';scope='live Office COM through the installed host; not VSTO pane or live LLM';passed=(@($results|Where-Object {!$_.passed}).Count -eq 0);results=$results}
+[Threading.Thread]::CurrentThread.CurrentCulture=$originalCulture
+$record=@{version='0.6.0';scope='live Office COM through the installed host; not VSTO pane or live LLM';passed=(@($results|Where-Object {!$_.passed}).Count -eq 0);results=$results}
 $record|ConvertTo-Json -Depth 20|Set-Content $OutputPath -Encoding UTF8
 $record|ConvertTo-Json -Depth 20
 if(!$record.passed){exit 1}

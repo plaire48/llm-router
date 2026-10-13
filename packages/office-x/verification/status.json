@@ -1,13 +1,13 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "date": "2026-10-13",
   "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
   "sourceChecks": {
-    "genofficeHashes": 99,
+    "genofficeHashes": 842,
     "nubiHashes": 88,
-    "unitTestsPassed": 45,
+    "unitTestsPassed": 62,
     "unitTestsSkipped": 4,
-    "nativeCoreTests": 66,
+    "nativeCoreTests": 68,
     "stdioMockIntegration": "passed",
     "net472HostCrossCompile": "passed",
     "creationOperationBrowserFlows": 6,
@@ -17,11 +17,26 @@
       "states": 12,
       "propertiesPerState": 77,
       "matchesExcel": true
-    }
+    },
+    "newGenofficeBrowserFlows": 8,
+    "realPdfConversionFormats": [
+      "docx",
+      "pptx",
+      "xlsx"
+    ],
+    "realPptxGeneratedFixture": true,
+    "claudeTextOnlyRecoveryFixture": true,
+    "upstreamPptxOps": 68,
+    "upstreamPipelines": 77,
+    "upstreamPdf2docx": 822,
+    "upstreamPptxEngine": 1253,
+    "upstreamPptxEngineSkipped": 1,
+    "upstreamEnginesTotalPassed": 2829
   },
   "windowsVstoBuildVerified": false,
   "windowsInstallerVerified": false,
   "officeRuntimeVerified": false,
   "liveModelVerified": false,
-  "genofficeFullProductParityVerified": false
+  "genofficeFullProductParityVerified": false,
+  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.6.0-beta.1"
 }

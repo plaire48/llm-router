@@ -8,7 +8,10 @@ using Newtonsoft.Json.Serialization;
 
 namespace OfficeX.Core
 {
-    public sealed class OfficeFault : Exception { public OfficeFault(string code) : base(code) { } }
+    public sealed class OfficeFault : Exception {
+        public string Member {get;} public string NativeCode {get;} public bool? InvocationStarted {get;}
+        public OfficeFault(string code,string member=null,int? nativeCode=null,bool? invocationStarted=null) : base(code) {Member=member;NativeCode=nativeCode.HasValue?"0x"+unchecked((uint)nativeCode.Value).ToString("X8"):null;InvocationStarted=invocationStarted;}
+    }
     public static class Wire
     {
         public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings {

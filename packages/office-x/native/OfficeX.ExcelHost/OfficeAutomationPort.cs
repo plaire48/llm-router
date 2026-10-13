@@ -21,6 +21,7 @@ namespace OfficeX.ExcelHost {
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   public OfficeAutomationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;object doc=Source();acquired.Add(doc);objects["document"]=doc;sourceId=Identity(doc);}
   public string DocumentId=>sourceId;
+  public object BoundDocument=>objects["document"];
   public string DocumentName=>(string)((dynamic)objects["document"]).Name;
   object Source()=>app=="word"?application.ActiveDocument:app=="powerpoint"?application.ActivePresentation:application.ActiveWorkbook;
   public void CheckSource(){object win=null,doc=null;try{win=application.ActiveWindow;doc=Source();if((int)((dynamic)win).HWND!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
@@ -39,9 +40,9 @@ namespace OfficeX.ExcelHost {
    if(step.Action=="set"){args.Add(Arg(step.Value));flags|=BindingFlags.SetProperty;}
    else flags|=step.Action=="call"?BindingFlags.InvokeMethod:BindingFlags.GetProperty|(ReadCalls.Contains(step.Member)?BindingFlags.InvokeMethod:0);
    object result;
-   try{result=target.GetType().InvokeMember(step.Member,flags,null,target,args.ToArray(),System.Globalization.CultureInfo.InvariantCulture);}
-   catch(TargetInvocationException e){throw new OfficeFault("office_operation_failed: "+step.Member+": "+(e.InnerException?.Message??e.Message));}
-   catch(COMException e){throw new OfficeFault("office_operation_failed: "+step.Member+": "+e.Message);}
+   try{result=target.GetType().InvokeMember(step.Member,flags,null,target,args.ToArray(),OfficeCulture.Automation);}
+   catch(TargetInvocationException e){var cause=e.InnerException??e;throw new OfficeFault("office_operation_failed",step.Member,cause.HResult,cause.HResult==unchecked((int)0x80028018)?false:(bool?)null);}
+   catch(COMException e){throw new OfficeFault("office_operation_failed",step.Member,e.HResult,e.HResult==unchecked((int)0x80028018)?false:(bool?)null);}
    if(result!=null&&Marshal.IsComObject(result)){
     acquired.Add(result);if(string.IsNullOrWhiteSpace(step.Id)||step.Id=="document")throw new OfficeFault("office_object_id_required");
     objects[step.Id]=result;return new{reference=step.Id};

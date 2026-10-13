@@ -12,6 +12,8 @@ namespace OfficeX.ExcelHost
         private const string Origin="https://office-x.local";
         private readonly WebView2 web=new WebView2 {Dock=DockStyle.Fill};
         private bool ready;
+        private string assetsRoot;
+        public void SetAssetsRoot(string path){assetsRoot=path;if(web.CoreWebView2!=null)web.CoreWebView2.SetVirtualHostNameToFolderMapping("office-x-assets.local",path,CoreWebView2HostResourceAccessKind.DenyCors);}
         public event Action<JObject> Message;
         public event Action Failed;
         public ChatSurface(string root) {
@@ -26,6 +28,7 @@ namespace OfficeX.ExcelHost
                     core.Settings.IsGeneralAutofillEnabled=false;core.Settings.IsPasswordAutosaveEnabled=false;
                     core.Settings.AreDefaultContextMenusEnabled=false;
                     core.SetVirtualHostNameToFolderMapping("office-x.local",ui,CoreWebView2HostResourceAccessKind.DenyCors);
+                    if(assetsRoot!=null)core.SetVirtualHostNameToFolderMapping("office-x-assets.local",assetsRoot,CoreWebView2HostResourceAccessKind.DenyCors);
                     core.NavigationStarting+=(_,e)=>{if(e.Uri!=Origin+"/index.html")e.Cancel=true;};
                     core.NewWindowRequested+=(_,e)=>e.Handled=true;
                     core.PermissionRequested+=(_,e)=>e.State=CoreWebView2PermissionState.Deny;

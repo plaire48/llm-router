@@ -24,14 +24,17 @@ import '../vendor/nubi/packages/nubi-desktop/design/workspace-dialogs.css';
 import './office.css';
 import {officeApps} from './office-apps.js';
 import {useGreeting} from './useGreeting.js';
+import {Services} from './Services.jsx';
+import {outcome,inferDocumentTarget} from './run-outcome.js';
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
-const toolNames={inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
+const toolNames={web_search:'웹 자료 검색',image_search:'이미지 검색',generate_image:'이미지 생성',analyze_media:'미디어 확인',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',insert_image:'이미지 삽입',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
 function App(){
   const greeting=useGreeting();
   const [host,setHost]=useState('excel');
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.5.0');
+  const [version,setVersion]=useState('0.6.0');
+  const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({});
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
   const [target,setTarget]=useState('현재 문서에서 작업합니다'),[status,setStatus]=useState(''),[review,setReview]=useState(null),[loading,setLoading]=useState(false);
@@ -42,22 +45,29 @@ function App(){
   const updateReply=patch=>setConversations(rows=>rows.map(c=>c.id!==current.current?c:{...c,messages:c.messages.map((m,i)=>i===c.messages.length-1&&m.role==='assistant'?{...m,...patch}:m)}));
   useEffect(()=>{
     const unsubscribe=subscribe(m=>{
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.5.0');return;}
+      if(m.type==='handoff'){started.current=performance.now();current.current=m.conversationId;run.current=m.runId;setHost(m.app);setTarget(m.target);setBusy(m.running);setConversations([{id:m.conversationId,title:m.request.slice(0,32),messages:[{role:'user',text:m.request},{role:'assistant',text:m.text||'',target:m.target,model:m.model||'누비'}]}]);setIndex(0);return;}
+      if(m.type==='services_state'){setServices(m.state);return;}
+      if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.6.0');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);if(m.operation==='ready')setLost(true);if(!m.id&&!run.current){setBusy(false);updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
       if(m.type==='view'){setTarget(m.target||'현재 문서에서 작업합니다');setStatus(m.status);setBusy(m.running);return;}
       if(m.type==='started'){run.current=m.runId;updateReply({target:m.target});return;}
+      if(m.type==='question'){setQuestion(m);setQuestionAnswers({});return;}if(m.type==='question_closed'){setQuestion(null);return;}
       if(m.type==='review_closed'){setReview(null);return;}
       if(m.runId!==run.current)return;
       if(m.type==='text')updateReply({text:m.data});
       if(m.type==='phase')setStatus(({requesting:'응답 준비 중',thinking:'요청 검토 중',responding:'답변 작성 중','tool-input':'문서 작업 준비 중','tool-running':'문서 도구 실행 중'})[m.data.kind]||'작업 중');
       if(m.type==='tool')setStatus(toolNames[m.name||m.data]||'문서 도구 실행 중');
       if(m.type==='review')setReview(m);
-      if(m.type==='receipt')updateReply({receipt:m.receipt});
+      if(m.type==='receipt')setConversations(rows=>rows.map(c=>c.id!==current.current?c:{...c,messages:c.messages.map((reply,i)=>i===c.messages.length-1&&reply.role==='assistant'?{...reply,receipt:m.receipt,receipts:[...(reply.receipts||[]),m.receipt]}:reply)}));
+      if(m.type==='sources')updateReply({sources:m.data.items});
+      if(m.type==='artifacts')updateReply({artifacts:m.data.items});
+      if(m.type==='generation_progress')setStatus(({style:'발표자료 스타일 준비',plan:'페이지 구성 준비',pages:'슬라이드 작성',audit:'레이아웃 확인',convert:'문서 변환'})[m.data.stage]+(m.data.total?` ${m.data.done}/${m.data.total}`:''));
       if(m.type==='usage')updateReply({usage:m.data});
       if(m.type==='done'||m.type==='error'){
-        setBusy(false);setReview(null);updateReply({... (m.result?.text?{text:m.result.text}:{}),failed:m.type==='error',cancelled:!!m.result?.cancelled,incomplete:!!(m.result?.turnLimit||m.result?.truncated),finished:true,
+        setBusy(false);setReview(null);updateReply({... (m.result?.text?{text:m.result.text}:{}),failed:m.type==='error',errorCode:m.error,cancelled:!!m.result?.cancelled,incomplete:!!(m.result?.turnLimit||m.result?.truncated),finished:true,
           timing:{durationMs:performance.now()-started.current}});run.current=null;
       }
     });
@@ -70,11 +80,11 @@ function App(){
     setConversations(rows=>rows.map(c=>c.id!==active.id?c:{...c,title:'문서 도구 확인',messages:[...c.messages,{role:'user',text:textHost?'선택한 텍스트 읽기 (모델 전송 없음)':'C1:E4 수식 도구 확인 (모델 전송 없음)'},{role:'assistant',text:'',model:'문서 도구 확인',timing:{elapsedMs:0}}]}));
     try{send({type:'demo',conversationId:active.id});}catch(e){setBusy(false);setError(e.message);}
   }
-  function submit(){
+  function submit(chosenTarget){
     if(busy||controlBusy||!ready||!provider.connected||provider.pending||!draft.trim())return;
-    const text=draft.trim();setError('');started.current=performance.now();setBusy(true);
+    const text=pendingRequest||draft.trim(),documentTarget=typeof chosenTarget==='string'?chosenTarget:inferDocumentTarget(text);if(documentTarget===null){setPendingRequest(text);setDialog('target');return;}setPendingRequest('');setDialog(null);setError('');started.current=performance.now();setBusy(true);
     setConversations(rows=>rows.map(c=>c.id!==active.id?c:{...c,title:c.messages.length?c.title:text.slice(0,32),messages:[...c.messages,{role:'user',text,at:new Date().toISOString()},{role:'assistant',text:'',model:provider.models?.find(m=>m.id===provider.model)?.label||provider.model,timing:{elapsedMs:0,startedAt:new Date().toISOString()}}]}));
-    try{send({type:'start',conversationId:active.id,request:text});setDraft('');}catch(e){setBusy(false);setError(e.message);}
+    try{send({type:'start',conversationId:active.id,request:text,documentTarget});setDraft('');}catch(e){setBusy(false);setError(e.message);}
   }
   function newChat(){if(busy)return;const next=fresh();setConversations(rows=>[...rows.slice(-19),next]);setIndex(Math.min(conversations.length,19));setDialog(null);setDraft('');}
   async function refresh(input){setLoading(true);try{await action('refreshModels',input||{});}finally{setLoading(false);}}
@@ -88,6 +98,8 @@ function App(){
       <ActionButton action="add" label="새 대화" iconOnly disabled={busy} onClick={newChat}/>
       <ActionButton action="history" label="대화 이력" iconOnly disabled={busy} onClick={()=>setDialog('history')}/>
       <CxButton aria-label="연결 설정" title={`연결 설정 / ${app.name} / 누비 Agent ${version}`} disabled={busy||!ready} onClick={()=>setDialog('models')}><Icon name="sliders" size={20}/></CxButton>
+      <CxButton aria-label="검색과 이미지 설정" title="검색과 이미지" disabled={busy||!ready} onClick={()=>setDialog('services')}><Icon name="image" size={18}/></CxButton>
+      <CxButton disabled={busy} onClick={()=>send({type:'checkpoints'})}>복원</CxButton>
     </div></header>
     {!available&&<CxNotice tone="warning">미리보기 화면입니다. Windows Office에서 실행하세요.</CxNotice>}
     {lost&&<CxButton onClick={()=>{setLost(false);setError('');send({type:'ready'});}}>Agent 다시 연결</CxButton>}
@@ -100,24 +112,32 @@ function App(){
       <div className="document-context"><Icon name={app.icon} size={18}/><span title={target}>{target}</span><ActionButton action="refresh" label="선택 범위 확인" iconOnly disabled={busy} onClick={()=>send({type:'inspect'})}/></div>
       <div className="conversation" ref={scroll.viewport} tabIndex={0} aria-label="대화 내용" onScroll={scroll.onScroll} onFocusCapture={scroll.onFocusCapture}><div className="nubi-task office-task" ref={scroll.content}>
         {!active.messages.length&&<div className="empty-chat"><h1>어떤 작업을 할까요?</h1><div className="office-suggestions">{app.suggestions.map(([label,prompt])=><CxButton key={label} onClick={()=>setDraft(prompt)}>{label}</CxButton>)}</div></div>}
-        {active.messages.map((m,i)=><article key={i} className={'message '+m.role+' '+(m.role==='user'?'message-user nubi-request':'message-assistant')}>
+        {active.messages.map((m,i)=>{const result=outcome(m);return <article key={i} className={'message '+m.role+' '+(m.role==='user'?'message-user nubi-request':'message-assistant')}>
           <div className={m.role==='user'?'visually-hidden':'message-label answer-model'}>{m.role==='user'?'나':displayLabel(m.model)||'누비'}</div>
           {m.target&&<div className="message-source">{m.target}</div>}
-          <div className={"message-text message-body"+(m.role==='user'?' nubi-user-bubble':'')}><Markdown remarkPlugins={[remarkGfm]} components={{a:({children})=><span>{children}</span>,img:()=>null}}>{m.text||(m.failed?'응답을 완료하지 못했습니다. 연결과 문서 결과를 확인해 주세요.':m.cancelled?'작업을 중지했습니다.':busy?'요청을 확인하고 있어요.':'응답이 없습니다.')}</Markdown></div>
+          <div className={"message-text message-body"+(m.role==='user'?' nubi-user-bubble':'')}><Markdown remarkPlugins={[remarkGfm]} components={{a:({href,children})=><button className="source-link" onClick={()=>send({type:'open_source',url:href})}>{children}</button>,img:()=>null}}>{result.text||(busy?'요청을 확인하고 있어요.':'응답이 없습니다.')}</Markdown></div>
           {m.receipt&&<div className="receipt" data-status={m.receipt.status}><strong>{m.receipt.status==='verified'?(m.receipt.kind==='save_document'?'저장 확인':m.receipt.kind==='create_document'?'새 문서 생성 확인':m.receipt.kind==='office_operations'?'문서 변경 확인':m.receipt.cells?'수식 검증 완료':'문장 변경 확인'):m.receipt.status==='rejected'?'변경 안 함':'변경 결과 확인 필요'}</strong><div className="receipt-meta">{m.receipt.status!=='rejected'&&<><span>{m.receipt.document|| (m.receipt.kind==='office_operations'?`${m.receipt.count}개 작업`:m.receipt.kind==='create_document'?`${m.receipt.count}개 구성`:m.receipt.cells?`${m.receipt.cells.length}개 셀`:`${m.receipt.count||0}개 문단`)}</span><span>{m.receipt.saved?'저장됨':'저장 전'}</span></>}</div></div>}
-          {(m.failed||m.incomplete)&&<p className="muted">응답을 마치지 못했습니다. 문서 결과를 확인하세요.</p>}
+          {m.sources?.length>0&&<div className="source-list">{m.sources.slice(0,8).map((source,j)=><button className="source-link" key={j} onClick={()=>send({type:'open_source',url:source.url||source.sourceUrl})}>{source.title||source.source||'출처 '+(j+1)}</button>)}</div>}
+          {m.artifacts?.length>0&&<div className="artifact-grid">{m.artifacts.map(a=><figure key={a.artifactId}>{a.preview&&<img src={a.preview} alt={a.name}/>}<figcaption>{a.name}</figcaption></figure>)}</div>}
+          {m.receipt?.nativeCode&&<p className="muted">{m.receipt.failedMember} 호출 실패 {m.receipt.nativeCode} {m.receipt.completedWrites===0?'입력 완료 미확인':''}</p>}
+          {(m.failed||m.receipt?.status==='partial')&&<CxNotice tone={result.tone}>{result.notice}<CxButton disabled={busy} onClick={()=>{send({type:'inspect'});setDraft(result.documentVerified?'현재 문서에서 작업 결과를 확인하고 남은 작업만 이어서 처리해줘':'현재 문서의 실제 값을 다시 읽고 요청한 작업을 계획해줘');}}>문서 확인 후 이어서 요청</CxButton></CxNotice>}
+          {m.incomplete&&!m.failed&&<p className="muted">응답을 마치지 못했습니다. 문서 결과를 확인하세요.</p>}
           {m.cancelled&&<p className="muted">중지했습니다. 적용된 변경은 유지됩니다.</p>}
           {m.role==='assistant'&&<footer className="message-actions"><ResponseTime label="" timing={m.timing} live={busy&&i===active.messages.length-1}/>{m.text&&<ActionButton action="copy" label="답변 복사" iconOnly onClick={()=>navigator.clipboard.writeText(m.text).catch(()=>setError('답변을 선택해서 복사해 주세요.'))}/>}</footer>}
-        </article>)}
+        </article>;})}
       </div></div>
       {scroll.away&&<CxButton className="latest" onClick={scroll.followLatest}>최근 답변으로 이동</CxButton>}
       {busy&&<div className="run-status" role="status"><span className="status-spinner"/>{status}</div>}
-      {review&&<section className="review" aria-label="문서 변경 승인"><strong>{review.plan.kind==='create_document'?'새 문서를 만들까요?':review.plan.kind==='office_operations'?'문서에 적용할까요?':textReview?'문단을 바꿀까요?':'수식을 적용할까요?'}</strong><p>{review.target}</p>{review.plan.kind==='create_document'?<div className="review-text"><strong>{review.plan.content.title}</strong>{(review.plan.content.paragraphs||review.plan.content.slides||review.plan.content.sheets||[]).map((part,i)=><div className="review-block" key={i}><strong>{part.title||part.name||''}</strong><p>{part.text||part.body?.join('\n')}</p>{part.rows&&<div className="review-table"><table><tbody>{part.rows.map((row,r)=><tr key={r}>{row.map((cell,c)=><td key={c}>{cell}</td>)}</tr>)}</tbody></table></div>}</div>)}</div>:review.plan.kind==='office_operations'?<div className="review-text"><p>{review.plan.summary}</p><details><summary>변경 내용 확인</summary>{review.plan.steps.map((step,i)=><div className="review-block" key={i}><strong>{step.target}.{step.member}</strong><pre>{JSON.stringify(step.action==='set'?step.value:step.args,null,2)}</pre></div>)}</details></div>:textReview?<div className="review-text">{review.plan.operations?.length?review.plan.operations.map(op=>{const block=review.plan.before.blocks.find(b=>b.id===op.blockId);return <div className="review-block" key={op.blockId}><strong>{block?.label||op.blockId}</strong><dl><dt>변경 전</dt><dd>{block?.text}</dd><dt>변경 후</dt><dd>{op.text}</dd></dl></div>;}):<dl><dt>변경 전</dt><dd>{review.plan.before.text}</dd><dt>변경 후</dt><dd>{review.plan.replacement}</dd></dl>}</div>:<div className="review-table"><table><thead><tr><th>셀</th><th>입력할 수식</th></tr></thead><tbody>{review.plan.operations.map(op=><tr key={op.address}><td>{op.address}</td><td><code>{op.formula}</code></td></tr>)}</tbody></table></div>}<div className="review-actions"><CxButton onClick={()=>send({type:'approve',runId:review.runId,planId:review.planId,approved:false})}>적용 안 함</CxButton><CxButton variant="primary" onClick={()=>send({type:'approve',runId:review.runId,planId:review.planId,approved:true})}>변경 적용</CxButton></div></section>}
+      {question&&<section className="review" aria-label="작업 질문"><form onSubmit={e=>{e.preventDefault();send({type:'answer_question',runId:question.runId,questionId:question.questionId,answers:questionAnswers});}}>{question.questions.map(q=><fieldset key={q.id}><legend>{q.question}</legend>{q.options?.map(option=><label className="question-choice" key={option}><input type="radio" name={q.id} checked={questionAnswers[q.id]===option} onChange={()=>setQuestionAnswers({...questionAnswers,[q.id]:option})}/>{option}</label>)}<label>직접 입력<CxInput value={q.options?.includes(questionAnswers[q.id])?'':questionAnswers[q.id]||''} required={!q.options?.length} onChange={e=>setQuestionAnswers({...questionAnswers,[q.id]:e.target.value})}/></label></fieldset>)}<CxButton type="submit" variant="primary" disabled={question.questions.some(q=>!questionAnswers[q.id]?.trim())}>계속</CxButton></form></section>}
+      {review&&<section className="review" aria-label="문서 변경 승인"><strong>{review.plan.kind==='create_document'?'새 문서를 만들까요?':['office_operations','file_operation'].includes(review.plan.kind)?'문서에 적용할까요?':textReview?'문단을 바꿀까요?':'수식을 적용할까요?'}</strong><p>{review.target}</p>{review.plan.kind==='file_operation'?<p>{review.plan.summary}</p>:review.plan.kind==='create_document'?<div className="review-text"><strong>{review.plan.content.title}</strong>{(review.plan.content.paragraphs||review.plan.content.slides||review.plan.content.sheets||[]).map((part,i)=><div className="review-block" key={i}><strong>{part.title||part.name||''}</strong><p>{part.text||part.body?.join('\n')}</p>{part.rows&&<div className="review-table"><table><tbody>{part.rows.map((row,r)=><tr key={r}>{row.map((cell,c)=><td key={c}>{cell}</td>)}</tr>)}</tbody></table></div>}</div>)}</div>:review.plan.kind==='office_operations'?<div className="review-text"><p>{review.plan.summary}</p><details><summary>변경 내용 확인</summary>{review.plan.steps.map((step,i)=><div className="review-block" key={i}><strong>{step.target}.{step.member}</strong><pre>{JSON.stringify(step.action==='set'?step.value:step.args,null,2)}</pre></div>)}</details></div>:textReview?<div className="review-text">{review.plan.operations?.length?review.plan.operations.map(op=>{const block=review.plan.before.blocks.find(b=>b.id===op.blockId);return <div className="review-block" key={op.blockId}><strong>{block?.label||op.blockId}</strong><dl><dt>변경 전</dt><dd>{block?.text}</dd><dt>변경 후</dt><dd>{op.text}</dd></dl></div>;}):<dl><dt>변경 전</dt><dd>{review.plan.before.text}</dd><dt>변경 후</dt><dd>{review.plan.replacement}</dd></dl>}</div>:<div className="review-table"><table><thead><tr><th>셀</th><th>입력할 수식</th></tr></thead><tbody>{review.plan.operations.map(op=><tr key={op.address}><td>{op.address}</td><td><code>{op.formula}</code></td></tr>)}</tbody></table></div>}<div className="review-actions"><CxButton onClick={()=>send({type:'approve',runId:review.runId,planId:review.planId,approved:false})}>적용 안 함</CxButton><CxButton variant="primary" onClick={()=>send({type:'approve',runId:review.runId,planId:review.planId,approved:true})}>변경 적용</CxButton></div></section>}
       <div className="office-composer-dock"><section className="composer nubi-compose-card" aria-label="메시지 작성"><div className="nubi-composer-surface">
         <div className="nubi-composer-input"><NubiComposerInput rows={1} inputRef={composerInput} value={draft} maxLength={8000} disabled={busy} placeholder={app.placeholder} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing&&e.keyCode!==229){e.preventDefault();submit();}}}/></div>
         <NubiComposerBar leading={<><ModelPicker data={data} providerLabels={labels} disabled={busy||controlBusy||!ready} onOpen={()=>setDialog('models')} onRefresh={()=>refresh().catch(()=>{})}/>{provider.connected&&provider.reasoningOptions?.length>0&&<ReasoningPicker api={reasoningApi} provider={provider} disabled={busy||controlBusy||!!provider.pending}/>}</>} tools={busy?<CxButton className="nubi-composer-stop" data-icon-only aria-label="중지" title="작업 중지" onClick={()=>send({type:'cancel'})}><span className="stop-symbol" aria-hidden="true"/></CxButton>:<CxButton type="submit" data-icon-only aria-label="보내기" title="보내기" variant="primary" disabled={!draft.trim()||!provider.connected||!!provider.pending||!ready||controlBusy} onClick={submit}><Icon name="arrowUp" size={18}/></CxButton>}/>
       </div></section></div>
     </>}
+    {dialog==='services'&&<Services state={services} call={(method,input)=>command(method,input,'services')} onClose={()=>setDialog(null)}/>}
+    {dialog==='target'&&<DetailPanel title="어디에 만들까요?" variant="modal" hideHelp onClose={()=>{setDialog(null);setPendingRequest('');}}><p>현재 문서를 수정하거나 새 문서를 열어 작성합니다.</p><div className="target-choices"><CxButton onClick={()=>submit('current')}><strong>현재 문서</strong><span>지금 열린 문서에 적용</span></CxButton><CxButton onClick={()=>submit('new')}><strong>새 문서</strong><span>새 창에서 작성하고 Agent 이어가기</span></CxButton></div></DetailPanel>}
+    {dialog==='checkpoints'&&<DetailPanel title="문서 복원" variant="modal" hideHelp onClose={()=>setDialog(null)}><p>전체 스냅샷을 새 창에 복원합니다. 현재 문서는 유지됩니다.</p>{checkpoints.length?checkpoints.map(c=><CxButton className="history-row" key={c.id} onClick={()=>{setDialog(null);started.current=performance.now();setBusy(true);setConversations(rows=>rows.map(row=>row.id===active.id?{...row,messages:[...row.messages,{role:'user',text:'문서 복원: '+c.label},{role:'assistant',text:''}]}:row));send({type:'rollback',checkpointId:c.id,conversationId:active.id});}}>{c.label} / {c.document}</CxButton>):<p className="muted">아직 복원 지점이 없습니다.</p>}</DetailPanel>}
     {dialog==='models'&&<ModelSelection data={data} loading={loading} disabled={busy} providerLabels={labels} showProviderNames showActionLabels selectWhileLoading onClose={()=>setDialog(null)} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onProviderSelect={id=>action('select',id)} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
     {dialog==='history'&&<DetailPanel title="대화 이력" variant="modal" hideHelp onClose={()=>setDialog(null)}><p className="muted">창을 닫으면 대화가 지워집니다.</p><CxButton onClick={newChat}>새 대화</CxButton>{conversations.map((c,i)=><CxButton className="history-row" key={c.id} aria-pressed={index===i} onClick={()=>{setIndex(i);setDialog(null);setDraft('');}}>{c.title}</CxButton>)}</DetailPanel>}
     {dialog==='fabrix'&&<Fabrix onClose={()=>setDialog(null)} onConnect={async values=>{await action('connect',{provider:'fabrix',...values});setDialog(null);}}/>}

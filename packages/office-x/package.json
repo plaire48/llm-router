@@ -1,6 +1,6 @@
 {
   "name": "office-x",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -18,23 +18,39 @@
     "verify:vendor": "node scripts/verify-vendor.mjs",
     "test:auth": "npm run build && node scripts/test-auth.mjs",
     "test:nubi-process": "npm run build && node tests/nubi-worker.integration.mjs",
-    "test:claude": "npm run build && node scripts/test-auth.mjs tests/claude.integration.mjs"
+    "test:claude": "npm run build && node scripts/test-auth.mjs tests/claude.integration.mjs",
+    "test:engines": "node scripts/test-engines.mjs"
   },
   "dependencies": {
     "@e2e/cx-design-system": "file:vendor/nubi/extensions/aipro-chat/vendor/e2e-cx-design-system-0.5.4.tgz",
     "@earendil-works/pi-ai": "^0.86.1",
+    "@embedpdf/pdfium": "^2.15.0",
     "@genoffice/agent-core": "*",
     "@genoffice/ai-provider": "*",
+    "@genoffice/ai-search": "*",
+    "@genoffice/docx-engine": "*",
+    "@genoffice/pdf2docx": "*",
+    "@genoffice/pipelines": "*",
+    "@genoffice/pptx-engine": "*",
+    "@genoffice/pptx-ops": "*",
+    "@genoffice/pptx-render": "*",
+    "jszip": "^3.10.1",
+    "marked": "^17.0.4",
     "minisearch": "^7.2.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-markdown": "10.1.0",
     "remark-gfm": "4.0.1",
+    "sanitize-html": "^2.18.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/node": "22.19.0",
+    "@xmldom/xmldom": "^0.9.12",
     "esbuild": "0.25.12",
+    "jsdom": "^29.1.1",
+    "pdf-lib": "^1.17.1",
+    "pngjs": "^7.0.0",
     "typescript": "5.9.3",
     "vitest": "4.1.11"
   }

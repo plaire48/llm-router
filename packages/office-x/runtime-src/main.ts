@@ -5,6 +5,11 @@ import { Conversations } from './conversations';
 // @ts-expect-error Nubi preserves its original JavaScript modules.
 import { officeProviders, publicProviderState } from './nubi-providers.mjs';
 import { providerTransport, validateConfig } from './transport';
+import {OfficeServices,Artifacts} from './services';
+import {extendedOfficeSkill} from './genoffice-skill';
+import {mkdtempSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 
 // Agent messages use inherited stdio. Only a user-started OAuth login opens a temporary loopback callback.
 // Only this process's parent owns the native session and authorization UI.
@@ -16,10 +21,13 @@ console.log = () => {}; console.warn = () => {}; console.error = () => {};
 
 const conversations=new Conversations();
 const vaultPending=new Map<string,{resolve():void;reject(error:Error):void;timer:ReturnType<typeof setTimeout>}>();
-const providers=officeProviders((key:string,value:unknown)=>new Promise<void>((resolve,reject)=>{
+const persist=(key:string,value:unknown)=>new Promise<void>((resolve,reject)=>{
   const id=randomUUID();const timer=setTimeout(()=>{vaultPending.delete(id);reject(Error('storage_failed'));},10000);
   vaultPending.set(id,{resolve,reject,timer});send({type:'vault_write',id,key,value});
-}));
+});
+const providers=officeProviders(persist);
+const services=new OfficeServices(persist);
+const artifactStores=new Map<string,Artifacts>();
 let authBusy=false,initialized=false,lastState='';
 function publish(){const state={...publicProviderState(providers),initializing:!initialized},encoded=JSON.stringify(state);if(encoded!==lastState){lastState=encoded;send({type:'provider_state',state});}}
 const stateTimer=setInterval(publish,500);stateTimer.unref();
@@ -48,7 +56,11 @@ async function receive(msg: Record<string, any>) {
     const p=vaultPending.get(msg.id);if(p){clearTimeout(p.timer);vaultPending.delete(msg.id);msg.ok?p.resolve():p.reject(Error('storage_failed'));}return;
   }
   if(msg.type==='init'&&!initialized&&!authBusy){
-    authBusy=true;try{await providers.restoreConnections(msg.records||[],msg.selected);}finally{initialized=true;authBusy=false;publish();}return;
+    authBusy=true;try{services.restore(msg.services);await providers.restoreConnections(msg.records||[],msg.selected);}finally{initialized=true;authBusy=false;publish();send({type:"services_state",state:services.state()});}return;
+  }
+  if(msg.type==='services'){
+    if(active||authBusy||!initialized){send({type:'reply',id:msg.id,error:'worker_busy'});return;}
+    authBusy=true;try{const result=msg.method==='configure'?await services.configure(msg.input):msg.method==='clear'?await services.clear():msg.method==='test'?await services.test():services.state();send({type:'services_state',state:services.state()});send({type:'reply',id:msg.id,result});}catch{send({type:'reply',id:msg.id,error:'services_connection_failed'});}finally{authBusy=false;}return;
   }
   if(msg.type==='provider'){
     try{const result=await providerCommand(msg);send({type:'reply',id:msg.id,result});}
@@ -73,10 +85,7 @@ async function receive(msg: Record<string, any>) {
     if(!msg.config&&(!initialized||!providers.status().connected||providers.status().pending))throw Error('no_credential');
     const conversationId=String(msg.conversationId||id);
     const context=(msg.context||{}) as Record<string,unknown>;
-    const run = startAgent({transport, request:msg.request, history:conversations.history(conversationId,context),
-      context:(msg.context || {}) as Record<string,unknown>,
-      event:(type,data) => send({type,runId:id,data}),
-      native:(name,input,signal) => new Promise((resolve,reject) => {
+    const native:import('./excel-skill').NativeCall=(name,input,signal) => new Promise((resolve,reject) => {
         if (signal?.aborted) { reject(new Error('cancelled')); return; }
         const callId = randomUUID();
         const cancel = () => { const p=pending.get(callId); pending.delete(callId); p?.cleanup(); reject(new Error('cancelled')); };
@@ -84,15 +93,23 @@ async function receive(msg: Record<string, any>) {
         pending.set(callId,{resolve,reject,cleanup:()=>{clearTimeout(timeout);signal?.removeEventListener('abort',cancel);}});
         signal?.addEventListener('abort',cancel,{once:true});
         send({type:'tool',runId:id,id:callId,name,input});
-      }),
+      });
+    const root=String(context.artifactRoot||mkdtempSync(join(tmpdir(),'office-x-artifacts-')));
+    let artifacts=artifactStores.get(root);if(!artifacts){artifacts=new Artifacts(root);artifactStores.set(root,artifacts);}
+    const run = startAgent({transport, request:msg.request, history:conversations.history(conversationId,context),
+      additionalSkills:[extendedOfficeSkill({native,context,transport,services,artifacts,event:(type,data)=>send({type,runId:id,data})})],
+      context:(msg.context || {}) as Record<string,unknown>,
+      event:(type,data) => send({type,runId:id,data}),
+      native,
     });
     active = {id,cancel:run.cancel};
     // Host cancellation still works during provider timeout/backoff or native approval waits.
     const result = await run.result;
     if(!result.cancelled)conversations.remember(conversationId,context,run.messages());
     publish();send({type:'done',runId:id,result});
-  } catch {
-    send({type:'error',runId:id,error:'agent_failed'});
+  } catch(e) {
+    const code=(e as Error).message;
+    send({type:'error',runId:id,error:/^(claude_[a-z_]+|rate_limited|provider_response_failed|no_credential)$/.test(code)?code:'agent_failed'});
   } finally { if (active?.id === id) active=undefined; stopPending(); }
 }
 

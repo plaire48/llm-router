@@ -1,0 +1,12 @@
+
+> @genoffice/pdf2docx@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/vendor/genoffice/packages/pdf2docx
+
+
+ Test Files  54 passed (54)
+      Tests  822 passed (822)
+   Start at  09:14:34
+   Duration  9.01s (transform 5.86s, setup 0ms, import 12.59s, tests 23.63s, environment 3ms)

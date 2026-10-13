@@ -9,7 +9,7 @@ namespace OfficeX.Core {
  public sealed class OfficeCheck {public OfficeStep Read {get;set;} public new JToken Equals {get;set;}}
  public sealed class OfficeObservation {public string SnapshotId {get;set;} public List<OfficeStep> Steps {get;set;} public List<object> Results {get;set;}}
  public sealed class OfficePlan {public string Kind {get;set;}="office_operations";public string Id {get;set;} public string Summary {get;set;} public OfficeObservation Before {get;set;} public List<OfficeStep> Steps {get;set;} public List<OfficeCheck> Checks {get;set;}}
- public sealed class OfficeExecutionReceipt {public string Kind {get;set;}="office_operations";public string PlanId {get;set;} public string Status {get;set;} public string Error {get;set;} public bool Mutated {get;set;} public bool Saved {get;set;} public int Count {get;set;} public List<object> Results {get;set;}=new List<object>();public List<object> Checks {get;set;}=new List<object>();}
+ public sealed class OfficeExecutionReceipt {public string Kind {get;set;}="office_operations";public string PlanId {get;set;} public string Status {get;set;} public string Error {get;set;} public string FailedMember {get;set;} public string NativeCode {get;set;} public bool Mutated {get;set;} public int CompletedWrites {get;set;} public bool WriteResultUncertain {get;set;} public bool Saved {get;set;} public int Count {get;set;} public List<object> Results {get;set;}=new List<object>();public List<object> Checks {get;set;}=new List<object>();}
  public interface IOfficeAutomationPort {void CheckSource();object Execute(OfficeStep step,bool readOnly);}
  public sealed class OfficeAutomationSession {
   readonly IOfficeAutomationPort port;readonly Dictionary<string,OfficeObservation> observations=new Dictionary<string,OfficeObservation>();readonly Dictionary<string,OfficePlan> plans=new Dictionary<string,OfficePlan>();bool stopped;
@@ -26,11 +26,11 @@ namespace OfficeX.Core {
   public OfficeExecutionReceipt Apply(string id,bool approved,CancellationToken token)=>ApplyAsync(id,approved,token).GetAwaiter().GetResult();
   public async Task<OfficeExecutionReceipt> ApplyAsync(string id,bool approved,CancellationToken token){if(stopped||id==null||!plans.TryGetValue(id,out var plan))throw new OfficeFault("invalid_plan");plans.Remove(id);var r=new OfficeExecutionReceipt{PlanId=id,Status="rejected"};if(!approved){stopped=true;return r;}
    try{token.ThrowIfCancellationRequested();port.CheckSource();var live=plan.Before.Steps.Select(s=>port.Execute(s,true)).ToList();if(Wire.Hash(live)!=Wire.Hash(plan.Before.Results))throw new OfficeFault("source_changed");
-    foreach(var step in plan.Steps){await Task.Yield();token.ThrowIfCancellationRequested();if(step.Action!="get")r.Mutated=true;r.Results.Add(port.Execute(step,false));r.Count++;}
+    foreach(var step in plan.Steps){await Task.Yield();token.ThrowIfCancellationRequested();if(step.Action!="get"){r.Mutated=true;r.WriteResultUncertain=true;}r.Results.Add(port.Execute(step,false));r.Count++;if(step.Action!="get"){r.CompletedWrites++;r.WriteResultUncertain=false;}}
     foreach(var check in plan.Checks){await Task.Yield();token.ThrowIfCancellationRequested();var actual=port.Execute(check.Read,true);bool matches=Equivalent(actual==null?JValue.CreateNull():JToken.FromObject(actual),check.Equals);r.Checks.Add(new{read=check.Read,actual,expected=check.Equals,passed=matches});if(!matches)throw new OfficeFault("readback_mismatch");}
     r.Status="verified";observations.Clear();plans.Clear();
    }catch(OperationCanceledException){r.Status=r.Mutated?"partial":"cancelled";r.Error="cancelled";stopped=true;}
-   catch(OfficeFault e){r.Status=r.Mutated?"partial":"conflict";r.Error=e.Message;stopped=true;}
+   catch(OfficeFault e){if(e.InvocationStarted==false&&r.CompletedWrites==0){r.Mutated=false;r.WriteResultUncertain=false;}r.Status=r.Mutated?"partial":"conflict";r.Error=e.Message;r.FailedMember=e.Member;r.NativeCode=e.NativeCode;stopped=true;}
    catch{r.Status=r.Mutated?"partial":"failed";r.Error="native_execution_failed";stopped=true;}
    return r;
   }

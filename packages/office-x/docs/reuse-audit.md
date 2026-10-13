@@ -7,7 +7,7 @@
 | GenOffice agent-core | 원본 그대로 도입 | AgentLoop, composeSkills, 도구 인자 검사, 취소, 실행 한도, 문맥 압축 |
 | GenOffice ai-provider | 원본 그대로 도입 | streamForProvider, 사용자 지정 endpoint, SSE 및 tool call 파싱, timeout 처리 |
 | GenOffice 문서 skill 인터페이스 | 직접 사용 | Excel VSTO 도구를 AgentSkill로 구현 |
-| GenOffice Electron UI·문서 엔진 | 이번 배포에서 제외 | Windows Office가 열린 문서·저장을 소유. 파일 파서 경로를 연결하지 않음 |
+| GenOffice 문서 엔진 | 원본 12개 패키지 재사용 | PPTX 생성·파싱·작업·품질 검사, 검색·미디어, PDF 변환. 열린 문서는 Windows Office가 소유하며 Electron 편집기 UI는 제외 |
 | 기존 누비 VSTO 생성 진입점 | 복사 | ThisAddIn.Designer.vb, ThisAddIn.Designer.xml |
 | 기존 누비 리본·호스트 빌드 | 수정해 재사용 | 최소 VB VSTO entry, C# host 연결, 창별 작업창 |
 | 기존 누비 ExcelPort·WorkerProcess | 필요한 패턴을 옮겨 재작성 | COM identity, 닫힘·삭제 무효화, UI 스레드 접근, stdio 자식 프로세스 |
@@ -15,7 +15,7 @@
 | 기존 누비 전체 WorkbookEngine·Pi 실행부 | 도입하지 않음 | 기존 광범위 기능·UI 결합을 피하고 GenOffice를 실행부로 사용 |
 | 기존 누비 A2A | 후속 연결 후보 | 작업 수신·실행 ID 결합 코드를 검토. 이번 코드에는 활성화하지 않음 |
 
-GenOffice 고정 커밋은 `438d9c65709952490c970beaa2599ef45e74431f`이다. 85개 파일을 수정 없이 저장했고 `vendor/genoffice-source.json`으로 해시를 검사한다. 해당 디렉터리 밖에 Office X 코드를 둬 업스트림 변경과 어댑터 변경을 분리한다. [고정 소스](https://github.com/genspark-ai/genoffice/tree/438d9c65709952490c970beaa2599ef45e74431f)
+GenOffice 고정 커밋은 `438d9c65709952490c970beaa2599ef45e74431f`이다. 842개 파일을 수정 없이 저장했고 `vendor/genoffice-source.json`으로 해시를 검사한다. 해당 디렉터리 밖에 Office X 코드를 둬 업스트림 변경과 어댑터 변경을 분리한다. [고정 소스](https://github.com/genspark-ai/genoffice/tree/438d9c65709952490c970beaa2599ef45e74431f)
 
 기존 누비는 `/Users/ganadi/Documents/llm_router`의 현재 작업 파일을 확인했다. 당시 Git HEAD는 `7dbaf0f6cdb3ea938e09b743b2d8bc31ce8d953e`이며 실제 읽은 파일별 해시는 `vendor/nubi-source.json`에 기록했다. 누비 저장소 자체는 수정하지 않았다.
 

@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 dist/
 **/bin/
 **/obj/
@@ -9,3 +9,5 @@ runtime/
 .env*
 !.env.example
 artifacts/
+
+.playwright-mcp/

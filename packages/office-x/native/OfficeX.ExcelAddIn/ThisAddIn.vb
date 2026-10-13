@@ -2,6 +2,7 @@
 ' Original VSTO host: it235/office-ai-agent, Apache-2.0. See THIRD-PARTY-NOTICES.md.
 Imports System.IO
 Imports System.Collections.Generic
+Imports System.Linq
 Imports System.Runtime.InteropServices
 Imports Office = Microsoft.Office.Core
 
@@ -20,7 +21,7 @@ Partial Public Class ThisAddIn
             If Not panes.TryGetValue(window.Hwnd, pane) Then
                 Dim control = CreateControl(window.Hwnd)
                 Try
-                    pane = CustomTaskPanes.Add(control, "누비 Agent")
+                    pane = CustomTaskPanes.Add(control, "누비 Agent", window)
                     pane.Width = 420
                     panes.Add(window.Hwnd, pane)
                 Catch
@@ -36,19 +37,55 @@ Partial Public Class ThisAddIn
     End Sub
 
     <System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)>
-    Private Function CreateControl(windowHandle As Integer) As System.Windows.Forms.UserControl
+    Private Function CreateControl(windowHandle As Integer) As OfficeX.ExcelHost.OfficePane
         Dim codeBase = New Uri(GetType(ThisAddIn).Assembly.CodeBase)
         Dim directory = Path.GetDirectoryName(If(codeBase.IsFile, codeBase.LocalPath, GetType(ThisAddIn).Assembly.Location))
-        Return New OfficeX.ExcelHost.OfficePane(Application, Path.Combine(directory, "OfficeX"), windowHandle)
+        Dim control = New OfficeX.ExcelHost.OfficePane(Application, Path.Combine(directory, "OfficeX"), windowHandle)
+        AddHandler control.DocumentWindowChanged, Sub(newHandle) FollowDocument(control, newHandle)
+        Return control
     End Function
+
+    Private Sub FollowDocument(source As OfficeX.ExcelHost.OfficePane, newHandle As Integer)
+        Dim window = Application.ActiveWindow
+        If window Is Nothing OrElse window.Hwnd <> newHandle Then Return
+        Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
+        If Not panes.TryGetValue(newHandle, pane) Then
+            Dim control = CreateControl(newHandle)
+            control.FollowSession(source)
+            pane = CustomTaskPanes.Add(control, "누비 Agent", window)
+            pane.Width = 420
+            panes.Add(newHandle, pane)
+        Else
+            Dim control = TryCast(pane.Control, OfficeX.ExcelHost.OfficePane)
+            If control IsNot Nothing AndAlso Not control.IsRunning Then control.FollowSession(source)
+        End If
+        pane.Visible = True
+        For Each other In panes.Values
+            If Object.ReferenceEquals(other.Control, source) AndAlso Not Object.ReferenceEquals(other, pane) Then other.Visible = False
+        Next
+    End Sub
 
     Private Sub Starting() Handles Me.Startup
         AddHandler Application.WorkbookBeforeClose, AddressOf ClosingWorkbook
     End Sub
 
     Private Sub ClosingWorkbook(book As Microsoft.Office.Interop.Excel.Workbook, ByRef cancel As Boolean)
-        ' Conservatively dispose every pane/session even if closing is later cancelled.
-        ClosePanes(True)
+        Dim handles As New List(Of Integer)()
+        Try
+            For Each window In book.Windows
+                handles.Add(CInt(window.Hwnd))
+            Next
+        Catch
+            ' Office may already have removed the windows from a closing presentation.
+        End Try
+        For Each handle In handles
+            Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
+            If panes.TryGetValue(handle, pane) Then
+                panes.Remove(handle)
+                pane.Control.Dispose()
+                CustomTaskPanes.Remove(pane)
+            End If
+        Next
     End Sub
 
     Private Sub ClosePanes(removeFromCollection As Boolean)

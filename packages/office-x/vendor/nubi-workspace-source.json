@@ -370,6 +370,12 @@
       "path": "runtime-src/claude-cli.mjs",
       "sha256": "73a054ae43200d9a3a67a33ccbe5b2acb0ddb8c8c7e0158894139d00586a7512",
       "note": "Office-specific discovery and Windows process launcher adapted from runClaude. CLI models, protocol, environment filtering and failure signals are imported unchanged."
+    },
+    {
+      "source": "packages/nubi-desktop/runtime/claude-code.mjs",
+      "path": "runtime-src/claude-office-run.mjs",
+      "sha256": "84784e11ac02db5e1dc10aa04f47ba09a20770a540455478df5834f7b2055980",
+      "note": "Office-only wrapper classifies CLI terminal result errors and adjusts bounded structured-output turns; original Nubi provider source remains unchanged."
     }
   ]
 }

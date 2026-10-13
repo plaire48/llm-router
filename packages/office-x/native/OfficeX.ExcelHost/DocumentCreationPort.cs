@@ -18,6 +18,7 @@ namespace OfficeX.ExcelHost {
   object Source()=>app=="word"?application.ActiveDocument:app=="powerpoint"?application.ActivePresentation:application.ActiveWorkbook;
   public void CheckSource(){using(var c=new Scope()){dynamic win=c.Keep(application.ActiveWindow),doc=c.Keep(Source());if((int)win.HWND!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
   public string CreatedName=>created==null?null:(string)((dynamic)created).Name;
+  public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){dynamic doc=created;if(app=="powerpoint"){dynamic windows=c.Keep(doc.Windows),window=c.Keep(windows.Item(1));window.Activate();}else doc.Activate();}}
   public void Create(CreationPlan value,CancellationToken token){
    if(created!=null)throw new OfficeFault("writes_stopped_for_this_run");plan=Wire.Clone(value);
    using(var c=new Scope()){

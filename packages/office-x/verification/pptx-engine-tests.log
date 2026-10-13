@@ -1,0 +1,12 @@
+
+> @genoffice/pptx-engine@0.1.0 test
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.11 /Users/ganadi/Documents/office_x/vendor/genoffice/packages/pptx-engine
+
+
+ Test Files  120 passed | 1 skipped (121)
+      Tests  1253 passed | 1 skipped (1254)
+   Start at  09:15:52
+   Duration  11.77s (transform 1.78s, setup 0ms, import 9.73s, tests 23.09s, environment 458ms)

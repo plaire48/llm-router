@@ -9,13 +9,12 @@ GenOffice source, not a reimplementation.
 - Source: https://github.com/genspark-ai/genoffice
 - Revision: `438d9c65709952490c970beaa2599ef45e74431f`
 - Unmodified prompt guides: 11 Sheets guides and 3 Slides prompts, provided on demand by `load_office_guide`; native COM guidance is an Office X adaptation.
-- Unmodified packages: `vendor/genoffice/packages/agent-core`, `ai-provider`.
+- Unmodified packages: agent-core, ai-provider, ai-search, electron-utils, pptx-engine, pptx-render, pipelines, zip-gate, docx-engine, pptx-ops, pdf2docx, font-metrics. 842 original files with hashes.
 - Copyright: 2026 Mainfunc, Inc.
 - Original LICENSE and NOTICE retained in `vendor/genoffice/`.
 - Per-file hashes: `vendor/genoffice-source.json`.
 - Office X integration code lives outside `vendor/`. No `ee/` sources are included.
-- The original Electron editors, file parsers and save engines are not used to
-  access Office/NASCA files. Open documents are accessed through VSTO.
+- Original PPTX/PDF engines parse and generate explicit local artifacts. Open documents are accessed through VSTO; original Electron editor UI is excluded.
 
 ## Existing Nubi Office and Office AI Agent
 
@@ -35,7 +34,7 @@ or enabled in this initial Excel add-in. No Workspace source was modified.
 
 Newtonsoft.Json 13.0.3 (MIT) is used for the native JSON bridge.
 Microsoft Office interop and VSTO runtime are used under their Microsoft terms.
-Node.js is an external prerequisite for development; it is not bundled here.
+Node.js is an external prerequisite for development and is bundled in the Windows installer. PDFium WASM is bundled for local PDF conversion/rendering; dependency notices are generated under dist/licenses.
 Development-only npm dependencies are recorded in package-lock.json.
 
 ## Nubi Workspace UI and provider sources (0.2.0)

@@ -41,5 +41,7 @@ jobs:
           if($LASTEXITCODE -eq 0 -and $existingDraft -eq 'false'){throw 'Published releases are immutable. Bump the package version.'}
           if($LASTEXITCODE){gh release create $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --draft --prerelease --title "Nubi Agent Office $version Beta 1" --notes-file RELEASE-NOTES.md}
           if($LASTEXITCODE){throw 'Release creation failed'}
+          gh release edit $tag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --notes-file RELEASE-NOTES.md
+          if($LASTEXITCODE){throw 'Draft target update failed'}
           gh release upload $tag "releases/Nubi-Office-X-$version-Setup.exe" "releases/Nubi-Office-X-$version-Setup.exe.sha256" "releases/office-x-$version-source.zip" "releases/office-x-$version-source.json" releases/installer-build.json releases/install-smoke.json --clobber --repo $env:GITHUB_REPOSITORY
           if($LASTEXITCODE){throw 'Release upload failed'}
