@@ -89,9 +89,9 @@ class Program {
     port.Execute(new OfficeStep{Target="range",Action="set",Member="Font.Bold",Value=true},false);
     Equal(true,port.Execute(new OfficeStep{Target="range",Action="call",Member="Font.Bold"},true));
     port.Execute(new OfficeStep{Target="range.Font",Action="set",Member="Size",Value=14},false);
-    Equal(14,port.Execute(new OfficeStep{Target="range",Member="Font.Size"},true));
+    Equal(14d,Convert.ToDouble(port.Execute(new OfficeStep{Target="range",Member="Font.Size"},true)));
     port.Execute(new OfficeStep{Target="document",Action="set",Member="Content.Font.Size",Value=16},false);
-    Equal(16,port.Execute(new OfficeStep{Member="Content.Font.Size",Action="call"},true));
+    Equal(16d,Convert.ToDouble(port.Execute(new OfficeStep{Member="Content.Font.Size",Action="call"},true)));
     port.Execute(new OfficeStep{Target="range",Action="set",Member="TextFrame.TextRange.Text",Value="발표 본문"},false);
     Equal("발표 본문",port.Execute(new OfficeStep{Target="range",Action="call",Member="TextFrame.TextRange.Text"},true));
     foreach(var member in new[]{"Font.Application.Name","Font.SaveAs","Font.AddPicture"}){try{port.Execute(new OfficeStep{Target="range",Member=member},true);throw new Exception("Expected denied path");}catch(OfficeFault e){Equal("office_member_unavailable",e.Message);Equal(false,e.InvocationStarted);}}
