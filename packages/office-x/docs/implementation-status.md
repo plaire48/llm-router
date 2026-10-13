@@ -15,3 +15,5 @@ OfficeGeometry는 Excel ColumnWidth 문자 단위 0..255, RowHeight 포인트 0.
 네이티브 모의 검사에 읽기로 생성되는 계획 핸들, 늦은 지원 불가 멤버, 문서 루트의 잘못된 ColumnWidth, Word/PPT 배치 사전 거절, PPT Single 폰트 크기를 추가했다. 실제 Office가 없는 CI이므로 전체 COM 모델과 사용자 환경의 쓰기/저장/연결 성공을 증명하지 않는다.
 
 스칼라 결과를 같은 id에 다시 읽으면 이전 COM 핸들을 제거한다. Count 등을 객체 핸들로 재사용하는 계획은 쓰기 전에 거절한다. 반대로 Add 뒤 처음 존재할 명시적 Item 인덱스는 사전 검사에서 객체를 만들지 않고 실행 후 확인하므로 정상적인 구조 변경 기능을 유지한다.
+
+IOfficeTypedPort의 app을 기준으로 알려진 속성의 읽기 검사를 변환한다. Word/PPT Bold/Italic true/false는 -1/0으로 정확히 검사하고 mixed/undefined는 인정하지 않는다. PPT Single 좌표/크기와 Word Size, Excel ColumnWidth/RowHeight에 해당 비교 방식을 자동 반영해 모델이 매번 옵션을 지정할 필요를 줄인다. Count/Value2/Text는 변환하지 않는다.

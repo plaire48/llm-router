@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "version": "0.8.9",
+  "testedProductCommit": "201cdcfbc1307e87412e0460e370358d5718bc79",
+  "scope": "Playwright with mock WebView2 host; not real Office",
+  "generalUI": {"manualLoginReadiness":true,"claudeModelPicker":true,"typingAndClicks":true,"nativeReviewPayload":true,"busyGuards":true,"startupErrorRecovery":true},
+  "countUI": {"expectedActualCounts":true,"blockedWritePreservesOriginalFailure":true,"copiedFaultsOmitCellValues":true},
+  "connectionUI": {"retryAfterClick":true,"successClearsError":true,"catalogWarningDoesNotBlockSending":true},
+  "identity": {"states":12,"cssPropertiesPerState":77,"allThreeAppsMatch":true,"scope":"shared CSS fixture"},
+  "pageErrors": []
+}

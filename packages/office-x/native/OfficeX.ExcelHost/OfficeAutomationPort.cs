@@ -11,13 +11,14 @@ using Newtonsoft.Json.Linq;
 using OfficeX.Core;
 namespace OfficeX.ExcelHost {
  // Structured Office Object Model calls, never eval, C#, VBA or a shell.
- sealed class OfficeAutomationPort:IOfficeAutomationPort,IOfficePreflightPort,IOfficeBatchPreflightPort,IDisposable {
+ sealed class OfficeAutomationPort:IOfficeAutomationPort,IOfficePreflightPort,IOfficeTypedPort,IOfficeBatchPreflightPort,IDisposable {
   readonly int threadId=Thread.CurrentThread.ManagedThreadId;
   readonly dynamic application;readonly string app;readonly int hwnd;readonly string sourceId;
   readonly HashSet<string> worksheetCollections=new HashSet<string>();
   readonly Dictionary<string,object> objects=new Dictionary<string,object>();readonly List<object> acquired=new List<object>();
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   public OfficeAutomationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;object doc=Source();if(doc==null)throw new OfficeFault("open_document_required");acquired.Add(doc);objects["document"]=doc;sourceId=Identity(doc);}
+  public string App=>app;
   public string DocumentId=>sourceId;
   public object BoundDocument=>objects["document"];
   public string DocumentName=>(string)OfficeDispatch.Get(objects["document"],"Name");

@@ -12,6 +12,8 @@ read_worksheets, add_worksheet, rename_worksheet를 연결했습니다. 실제 �
 
 format_cells에 열 너비와 행 높이를 연결했습니다. ColumnWidth는 0–255 문자 단위, RowHeight는 0–409 포인트로 쓰기 전에 검사합니다. 전체 열/행에 적용되는 범위를 승인 요약에 표시합니다. 서식 검사에는 제한된 반올림 허용 범위(0.15 문자/0.5 포인트)를 명시하며 셀 값과 수식은 그대로 확인합니다.
 
+Excel의 Boolean과 Word/PowerPoint의 -1/0 강조 속성 차이도 읽기 검사에 반영했습니다. Word/PPT의 굵게 true를 실제 -1 반환값과 다르다고 판단해 작업을 중단하던 경로를 방지합니다. 좌표/폰트의 Single 비교와 열/행 반올림 방식은 해당 앱의 알려진 속성에서 자동 반영하고 승인 계획과 영수증에 남깁니다. Count, 셀 값, 텍스트는 이 변환의 대상이 아닙니다.
+
 PowerPoint AddTextbox의 다섯 인수와 포인트 단위를 먼저 검사합니다. 좌표와 폰트 크기의 Single 반올림을 정확히 비교하는 검사 옵션을 추가했습니다. Excel Font.Color와 PowerPoint Font.Color.RGB의 객체 차이, Word Range의 위치 인수도 모델 가이드에 반영했습니다.
 
 0.8.8의 Count, Item 인자와 셀 서식 수정은 유지합니다. 별도 편집기, 새 대화/히스토리, 이미지 기능은 포함하지 않습니다. Excel, Word, PowerPoint를 모두 종료한 뒤 설치하세요. 실제 Office 2016 환경에는 접근할 수 없어 그 환경의 정상 완료는 직접 확인하지 못했습니다.
@@ -19,3 +21,5 @@ PowerPoint AddTextbox의 다섯 인수와 포인트 단위를 먼저 검사합�
 참고: [Worksheet.Name](https://learn.microsoft.com/en-us/office/vba/api/excel.worksheet.name), [Worksheets.Item](https://learn.microsoft.com/en-us/office/vba/api/excel.worksheets.item).
 
 참고: [Excel 열 너비](https://learn.microsoft.com/en-us/office/vba/api/excel.range.columnwidth), [Excel 한도](https://support.microsoft.com/en-us/excel/excel-specifications-and-limits), [PowerPoint AddTextbox](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.shapes.addtextbox), [PowerPoint Font.Size](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.font.size).
+
+반환 타입 참고: [Word Font.Bold](https://learn.microsoft.com/en-us/office/vba/api/word.font.bold), [PowerPoint Font.Bold](https://learn.microsoft.com/en-us/office/vba/api/powerpoint.font.bold).

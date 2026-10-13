@@ -18,6 +18,14 @@ namespace OfficeX.Core {
     for(int i=0;i<5;i++)if(!Number(args[i])||(i==0&&(args[i].Type!=JTokenType.Integer||args[i].Value<int>()<1||args[i].Value<int>()>6))||(i>=3&&args[i].Value<double>()<=0)||Double.IsInfinity((float)args[i].Value<double>()))throw new OfficeFault("office_argument_invalid",step.Member,invocationStarted:false,inputPath:"args["+i+"]",inputRule:i==0?"office_text_orientation_required":"finite_point_dimension_required");
    }
   }
+  public static void AdaptNativeCheck(OfficeCheck check,string app){
+   if(check.Compare!=null)return;string leaf=OfficeCallPolicy.Leaf(check.Read.Member);
+   // Excel Bold is Boolean; Word/PPT Bold and Italic are native -1/0.
+   if(check.Equals?.Type==JTokenType.Boolean&&(app=="word"||app=="powerpoint")&&(new[]{"Bold","Italic"}.Contains(leaf)||app=="powerpoint"&&new[]{"WordWrap","HasTextFrame"}.Contains(leaf)))check.Equals=new JValue((bool)check.Equals?-1:0);
+   if(!Number(check.Equals))return;
+   if(app=="powerpoint"&&Singles.Contains(leaf)||app=="word"&&leaf=="Size")check.Compare="office_single";
+   else if(app=="excel"&&new[]{"ColumnWidth","RowHeight"}.Contains(leaf))check.Compare="excel_dimension";
+  }
   public static void ValidateCheck(OfficeCheck check){
    if(check.Compare==null)return;string leaf=OfficeCallPolicy.Leaf(check.Read.Member);
    bool valid=check.Compare=="excel_formula"?new[]{"Formula","FormulaLocal"}.Contains(leaf)&&check.Equals?.Type==JTokenType.String:

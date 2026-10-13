@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "buildCommit": "201cdcfbc1307e87412e0460e370358d5718bc79",
+  "provider": "claude",
+  "liveProvider": true,
+  "platform": "macOS",
+  "nativeOffice": "JavaScript fixture",
+  "realOfficeVerified": false,
+  "realWindowsClaudeVerified": false,
+  "initialSheets": 3,
+  "finalSheets": 3,
+  "otherSheetsPreserved": true,
+  "intendedSheetRenamed": true,
+  "cellValueVerified": true,
+  "numberFormatVerified": true,
+  "columnWidthVerified": true,
+  "rowHeightVerified": true,
+  "finalTextDelivered": true,
+  "calls": [
+    "read_worksheets",
+    "rename_worksheet",
+    "write_cells",
+    "format_cells"
+  ]
+}

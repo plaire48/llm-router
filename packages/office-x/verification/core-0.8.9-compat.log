@@ -44,6 +44,7 @@ PASS cell validation rejects malformed destinations and ambiguous payloads befor
 PASS Excel geometry rejects pixels strings and out-of-range dimensions before writes
 PASS PowerPoint textbox validates five finite native arguments without creating a shape
 PASS layout readback accepts bounded quantization but rejects wrong dimensions and data tolerances
+PASS native checks normalize Office tri-state and geometry without changing Count or cell values
 PASS native Single readback matches exact Single only and never arbitrary near values
 PASS format helper verifies rounded native dimensions with content preserved
 PASS formula comparer is not available for arbitrary data readback
@@ -129,4 +130,4 @@ PASS readonly and protected workbook reject proposals
 PASS numeric-looking strings are not numeric evidence
 PASS invalid and unbounded addresses reject
 PASS large cell context is rejected before model transfer
-131/131 core behavior tests passed; fake port, not Excel COM.
+132/132 core behavior tests passed; fake port, not Excel COM.
