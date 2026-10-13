@@ -1,9 +1,1 @@
-{
-  "passed": true,
-  "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
-  "editors": 3,
-  "approvals": 3,
-  "physicalClickAndTyping": true,
-  "invalidContractRecovery": true,
-  "error": null
-}
+{"passed":true,"scope":"installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested","editors":3,"approvals":3,"physicalClickAndTyping":true,"invalidContractRecovery":true,"error":null}

@@ -17,3 +17,7 @@ Claude의 컬렉션 인자가 JSON 문자열로 이중 인코딩되는 실제 �
 Office 앱을 모두 종료하고 EXE를 실행하세요. Windows 네이티브 COM 테스트 객체와 채팅창 검사 결과는 실제 Office 2016 또는 사용자 Claude 계정 검증을 대신하지 않습니다. 실제 Windows Office 환경은 현재 연결할 수 없어 해당 검증은 미완료입니다.
 
 실제 로그인된 macOS Claude로 발표자료 두 슬라이드 생성 제안과 최종 응답을 확인했습니다. 이 검사의 Office 실행부는 모의 개체이며 실제 Windows Office 문서 작성 검증은 아닙니다.
+
+최종 검증 커밋: `f80e15852438da2b6cbd9313aac4bcf8f5c8fee1`. [Windows 검사](https://github.com/plaire48/llm-router/actions/runs/38371793981)에서 양쪽 COM 아키텍처와 설치·재설치·제거 및 실제 Windows 채팅창 입력 검사를 통과했습니다. 설치 10.54초, 재설치 4.33초이며 테스트 VM 기준입니다.
+
+EXE SHA-256: `08e36d79b0ee21fcc275016fcd0ac4f45dc3a04ef489c084a10903ab0bb6051c`. GenOffice 4,582개와 누비 88개 원본 파일, Office 어댑터·실제 Claude 검사 원본 해시 및 ZIP 무결성을 확인했습니다.

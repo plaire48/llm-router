@@ -1,0 +1,11 @@
+{
+  "commit": "f80e15852438da2b6cbd9313aac4bcf8f5c8fee1",
+  "exeSha256": "08e36d79b0ee21fcc275016fcd0ac4f45dc3a04ef489c084a10903ab0bb6051c",
+  "exeBytes": 124569133,
+  "sourceSha256": "4a8efc9f7040c1828417d2f38b6f9b57f4c595073205e03811c124cbb7396f40",
+  "sourceFiles": 5432,
+  "immutableGenOfficeFiles": 4582,
+  "immutableNubiFiles": 88,
+  "liveClaudeHashesMatch": true,
+  "zipCRC": true
+}

@@ -55,9 +55,171 @@
     }
   },
   "windowsChecks": {
-    "status": "pending",
-    "realOfficeVerified": false,
-    "liveModelVerified": false
+    "status": "passed",
+    "run": "https://github.com/plaire48/llm-router/actions/runs/38371793981",
+    "commit": "f80e15852438da2b6cbd9313aac4bcf8f5c8fee1",
+    "nativeComScope": "Native Office-shaped IDispatch fixture with broken type library; Scripting.Dictionary; no installed Office",
+    "nativeCom": [
+      {
+        "passed": true,
+        "architecture": "x64",
+        "legacyFailed": true,
+        "legacyException": "COMException",
+        "legacyCode": "0x80028018",
+        "legacyTypeInfoCalls": 1,
+        "typeInfoCalls": 0,
+        "valueWrites": 4,
+        "checkpointCopies": 4,
+        "creationSheets": 2,
+        "matrixReadback": true,
+        "largeIntegerReadback": true,
+        "wordCreation": true,
+        "powerpointCreation": true,
+        "newDocumentIdentity": true,
+        "formatMismatchReproduced": true,
+        "checkpointFormatMatched": true,
+        "wordCheckpoint": true,
+        "powerpointCheckpoint": true,
+        "propertyPaths": true,
+        "propertyCallAliases": true,
+        "deniedPathBlocked": true,
+        "readMutationBlocked": true,
+        "binaryCheckpoint": true,
+        "hostAnyCPU": true,
+        "coreAnyCPU": true,
+        "realOfficeVerified": false
+      },
+      {
+        "passed": true,
+        "architecture": "x86",
+        "legacyFailed": true,
+        "legacyException": "COMException",
+        "legacyCode": "0x80028018",
+        "legacyTypeInfoCalls": 1,
+        "typeInfoCalls": 0,
+        "valueWrites": 4,
+        "checkpointCopies": 4,
+        "creationSheets": 2,
+        "matrixReadback": true,
+        "largeIntegerReadback": true,
+        "wordCreation": true,
+        "powerpointCreation": true,
+        "newDocumentIdentity": true,
+        "formatMismatchReproduced": true,
+        "checkpointFormatMatched": true,
+        "wordCheckpoint": true,
+        "powerpointCheckpoint": true,
+        "propertyPaths": true,
+        "propertyCallAliases": true,
+        "deniedPathBlocked": true,
+        "readMutationBlocked": true,
+        "binaryCheckpoint": true,
+        "hostAnyCPU": true,
+        "coreAnyCPU": true,
+        "realOfficeVerified": false
+      }
+    ],
+    "installer": {
+      "manifestSigning": "self-signed preview",
+      "standaloneEditors": false,
+      "liveModelVerified": false,
+      "bytes": 124569133,
+      "commit": "f80e15852438da2b6cbd9313aac4bcf8f5c8fee1",
+      "imageFeatures": false,
+      "realOfficeVerified": false,
+      "version": "0.8.3",
+      "components": [
+        "excel",
+        "word",
+        "powerpoint"
+      ],
+      "compression": "zip/7, non-solid",
+      "prerequisites": [
+        {
+          "source": "https://download.microsoft.com/download/5/d/2/5d24f8f8-efbb-4b63-aa33-3785e3104713/vstor_redist.exe",
+          "name": "vstor_redist.exe",
+          "sha256": "CFE1A40BBE4A50022DB2164ABDB0154984E2CECB761A23CDC81CB5754F6E0A18"
+        },
+        {
+          "source": "https://go.microsoft.com/fwlink/p/?LinkId=2124703",
+          "name": "MicrosoftEdgeWebview2Setup.exe",
+          "sha256": "9B5CA0A259E6FC9B57230089258BB2EE1DE74A9ED52F88D06B4AC354A8A68C70"
+        },
+        {
+          "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x64.zip",
+          "name": "node-v22.23.2-win-x64.zip",
+          "sha256": "1177b4137ba5adaa56354ae40f1080c7450e8ae09cecb47da459d1c52ac99f97"
+        },
+        {
+          "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x86.zip",
+          "name": "node-v22.23.2-win-x86.zip",
+          "sha256": "725c9e2bdd1c2016b41c995a81f4fa36ce4e2ee565b7455d8f889182727df647"
+        }
+      ],
+      "installerAuthenticode": "unsigned"
+    },
+    "installation": {
+      "imageFeatures": false,
+      "standaloneEditorsAbsent": true,
+      "realOfficeVerified": false,
+      "runner": "windows-2022",
+      "passed": true,
+      "registry": [
+        {
+          "app": "Excel",
+          "view": "Registry32",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal"
+        },
+        {
+          "app": "Word",
+          "view": "Registry32",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal"
+        },
+        {
+          "app": "PowerPoint",
+          "view": "Registry32",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal"
+        },
+        {
+          "app": "Excel",
+          "view": "Registry64",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal"
+        },
+        {
+          "app": "Word",
+          "view": "Registry64",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal"
+        },
+        {
+          "app": "PowerPoint",
+          "view": "Registry64",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal"
+        }
+      ],
+      "uninstallSeconds": 1.68,
+      "legacyEditorUpgradeCleanup": true,
+      "reinstallSeconds": 4.33,
+      "liveModelVerified": false,
+      "installSeconds": 10.54,
+      "officeInstalled": false
+    },
+    "surface": {
+      "passed": true,
+      "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+      "editors": 3,
+      "approvals": 3,
+      "physicalClickAndTyping": true,
+      "invalidContractRecovery": true,
+      "error": null
+    },
+    "exeSha256": "08e36d79b0ee21fcc275016fcd0ac4f45dc3a04ef489c084a10903ab0bb6051c",
+    "exeBytes": 124569133,
+    "sourceSha256": "4a8efc9f7040c1828417d2f38b6f9b57f4c595073205e03811c124cbb7396f40",
+    "sourceFiles": 5432,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "liveClaudeHashesMatch": true,
+    "zipCRC": true
   },
   "realOffice2016Verified": false,
   "liveModelVerified": false
