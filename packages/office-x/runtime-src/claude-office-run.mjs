@@ -9,6 +9,10 @@ export function officeClaudeRun(run){return async(binary,args,options={})=>{
  const adapted=[...args];const index=adapted.indexOf('--max-turns');if(index>=0)adapted[index+1]='8';
  if(adapted[0]==='-p')adapted.push('--disallowedTools','mcp__*');
  let failure=null;
- try{const result=await run(binary,adapted,{...options,onEvent:event=>{failure=claudeResultFailure(event)||failure;options.onEvent?.(event);}});if(failure)throw Error(failure);return result;}
+ try{const result=await run(binary,adapted,{...options,onEvent:event=>{
+      if(event?.type==='result'&&event.subtype==='success'&&!event.structured_output&&typeof event.result==='string'){
+        try{const value=JSON.parse(event.result.trim().replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/,'$1'));if(value&&typeof value.content==='string'&&Array.isArray(value.calls))event={...event,structured_output:value};}catch{}
+      }
+      failure=claudeResultFailure(event)||failure;options.onEvent?.(event);}});if(failure)throw Error(failure);return result;}
  catch(error){if(error.message==='cancelled')throw error;throw Error(failure||error.message);}
 };}

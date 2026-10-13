@@ -7,7 +7,7 @@ using OfficeX.Core;
 namespace OfficeX.ExcelHost {
  // New unsaved Office documents only. All COM access remains on the pane's STA thread.
  sealed class DocumentCreationPort:IDocumentCreationPort,IDisposable {
-  readonly dynamic application;readonly string app;readonly int hwnd;readonly string sourceId;
+  readonly object application;readonly string app;readonly int hwnd;readonly string sourceId;
   object created;CreationPlan plan;
   readonly List<Tuple<int,int>> wordRanges=new List<Tuple<int,int>>();
   readonly List<int> wordTables=new List<int>();
@@ -18,35 +18,36 @@ namespace OfficeX.ExcelHost {
   object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
   public void CheckSource(){using(var c=new Scope()){object win=c.Hold(OfficeDispatch.Get((object)application,"ActiveWindow")),doc=c.Hold(Source());if(Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
   public string CreatedName=>created==null?null:Convert.ToString(OfficeDispatch.Get(created,"Name"));
-  public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){dynamic doc=created;if(app=="powerpoint"){dynamic windows=c.Keep(doc.Windows),window=c.Keep(windows.Item(1));window.Activate();}else OfficeDispatch.Call(created,"Activate");}}
+  public string CreatedDocumentId=>created==null?null:Identity(created);
+  public void ActivateCreated(){if(created==null)throw new OfficeFault("document_closed");using(var c=new Scope()){if(app=="powerpoint"){object windows=c.Hold(OfficeDispatch.Get(created,"Windows")),window=c.Hold(OfficeDispatch.Get(windows,"Item",1));OfficeDispatch.Call(window,"Activate");}else OfficeDispatch.Call(created,"Activate");}}
   public void Create(CreationPlan value,CancellationToken token){
    if(created!=null)throw new OfficeFault("writes_stopped_for_this_run");plan=Wire.Clone(value);
    using(var c=new Scope()){
     object collection=c.Hold(OfficeDispatch.Get((object)application,app=="word"?"Documents":app=="powerpoint"?"Presentations":"Workbooks"));
     created=OfficeDispatch.Invoke((object)collection,"Add","call",app=="word"?new object[0]:new object[]{app=="powerpoint"?-1:-4167});
     object properties=c.Hold(OfficeDispatch.Get(created,"BuiltInDocumentProperties")),title=c.Hold(OfficeDispatch.Get(properties,"Item","Title"));OfficeDispatch.Set(title,"Value",plan.Content.Title);
-    dynamic doc=created;
-    if(app=="word")CreateWord(c,doc,token);else if(app=="powerpoint")CreateSlides(c,doc,token);else CreateSheets(c,created,token);
+    if(app=="word")CreateWord(c,created,token);else if(app=="powerpoint")CreateSlides(c,created,token);else CreateSheets(c,created,token);
    }
   }
-  void CreateWord(Scope c,dynamic doc,CancellationToken token){
-   foreach(var part in plan.Content.Paragraphs){token.ThrowIfCancellationRequested();dynamic content=c.Keep(doc.Content);int start=(int)content.End-1;dynamic range=c.Keep(doc.Range(start,start));
-    if(part.Rows==null){range.Text=part.Text+"\r";dynamic written=c.Keep(doc.Range(start,start+part.Text.Length));written.Style=Styles[part.Style];wordRanges.Add(Tuple.Create(start,start+part.Text.Length));wordTables.Add(0);}
-    else{dynamic tables=c.Keep(doc.Tables),table=c.Keep(tables.Add(range,part.Rows.Count,part.Rows[0].Count));
-     for(int r=0;r<part.Rows.Count;r++)for(int col=0;col<part.Rows[r].Count;col++){dynamic cell=c.Keep(table.Cell(r+1,col+1)),text=c.Keep(cell.Range);text.Text=part.Rows[r][col];}
-     dynamic borders=c.Keep(table.Borders),rows=c.Keep(table.Rows),header=c.Keep(rows.Item(1)),hr=c.Keep(header.Range),font=c.Keep(hr.Font);borders.Enable=1;header.HeadingFormat=-1;font.Bold=-1;table.AutoFitBehavior(2);wordRanges.Add(null);wordTables.Add((int)tables.Count);
+  static object Get(Scope c,object target,string member,params object[] args)=>c.Hold(OfficeDispatch.Get(target,member,args));
+  void CreateWord(Scope c,object doc,CancellationToken token){
+   foreach(var part in plan.Content.Paragraphs){token.ThrowIfCancellationRequested();object content=Get(c,doc,"Content");int start=Convert.ToInt32(OfficeDispatch.Get(content,"End"))-1;object range=Get(c,doc,"Range",start,start);
+    if(part.Rows==null){OfficeDispatch.Set(range,"Text",part.Text+"\r");object written=Get(c,doc,"Range",start,start+part.Text.Length);OfficeDispatch.Set(written,"Style",Styles[part.Style]);wordRanges.Add(Tuple.Create(start,start+part.Text.Length));wordTables.Add(0);}
+    else{object tables=Get(c,doc,"Tables"),table=c.Hold(OfficeDispatch.Call(tables,"Add",range,part.Rows.Count,part.Rows[0].Count));
+     for(int r=0;r<part.Rows.Count;r++)for(int col=0;col<part.Rows[r].Count;col++){object cell=Get(c,table,"Cell",r+1,col+1),text=Get(c,cell,"Range");OfficeDispatch.Set(text,"Text",part.Rows[r][col]);}
+     object borders=Get(c,table,"Borders"),rows=Get(c,table,"Rows"),header=Get(c,rows,"Item",1),hr=Get(c,header,"Range"),font=Get(c,hr,"Font");OfficeDispatch.Set(borders,"Enable",1);OfficeDispatch.Set(header,"HeadingFormat",-1);OfficeDispatch.Set(font,"Bold",-1);OfficeDispatch.Call(table,"AutoFitBehavior",2);wordRanges.Add(null);wordTables.Add(Convert.ToInt32(OfficeDispatch.Get(tables,"Count")));
     }
    }
   }
-  static void Box(Scope c,dynamic shapes,string text,float top,float height,bool heading){
-   dynamic shape=c.Keep(shapes.AddTextbox(1,54f,top,852f,height)),frame=c.Keep(shape.TextFrame),range=c.Keep(frame.TextRange);range.Text=text;
-   frame.WordWrap=-1;frame.AutoSize=0;dynamic font=c.Keep(range.Font),color=c.Keep(font.Color);font.Name="맑은 고딕";font.Size=heading?32f:24f;font.Bold=heading?-1:0;color.RGB=heading?0xBD6421:0x333333;
-   while((float)range.BoundHeight>height-12&&(float)font.Size>16)font.Size=(float)font.Size-1;
-   if((float)range.BoundHeight>height-12)throw new OfficeFault("slide_text_overflow");
+  static void Box(Scope c,object shapes,string text,float top,float height,bool heading){
+   object shape=c.Hold(OfficeDispatch.Call(shapes,"AddTextbox",1,54f,top,852f,height)),frame=Get(c,shape,"TextFrame"),range=Get(c,frame,"TextRange");OfficeDispatch.Set(range,"Text",text);
+   OfficeDispatch.Set(frame,"WordWrap",-1);OfficeDispatch.Set(frame,"AutoSize",0);object font=Get(c,range,"Font"),color=Get(c,font,"Color");OfficeDispatch.Set(font,"Name","맑은 고딕");OfficeDispatch.Set(font,"Size",heading?32f:24f);OfficeDispatch.Set(font,"Bold",heading?-1:0);OfficeDispatch.Set(color,"RGB",heading?0xBD6421:0x333333);
+   while(Convert.ToSingle(OfficeDispatch.Get(range,"BoundHeight"))>height-12&&Convert.ToSingle(OfficeDispatch.Get(font,"Size"))>16)OfficeDispatch.Set(font,"Size",Convert.ToSingle(OfficeDispatch.Get(font,"Size"))-1);
+   if(Convert.ToSingle(OfficeDispatch.Get(range,"BoundHeight"))>height-12)throw new OfficeFault("slide_text_overflow");
   }
-  void CreateSlides(Scope c,dynamic doc,CancellationToken token){
-   dynamic setup=c.Keep(doc.PageSetup);setup.SlideWidth=960f;setup.SlideHeight=540f;dynamic slides=c.Keep(doc.Slides);
-   foreach(var item in plan.Content.Slides){token.ThrowIfCancellationRequested();dynamic slide=c.Keep(slides.Add((int)slides.Count+1,12)),shapes=c.Keep(slide.Shapes);Box(c,shapes,item.Title,38,86,true);Box(c,shapes,string.Join("\r",item.Body),145,340,false);}
+  void CreateSlides(Scope c,object doc,CancellationToken token){
+   object setup=Get(c,doc,"PageSetup");OfficeDispatch.Set(setup,"SlideWidth",960f);OfficeDispatch.Set(setup,"SlideHeight",540f);object slides=Get(c,doc,"Slides");
+   foreach(var item in plan.Content.Slides){token.ThrowIfCancellationRequested();object slide=c.Hold(OfficeDispatch.Call(slides,"Add",Convert.ToInt32(OfficeDispatch.Get(slides,"Count"))+1,12)),shapes=Get(c,slide,"Shapes");Box(c,shapes,item.Title,38,86,true);Box(c,shapes,string.Join("\r",item.Body),145,340,false);}
   }
   void CreateSheets(Scope c,object doc,CancellationToken token){
    object sheets=c.Hold(OfficeDispatch.Get(doc,"Worksheets"));
@@ -64,18 +65,18 @@ namespace OfficeX.ExcelHost {
    }
   }
   public DocumentDraft ReadCreated(){using(var c=new Scope()){
-   object properties=c.Hold(OfficeDispatch.Get(created,"BuiltInDocumentProperties")),title=c.Hold(OfficeDispatch.Get(properties,"Item","Title"));var actual=new DocumentDraft{Title=Convert.ToString(OfficeDispatch.Get(title,"Value"))};dynamic doc=created;
+   object properties=c.Hold(OfficeDispatch.Get(created,"BuiltInDocumentProperties")),title=c.Hold(OfficeDispatch.Get(properties,"Item","Title"));var actual=new DocumentDraft{Title=Convert.ToString(OfficeDispatch.Get(title,"Value"))};object doc=created;
    if(app=="word"){
     actual.Paragraphs=new List<DocumentPart>();
     for(int i=0;i<wordRanges.Count;i++){
-     if(wordRanges[i]!=null){var bounds=wordRanges[i];dynamic range=c.Keep(doc.Range(bounds.Item1,bounds.Item2)),style=c.Keep(range.Style),styles=c.Keep(doc.Styles);string name=(string)style.NameLocal;string found=null;
-      foreach(var pair in Styles){dynamic candidate=c.Keep(styles.Item(pair.Value));if((string)candidate.NameLocal==name){found=pair.Key;break;}}
-      actual.Paragraphs.Add(new DocumentPart{Text=(string)range.Text??"",Style=found});
-     }else{dynamic tables=c.Keep(doc.Tables),table=c.Keep(tables.Item(wordTables[i])),rows=c.Keep(table.Rows),columns=c.Keep(table.Columns);var values=new List<List<string>>();for(int r=1;r<=(int)rows.Count;r++){var cells=new List<string>();for(int col=1;col<=(int)columns.Count;col++){dynamic cell=c.Keep(table.Cell(r,col)),range=c.Keep(cell.Range);cells.Add(((string)range.Text??"").TrimEnd('\r','\a'));}values.Add(cells);}actual.Paragraphs.Add(new DocumentPart{Rows=values});}
+     if(wordRanges[i]!=null){var bounds=wordRanges[i];object range=Get(c,doc,"Range",bounds.Item1,bounds.Item2),style=Get(c,range,"Style"),styles=Get(c,doc,"Styles");string name=Convert.ToString(OfficeDispatch.Get(style,"NameLocal"));string found=null;
+      foreach(var pair in Styles){object candidate=Get(c,styles,"Item",pair.Value);if(Convert.ToString(OfficeDispatch.Get(candidate,"NameLocal"))==name){found=pair.Key;break;}}
+      actual.Paragraphs.Add(new DocumentPart{Text=Convert.ToString(OfficeDispatch.Get(range,"Text"))??"",Style=found});
+     }else{object tables=Get(c,doc,"Tables"),table=Get(c,tables,"Item",wordTables[i]),rows=Get(c,table,"Rows"),columns=Get(c,table,"Columns");var values=new List<List<string>>();for(int r=1;r<=Convert.ToInt32(OfficeDispatch.Get(rows,"Count"));r++){var cells=new List<string>();for(int col=1;col<=Convert.ToInt32(OfficeDispatch.Get(columns,"Count"));col++){object cell=Get(c,table,"Cell",r,col),range=Get(c,cell,"Range");cells.Add((Convert.ToString(OfficeDispatch.Get(range,"Text"))??"").TrimEnd('\r','\a'));}values.Add(cells);}actual.Paragraphs.Add(new DocumentPart{Rows=values});}
     }
    }else if(app=="powerpoint"){
-    actual.Slides=new List<SlideContent>();dynamic slides=c.Keep(doc.Slides);
-    for(int i=1;i<=(int)slides.Count;i++){dynamic slide=c.Keep(slides.Item(i)),shapes=c.Keep(slide.Shapes),a=c.Keep(shapes.Item(1)),b=c.Keep(shapes.Item(2)),af=c.Keep(a.TextFrame),bf=c.Keep(b.TextFrame),at=c.Keep(af.TextRange),bt=c.Keep(bf.TextRange);string body=(string)bt.Text??"";actual.Slides.Add(new SlideContent{Title=(string)at.Text??"",Body=body.Length==0?new List<string>():body.Split('\r').ToList()});}
+    actual.Slides=new List<SlideContent>();object slides=Get(c,doc,"Slides");
+    for(int i=1;i<=Convert.ToInt32(OfficeDispatch.Get(slides,"Count"));i++){object slide=Get(c,slides,"Item",i),shapes=Get(c,slide,"Shapes"),a=Get(c,shapes,"Item",1),b=Get(c,shapes,"Item",2),af=Get(c,a,"TextFrame"),bf=Get(c,b,"TextFrame"),at=Get(c,af,"TextRange"),bt=Get(c,bf,"TextRange");string body=Convert.ToString(OfficeDispatch.Get(bt,"Text"))??"";actual.Slides.Add(new SlideContent{Title=Convert.ToString(OfficeDispatch.Get(at,"Text"))??"",Body=body.Length==0?new List<string>():body.Split('\r').ToList()});}
    }else{
     actual.Sheets=new List<SheetContent>();object sheets=c.Hold(OfficeDispatch.Get(created,"Worksheets"));
     for(int i=1;i<=Convert.ToInt32(OfficeDispatch.Get(sheets,"Count"));i++){

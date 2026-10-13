@@ -27,13 +27,24 @@ namespace OfficeX.ExcelHost {
   public object Execute(OfficeStep step,bool readOnly){
    if(Thread.CurrentThread.ManagedThreadId!=threadId)throw new OfficeFault("office_thread_required");
    OfficeCallPolicy.Validate(step.Member,readOnly,step.Action);
-   if(!objects.TryGetValue(step.Target??"document",out var target))throw new OfficeFault("office_target_unknown",step.Member,invocationStarted:false);
-   if(app=="excel"&&new[]{"Value","Value2","Formula","FormulaLocal","FormulaArray","Text"}.Contains(step.Member,StringComparer.OrdinalIgnoreCase)){
+   string targetName=step.Target??"document";object target;
+   string[] targetPath=new string[0];
+   if(!objects.TryGetValue(targetName,out target)){
+    var parts=targetName.Split('.');
+    if(parts.Length<2||!objects.TryGetValue(parts[0],out target))throw new OfficeFault("office_target_unknown",step.Member,invocationStarted:false);
+    targetPath=parts.Skip(1).ToArray();OfficeCallPolicy.Validate(String.Join(".",targetPath),true,"get");
+   }
+   // Validate the entire path before any native lookup. Traverse only getters;
+   // execute the final requested mutation once, with normal independent readback.
+   var memberPath=step.Member.Split('.');
+   var args=(step.Args??new JArray()).Select(Arg).ToList();if(step.Action=="set")args.Add(Arg(step.Value));
+   target=ResolvePath(target,targetPath.Concat(memberPath.Take(memberPath.Length-1)));
+   string member=memberPath.Last();
+   if(app=="excel"&&new[]{"Value","Value2","Formula","FormulaLocal","FormulaArray","Text"}.Contains(member,StringComparer.OrdinalIgnoreCase)){
     double size=0;try{size=Convert.ToDouble(OfficeDispatch.Get(target,"CountLarge"));}catch{}
     if(size>20000)throw new OfficeFault("context_limit");
    }
-   var args=(step.Args??new JArray()).Select(Arg).ToList();if(step.Action=="set")args.Add(Arg(step.Value));
-   var result=OfficeDispatch.Invoke(target,step.Member,step.Action,args.ToArray());
+   var result=OfficeDispatch.Invoke(target,member,step.Action,args.ToArray());
    if(result!=null&&Marshal.IsComObject(result)){
     acquired.Add(result);if(string.IsNullOrWhiteSpace(step.Id)||step.Id=="document")throw new OfficeFault("office_object_id_required");
     objects[step.Id]=result;return new{reference=step.Id};
@@ -45,10 +56,11 @@ namespace OfficeX.ExcelHost {
    if(result is Array array){if(array.Length>20000)throw new OfficeFault("context_limit");if(array.Rank==2){var rows=new List<List<object>>();for(int r=array.GetLowerBound(0);r<=array.GetUpperBound(0);r++){var row=new List<object>();for(int c=array.GetLowerBound(1);c<=array.GetUpperBound(1);c++)row.Add(array.GetValue(r,c));rows.Add(row);}return rows;}}
    return result;
   }
+  object ResolvePath(object target,IEnumerable<string> members){foreach(string member in members){object child=OfficeDispatch.Get(target,member);if(child==null||!Marshal.IsComObject(child))throw new OfficeFault("office_member_path_not_supported",member,invocationStarted:false);acquired.Add(child);target=child;}return target;}
   public object Members(string target,string query,int count){CheckSource();if(!objects.TryGetValue(target??"document",out var value))throw new OfficeFault("office_target_unknown",invocationStarted:false);return OfficeMembers.Read(value,query,count);}
   public void FocusSource(){
    dynamic doc=objects["document"];
-   if(app=="powerpoint"){object windows=null,window=null;try{windows=doc.Windows;window=((dynamic)windows).Item(1);((dynamic)window).Activate();}finally{Release(window);Release(windows);}}
+   if(app=="powerpoint"){object windows=null,window=null;try{windows=OfficeDispatch.Get(objects["document"],"Windows");window=OfficeDispatch.Get(windows,"Item",1);OfficeDispatch.Call(window,"Activate");}finally{Release(window);Release(windows);}}
    else OfficeDispatch.Call(objects["document"],"Activate");
    CheckSource();
   }

@@ -41,7 +41,18 @@ namespace OfficeX.ExcelHost
         private void ReplayFollow(){if(handoffState==null)return;if(followOwner!=null)handoffState=followOwner.HandoffState();surface.Send(handoffState);if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);if(lastReceipt!=null&&!followMessages.Any(m=>(string)m["type"]=="receipt"))surface.Send(lastReceipt);foreach(var message in followMessages)surface.Send(message);if(followOwner?.pendingQuestion!=null)surface.Send(followOwner.pendingQuestion);if(followOwner?.pendingReview!=null)surface.Send(followOwner.pendingReview);}
         private void RememberFollow(JObject message){var type=(string)message["type"];if(type=="provider_state")lastProvider=(JObject)message.DeepClone();if(type=="services_state")lastServices=(JObject)message.DeepClone();if(type=="receipt")lastReceipt=(JObject)message.DeepClone();if(new[]{"receipt","sources","artifacts","done","error","disconnected"}.Contains(type)){followMessages.Add((JObject)message.DeepClone());if(followMessages.Count>200)followMessages.RemoveAt(0);}if(followOwner!=null)handoffState=followOwner.HandoffState();}
         private void SendSurface(object value){var message=Wire.Object(value);if((string)message["type"]=="artifacts"&&files!=null&&message["data"]?["items"] is JArray items){foreach(JObject item in items){var path=(string)item["previewPath"];if(path==null)continue;try{files.CheckedPath(path,".png",".jpg",".jpeg",".gif",".webp");item["preview"]="https://office-x-assets.local/"+Uri.EscapeDataString(System.IO.Path.GetFileName(path));}catch{}item.Remove("previewPath");}}if((string)message["type"]=="provider_state")lastProvider=(JObject)message.DeepClone();if((string)message["type"]=="services_state")lastServices=(JObject)message.DeepClone();if((string)message["type"]=="receipt")lastReceipt=(JObject)message.DeepClone();RememberFollow(message);surface.Send(message);foreach(var follower in followers.ToArray())if(!follower.IsDisposed){follower.RememberFollow(message);follower.surface.Send(message);}}
-        private void RebindActiveDocument(){object window=OfficeDispatch.Get(application,"ActiveWindow");int handle=Convert.ToInt32(OfficeDispatch.Get(window,"HWND"));if(System.Runtime.InteropServices.Marshal.IsComObject(window))System.Runtime.InteropServices.Marshal.ReleaseComObject(window);creationPort?.Dispose();creationPort=new DocumentCreationPort(application,app,handle);automationPort?.Dispose();automationPort=new OfficeAutomationPort(application,app,handle);automation=new OfficeAutomationSession(automationPort);createdDuringRun=true;fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};target.Text=automationPort.DocumentName;try{DocumentWindowChanged?.Invoke(handle);}catch{SendSurface(new{type="document_follow_warning",runId,document=target.Text});}}
+        private void RebindActiveDocument(string expectedDocumentId=null){
+            object window=null;OfficeAutomationPort next=null;DocumentCreationPort nextCreation=null;
+            try{
+                window=OfficeDispatch.Get(application,"ActiveWindow");int handle=Convert.ToInt32(OfficeDispatch.Get(window,"HWND"));
+                next=new OfficeAutomationPort(application,app,handle);next.CheckSource();
+                if(expectedDocumentId!=null&&next.DocumentId!=expectedDocumentId)throw new OfficeFault("created_document_binding_failed",invocationStarted:false);
+                string name=next.DocumentName;nextCreation=new DocumentCreationPort(application,app,handle);
+                automationPort?.Dispose();creationPort?.Dispose();automationPort=next;creationPort=nextCreation;next=null;nextCreation=null;automation=new OfficeAutomationSession(automationPort);createdDuringRun=true;
+                fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=name,selectionAvailable=false,documentToolsAvailable=true};target.Text=name;
+                try{DocumentWindowChanged?.Invoke(handle);}catch{SendSurface(new{type="document_follow_warning",runId,document=name});}
+            }finally{next?.Dispose();nextCreation?.Dispose();if(window!=null&&System.Runtime.InteropServices.Marshal.IsComObject(window))System.Runtime.InteropServices.Marshal.ReleaseComObject(window);}
+        }
         private object RunContext(){var context=Wire.Object(Context);context["artifactRoot"]=files.Folder;context["documentTarget"]=documentTarget;return context;}
 
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -80,7 +91,7 @@ namespace OfficeX.ExcelHost
                 EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.2"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.3"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
@@ -249,8 +260,8 @@ namespace OfficeX.ExcelHost
                 writesStopped=receipt.Status!="verified";
                 SendSurface(new{type="receipt",runId,receipt});
                 if(receipt.Status=="verified"){
-                    try{creationPort.ActivateCreated();RebindActiveDocument();}
-                    catch{outcome.Text="새 문서는 만들어졌지만 후속 연결을 확인해야 합니다.";return new{status="verified",mutated=true,document=receipt.Document,followUpAvailable=false,error="created_document_binding_failed"};}
+                    try{string createdId=creationPort.CreatedDocumentId;creationPort.ActivateCreated();RebindActiveDocument(createdId);}
+                    catch{writesStopped=true;outcome.Text="새 문서는 만들어졌지만 후속 연결을 확인해야 합니다.";return new{status="verified",mutated=true,document=receipt.Document,followUpAvailable=false,error="created_document_binding_failed"};}
                 }
                 outcome.Text=receipt.Status=="verified"?"새 문서를 만들고 내용을 확인했습니다. 저장 전입니다.":"생성 결과: "+receipt.Status;return receipt;
             }

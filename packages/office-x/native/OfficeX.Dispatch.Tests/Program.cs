@@ -52,6 +52,7 @@ class Program {
     var creation=new DocumentCreation(creationPort,"excel",draft);var receipt=creation.Apply(creation.Plan.Id,true,default);
     if(receipt.Status!="verified")Console.Error.WriteLine(Wire.Json(receipt));Equal("verified",receipt.Status);Equal(2,receipt.Count);Equal("Book1",receipt.Document);
     creationPort.ActivateCreated();Equal(Wire.Hash(draft),Wire.Hash(creationPort.ReadCreated()));
+    using(var rebound=new OfficeAutomationPort(app,"excel",12345)){Equal(creationPort.CreatedDocumentId,rebound.DocumentId);rebound.CheckSource();}
    }
    using(var port=new OfficeAutomationPort(app,"excel",12345))using(var files=new OfficeFiles(app,"excel",()=>port)){
     // A rollback checkpoint must not consult the broken type library or change cells.
@@ -63,6 +64,18 @@ class Program {
     var plan=session.Prepare(before.SnapshotId,"셀에 값 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=values}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=values}});
     var receipt=session.Apply(plan.Id,true,default);Equal("verified",receipt.Status);Equal(1,receipt.CompletedWrites);
     Equal(Wire.Json(values),Wire.Json(port.Execute(new OfficeStep{Target="range",Member="Value2"},true)));
+    Equal(Wire.Json(values),Wire.Json(port.Execute(new OfficeStep{Target="range",Action="call",Member="Value2"},true)));
+    port.Execute(new OfficeStep{Target="range",Action="set",Member="Font.Bold",Value=true},false);
+    Equal(true,port.Execute(new OfficeStep{Target="range",Action="call",Member="Font.Bold"},true));
+    port.Execute(new OfficeStep{Target="range.Font",Action="set",Member="Size",Value=14},false);
+    Equal(14,port.Execute(new OfficeStep{Target="range",Member="Font.Size"},true));
+    port.Execute(new OfficeStep{Target="document",Action="set",Member="Content.Font.Size",Value=16},false);
+    Equal(16,port.Execute(new OfficeStep{Member="Content.Font.Size",Action="call"},true));
+    port.Execute(new OfficeStep{Target="range",Action="set",Member="TextFrame.TextRange.Text",Value="발표 본문"},false);
+    Equal("발표 본문",port.Execute(new OfficeStep{Target="range",Action="call",Member="TextFrame.TextRange.Text"},true));
+    foreach(var member in new[]{"Font.Application.Name","Font.SaveAs","Font.AddPicture"}){try{port.Execute(new OfficeStep{Target="range",Member=member},true);throw new Exception("Expected denied path");}catch(OfficeFault e){Equal("office_member_unavailable",e.Message);Equal(false,e.InvocationStarted);}}
+    try{port.Execute(new OfficeStep{Target="range",Member="Font.Bold.Value2"},true);throw new Exception("Expected scalar path rejection");}catch(OfficeFault e){Equal("office_member_path_not_supported",e.Message);Equal(false,e.InvocationStarted);}
+    try{port.Execute(new OfficeStep{Target="range",Member="Rows.AutoFit",Action="call"},true);throw new Exception("Expected read-only mutation rejection");}catch(OfficeFault e){Equal("office_read_requires_get",e.Message);Equal(false,e.InvocationStarted);}
     files.CheckpointNow("입력 후");
     before=session.Inspect(reads);var largeNumber=new JValue(5000000000L);
     plan=session.Prepare(before.SnapshotId,"32비트 범위보다 큰 숫자 입력",new List<OfficeStep>{new OfficeStep{Target="range",Action="set",Member="Value2",Value=largeNumber}},new List<OfficeCheck>{new OfficeCheck{Read=new OfficeStep{Target="range",Member="Value2"},Equals=largeNumber}});
@@ -70,12 +83,18 @@ class Program {
    }
    GetExcelFixtureStats(out int info,out int writes,out int copies);Equal(0,info);Equal(4,writes);Equal(4,copies);
    Marshal.ReleaseComObject(app);app=null;
+   foreach(var host in new[]{"word","powerpoint"}){
+    Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
+    var content=host=="word"?new DocumentDraft{Title="보고서",Paragraphs=new List<DocumentPart>{new DocumentPart{Style="Title",Text="제목"},new DocumentPart{Style="Normal",Text="본문"}}}:new DocumentDraft{Title="발표",Slides=new List<SlideContent>{new SlideContent{Title="소개",Body=new List<string>{"목표","일정"}},new SlideContent{Title="결론",Body=new List<string>{"다음 단계"}}}};
+    using(var creator=new DocumentCreationPort(app,host,12345)){var creation=new DocumentCreation(creator,host,content);var created=creation.Apply(creation.Plan.Id,true,default);if(created.Status!="verified")Console.Error.WriteLine(Wire.Json(created));Equal("verified",created.Status);creator.ActivateCreated();Equal(Wire.Hash(content),Wire.Hash(creator.ReadCreated()));using(var bound=new OfficeAutomationPort(app,host,12345)){Equal(creator.CreatedDocumentId,bound.DocumentId);bound.CheckSource();bound.FocusSource();}}
+    GetExcelFixtureStats(out int hostInfo,out _,out _);Equal(0,hostInfo);Marshal.ReleaseComObject(app);app=null;
+   }
    File.WriteAllBytes(source,new byte[]{0xD0,0xCF,0x11,0xE0,0xA1,0xB1,0x1A,0xE1,0,0,0,0});
    Marshal.ThrowExceptionForHR(CreateExcelFixture(source,out app));
    using(var binaryPort=new OfficeAutomationPort(app,"excel",12345))using(var binaryFiles=new OfficeFiles(app,"excel",()=>binaryPort)){
     var binaryCheckpoint=Wire.Object(binaryFiles.CheckpointNow("Excel 97-2003 형식 사본"));Equal(true,(bool)binaryCheckpoint["encrypted"]);Equal(true,binaryFiles.State().Length==64);
    }
-   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,largeIntegerReadback=true,binaryCheckpoint=true,hostAnyCPU=true,coreAnyCPU=true,realOfficeVerified=false}));
+   Directory.CreateDirectory("verification");File.WriteAllText("verification/native-dispatch-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,architecture=IntPtr.Size==8?"x64":"x86",legacyFailed,legacyException,legacyCode,legacyTypeInfoCalls=legacyInfo,typeInfoCalls=info,valueWrites=writes,checkpointCopies=copies,creationSheets=2,matrixReadback=true,largeIntegerReadback=true,wordCreation=true,powerpointCreation=true,newDocumentIdentity=true,propertyPaths=true,propertyCallAliases=true,deniedPathBlocked=true,readMutationBlocked=true,binaryCheckpoint=true,hostAnyCPU=true,coreAnyCPU=true,realOfficeVerified=false}));
    Console.WriteLine("PASS Excel-shaped native COM with TYPE_E_INVDATAREAD: two-sheet creation, SAFEARRAY cell writes/readback, encrypted checkpoints; zero type-info calls. This fixture is not installed Excel.");
   }finally{if(app!=null)Marshal.ReleaseComObject(app);File.Delete(source);}
  }

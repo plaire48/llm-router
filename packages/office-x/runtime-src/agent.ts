@@ -32,10 +32,12 @@ export function startAgent(options: {
         const key=[event.call.name,code,detail.failedMember||''].join(':');const count=(failures.get(key)||0)+1;failures.set(key,count);
         if(count>=3){abortReason='office_repeated_tool_failure';loop.cancel();}
       },
-      onDone: value => abortReason?reject(new Error(abortReason)):resolve(value), onError: error => reject(new Error(abortReason||error)),
+      onDone: value => abortReason?reject(new Error(abortReason)):resolve(value), onError: error => reject(new Error(abortReason||classifyAgentFailure(error))),
     },
   });
   if(options.history)loop.restore(options.history);
   loop.run(options.request);
   return { cancel: () => loop.cancel(), result, messages:()=>structuredClone([...loop.messages]) };
 }
+
+export function classifyAgentFailure(error:string):string{if(/Tool input was unusable/.test(error))return 'agent_tool_input_failed';if(/Every tool call failed/.test(error))return 'agent_tool_failed';if(/kept repeating the exact same turn/.test(error))return 'agent_no_progress';if(/verification/i.test(error)&&!/^[a-z_]+$/.test(error))return 'agent_response_unverified';return error;}

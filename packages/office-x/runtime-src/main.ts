@@ -30,7 +30,8 @@ const providers=officeProviders(persist);
 const services=new OfficeServices(persist);
 const artifactStores=new Map<string,Artifacts>();
 let authBusy=false,initialized=false,lastState='';
-function publish(){const state={...publicProviderState(providers),initializing:!initialized},encoded=JSON.stringify(state);if(encoded!==lastState){lastState=encoded;send({type:'provider_state',state});}}
+const savedConnections=new Map<string,Record<string,any>>();
+function publish(){const state={...publicProviderState(providers),initializing:!initialized,authBusy},encoded=JSON.stringify(state);if(encoded!==lastState){lastState=encoded;send({type:'provider_state',state});}}
 const stateTimer=setInterval(publish,500);stateTimer.unref();
 const methods=new Set(['status','login','cancelLogin','select','model','reasoning','refreshModels','disconnect','connect']);
 async function providerCommand(msg:Record<string,any>){
@@ -38,13 +39,19 @@ async function providerCommand(msg:Record<string,any>){
   if(active||authBusy)throw Error('worker_busy');
   if(!initialized)throw Error('provider_initializing');
   if(!methods.has(msg.method))throw Error('unsupported_command');
-  authBusy=true;
+  authBusy=true;publish();
   try {
     const arg=msg.input;
     if(['login','select','disconnect'].includes(msg.method)&&!['aipro','chatgpt','fabrix','claude'].includes(arg))throw Error('invalid_provider');
     if(msg.method==='connect'&&arg?.provider!=='fabrix')throw Error('invalid_provider');
-    const result=await providers[msg.method](arg);await providers.flushConnections();publish();return result;
-  }finally{authBusy=false;}
+    let result;
+    if(msg.method==='login'&&savedConnections.has(arg)){
+      const record=savedConnections.get(arg);savedConnections.delete(arg);
+      await providers.restoreConnections([record],arg);
+      const restored=providers.status();result=restored.connected&&restored.provider===arg?restored:await providers.login(arg);
+    }else{if(msg.method==='disconnect')savedConnections.delete(arg);result=await providers[msg.method](arg);}
+    await providers.flushConnections();publish();return result;
+  }finally{authBusy=false;publish();}
 }
 
 function stopPending() {
@@ -57,7 +64,7 @@ async function receive(msg: Record<string, any>) {
     const p=vaultPending.get(msg.id);if(p){clearTimeout(p.timer);vaultPending.delete(msg.id);msg.ok?p.resolve():p.reject(Error('storage_failed'));}return;
   }
   if(msg.type==='init'&&!initialized&&!authBusy){
-    authBusy=true;try{services.restore(msg.services);await providers.restoreConnections(msg.records||[],msg.selected);}finally{initialized=true;authBusy=false;publish();send({type:"services_state",state:services.state()});}return;
+    authBusy=true;try{services.restore(msg.services);for(const record of msg.records||[])if(record&&['aipro','chatgpt','fabrix','claude'].includes(record.provider))savedConnections.set(record.provider,record);}finally{initialized=true;authBusy=false;publish();send({type:"services_state",state:services.state()});}return;
   }
   if(msg.type==='services'){
     if(active||authBusy||!initialized){send({type:'reply',id:msg.id,error:'worker_busy'});return;}
@@ -110,7 +117,7 @@ async function receive(msg: Record<string, any>) {
     publish();send({type:'done',runId:id,result});
   } catch(e) {
     const code=(e as Error).message;
-    send({type:'error',runId:id,error:/^(office_repeated_tool_failure|claude_[a-z_]+|rate_limited|provider_response_failed|no_credential)$/.test(code)?code:'agent_failed'});
+    send({type:'error',runId:id,error:/^(office_repeated_tool_failure|agent_tool_input_failed|agent_tool_failed|agent_no_progress|agent_response_unverified|claude_[a-z_]+|rate_limited|provider_response_failed|no_credential)$/.test(code)?code:'agent_failed'});
   } finally { if (active?.id === id) active=undefined; stopPending(); }
 }
 
