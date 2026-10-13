@@ -45,10 +45,18 @@ async function providerCommand(msg:Record<string,any>){
     if(['login','select','disconnect'].includes(msg.method)&&!['aipro','chatgpt','fabrix','claude'].includes(arg))throw Error('invalid_provider');
     if(msg.method==='connect'&&arg?.provider!=='fabrix')throw Error('invalid_provider');
     let result;
-    if(msg.method==='login'&&savedConnections.has(arg)){
-      const record=savedConnections.get(arg);savedConnections.delete(arg);
-      await providers.restoreConnections([record],arg);
-      const restored=providers.status();result=restored.connected&&restored.provider===arg?restored:await providers.login(arg);
+    if(msg.method==='login'){
+      let expired=false,timer:ReturnType<typeof setTimeout>|undefined;
+      const connect=async()=>{
+        if(savedConnections.has(arg)){
+          const record=savedConnections.get(arg);savedConnections.delete(arg);
+          await providers.restoreConnections([record],arg);if(expired)throw Error('cancelled');
+          const restored=providers.status();if(restored.connected&&restored.provider===arg)return restored;
+        }
+        if(expired)throw Error('cancelled');return providers.login(arg);
+      };
+      try{result=await Promise.race([connect(),new Promise((_,reject)=>{timer=setTimeout(()=>{expired=true;providers.cancelConnection(arg);reject(Error('connection_timeout'));},55000);})]);}
+      finally{if(timer)clearTimeout(timer);}
     }else{if(msg.method==='disconnect')savedConnections.delete(arg);result=await providers[msg.method](arg);}
     await providers.flushConnections();publish();return result;
   }finally{authBusy=false;publish();}
@@ -72,7 +80,7 @@ async function receive(msg: Record<string, any>) {
   }
   if(msg.type==='provider'){
     try{const result=await providerCommand(msg);send({type:'reply',id:msg.id,result});}
-    catch(e){send({type:'reply',id:msg.id,error:['worker_busy','claude_cli_missing','claude_cli_failed','claude_cli_timeout','claude_cli_update','claude_login_required','browser_unavailable'].includes((e as Error).message)?(e as Error).message:'connection_failed'});}return;
+    catch(e){send({type:'reply',id:msg.id,error:['worker_busy','connection_timeout','claude_cli_missing','claude_cli_failed','claude_cli_timeout','claude_cli_update','claude_login_required','browser_unavailable'].includes((e as Error).message)?(e as Error).message:'connection_failed'});}return;
   }
   if(msg.type==='clear_conversation'&&!active){conversations.clear(String(msg.conversationId));return;}
 

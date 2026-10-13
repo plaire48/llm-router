@@ -174,10 +174,12 @@ namespace OfficeX.ExcelHost
                 worker?.Send(new {type="vault_result",id=(string)message["id"],ok});return;
             }
             if(type=="ready") {
-                var records=new JArray();string selected=null;
-                try {foreach(var name in new[]{"aipro","chatgpt","fabrix","claude"}){var record=ProtectedVault.Read("provider:"+name);if(record!=null)records.Add(record);}selected=(string)ProtectedVault.Read("provider:active");}
-                catch {SendSurface(new {type="host_error",error="보관한 연결을 읽지 못했습니다. 다시 로그인해 주세요."});}
-                worker?.Send(new {type="init",records,selected,services=ProtectedVault.Read("services")});return;
+                var records=new JArray();string selected=null;JToken services=null;bool storageWarning=false;
+                foreach(var name in new[]{"aipro","chatgpt","fabrix","claude"})try{var record=ProtectedVault.Read("provider:"+name);if(record!=null)records.Add(record);}catch{storageWarning=true;}
+                try{selected=(string)ProtectedVault.Read("provider:active");}catch{storageWarning=true;}
+                try{services=ProtectedVault.Read("services");}catch{storageWarning=true;}
+                worker?.Send(new{type="init",records,selected,services});
+                if(storageWarning)SendSurface(new{type="connection_storage_warning"});return;
             }
             if(type=="provider_state"||type=="services_state"){if(followOwner==null)SendSurface(message);return;}if(type=="reply"){surface.Send(message);return;}
             if((string)message["runId"]!=runId||!running)return;
@@ -250,7 +252,7 @@ namespace OfficeX.ExcelHost
             if(name=="execute_office_operations"){
                 var plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
                 status.Text="문서 변경안을 확인해 주세요.";
-                var approved=await AwaitReview(plan.Id,plan);if(approved)files.CheckpointNow(plan.Summary);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
+                var approved=await AwaitReview(plan.Id,plan);if(approved){currentStage="checkpoint_before_write";files.CheckpointNow(plan.Summary);currentStage="native_execute_office_operations";}var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);SendSurface(new{type="receipt",runId,receipt});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return receipt;
             }
             if(name=="create_document"){

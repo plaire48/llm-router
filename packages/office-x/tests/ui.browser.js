@@ -13,7 +13,7 @@ async (page) => {
         if(m.method==='login'){connected(m.input);if(m.input==='claude'){state.models=[{id:'fixture-sonnet',label:'Sonnet · 테스트 모델'},{id:'fixture-opus',label:'Opus · 테스트 모델'}];state.model='fixture-sonnet';state.providers.push({id:'claude',connected:true,connectionId:2});state.catalogs=[{provider:'claude',models:state.models,model:state.model}];}}if(m.method==='model'){state.model=m.input;state.catalogs[0].model=m.input;}
         if(m.method==='reasoning'){if(window.officeFixture.failReasoning){window.officeFixture.failReasoning=false;setTimeout(()=>emit({type:'reply',id:m.id,error:'reasoning_failed'}),5);return;}state.reasoningEffort=m.input;}
         if(m.method==='disconnect')state.connected=false;
-        setTimeout(()=>{emit({type:'provider_state',state});emit({type:'reply',id:m.id,result:state});},5);
+        const reply=()=>{emit({type:'provider_state',state});emit({type:'reply',id:m.id,result:state});};if(m.method==='login'&&window.officeFixture.holdLogin)window.officeFixture.finishLogin=reply;else setTimeout(reply,5);
       }
       if(m.type==='inspect')emit({type:'view',running:false,target:'견적서.xlsx / 견적 / C1:E4',status:'선택 범위를 확인했습니다.'});
       if(m.type==='start'){
@@ -67,7 +67,10 @@ async (page) => {
   for(const name of ['새 대화','대화 이력','검색과 이미지 설정','GenOffice 편집기 열기'])if(await page.getByRole('button',{name,exact:true}).count())throw Error('removed header action remains: '+name);
   await page.getByRole('button',{name:'연결 설정',exact:true}).click();
   await page.getByRole('radio',{name:'Claude',exact:true}).click();
+  await page.evaluate(()=>officeFixture.holdLogin=true);
   await page.getByRole('button',{name:'연결',exact:true}).click();
+  await page.getByText('Claude 연결 확인 중',{exact:true}).waitFor();
+  await page.evaluate(()=>{officeFixture.holdLogin=false;officeFixture.finishLogin();});
   await page.getByRole('radio',{name:'Opus 테스트 모델',exact:true}).click();
   await page.getByRole('button',{name:'적용',exact:true}).click();
   await page.getByRole('textbox',{name:'모델 검색',exact:true}).waitFor({state:'detached'});
@@ -106,5 +109,5 @@ async (page) => {
   await page.getByText('office_operation_failed',{exact:true}).waitFor();
   if(await page.locator('.tool-errors').last().getAttribute('open')===null)throw Error('fault metadata collapsed');
   if(errors.length)throw Error(errors.join('\n'));
-  return {passed:['startup login disabled until ready','no automatic login','visible member and HRESULT','provider login fixture','model search and selection','IME composition','native approval payload','typing during a run','startup error unlocks input and clicks','busy send/model mutation guards','verified receipt','simplified header without new/history/image/external buttons','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
+  return {passed:['login request immediately displays progress','startup login disabled until ready','no automatic login','visible member and HRESULT','provider login fixture','model search and selection','IME composition','native approval payload','typing during a run','startup error unlocks input and clicks','busy send/model mutation guards','verified receipt','simplified header without new/history/image/external buttons','320px layout','Claude login and model picker','stream auto-scroll and latest jump','reasoning apply and reset','reasoning failure rollback','busy reasoning guard and stop','rejected receipt state'],pageErrors:errors};
 }

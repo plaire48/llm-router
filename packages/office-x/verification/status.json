@@ -23,13 +23,36 @@
   "localChecks": {
     "vendorHashes": 4582,
     "nubiHashes": 88,
-    "unitPassed": 76,
+    "unitPassed": 78,
     "unitSkippedMacOS": 4,
     "nativeCorePassed": 78,
     "hostCrossCompile": true,
     "stdioIntegration": "mock provider and native Office",
     "claudeIntegration": "mock CLI; no live account",
-    "startupLogin": "manual-only; saved account restored after user action (fixture)"
+    "startupLogin": "manual-only; saved account restored after user action (fixture)",
+    "claudeLiveMacOS": {
+      "passed": true,
+      "liveProvider": true,
+      "provider": "claude",
+      "platform": "macOS",
+      "nativeOffice": "mock",
+      "realOfficeVerified": false,
+      "realWindowsClaudeVerified": false,
+      "proposals": [
+        "create_document"
+      ],
+      "nativeMockWrites": 1,
+      "slides": 2,
+      "finalTextDelivered": true,
+      "connectedAfterCompletion": true,
+      "sourceHashes": {
+        "runtime-src/claude-office-run.mjs": "8e778e52e0d5a36c8bc1e3b189e790a5df0378e1d24c1d4e743dc6a437e21221",
+        "runtime-src/nubi-transport.ts": "32a94fbe104f70485e14d226d09a736fcc8029dba5d52d276c95c82820ad605d",
+        "runtime-src/nubi-providers.mjs": "1657f0f11682fdd464a359c1fdf6aff4c4a347b33e8c02da5643f7a6bcd529ca",
+        "runtime-src/agent.ts": "0d37279199b684841a6afc41d1a09af82d0b84601a31cd4528b02f30c58fcda5",
+        "runtime-src/office-skill.ts": "7a4d2eebbd9017c5eb21b423eb53c61f73060012baeb817525d3c0502f817727"
+      }
+    }
   },
   "windowsChecks": {
     "status": "pending",

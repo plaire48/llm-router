@@ -20,7 +20,7 @@ struct Object: IDispatch {
  ULONG STDMETHODCALLTYPE Release() override {auto n=InterlockedDecrement(&refs);if(!n)delete this;return n;}
  HRESULT STDMETHODCALLTYPE GetTypeInfoCount(UINT* n) override {*n=1;return S_OK;}
  HRESULT STDMETHODCALLTYPE GetTypeInfo(UINT,LCID,ITypeInfo** p) override {++state->typeInfoCalls;*p=nullptr;return TYPE_E_INVDATAREAD;}
- static const std::vector<std::wstring>& Names(){static const std::vector<std::wstring> n={L"ActiveWorkbook",L"ActiveWindow",L"HWND",L"Workbooks",L"Add",L"Name",L"Worksheets",L"Count",L"Item",L"BuiltInDocumentProperties",L"Value",L"Range",L"Value2",L"NumberFormat",L"Font",L"Bold",L"Interior",L"Color",L"Columns",L"ColumnWidth",L"WrapText",L"Rows",L"AutoFit",L"UsedRange",L"CountLarge",L"Formula",L"Address",L"SaveCopyAs",L"HasVBProject",L"Activate",L"Content",L"TextFrame",L"TextRange",L"Size",L"RGB",L"Text",L"ActiveDocument",L"ActivePresentation",L"Documents",L"Presentations",L"PageSetup",L"SlideWidth",L"SlideHeight",L"Slides",L"Shapes",L"AddTextbox",L"WordWrap",L"AutoSize",L"BoundHeight",L"Windows",L"End",L"Style",L"Styles",L"NameLocal"};return n;}
+ static const std::vector<std::wstring>& Names(){static const std::vector<std::wstring> n={L"ActiveWorkbook",L"ActiveWindow",L"HWND",L"Workbooks",L"Add",L"Name",L"Worksheets",L"Count",L"Item",L"BuiltInDocumentProperties",L"Value",L"Range",L"Value2",L"NumberFormat",L"Font",L"Bold",L"Interior",L"Color",L"Columns",L"ColumnWidth",L"WrapText",L"Rows",L"AutoFit",L"UsedRange",L"CountLarge",L"Formula",L"Address",L"SaveCopyAs",L"HasVBProject",L"Activate",L"Content",L"TextFrame",L"TextRange",L"Size",L"RGB",L"Text",L"ActiveDocument",L"ActivePresentation",L"Documents",L"Presentations",L"PageSetup",L"SlideWidth",L"SlideHeight",L"Slides",L"Shapes",L"AddTextbox",L"WordWrap",L"AutoSize",L"BoundHeight",L"Windows",L"End",L"Style",L"Styles",L"NameLocal",L"FileFormat",L"HasTextFrame",L"Type",L"Left",L"Top",L"Width",L"Height",L"WordOpenXML",L"Tables",L"Sections",L"InlineShapes"};return n;}
  HRESULT STDMETHODCALLTYPE GetIDsOfNames(REFIID,LPOLESTR* names,UINT count,LCID,DISPID* ids) override {for(UINT i=0;i<count;i++){ids[i]=DISPID_UNKNOWN;for(size_t j=0;j<Names().size();j++)if(_wcsicmp(names[i],Names()[j].c_str())==0)ids[i]=static_cast<DISPID>(j+1);if(ids[i]==DISPID_UNKNOWN)return DISP_E_UNKNOWNNAME;}return S_OK;}
  Object* Child(const std::wstring& key,const std::wstring& type=L"object"){auto& child=children[key];if(!child)child=new Object(state,type);return child;}
  static void Ref(VARIANT* r,Object* o){r->vt=VT_DISPATCH;r->pdispVal=o;o->AddRef();}
@@ -53,6 +53,11 @@ struct Object: IDispatch {
   if(member==L"Item"&&kind==L"Windows"){Ref(r,Child(L"window",L"window"));return S_OK;}
   if(member==L"Color"&&kind==L"font"&&!set){Ref(r,Child(member));return S_OK;}
   if(member==L"BoundHeight"){r->vt=VT_R4;r->fltVal=20;return S_OK;}
+  if(member==L"FileFormat"){r->vt=VT_I4;r->lVal=51;return S_OK;}
+  if(member==L"WordOpenXML"){if(kind!=L"wordrange")return DISP_E_MEMBERNOTFOUND;Text(r,L"<document>"+document->text+L"</document>");return S_OK;}
+  if(member==L"Tables"||member==L"Sections"||member==L"InlineShapes"){Ref(r,Child(member,L"emptycollection"));return S_OK;}
+  if(member==L"Count"&&kind==L"emptycollection"){r->vt=VT_I4;r->lVal=0;return S_OK;}
+  if(member==L"HasTextFrame"||member==L"Type"){r->vt=VT_I4;r->lVal=member==L"HasTextFrame"?-1:17;return S_OK;}
   if(member==L"Name"){if(set){if(p->cArgs!=1||arg(0).vt!=VT_BSTR)return DISP_E_TYPEMISMATCH;name=arg(0).bstrVal;}else Text(r,name.empty()?L"Book1":name);return S_OK;}
   if(member==L"Worksheets"){auto s=Child(member,L"sheets");if(s->sheets.empty()){auto sheet=new Object(state,L"sheet");sheet->name=L"Sheet1";s->sheets.push_back(sheet);}Ref(r,s);return S_OK;}
   if(member==L"BuiltInDocumentProperties"||member==L"Font"||member==L"Interior"||member==L"Columns"||member==L"Rows"||member==L"Content"||member==L"TextFrame"||member==L"TextRange"){Ref(r,Child(member,member==L"BuiltInDocumentProperties"?L"properties":member==L"Font"?L"font":L"object"));return S_OK;}
@@ -67,9 +72,9 @@ struct Object: IDispatch {
   if((member==L"Value2"||member==L"Formula")&&kind==L"range"){if(set){++state->valueWrites;VariantClear(&data);return VariantCopy(&data,&arg(p->cArgs-1));}return VariantCopy(r,&data);}
   if(member==L"CountLarge"&&kind==L"range"){r->vt=VT_R8;r->dblVal=1;if(data.vt&VT_ARRAY){LONG a,b,c,d;SafeArrayGetLBound(data.parray,1,&a);SafeArrayGetUBound(data.parray,1,&b);SafeArrayGetLBound(data.parray,2,&c);SafeArrayGetUBound(data.parray,2,&d);r->dblVal=double(b-a+1)*(d-c+1);}return S_OK;}
   if(member==L"Address"){Text(r,address);return S_OK;}
-  if(member==L"SaveCopyAs"){if(p->cArgs!=1||arg(0).vt!=VT_BSTR)return DISP_E_BADPARAMCOUNT;++state->copies;return CopyFileW(state->copySource.c_str(),arg(0).bstrVal,FALSE)?S_OK:HRESULT_FROM_WIN32(GetLastError());}
+  if(member==L"SaveCopyAs"){if(p->cArgs<1||arg(0).vt!=VT_BSTR)return DISP_E_BADPARAMCOUNT;if(kind==L"book"){std::wstring file=arg(0).bstrVal;if(file.size()<5||file.substr(file.size()-5)!=L".xlsx")return HRESULT(0x800A03EC);}++state->copies;return CopyFileW(state->copySource.c_str(),arg(0).bstrVal,FALSE)?S_OK:HRESULT_FROM_WIN32(GetLastError());}
   if(member==L"AutoFit")return S_OK;
-  if(member==L"NumberFormat"||member==L"Bold"||member==L"Color"||member==L"ColumnWidth"||member==L"WrapText"||member==L"Size"||member==L"RGB"||member==L"Text"||member==L"WordWrap"||member==L"AutoSize"||member==L"SlideWidth"||member==L"SlideHeight"){auto property=Child(L"property:"+member);if(set){if(p->cArgs!=1)return DISP_E_BADPARAMCOUNT;VariantClear(&property->data);return VariantCopy(&property->data,&arg(0));}return VariantCopy(r,&property->data);}
+  if(member==L"NumberFormat"||member==L"Bold"||member==L"Color"||member==L"ColumnWidth"||member==L"WrapText"||member==L"Size"||member==L"RGB"||member==L"Text"||member==L"WordWrap"||member==L"AutoSize"||member==L"SlideWidth"||member==L"SlideHeight"||member==L"Left"||member==L"Top"||member==L"Width"||member==L"Height"){auto property=Child(L"property:"+member);if(set){if(p->cArgs!=1)return DISP_E_BADPARAMCOUNT;VariantClear(&property->data);return VariantCopy(&property->data,&arg(0));}return VariantCopy(r,&property->data);}
   return DISP_E_MEMBERNOTFOUND;
  }
 };

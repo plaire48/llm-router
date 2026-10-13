@@ -11,3 +11,9 @@ Word/PPT 생성·검증·창 활성화를 직접 IDispatch로 호출한다. 새 
 Claude 응답 형식은 엄격한 JSON으로 변환한 뒤 기존 도구 카탈로그 검증을 거친다. 형식 오류는 1회 복구하며, 검증된 변경 이후 복구 요청은 도구를 제거한다. 응답 텍스트는 성공한 응답에서만 전달한다.
 
 Windows C++ COM 재현 객체는 고장 난 타입 라이브러리, 3개 앱의 새 문서 생성·읽기 확인·새 문서 연결, getter 별칭 및 중첩 속성 접근을 검증한다. 실제 Office 2016/VSTO 실행 및 로그인한 Claude 계정 작성은 현재 Windows 접근이 없어 미검증이다.
+
+추가: 실제 macOS Claude가 slides 배열을 JSON 문자열로 반환해 3회 인자 실패로 중단되는 현상을 재현했다. CLI 제안 스키마에 도구별 객체 인자를 선언하고, 전송 어댑터에서 스키마가 명시한 배열·객체만 JSON 정규화한다. 숫자 문자열과 리터럴 텍스트는 원래대로 유지한다. 수정 후 실제 Claude에서 생성 제안 1회와 최종 응답을 확인했으며 nativeOffice=mock으로 기록했다.
+
+SaveCopyAs의 확장자는 Workbook.FileFormat에 맞춘다. 네이티브 테스트는 이름이 renamed.csv지만 실제 형식이 XLSX인 통합문서의 이전 사본 호출을 거절한다. Word의 WordOpenXML은 Document.Content 범위에서 얻는다. Word/PPT 복원 사본 검증과 파일·렌더링·가져오기 호출도 직접 IDispatch로 수행한다.
+
+보관 파일은 키별로 읽는다. 하나가 손상돼도 worker init을 보낸다. 연결 요청은 즉시 상태를 표시하고 55초 확인 제한 이후 CLI 연결 시도를 취소한다. 이 변경이 사용자의 Windows 계정 연결 실패를 실제 해결했는지는 아직 미확인이다.

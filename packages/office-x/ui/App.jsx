@@ -47,6 +47,7 @@ function App(){
   useEffect(()=>{
     const unsubscribe=subscribe(m=>{
       if(m.type==='handoff'){const request=typeof m.request==='string'?m.request:'';const id=m.conversationId||crypto.randomUUID();started.current=performance.now();current.current=id;run.current=m.runId||null;setHost(m.app||'excel');setTarget(m.target||'현재 문서에서 작업합니다');setBusy(!!m.running);setConversations([{id,title:request.slice(0,32)||'문서 작업',messages:request?[{role:'user',text:request},{role:'assistant',text:typeof m.text==='string'?m.text:'',target:m.target,model:m.model||'누비'}]:[]}]);setIndex(0);return;}
+      if(m.type==='connection_storage_warning'){setError('보관한 일부 연결 설정을 읽지 못했습니다. 로그인은 다시 진행할 수 있습니다.');return;}
       if(m.type==='services_state'){setServices(m.state);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
       if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.3');return;}
@@ -77,7 +78,7 @@ function App(){
   },[]);
   useEffect(()=>{if(ready||!available)return;const timer=setTimeout(()=>{setLost(true);setError('Agent 연결을 확인해주세요. 다시 연결할 수 있습니다.');},15000);return()=>clearTimeout(timer);},[ready]);
   async function action(method,input){setError('');try{return await command(method,input);}catch(e){setError(e.message);throw e;}}
-  async function login(id){if(!ready||controlBusy||provider.authBusy||provider.pending)return;if(id==='fabrix'){setDialog('fabrix');return;}setLoginProvider(id);setControlBusy(true);try{await action('login',id);}catch{}finally{setControlBusy(false);setLoginProvider(null);}}
+  async function login(id){if(!ready||controlBusy||provider.authBusy||provider.pending)return;if(id==='fabrix'){setDialog('fabrix');return;}setLoginProvider(id);setControlBusy(true);try{return await action('login',id);}catch{return false;}finally{setControlBusy(false);setLoginProvider(null);}}
   function demo(){
     if(busy)return;setError('');setBusy(true);started.current=performance.now();
     setConversations(rows=>rows.map(c=>c.id!==active.id?c:{...c,title:'문서 도구 확인',messages:[...c.messages,{role:'user',text:textHost?'선택한 텍스트 읽기 (모델 전송 없음)':'C1:E4 수식 도구 확인 (모델 전송 없음)'},{role:'assistant',text:'',model:'문서 도구 확인',timing:{elapsedMs:0}}]}));
@@ -139,7 +140,7 @@ function App(){
     {dialog==='services'&&<Services state={services} call={(method,input)=>command(method,input,'services')} onClose={()=>setDialog(null)}/>}
     {dialog==='target'&&<DetailPanel title="어디에 만들까요?" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={()=>{setDialog(null);setPendingRequest('');}}><p>현재 문서를 수정하거나 새 문서를 열어 작성합니다.</p><div className="target-choices"><CxButton onClick={()=>submit('current')}><strong>현재 문서</strong><span>지금 열린 문서에 적용</span></CxButton><CxButton onClick={()=>submit('new')}><strong>새 문서</strong><span>새 창에서 작성하고 Agent 이어가기</span></CxButton></div></DetailPanel>}
     {dialog==='checkpoints'&&<DetailPanel title="문서 복원" className="office-form deck-dialog nubi-decision-dialog" variant="modal" hideHelp onClose={()=>setDialog(null)}><p className="form-help">복원할 시점을 선택하세요. 새 창에 복원됩니다.</p>{checkpoints.length?checkpoints.map(c=><CxButton className="checkpoint-row" key={c.id} onClick={()=>{setDialog(null);started.current=performance.now();setBusy(true);setConversations(rows=>rows.map(row=>row.id===active.id?{...row,messages:[...row.messages,{role:'user',text:'문서 복원: '+c.label},{role:'assistant',text:''}]}:row));send({type:'rollback',checkpointId:c.id,conversationId:active.id});}}>{c.label} / {c.document}</CxButton>):<p className="muted">아직 복원 지점이 없습니다.</p>}</DetailPanel>}
-    {dialog==='models'&&<ModelForm data={data} loading={loading} disabled={busy||!ready||controlBusy||!!provider.authBusy} providerLabels={labels} onClose={()=>setDialog(null)} onTools={()=>setDialog('services')} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
+    {dialog==='models'&&<ModelForm data={data} loading={loading} connectingProvider={loginProvider} connectionError={error} disabled={busy||!ready||controlBusy||!!provider.authBusy} providerLabels={labels} onClose={()=>setDialog(null)} onTools={()=>setDialog('services')} onLogin={login} onCancelLogin={()=>action('cancelLogin')} onLogout={id=>action('disconnect',id)} onRefresh={input=>refresh(input).catch(()=>{})} onSelect={async(id,p)=>{try{await action('select',p);await action('model',id);return true;}catch{return false;}}}/> }
     {dialog==='fabrix'&&<Fabrix onClose={()=>setDialog(null)} onConnect={async values=>{await action('connect',{provider:'fabrix',...values});setDialog(null);}}/>}
   </div></main></div>;
 }

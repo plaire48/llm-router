@@ -15,6 +15,6 @@ export function officeProviders(vault, overrides={}) {
     createBase:deps=>base=(overrides.createBase||createProviders)(deps),createClaude:deps=>claude=(overrides.createClaude||createClaudeCode)(deps)});
   // A staged model form can refresh another account without switching the
   // conversation or persisting a provider change before the user presses Apply.
-  return {...providers,refreshModels:async(input={})=>{const provider=input.provider||providers.status().provider;if(provider==='claude'){if(!claude.status().connected)throw Error('claude_login_required');await claude.connect();}else await base.refreshModels(input);return providers.status();}};
+  return {...providers,cancelConnection:provider=>{providers.cancelLogin();if(provider==='claude')claude.disconnect();},refreshModels:async(input={})=>{const provider=input.provider||providers.status().provider;if(provider==='claude'){if(!claude.status().connected)throw Error('claude_login_required');await claude.connect();}else await base.refreshModels(input);return providers.status();}};
 }
 export function publicProviderState(providers){return {...providers.status(),catalogs:providers.catalogs()};}

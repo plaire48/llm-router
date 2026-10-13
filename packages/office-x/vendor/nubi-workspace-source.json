@@ -374,8 +374,8 @@
     {
       "source": "packages/nubi-desktop/runtime/claude-code.mjs",
       "path": "runtime-src/claude-office-run.mjs",
-      "sha256": "5a0b905c2c58ed8903627f1be82428fcd318e57a7f538d8774a17bae94cc04df",
-      "note": "Office wrapper classifies terminal errors, adapts strict JSON envelopes and bounds structured-output turns; original Nubi provider source remains unchanged."
+      "sha256": "8e778e52e0d5a36c8bc1e3b189e790a5df0378e1d24c1d4e743dc6a437e21221",
+      "note": "Office wrapper adds typed proposal schemas, normalizes structured CLI envelopes and bounds result errors; immutable Nubi provider still validates tool names and decoding."
     }
   ]
 }

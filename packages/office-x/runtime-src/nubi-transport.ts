@@ -10,6 +10,18 @@ export function nubiMessages(request: AgentStreamRequest): Record<string, unknow
       ...(m.toolCalls?.length?{tool_calls:m.toolCalls.map(c=>({id:c.id,type:'function',function:{name:c.name,arguments:JSON.stringify(c.input)}}))}:{})}];
   })];
 }
+// Some CLI proposals JSON-encode collection fields twice. Decode only where
+// the advertised schema explicitly requires a collection. Literal cell/text
+// strings and numeric strings stay unchanged; normal schema validation follows.
+export function normalizeOfficeInput(value:any,schema:any,depth=0):any{
+  if(depth>12||!schema||typeof schema!=='object')return value;
+  if(typeof value==='string'&&value.length<=200000&&['array','object'].includes(schema.type)){
+    try{const decoded=JSON.parse(value);if(schema.type==='array'?Array.isArray(decoded):decoded&&typeof decoded==='object'&&!Array.isArray(decoded))value=decoded;}catch{}
+  }
+  if(Array.isArray(value)&&schema.type==='array')return value.map(item=>normalizeOfficeInput(item,schema.items,depth+1));
+  if(value&&typeof value==='object'&&!Array.isArray(value)&&schema.properties)return Object.fromEntries(Object.entries(value).map(([key,item])=>[key,normalizeOfficeInput(item,schema.properties[key],depth+1)]));
+  return value;
+}
 export function nubiTransport(providers: {complete: (...args:any[])=>Promise<any>}): AgentTransport {
   return {stream(request,cb){
     const controller=new AbortController();let previous='';
@@ -38,7 +50,7 @@ export function nubiTransport(providers: {complete: (...args:any[])=>Promise<any
       // Only a successfully completed response can emit executable calls.
       for(const call of result.calls||[]){
         let input={},inputError;
-        try{input=JSON.parse(call.function.arguments);if(!input||Array.isArray(input)||typeof input!=='object')throw Error();}
+        try{input=normalizeOfficeInput(JSON.parse(call.function.arguments),request.tools.find(t=>t.name===call.function.name)?.inputSchema);if(!input||Array.isArray(input)||typeof input!=='object')throw Error();}
         catch{inputError='invalid_json';}
         cb.onToolCall({id:call.id,name:call.function.name,input,inputError});
       }
