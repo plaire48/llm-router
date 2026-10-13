@@ -1,0 +1,20 @@
+{
+  "buildCommit": "368e95103b329e9e3d0ff226c44bf3a12bc6222a",
+  "passed": true,
+  "provider": "claude",
+  "liveProvider": true,
+  "platform": "macOS",
+  "nativeOffice": "mock",
+  "realOfficeVerified": false,
+  "realWindowsClaudeVerified": false,
+  "calls": [
+    "write_cells",
+    "set_formula",
+    "merge_cells",
+    "calculate_and_read"
+  ],
+  "rangeMergeProposed": true,
+  "formulaProposed": true,
+  "postCalculationRead": true,
+  "finalTextDelivered": true
+}

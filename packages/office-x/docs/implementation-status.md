@@ -1,5 +1,7 @@
 # 0.8.6 변경
 
+OfficePath는 명시된 Item/Range 선택 인자를 순서대로 소비하며 값 쓰기 인자를 선택 인자로 오인하지 않는다. Worksheets/Sheets/ActiveSheet 등의 앱별 문서 상대 경로를 허용한다. 선택 인자 누락은 실행 전 구체적인 오류로 보고하며 read_cells는 현재 연결된 문서에서 새 핸들과 Office snapshotId를 조회한다.
+
 계산은 calculate_office의 고정된 Calculate 메서드 호출과 CalculationState 확인으로 처리한다. inspect_office에 잘못 섞인 Calculate는 앞선 객체 읽기, 고정 계산 호출, 계산 후 전체 읽기로 분리한다. 계산 실패/대기 결과는 재호출하거나 성공 스냅샷으로 만들지 않는다. calculate_and_read는 bound document의 활성/이름 지정 시트와 최대 101x20 범위를 조회한다. 새 문서 이후 legacy ExcelPort로 돌아가지 않는다.
 
 ExcelRangeTools는 Range의 병합/해제를 같은 OfficeAutomationSession 승인·원본 비교·읽기 검증으로 연결한다. 좌상단 외 값/수식 손실을 사전에 거절한다. 일반 도구의 선호출 실패 후 확인된 셀 수정은 공통 실행별 영수증 상태로 최종 응답 검증을 통과한다. 이후 실패/불확실한 변경은 이전 성공으로 덮지 않는다.
