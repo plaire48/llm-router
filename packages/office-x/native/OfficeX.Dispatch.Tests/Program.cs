@@ -11,7 +11,7 @@ using OfficeX.Core;
 using OfficeX.ExcelHost;
 class Program {
  static void Equal(object a,object b){if(!object.Equals(a,b))throw new Exception("Expected "+a+", got "+b);}
- [STAThread]static void Main(string[] args){if(args.Length>0)Equal(args[0],IntPtr.Size==8?"x64":"x86");Console.WriteLine("Native test process: "+(IntPtr.Size==8?"x64":"x86"));AssertAnyCPU(typeof(OfficeAutomationPort).Assembly);AssertAnyCPU(typeof(OfficeAutomationSession).Assembly);object dictionary=Activator.CreateInstance(Type.GetTypeFromProgID("Scripting.Dictionary",true));
+ [STAThread]static void Main(string[] args){foreach(var app in new[]{"excel","word","powerpoint"}){var startup=TaskPaneStartupDiagnostics.Describe(new ArgumentException("private document path and content","title"),app,"pane_add_quiet");Equal(true,startup.Contains("Office 작업창 생성"));Equal(true,startup.Contains("title"));Equal(true,startup.Contains("ArgumentException"));Equal(false,startup.Contains("private"));}if(args.Length>0)Equal(args[0],IntPtr.Size==8?"x64":"x86");Console.WriteLine("Native test process: "+(IntPtr.Size==8?"x64":"x86"));AssertAnyCPU(typeof(OfficeAutomationPort).Assembly);AssertAnyCPU(typeof(OfficeAutomationSession).Assembly);object dictionary=Activator.CreateInstance(Type.GetTypeFromProgID("Scripting.Dictionary",true));
   try{
    OfficeDispatch.Invoke(dictionary,"Add","call",new object[]{"name","누비"});Equal(1,OfficeDispatch.Get(dictionary,"Count"));Equal("누비",OfficeDispatch.Get(dictionary,"Item","name"));
    Equal("누비",OfficeDispatch.Invoke(dictionary,"Item","call",new object[]{"name"}));

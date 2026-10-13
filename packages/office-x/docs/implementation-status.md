@@ -1,15 +1,9 @@
-# 0.8.6 변경
+# 0.8.7 변경
 
-OfficePath는 명시된 Item/Range 선택 인자를 순서대로 소비하며 값 쓰기 인자를 선택 인자로 오인하지 않는다. Worksheets/Sheets/ActiveSheet 등의 앱별 문서 상대 경로를 허용한다. Item args[0] 누락/missing/null도 실행 전 검증한다. 무수정 선호출 Item 인자 개수·대상 오류만 실제 셀 조회로 복구하고 수정안을 재제출한다. 선택 인자 누락은 실행 전 구체적인 오류로 보고하며 read_cells는 현재 연결된 문서에서 새 핸들과 Office snapshotId를 조회한다.
+TaskPaneOpening은 VSTO Add에 String.Empty를 전달하지 않는다. 기본 표시 제목은 U+200B로 길이가 1이고 whitespace-only가 아니다. 공장 호출의 ArgumentException만 같은 창/호환 제목, 활성 창/호환 제목 순서로 제한하여 처리한다. 너비 인자 거절은 420에서 320, Office 기본 너비로 처리한다. 실제 Office의 빈 제목 검증 규칙이나 사용자 예외의 ParamName은 아직 관측되지 않았다.
 
-계산은 calculate_office의 고정된 Calculate 메서드 호출과 CalculationState 확인으로 처리한다. inspect_office에 잘못 섞인 Calculate는 앞선 객체 읽기, 고정 계산 호출, 계산 후 전체 읽기로 분리한다. 계산 실패/대기 결과는 재호출하거나 성공 스냅샷으로 만들지 않는다. calculate_and_read는 bound document의 활성/이름 지정 시트와 최대 101x20 범위를 조회한다. 새 문서 이후 legacy ExcelPort로 돌아가지 않는다.
+세 VSTO 호스트의 최초 표시와 새 문서 연결이 공통 경로를 사용한다. 생성 중 예외 발생 시 컨트롤과 생성된 작업창을 정리하고 실패 단계가 포함된 진단을 표시한다. Dispose된 follower는 원래 세션에서 제거해 이후 포커스 판단을 막지 않는다. 새로운 화면 준비 전에 원래 작업창을 숨기지 않는다.
 
-ExcelRangeTools는 Range의 병합/해제를 같은 OfficeAutomationSession 승인·원본 비교·읽기 검증으로 연결한다. 좌상단 외 값/수식 손실을 사전에 거절한다. 일반 도구의 선호출 실패 후 확인된 셀 수정은 공통 실행별 영수증 상태로 최종 응답 검증을 통과한다. 이후 실패/불확실한 변경은 이전 성공으로 덮지 않는다.
+TaskPaneStartupDiagnostics는 단계, 예외 종류, 안전한 인자 이름, HRESULT, 확인 번호를 제공한다. 예외의 원문 메시지나 문서 내용/경로는 포함하지 않는다.
 
-OfficeArguments는 reference/ref 네이티브 핸들, scalar, rectangular matrix, missing optional arguments를 변환한다. Wire.Parse/Clone은 ISO 날짜 텍스트를 유지한다. inputPath/inputRule/InvocationStarted가 영수증까지 전달된다. 악성 코드 실행, Application/Parent와 파일 멤버 우회, 불확실한 쓰기 재실행은 허용하지 않는다.
-
-snapshot_required는 무수정 선호출 실패인 경우에만 실제 원본을 다시 읽는다. 반환된 새 ID와 원본은 수정 완료가 아니며 모델의 수정안 재제출과 승인이 필요하다. GenOffice 파일/렌더 연결은 native failure를 다음 단계 실행 전에 보존해 보고한다.
-
-작업창 제목 두 생성 위치 모두 String.Empty를 사용하고 WebView 안 아이콘 옆 브랜드는 유지한다. 실제 Office 작업창의 시각 결과는 미검증이다.
-
-실제 Windows Office 2016/Windows 모델 계정은 미검증이다. 네이티브 COM 테스트 객체와 실제 설치/WinForms WebView2 검증은 별도 범위다.
+문서 도구와 모델 동작은 0.8.6과 동일하다. Windows 빌드와 설치된 WinForms WebView2 검증은 Office VSTO 내부 실행과 별개이며 실제 Office 2016 작업창 열기는 미검증이다.

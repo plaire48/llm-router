@@ -5,6 +5,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Runtime.InteropServices
 Imports Office = Microsoft.Office.Core
+Imports OfficeX.Core
 
 Partial Public Class ThisAddIn
     Private ReadOnly panes As New Dictionary(Of Integer, Microsoft.Office.Tools.CustomTaskPane)()
@@ -14,15 +15,18 @@ Partial Public Class ThisAddIn
     End Function
 
     Public Sub ShowOfficeX()
+        Dim openingStage As String = "window_lookup"
         Try
             Dim window = Application.ActiveWindow
             If window Is Nothing Then Return
             Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
             If Not panes.TryGetValue(window.HWND, pane) Then
+                openingStage = "control_create"
                 Dim control = CreateControl(window.HWND)
                 Try
-                    pane = CustomTaskPanes.Add(control, String.Empty, window)
-                    pane.Width = 420
+                    pane = TaskPaneOpening.Create(Function(caption) CustomTaskPanes.Add(control, caption, window), Function(caption) CustomTaskPanes.Add(control, caption), Sub(value) openingStage = value)
+                    Dim createdPane = pane
+                    TaskPaneOpening.SetWidth(Sub(value) createdPane.Width = value, Sub(value) openingStage = value)
                     panes.Add(window.HWND, pane)
                 Catch
                     control.Dispose()
@@ -30,9 +34,10 @@ Partial Public Class ThisAddIn
                     Throw
                 End Try
             End If
+            openingStage = "pane_show"
             pane.Visible = True
         Catch ex As Exception
-            System.Windows.Forms.MessageBox.Show("Office X 작업창을 열지 못했습니다. 빌드 결과와 Windows 실행 안내를 확인해 주세요." & vbCrLf & ex.GetType().Name, "Office X")
+            System.Windows.Forms.MessageBox.Show(OfficeX.ExcelHost.TaskPaneStartupDiagnostics.Describe(ex, "powerpoint", openingStage), "누비 Office")
         End Try
     End Sub
 
@@ -46,21 +51,35 @@ Partial Public Class ThisAddIn
     End Function
 
     Private Sub FollowDocument(source As OfficeX.ExcelHost.OfficePane, newHandle As Integer)
-        Dim window = Application.ActiveWindow
-        If window Is Nothing OrElse window.HWND <> newHandle Then Return
-        Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
-        If Not panes.TryGetValue(newHandle, pane) Then
-            Dim control = CreateControl(newHandle)
-            AddHandler control.SurfaceReady, Sub() HideSourcePane(source, control)
-            control.FollowSession(source)
-            pane = CustomTaskPanes.Add(control, String.Empty, window)
-            pane.Width = 420
-            panes.Add(newHandle, pane)
-        Else
-            Dim control = TryCast(pane.Control, OfficeX.ExcelHost.OfficePane)
-            If control IsNot Nothing AndAlso Not control.IsRunning Then control.FollowSession(source)
-        End If
-        pane.Visible = True
+        Dim openingStage As String = "follow_window_lookup"
+        Try
+            Dim window = Application.ActiveWindow
+            If window Is Nothing OrElse window.HWND <> newHandle Then Return
+            Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
+            If Not panes.TryGetValue(newHandle, pane) Then
+                openingStage = "control_create"
+                Dim control = CreateControl(newHandle)
+                Try
+                    AddHandler control.SurfaceReady, Sub() HideSourcePane(source, control)
+                    control.FollowSession(source)
+                    pane = TaskPaneOpening.Create(Function(caption) CustomTaskPanes.Add(control, caption, window), Function(caption) CustomTaskPanes.Add(control, caption), Sub(value) openingStage = value)
+                    Dim createdPane = pane
+                    TaskPaneOpening.SetWidth(Sub(value) createdPane.Width = value, Sub(value) openingStage = value)
+                    panes.Add(newHandle, pane)
+                Catch
+                    control.Dispose()
+                    If pane IsNot Nothing Then CustomTaskPanes.Remove(pane)
+                    Throw
+                End Try
+            Else
+                Dim control = TryCast(pane.Control, OfficeX.ExcelHost.OfficePane)
+                If control IsNot Nothing AndAlso Not control.IsRunning Then control.FollowSession(source)
+            End If
+            openingStage = "pane_show"
+            pane.Visible = True
+        Catch ex As Exception
+            System.Windows.Forms.MessageBox.Show(OfficeX.ExcelHost.TaskPaneStartupDiagnostics.Describe(ex, "powerpoint", openingStage), "누비 Office")
+        End Try
     End Sub
 
     Private Sub HideSourcePane(source As OfficeX.ExcelHost.OfficePane, readyControl As OfficeX.ExcelHost.OfficePane)
