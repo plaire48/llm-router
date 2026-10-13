@@ -1,3 +1,4 @@
+import {editReceipts} from './edit-receipts';
 import type {AgentSkill,AgentToolDef} from '@genoffice/agent-core';
 import type {NativeCall} from './excel-skill';
 export function textSkill(native:NativeCall,context:Record<string,unknown>):AgentSkill {
@@ -16,5 +17,5 @@ export function textSkill(native:NativeCall,context:Record<string,unknown>):Agen
   if(['replace_text','replace_blocks'].includes(call.name)){if(written)return {summary:call.name,output:'writes_stopped_for_this_run',isError:true};written=true;}
   try {const result=await native(call.name,call.input,signal);if(['replace_text','replace_blocks'].includes(call.name))verified=result.status==='verified';return {summary:call.name,output:JSON.stringify(result),isError:result.ok===false||['failed','partial','conflict','cancelled'].includes(String(result.status)),mutated:result.mutated===true};}
   catch{return {summary:call.name,output:'native_result_unavailable; do not replay writes',isError:true};}
- },verifyResponse(text){return written&&!verified&&/완료|적용했|수정했|바꿨/.test(text)?'No native verified receipt. State the actual failure, rejection or uncertainty; do not claim editing completed.':null;}};
+ },verifyResponse(text){return written&&!(editReceipts(native)?.verified??verified)&&/완료|적용했|수정했|바꿨/.test(text)?'No native verified receipt. State the actual failure, rejection or uncertainty; do not claim editing completed.':null;}};
 }

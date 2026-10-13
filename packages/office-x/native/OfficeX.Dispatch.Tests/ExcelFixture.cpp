@@ -11,7 +11,7 @@ struct Object;
 struct State { Object* active=nullptr; std::wstring copySource; int typeInfoCalls=0, valueWrites=0, copies=0, copyAttempts=0, activeSheet=0; HRESULT copyFailure=S_OK; };
 struct Object: IDispatch {
  State* state; LONG refs=1; std::wstring kind, name, address; VARIANT data;
- bool hasFormula=false;Object* document=nullptr;int start=0,end=0,style=-1;std::wstring text=L"\r";
+ bool hasFormula=false,merged=false,calculated=false;Object* document=nullptr;int start=0,end=0,style=-1;std::wstring text=L"\r";
  std::map<std::wstring,Object*> children; std::vector<Object*> sheets;
  Object(State* s,std::wstring k):state(s),kind(k){VariantInit(&data);}
  ~Object(){VariantClear(&data);for(auto& p:children)p.second->Release();for(auto p:sheets)p->Release();}
@@ -20,7 +20,7 @@ struct Object: IDispatch {
  ULONG STDMETHODCALLTYPE Release() override {auto n=InterlockedDecrement(&refs);if(!n)delete this;return n;}
  HRESULT STDMETHODCALLTYPE GetTypeInfoCount(UINT* n) override {*n=1;return S_OK;}
  HRESULT STDMETHODCALLTYPE GetTypeInfo(UINT,LCID,ITypeInfo** p) override {++state->typeInfoCalls;*p=nullptr;return TYPE_E_INVDATAREAD;}
- static const std::vector<std::wstring>& Names(){static const std::vector<std::wstring> n={L"ActiveWorkbook",L"ActiveWindow",L"HWND",L"Workbooks",L"Add",L"Name",L"Worksheets",L"Count",L"Item",L"BuiltInDocumentProperties",L"Value",L"Range",L"Value2",L"NumberFormat",L"Font",L"Bold",L"Interior",L"Color",L"Columns",L"ColumnWidth",L"WrapText",L"Rows",L"AutoFit",L"UsedRange",L"CountLarge",L"Formula",L"Address",L"SaveCopyAs",L"HasVBProject",L"Activate",L"Content",L"TextFrame",L"TextRange",L"Size",L"RGB",L"Text",L"ActiveDocument",L"ActivePresentation",L"Documents",L"Presentations",L"PageSetup",L"SlideWidth",L"SlideHeight",L"Slides",L"Shapes",L"AddTextbox",L"WordWrap",L"AutoSize",L"BoundHeight",L"Windows",L"End",L"Style",L"Styles",L"NameLocal",L"FileFormat",L"HasTextFrame",L"Type",L"Left",L"Top",L"Width",L"Height",L"WordOpenXML",L"Tables",L"Sections",L"InlineShapes",L"HasFormula",L"ActiveSheet"};return n;}
+ static const std::vector<std::wstring>& Names(){static const std::vector<std::wstring> n={L"ActiveWorkbook",L"ActiveWindow",L"HWND",L"Workbooks",L"Add",L"Name",L"Worksheets",L"Count",L"Item",L"BuiltInDocumentProperties",L"Value",L"Range",L"Value2",L"NumberFormat",L"Font",L"Bold",L"Interior",L"Color",L"Columns",L"ColumnWidth",L"WrapText",L"Rows",L"AutoFit",L"UsedRange",L"CountLarge",L"Formula",L"Address",L"SaveCopyAs",L"HasVBProject",L"Activate",L"Content",L"TextFrame",L"TextRange",L"Size",L"RGB",L"Text",L"ActiveDocument",L"ActivePresentation",L"Documents",L"Presentations",L"PageSetup",L"SlideWidth",L"SlideHeight",L"Slides",L"Shapes",L"AddTextbox",L"WordWrap",L"AutoSize",L"BoundHeight",L"Windows",L"End",L"Style",L"Styles",L"NameLocal",L"FileFormat",L"HasTextFrame",L"Type",L"Left",L"Top",L"Width",L"Height",L"WordOpenXML",L"Tables",L"Sections",L"InlineShapes",L"HasFormula",L"ActiveSheet",L"Calculate",L"CalculationState",L"MergeCells",L"Merge",L"UnMerge"};return n;}
  HRESULT STDMETHODCALLTYPE GetIDsOfNames(REFIID,LPOLESTR* names,UINT count,LCID,DISPID* ids) override {for(UINT i=0;i<count;i++){ids[i]=DISPID_UNKNOWN;for(size_t j=0;j<Names().size();j++)if(_wcsicmp(names[i],Names()[j].c_str())==0)ids[i]=static_cast<DISPID>(j+1);if(ids[i]==DISPID_UNKNOWN)return DISP_E_UNKNOWNNAME;}return S_OK;}
  Object* Child(const std::wstring& key,const std::wstring& type=L"object"){auto& child=children[key];if(!child)child=new Object(state,type);return child;}
  static void Ref(VARIANT* r,Object* o){r->vt=VT_DISPATCH;r->pdispVal=o;o->AddRef();}
@@ -70,7 +70,11 @@ struct Object: IDispatch {
   if(member==L"Add"&&kind==L"sheets"){if(p->cArgs!=2||arg(0).vt!=VT_ERROR||arg(0).scode!=DISP_E_PARAMNOTFOUND||arg(1).vt!=VT_DISPATCH)return DISP_E_BADPARAMCOUNT;auto sheet=new Object(state,L"sheet");sheets.push_back(sheet);Ref(r,sheet);return S_OK;}
   if(member==L"Range"&&kind==L"sheet"){if(p->cArgs<1||arg(0).vt!=VT_BSTR)return DISP_E_BADPARAMCOUNT;std::wstring key=arg(0).bstrVal;if(p->cArgs>1&&arg(1).vt==VT_BSTR)key+=L":"+std::wstring(arg(1).bstrVal);auto range=Child(key,L"range");range->address=key;Ref(r,range);return S_OK;}
   if(member==L"UsedRange"&&kind==L"sheet"){for(auto& child:children)if(child.second->data.vt&VT_ARRAY){Ref(r,child.second);return S_OK;}auto range=Child(L"A1",L"range");range->address=L"A1";Ref(r,range);return S_OK;}
-  if((member==L"Value2"||member==L"Formula")&&kind==L"range"){if(set){++state->valueWrites;hasFormula=member==L"Formula";VariantClear(&data);return VariantCopy(&data,&arg(p->cArgs-1));}return VariantCopy(r,&data);}
+  if((member==L"Value2"||member==L"Formula")&&kind==L"range"){if(set){++state->valueWrites;calculated=false;hasFormula=member==L"Formula";VariantClear(&data);return VariantCopy(&data,&arg(p->cArgs-1));}if(member==L"Value2"&&hasFormula&&calculated&&data.vt==VT_BSTR&&std::wstring(data.bstrVal)==L"=2*3"){r->vt=VT_R8;r->dblVal=6;return S_OK;}return VariantCopy(r,&data);}
+  if(member==L"Calculate"){if(flags!=DISPATCH_METHOD||p->cArgs!=0||(kind!=L"sheet"&&kind!=L"range"))return DISP_E_MEMBERNOTFOUND;calculated=true;return S_OK;}
+  if(member==L"CalculationState"&&kind==L"app"){r->vt=VT_I4;r->lVal=0;return S_OK;}
+  if(member==L"MergeCells"&&kind==L"range"){r->vt=VT_BOOL;r->boolVal=merged?VARIANT_TRUE:VARIANT_FALSE;return S_OK;}
+  if((member==L"Merge"||member==L"UnMerge")&&kind==L"range"){if(flags!=DISPATCH_METHOD)return DISP_E_MEMBERNOTFOUND;if(member==L"Merge"&&(p->cArgs!=1||arg(0).vt!=VT_BOOL||arg(0).boolVal!=VARIANT_FALSE))return DISP_E_BADPARAMCOUNT;if(member==L"UnMerge"&&p->cArgs!=0)return DISP_E_BADPARAMCOUNT;merged=member==L"Merge";return S_OK;}
   if(member==L"HasFormula"&&kind==L"range"){r->vt=VT_BOOL;r->boolVal=hasFormula?VARIANT_TRUE:VARIANT_FALSE;return S_OK;}
   if(member==L"CountLarge"&&kind==L"range"){r->vt=VT_R8;r->dblVal=1;if(data.vt&VT_ARRAY){LONG a,b,c,d;SafeArrayGetLBound(data.parray,1,&a);SafeArrayGetUBound(data.parray,1,&b);SafeArrayGetLBound(data.parray,2,&c);SafeArrayGetUBound(data.parray,2,&d);r->dblVal=double(b-a+1)*(d-c+1);}return S_OK;}
   if(member==L"Address"){Text(r,address);return S_OK;}

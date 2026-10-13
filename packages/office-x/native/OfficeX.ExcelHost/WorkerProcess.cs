@@ -43,7 +43,7 @@ namespace OfficeX.ExcelHost
                 int count;
                 while((count=await process.StandardOutput.ReadAsync(chars,0,chars.Length).ConfigureAwait(false))>0) {
                     for(int i=0;i<count;i++) {
-                        if(chars[i]=='\n') { var line=buffer.ToString(); buffer.Clear(); Message?.Invoke(JObject.Parse(line)); }
+                        if(chars[i]=='\n') { var line=buffer.ToString(); buffer.Clear(); Message?.Invoke(Wire.Parse(line)); }
                         else { buffer.Append(chars[i]); if(buffer.Length>1024*1024) throw new OfficeFault("worker_message_limit"); }
                     }
                 }

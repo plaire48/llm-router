@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { startAgent } from './agent';
+import {trackEdits} from './edit-receipts';
 import { nubiTransport } from './nubi-transport';
 import { Conversations } from './conversations';
 // @ts-expect-error Nubi preserves its original JavaScript modules.
@@ -103,7 +104,7 @@ async function receive(msg: Record<string, any>) {
     if(!msg.config&&(!initialized||!providers.status().connected||providers.status().pending))throw Error('no_credential');
     const conversationId=String(msg.conversationId||id);
     const context=(msg.context||{}) as Record<string,unknown>;
-    const native:import('./excel-skill').NativeCall=(name,input,signal) => new Promise((resolve,reject) => {
+    const native:import('./excel-skill').NativeCall=trackEdits((name,input,signal) => new Promise((resolve,reject) => {
         if (signal?.aborted) { reject(new Error('cancelled')); return; }
         const callId = randomUUID();
         const cancel = () => { const p=pending.get(callId); pending.delete(callId); p?.cleanup(); reject(new Error('cancelled')); };
@@ -111,7 +112,7 @@ async function receive(msg: Record<string, any>) {
         pending.set(callId,{resolve:(result)=>{if(result.documentTarget==='current'||result.documentTarget==='new')context.documentTarget=result.documentTarget;if(result.documentId){context.documentId=result.documentId;context.targetId=result.targetId||'document';context.selectionAvailable=false;delete context.snapshotId;delete context.address;delete context.worksheet;delete context.worksheetId;delete context.cells;delete context.selection;context.document=result.document;}resolve(result);},reject,cleanup:()=>{clearTimeout(timeout);signal?.removeEventListener('abort',cancel);}});
         signal?.addEventListener('abort',cancel,{once:true});
         send({type:'tool',runId:id,id:callId,name,input});
-      });
+      }));
     const root=String(context.artifactRoot||mkdtempSync(join(tmpdir(),'office-x-artifacts-')));
     let artifacts=artifactStores.get(root);if(!artifacts){artifacts=new Artifacts(root);artifactStores.set(root,artifacts);}
     const run = startAgent({transport, request:msg.request, history:conversations.history(conversationId,context),

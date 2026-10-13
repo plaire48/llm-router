@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import {CxButton,ActionButton,Icon,DetailPanel,CxInput,CxNotice} from '@e2e/cx-design-system';
 import {NubiLogin,NubiComposerInput,NubiComposerBar} from '../vendor/nubi/extensions/aipro-chat/src/NubiSurfaces.jsx';
 import {ModelPicker} from '../vendor/nubi/extensions/aipro-chat/src/ChatControls.jsx';
-import {AgentMark} from '../vendor/nubi/extensions/aipro-chat/src/AgentMark.jsx';
+import {NubiLogo} from '../vendor/nubi/extensions/aipro-chat/src/AgentMark.jsx';
 import {ReasoningPicker} from '../vendor/nubi/packages/nubi-desktop/ui/ReasoningPicker.jsx';
 import {ResponseTime} from '../vendor/nubi/packages/nubi-desktop/ui/ResponseTime.jsx';
 import {useConversationScroll} from '../vendor/nubi/packages/nubi-desktop/ui/useConversationScroll.js';
@@ -34,7 +34,7 @@ function App(){
   const [host,setHost]=useState('excel');
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.8.5');
+  const [version,setVersion]=useState('0.8.6');
   const [services,setServices]=useState({}),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({}),[catalogProblem,setCatalogProblem]=useState(null);
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
@@ -50,7 +50,7 @@ function App(){
       if(m.type==='connection_storage_warning'){setError('보관한 일부 연결 설정을 읽지 못했습니다. 로그인은 다시 진행할 수 있습니다.');return;}
       if(m.type==='services_state'){setServices(m.state);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.5');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.6');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&(['start','demo','rollback'].includes(m.operation)||!run.current)){setBusy(false);setReview(null);setQuestion(null);run.current=null;updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
@@ -97,7 +97,7 @@ function App(){
   }
   const textReview=review?.plan?.before&&!Array.isArray(review.plan.before.cells);
   return <div className="desktop-shell nubi-desktop-host office-host"><main className="office-shell nubi-workbench" data-workspace-screen={provider.connected||active.messages.length?'conversation':'welcome'}><div className="nubi-workbench-content office-content">
-    <header className="topbar"><span className="nubi-logo"><AgentMark size={28} mood="idle" lively/><span className="nubi-beta">beta</span></span><div className="header-actions">
+    <header className="topbar"><NubiLogo title="누비 Agent" size={28}/><div className="header-actions">
       <CxButton aria-label="연결 설정" title={`모델 선택 / ${app.name} / 누비 Agent ${version}`} disabled={!available} onClick={()=>setDialog('models')}><Icon name="sliders" size={18}/><span>모델</span></CxButton>
       <CxButton aria-label="문서 복원" disabled={busy} onClick={()=>send({type:'checkpoints'})}><Icon name="clockRewind" size={18}/><span>복원</span></CxButton>
     </div></header>

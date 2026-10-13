@@ -332,6 +332,9 @@
     "vendor/genoffice/packages/agent-core/src/index.ts",
     "vendor/genoffice/packages/agent-core/src/loop.ts",
     "runtime-src/office-guides.json",
+    "runtime-src/snapshot-recovery.ts",
+    "runtime-src/calculation-read.ts",
+    "runtime-src/edit-receipts.ts",
     "runtime-src/office-skill.ts",
     "runtime-src/text-skill.ts",
     "runtime-src/excel-skill.ts",
@@ -693,6 +696,7 @@
     "runtime-src/genoffice-skill.ts",
     "node_modules/marked/lib/marked.esm.js",
     "runtime-src/feature-policy.ts",
+    "runtime-src/native-tool-result.ts",
     "runtime-src/original-file-skill.ts"
   ]
 }

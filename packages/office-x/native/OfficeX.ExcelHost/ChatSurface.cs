@@ -34,7 +34,7 @@ namespace OfficeX.ExcelHost {
     core.NewWindowRequested+=(_,e)=>e.Handled=true;core.PermissionRequested+=(_,e)=>e.State=CoreWebView2PermissionState.Deny;core.DownloadStarting+=(_,e)=>e.Cancel=true;
     core.WebMessageReceived+=(_,e)=>{
      if(e.Source!=Origin+"/index.html"||e.WebMessageAsJson.Length>128*1024)return;
-     JObject m;try{m=JObject.Parse(e.WebMessageAsJson);}catch{return;}
+     JObject m;try{m=Wire.Parse(e.WebMessageAsJson);}catch{return;}
      var type=(string)m["type"];if(type=="ready")ready=true;
      if(type=="ui_rendered"){if(!ready)return;loading.Stop();recovery.Visible=false;web.BringToFront();}
      if(type=="ui_fault")ShowFailure();

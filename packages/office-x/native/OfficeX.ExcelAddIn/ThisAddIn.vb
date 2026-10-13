@@ -21,7 +21,7 @@ Partial Public Class ThisAddIn
             If Not panes.TryGetValue(window.Hwnd, pane) Then
                 Dim control = CreateControl(window.Hwnd)
                 Try
-                    pane = CustomTaskPanes.Add(control, "누비 Agent", window)
+                    pane = CustomTaskPanes.Add(control, String.Empty, window)
                     pane.Width = 420
                     panes.Add(window.Hwnd, pane)
                 Catch
@@ -53,7 +53,7 @@ Partial Public Class ThisAddIn
             Dim control = CreateControl(newHandle)
             AddHandler control.SurfaceReady, Sub() HideSourcePane(source, control)
             control.FollowSession(source)
-            pane = CustomTaskPanes.Add(control, "누비 Agent", window)
+            pane = CustomTaskPanes.Add(control, String.Empty, window)
             pane.Width = 420
             panes.Add(newHandle, pane)
         Else

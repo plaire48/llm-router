@@ -23,7 +23,7 @@ namespace OfficeX.ExcelHost {
   object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
   public void CheckSource(){object win=null,doc=null;try{win=OfficeDispatch.Get((object)application,"ActiveWindow");doc=Source();if(win==null||doc==null||Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
   static void Release(object o){if(o!=null&&Marshal.IsComObject(o))Marshal.ReleaseComObject(o);}
-  object Arg(JToken value){if(value==null||value.Type==JTokenType.Null)return null;if(value is JObject obj){if(obj.Count==1&&obj["ref"]?.Type==JTokenType.String&&objects.TryGetValue((string)obj["ref"],out var reference))return reference;if(obj.Count==1&&(bool?)obj["missing"]==true)return Type.Missing;throw new OfficeFault("office_argument_invalid",invocationStarted:false);}if(value is JArray a){if(a.Count>0&&a.All(x=>x is JArray)){int cols=((JArray)a[0]).Count;if(a.Any(r=>((JArray)r).Count!=cols))throw new OfficeFault("office_argument_invalid",invocationStarted:false);var matrix=new object[a.Count,cols];for(int r=0;r<a.Count;r++)for(int c=0;c<cols;c++)matrix[r,c]=Arg(a[r][c]);return matrix;}return a.Select(Arg).ToArray();}if(value.Type==JTokenType.Integer){long number=value.Value<long>();return number>=int.MinValue&&number<=int.MaxValue?(object)(int)number:(double)number;}if(value.Type==JTokenType.Float)return value.Value<double>();if(value.Type==JTokenType.Boolean)return value.Value<bool>();if(value.Type==JTokenType.String)return value.Value<string>();throw new OfficeFault("office_argument_invalid",invocationStarted:false);}
+  object Arg(JToken value,string path)=>OfficeArguments.Convert(value,id=>objects.TryGetValue(id,out var found)?found:null,path);
   public object Execute(OfficeStep step,bool readOnly){
    if(Thread.CurrentThread.ManagedThreadId!=threadId)throw new OfficeFault("office_thread_required");
    OfficeCallPolicy.Validate(step.Member,readOnly,step.Action);
@@ -37,7 +37,7 @@ namespace OfficeX.ExcelHost {
    // Validate the entire path before any native lookup. Traverse only getters;
    // execute the final requested mutation once, with normal independent readback.
    var memberPath=step.Member.Split('.');
-   var args=(step.Args??new JArray()).Select(Arg).ToList();if(step.Action=="set")args.Add(Arg(step.Value));
+   var args=new List<object>();try{args=(step.Args??new JArray()).Select((v,i)=>Arg(v,"args["+i+"]")).ToList();if(step.Action=="set")args.Add(Arg(step.Value,"value"));}catch(OfficeFault e){throw new OfficeFault(e.Message,step.Member,invocationStarted:false,inputPath:e.InputPath,inputRule:e.InputRule);}
    target=ResolvePath(target,targetPath.Concat(memberPath.Take(memberPath.Length-1)));
    string member=memberPath.Last();
    if(app=="excel"&&new[]{"Value","Value2","Formula","FormulaLocal","FormulaArray","Text"}.Contains(member,StringComparer.OrdinalIgnoreCase)){
@@ -60,6 +60,17 @@ namespace OfficeX.ExcelHost {
    return result;
   }
   object ResolvePath(object target,IEnumerable<string> members){foreach(string member in members){object child=OfficeDispatch.Get(target,member);if(child==null||!Marshal.IsComObject(child))throw new OfficeFault("office_member_path_not_supported",member,invocationStarted:false);acquired.Add(child);target=child;}return target;}
+  public object Calculate(string targetName,CancellationToken token){
+   if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);
+   if(Thread.CurrentThread.ManagedThreadId!=threadId)throw new OfficeFault("office_thread_required",invocationStarted:false);
+   CheckSource();token.ThrowIfCancellationRequested();object target;
+   if(String.IsNullOrEmpty(targetName)||targetName=="document")target=ResolvePath(objects["document"],new[]{"ActiveSheet"});
+   else if(!objects.TryGetValue(targetName,out target))throw new OfficeFault("office_target_unknown","Calculate",invocationStarted:false);
+   // Range / Worksheet calculation only; no Application-wide execution.
+   OfficeDispatch.Call(target,"Calculate");
+   int state=Convert.ToInt32(OfficeDispatch.Get((object)application,"CalculationState"));
+   return new{status=state==0?"calculated":"verification_pending",calculationDone=state==0,mutated=false,scope="bound document target"};
+  }
   public object Members(string target,string query,int count){CheckSource();if(!objects.TryGetValue(target??"document",out var value))throw new OfficeFault("office_target_unknown",invocationStarted:false);return OfficeMembers.Read(value,query,count);}
   public void FocusSource(){
    dynamic doc=objects["document"];

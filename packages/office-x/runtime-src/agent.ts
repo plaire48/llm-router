@@ -1,6 +1,7 @@
 import { AgentLoop, composeSkills, type AgentTransport, type AgentSkill, type AgentMessage, type AgentRunResult } from '@genoffice/agent-core';
 import {officeSkill} from './office-skill';
 import {textSkill} from './text-skill';
+import {trackEdits} from './edit-receipts';
 import { excelSkill, type NativeCall } from './excel-skill';
 
 export function startAgent(options: {
@@ -13,9 +14,10 @@ export function startAgent(options: {
   let reject!: (error: Error) => void;
   const result = new Promise<AgentRunResult>((yes, no) => { resolve = yes; reject = no; });
   const failures=new Map<string,number>();let abortReason='';
+  const native=trackEdits(options.native);
   const loop = new AgentLoop({
     transport: options.transport,
-    skill: composeSkills('office-x', 'Use the supplied Office and GenOffice web search, rendering, conversion and recovery tools. Honor the selected current-document or new-document destination.', [(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(options.native, options.context), officeSkill(options.native,options.context), ...(options.additionalSkills||[])]),
+    skill: composeSkills('office-x', 'Use the supplied Office and GenOffice web search, rendering, conversion and recovery tools. Honor the selected current-document or new-document destination.', [(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(native, options.context), officeSkill(native,options.context), ...(options.additionalSkills||[])]),
     maxTurns: 100, maxHistory: 60,
     compaction: { maxBytes: 128 * 1024, keepRecentBytes: 48 * 1024 },
     events: {

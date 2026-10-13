@@ -91,7 +91,7 @@ namespace OfficeX.ExcelHost
                 EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.5"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version="0.8.6"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastServices!=null)surface.Send(lastServices);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":
@@ -193,7 +193,7 @@ namespace OfficeX.ExcelHost
                     else {
                         nativeBusy=true;
                         try {currentStage="native_"+(string)message["name"];result=await Native((string)message["name"],message["input"] as JObject??new JObject());}
-                        catch(OfficeFault e){OfficeDiagnostics.Record(e,app,currentStage);result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,exceptionName=e.ExceptionName,invocationStarted=e.InvocationStarted,inputPath=e.InputPath,inputRule=e.InputRule,recovery=e.Message=="document_content_invalid"?"No document was created or changed. Correct the indicated inputPath according to inputRule and the create_document schema, then propose corrected content for review. Preserve the requested data; never truncate it silently. For content above the creation limits, create a bounded starter and continue with inspected Office operations.":e.InvocationStarted==false?"No call was made. Use inspect_office_members and the native guide; root document is not Application. Use dedicated file tools for Save/Open/Export.":null};status.Text=Explain(e.Message);}
+                        catch(OfficeFault e){OfficeDiagnostics.Record(e,app,currentStage);result=new {ok=false,error=e.Message,failedMember=e.Member,nativeCode=e.NativeCode,exceptionName=e.ExceptionName,invocationStarted=e.InvocationStarted,inputPath=e.InputPath,inputRule=e.InputRule,recovery=e.Message=="office_argument_invalid"?"No call was made. Correct inputPath according to inputRule. Scalars and rectangular nested arrays are supported. Object arguments use the returned {reference:id} or {ref:id}; resolve an actual current native handle first with inspect_office. Optional missing arguments use {missing:true}. Do not pass arbitrary dictionaries or ragged matrices. Read again and propose the corrected plan.":e.Message=="snapshot_required"?"No document edit or approval was attempted. Inspect the currently bound document with inspect_office and use its snapshotId for execute_office_operations. Legacy read_selection/read_range IDs are not Office Object Model snapshots. IDs expire after a successful edit or new-document binding. For values/text use write_cells; it reads its own originals.":e.Message=="document_content_invalid"?"No document was created or changed. Correct the indicated inputPath according to inputRule and the create_document schema, then propose corrected content for review. Preserve the requested data; never truncate it silently. For content above the creation limits, create a bounded starter and continue with inspected Office operations.":e.InvocationStarted==false?"No call was made. Use inspect_office_members and the native guide; root document is not Application. Use dedicated file tools for Save/Open/Export.":null};status.Text=Explain(e.Message);}
                         catch(OperationCanceledException){result=new {ok=false,status="cancelled"};}
                         catch(Exception e){result=new {ok=false,error="native_execution_failed",diagnostics=OfficeDiagnostics.Record(e,app,currentStage)};}
                         finally {nativeBusy=false;if(!running)SetBusy(false);}
@@ -248,11 +248,21 @@ namespace OfficeX.ExcelHost
             if(name=="save_document"){var saved=automationPort.Save((string)input["format"]=="pdf",cancelToken);SendSurface(new{type="receipt",runId,receipt=saved});return saved;}
             if(name=="inspect_office_members")return automationPort.Members((string)input["target"],(string)input["query"],(int?)input["count"]??80);
             if(name=="inspect_office")return automation.Inspect(input["steps"]?.ToObject<List<OfficeStep>>());
+            if(name=="calculate_office")return automationPort.Calculate((string)input["target"],cancelToken);
+            if(name=="calculate_and_read"){
+                if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);
+                string sheet=(string)input["sheet"]??(fallbackContext==null?session?.Context.Worksheet:null);
+                string address=(string)input["address"]??(fallbackContext==null?session?.Context.Address:null)??"A1:T101";
+                var reads=ExcelRangeTools.ReadSteps(sheet,address,"calculation");
+                automation.Inspect(reads);var calculation=Wire.Object(automationPort.Calculate("calculation_sheet",cancelToken));
+                if((string)calculation["status"]!="calculated")return calculation;
+                var after=Wire.Object(automation.Inspect(reads));after["calculated"]=true;after["calculationDone"]=true;after["mutated"]=false;after["address"]=address;return after;
+            }
             if(writesStopped&&new[]{"create_document","execute_office_operations","replace_blocks","replace_text","set_formula"}.Contains(name))throw new OfficeFault("writes_stopped_for_this_run");
-            if(name=="execute_office_operations"||name=="write_cells"||name=="set_formula"){
+            if(name=="execute_office_operations"||name=="write_cells"||name=="set_formula"||name=="merge_cells"){
                 OfficePlan plan;
                 if(name=="execute_office_operations")plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
-                else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
+                else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=name=="merge_cells"?ExcelRangeTools.PrepareMerge(automation,input,fallbackContext==null?session?.Context.Worksheet:null):ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
                 status.Text="문서 변경안을 확인해 주세요.";
                 currentStage="checkpoint_before_write";var checkpoint=files.PrepareCheckpoint(plan.Summary);currentStage="native_"+name;var approved=await AwaitReview(plan.Id,plan,checkpoint);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);var result=Wire.Object(receipt);result["checkpoint"]=Wire.Object(checkpoint);SendSurface(new{type="receipt",runId,receipt=result});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return result;
@@ -289,7 +299,6 @@ namespace OfficeX.ExcelHost
                 case "read_sheet_context":return current.ReadContext();
                 case "read_surrounding":return current.ReadSurrounding();
                 case "read_range":return current.ReadRange((string)input["address"]);
-                case "calculate_and_read":return current.CalculateAndRead();
                 default:throw new OfficeFault("unsupported_tool");
             }
         }
@@ -347,6 +356,8 @@ namespace OfficeX.ExcelHost
                 case "document_closed":return "대상 문서 또는 시트가 닫혔습니다.";
                 case "target_not_empty":case "target_changed":return "금액 셀에 기존 내용이 있습니다. 덮어쓰지 않았습니다.";
                 case "unsupported_range":return "병합 셀, 표, 배열 수식, 숨긴 행과 열은 아직 지원하지 않습니다.";
+                case "snapshot_required":return "문서 내용을 다시 확인합니다.";
+                case "office_argument_invalid":return "문서 작업 형식을 다시 확인합니다.";
                 case "range_limit":return "101행, 20열 이내의 범위를 선택해 주세요.";
                 case "context_limit":return "선택한 셀의 내용이 많습니다. 더 작은 범위를 선택해 주세요.";
                 case "select_cells":case "single_range_required":return "한 개의 연속된 표 범위를 선택해 주세요.";

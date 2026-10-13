@@ -17,9 +17,10 @@ namespace OfficeX.Core
     {
         public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings {
             ContractResolver = new CamelCasePropertyNamesContractResolver(), Culture = CultureInfo.InvariantCulture,
-            TypeNameHandling = TypeNameHandling.None, MaxDepth = 32 };
+            TypeNameHandling = TypeNameHandling.None, DateParseHandling = DateParseHandling.None, MaxDepth = 32 };
         public static string Json(object value) => JsonConvert.SerializeObject(value, Settings);
-        public static JObject Object(object value) => JObject.Parse(Json(value));
+        public static JObject Parse(string json) {using(var reader=new JsonTextReader(new System.IO.StringReader(json)){DateParseHandling=DateParseHandling.None,MaxDepth=32})return JObject.Load(reader);}
+        public static JObject Object(object value) => Parse(Json(value));
         public static T Clone<T>(T value) => JsonConvert.DeserializeObject<T>(Json(value), Settings);
         public static string Hash(object value) {
             using (var hash = SHA256.Create()) return BitConverter.ToString(hash.ComputeHash(Encoding.UTF8.GetBytes(Json(value)))).Replace("-", "");

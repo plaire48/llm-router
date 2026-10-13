@@ -31,7 +31,7 @@ namespace OfficeX.Core {
   public TextSnapshot Read(){var s=port.Read(binding);Validate(s);if(s.DocumentId!=binding.DocumentId||s.TargetId!=binding.TargetId)throw new OfficeFault("source_changed");s.SnapshotId=Guid.NewGuid().ToString("N");observation=Wire.Clone(s);return s;}
   public TextPlan Prepare(string snapshotId,string replacement){
    if(consumed||plan!=null)throw new OfficeFault("writes_stopped_for_this_run");
-   if(observation==null||snapshotId!=observation.SnapshotId)throw new OfficeFault("snapshot_required");
+   if(observation==null||snapshotId!=observation.SnapshotId)throw new OfficeFault("snapshot_required",invocationStarted:false);
    if(!observation.Editable||observation.Blocks.Count>1)throw new OfficeFault("text_format_unsupported");
    if(string.IsNullOrWhiteSpace(replacement)||replacement.Length>8000||replacement.IndexOfAny(new[]{'\r','\n','\t','\a','\v','\f','\0'})>=0)throw new OfficeFault("single_paragraph_required");
    if(replacement==observation.Text)throw new OfficeFault("no_change");
@@ -39,7 +39,7 @@ namespace OfficeX.Core {
   }
   public TextPlan PrepareBlocks(string snapshotId,List<TextOperation> operations){
    if(consumed||plan!=null)throw new OfficeFault("writes_stopped_for_this_run");
-   if(observation==null||snapshotId!=observation.SnapshotId)throw new OfficeFault("snapshot_required");
+   if(observation==null||snapshotId!=observation.SnapshotId)throw new OfficeFault("snapshot_required",invocationStarted:false);
    if(!(port is ITextBatchPort)||operations==null||operations.Count<1||operations.Count>30||operations.Select(o=>o?.BlockId).Distinct().Count()!=operations.Count)throw new OfficeFault("text_operations_invalid");
    foreach(var op in operations){
     var block=observation.Blocks.SingleOrDefault(b=>b.Id==op?.BlockId);
