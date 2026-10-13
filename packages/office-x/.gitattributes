@@ -1,0 +1,2 @@
+# Preserve vendored source bytes exactly as recorded by the source manifests.
+vendor/** -text
