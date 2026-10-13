@@ -1,0 +1,1 @@
+{"passed":true,"architecture":"x64","legacyFailed":true,"legacyException":"COMException","legacyCode":"0x80028018","legacyTypeInfoCalls":1,"typeInfoCalls":0,"valueWrites":4,"checkpointCopies":4,"creationSheets":2,"matrixReadback":true,"largeIntegerReadback":true,"binaryCheckpoint":true,"hostAnyCPU":true,"coreAnyCPU":true,"realOfficeVerified":false}
