@@ -1,0 +1,4249 @@
+{
+  "version": "0.8.11",
+  "buildCommit": "b888e33e10216c0301bec21e634c7169718d54ea",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38437718492",
+  "change": "Workspace context/recovery controls, no web search, compact composer and readable chat/modal layout",
+  "installer": {
+    "name": "Nubi-Office-X-0.8.11-Setup.exe",
+    "sha256": "3401528722246281f5ad9e43d48068867d7bc0ce03f499582b6408011045cd93",
+    "bytes": 124479584
+  },
+  "source": {
+    "sha256": "d5beecf7e40e003b44f18ca66fd558515070464aab2e6231941296a8aec97383",
+    "files": 5559,
+    "sourceHashesChecked": 87
+  },
+  "sourceTests": {
+    "macOSPassed": 134,
+    "macOSSkipped": 4,
+    "windowsPassed": 138
+  },
+  "coreTests": 132,
+  "modalIdentity": {
+    "passed": true,
+    "scope": "Mock WebView, current Workspace CSS reference; not live Electron or real Office",
+    "dialogStates": 36,
+    "comparisons": 1,
+    "checks": [
+      "current Workspace typography and modal chrome",
+      "primary action emphasis",
+      "no overflow at 280/320/420 widths",
+      "short-height body scroll with reachable footer",
+      "deferred selection and keyboard trap/restore",
+      "FabriX external footer submission",
+      "busy Escape and Cancel guard"
+    ],
+    "reports": [
+      {
+        "app": "excel",
+        "width": 420,
+        "height": 820,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 12,
+          "bottom": 808,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "name": "current-workspace-comparison",
+        "expected": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "0px 16px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Noto Sans KR\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        },
+        "actual": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        },
+        "differences": [],
+        "inputFontAdaptation": "Office resolves the declared Workspace font chain on inputs too; upstream root-resolved font shorthand falls back to Noto Sans KR"
+      },
+      {
+        "app": "excel",
+        "width": 420,
+        "height": 820,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 304,
+          "bottom": 516,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 420,
+        "height": 820,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 257,
+          "bottom": 563,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 420,
+        "height": 820,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 199,
+          "bottom": 621,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 320,
+        "height": 480,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 468,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 320,
+        "height": 480,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 113,
+          "bottom": 367,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 320,
+        "height": 480,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 75,
+          "bottom": 405,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 320,
+        "height": 480,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 35,
+          "bottom": 445,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 280,
+        "height": 640,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 12,
+          "bottom": 628,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 280,
+        "height": 640,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 193,
+          "bottom": 447,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 280,
+        "height": 640,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 138.40625,
+          "bottom": 501.59375,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "excel",
+        "width": 280,
+        "height": 640,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 109,
+          "bottom": 531,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 420,
+        "height": 820,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 12,
+          "bottom": 808,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 420,
+        "height": 820,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 304,
+          "bottom": 516,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 420,
+        "height": 820,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 257,
+          "bottom": 563,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 420,
+        "height": 820,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 199,
+          "bottom": 621,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 320,
+        "height": 480,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 468,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 320,
+        "height": 480,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 113,
+          "bottom": 367,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 320,
+        "height": 480,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 75,
+          "bottom": 405,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 320,
+        "height": 480,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 35,
+          "bottom": 445,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 280,
+        "height": 640,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 12,
+          "bottom": 628,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 280,
+        "height": 640,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 193,
+          "bottom": 447,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 280,
+        "height": 640,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 138.40625,
+          "bottom": 501.59375,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "word",
+        "width": 280,
+        "height": 640,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 109,
+          "bottom": 531,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 420,
+        "height": 820,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 12,
+          "bottom": 808,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 420,
+        "height": 820,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 304,
+          "bottom": 516,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 420,
+        "height": 820,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 257,
+          "bottom": 563,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 420,
+        "height": 820,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 408,
+          "top": 199,
+          "bottom": 621,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 420,
+          "height": 820
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 320,
+        "height": 480,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 12,
+          "bottom": 468,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 320,
+        "height": 480,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 113,
+          "bottom": 367,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 320,
+        "height": 480,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 75,
+          "bottom": 405,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 320,
+        "height": 480,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 308,
+          "top": 35,
+          "bottom": 445,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 320,
+          "height": 480
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 280,
+        "height": 640,
+        "name": "models",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 12,
+          "bottom": 628,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px 0px 38px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 280,
+        "height": 640,
+        "name": "restore",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 193,
+          "bottom": 447,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 280,
+        "height": 640,
+        "name": "target",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 138.40625,
+          "bottom": 501.59375,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": null,
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": null,
+          "input": null,
+          "select": null
+        }
+      },
+      {
+        "app": "powerpoint",
+        "width": 280,
+        "height": 640,
+        "name": "fabrix",
+        "geometry": {
+          "left": 12,
+          "right": 268,
+          "top": 109,
+          "bottom": 531,
+          "overflow": false,
+          "bodyOverflow": false,
+          "footerVisible": true,
+          "width": 280,
+          "height": 640
+        },
+        "styles": {
+          ".cx-detail-panel": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "20px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-header": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px 16px 8px",
+            "gap": "8px"
+          },
+          ".cx-panel-header h2": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgba(0, 0, 0, 0)",
+            "borderRadius": "0px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-body": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "16px",
+            "gap": "16px"
+          },
+          ".cx-panel-footer": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(255, 255, 255)",
+            "borderRadius": "0px",
+            "padding": "12px 16px 24px",
+            "gap": "8px"
+          },
+          ".nubi-panel-title-icon": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "18px",
+            "fontWeight": "600",
+            "lineHeight": "26.1px",
+            "color": "rgb(27, 100, 218)",
+            "backgroundColor": "rgb(232, 241, 254)",
+            "borderRadius": "12px",
+            "padding": "0px",
+            "gap": "normal"
+          },
+          ".cx-panel-footer .cx-button--primary": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "600",
+            "lineHeight": "24px",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(27, 100, 218)",
+            "borderRadius": "12px",
+            "padding": "8px 14px",
+            "gap": "8px"
+          },
+          "input": {
+            "fontFamily": "\"Pretendard Variable\", Pretendard, \"Noto Sans KR\", -apple-system, \"Apple SD Gothic Neo\", \"Malgun Gothic\", sans-serif",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "24px",
+            "color": "rgb(25, 31, 40)",
+            "backgroundColor": "rgb(241, 247, 254)",
+            "borderRadius": "12px",
+            "padding": "0px 8px",
+            "gap": "normal"
+          },
+          "select": null
+        }
+      }
+    ]
+  },
+  "browser": {
+    "context-ui": {
+      "passed": true,
+      "scope": "Mock WebView and usage reports, no real Office/provider",
+      "reports": [
+        {
+          "app": "excel",
+          "width": 320
+        },
+        {
+          "app": "excel",
+          "width": 420
+        },
+        {
+          "app": "word",
+          "width": 320
+        },
+        {
+          "app": "word",
+          "width": 420
+        },
+        {
+          "app": "powerpoint",
+          "width": 320
+        },
+        {
+          "app": "powerpoint",
+          "width": 420
+        }
+      ],
+      "checks": [
+        "reported usage and remaining percent",
+        "Workspace automatic summary threshold",
+        "cancel retains original context and releases controls",
+        "manual summary preserves visible transcript",
+        "web search removed",
+        "recovery preserves original request and leaves input enabled",
+        "narrow composer layout"
+      ]
+    },
+    "genoffice-ui": {
+      "scope": "mock WebView host; no live Office or Claude",
+      "passed": [
+        "destination choice before start",
+        "uncertain COM receipt does not claim inputs",
+        "fresh request reads actual values",
+        "late handoff retains verified creation despite Claude failure",
+        "web search and image settings removed",
+        "whole-document rollback choice",
+        "Agent question form",
+        "320px layout",
+        "copy sanitized PowerPoint startup diagnostics",
+        "repeated errors stop and copied execution faults identify member/code"
+      ],
+      "pageErrors": []
+    },
+    "modal-identity": {
+      "passed": true,
+      "dialogStates": 36,
+      "checks": [
+        "current Workspace typography and modal chrome",
+        "primary action emphasis",
+        "no overflow at 280/320/420 widths",
+        "short-height body scroll with reachable footer",
+        "deferred selection and keyboard trap/restore",
+        "FabriX external footer submission",
+        "busy Escape and Cancel guard"
+      ]
+    },
+    "ui": {
+      "passed": [
+        "login request immediately displays progress",
+        "startup login disabled until ready",
+        "no automatic login",
+        "visible member and HRESULT",
+        "provider login fixture",
+        "model search and selection",
+        "IME composition",
+        "native approval payload",
+        "typing during a run",
+        "startup error unlocks input and clicks",
+        "busy send/model mutation guards",
+        "verified receipt",
+        "simplified header without new/history/image/external buttons",
+        "320px layout",
+        "Claude login and model picker",
+        "stream auto-scroll and latest jump",
+        "reasoning apply and reset",
+        "reasoning failure rollback",
+        "busy reasoning guard and stop",
+        "rejected receipt state"
+      ],
+      "pageErrors": []
+    },
+    "connection-ui": {
+      "passed": true,
+      "scope": "browser with mock WebView host; no real Windows account",
+      "loginErrorClassified": true,
+      "retryAfterClick": true,
+      "successClearsError": true,
+      "silentCatalogFailureKeepsModels": true,
+      "manualCatalogRefreshClearsWarning": true,
+      "sendRemainsAvailable": true
+    },
+    "office-identity": {
+      "passed": true,
+      "states": 12,
+      "propertiesPerState": 77,
+      "comparison": "Word and PowerPoint against Excel, shared CSS fixture only"
+    },
+    "native-wire": {
+      "scope": "actual C# serialized packets and WebView bridge fixture; no Office COM",
+      "results": [
+        {
+          "app": "excel",
+          "csharpPlanAndReceipt": true,
+          "approvalOnce": true
+        },
+        {
+          "app": "word",
+          "csharpPlanAndReceipt": true,
+          "approvalOnce": true
+        },
+        {
+          "app": "powerpoint",
+          "csharpPlanAndReceipt": true,
+          "approvalOnce": true
+        },
+        {
+          "malformedReviewVisibleRecovery": true,
+          "recoveryWithoutWrites": true,
+          "nullHandoff": true
+        }
+      ]
+    },
+    "office-creation-ui": {
+      "scope": "mock WebView host, not Office COM",
+      "results": [
+        {
+          "app": "excel",
+          "kind": "create_document",
+          "passed": true
+        },
+        {
+          "app": "excel",
+          "kind": "office_operations",
+          "passed": true
+        },
+        {
+          "app": "word",
+          "kind": "create_document",
+          "passed": true
+        },
+        {
+          "app": "word",
+          "kind": "office_operations",
+          "passed": true
+        },
+        {
+          "app": "powerpoint",
+          "kind": "create_document",
+          "passed": true
+        },
+        {
+          "app": "powerpoint",
+          "kind": "office_operations",
+          "passed": true
+        }
+      ]
+    },
+    "text-ui": {
+      "passed": [
+        "word before/after approval and receipt",
+        "powerpoint before/after approval and receipt"
+      ]
+    },
+    "checkpoint-ui": {
+      "passed": true,
+      "scope": "browser with mock WebView host; not real Office or live Claude",
+      "results": [
+        {
+          "app": "excel",
+          "iconLabelRestored": true,
+          "copyFailureDisclosed": true,
+          "rejectionPreserved": true,
+          "explicitApproval": true,
+          "receiptShowsNoBackup": true,
+          "validationLocationVisible": true
+        },
+        {
+          "app": "word",
+          "iconLabelRestored": true,
+          "copyFailureDisclosed": true,
+          "rejectionPreserved": true,
+          "explicitApproval": true,
+          "receiptShowsNoBackup": true,
+          "validationLocationVisible": true
+        },
+        {
+          "app": "powerpoint",
+          "iconLabelRestored": true,
+          "copyFailureDisclosed": true,
+          "rejectionPreserved": true,
+          "explicitApproval": true,
+          "receiptShowsNoBackup": true,
+          "validationLocationVisible": true
+        }
+      ]
+    },
+    "context-short": {
+      "passed": true,
+      "scope": "Mock WebView and usage reports, no real Office/provider",
+      "reports": [
+        {
+          "app": "excel",
+          "width": 280
+        }
+      ],
+      "checks": [
+        "reported usage and remaining percent",
+        "Workspace automatic summary threshold",
+        "cancel retains original context and releases controls",
+        "manual summary preserves visible transcript",
+        "web search removed",
+        "recovery preserves original request and leaves input enabled",
+        "narrow composer layout"
+      ]
+    },
+    "readability": {
+      "passed": true,
+      "scope": "Owned mocked WebView fixture, no real Office/provider",
+      "reports": [
+        {
+          "app": "excel",
+          "width": 280,
+          "height": 480,
+          "geometry": {
+            "chatBottom": 264,
+            "composerTop": 264,
+            "inputHeight": 64
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "excel",
+          "width": 320,
+          "height": 480,
+          "geometry": {
+            "chatBottom": 286.203125,
+            "composerTop": 286.203125,
+            "inputHeight": 76.796875
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "excel",
+          "width": 420,
+          "height": 760,
+          "geometry": {
+            "chatBottom": 521.40625,
+            "composerTop": 521.40625,
+            "inputHeight": 121.59375
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "word",
+          "width": 280,
+          "height": 480,
+          "geometry": {
+            "chatBottom": 264,
+            "composerTop": 264,
+            "inputHeight": 64
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "word",
+          "width": 320,
+          "height": 480,
+          "geometry": {
+            "chatBottom": 286.203125,
+            "composerTop": 286.203125,
+            "inputHeight": 76.796875
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "word",
+          "width": 420,
+          "height": 760,
+          "geometry": {
+            "chatBottom": 521.40625,
+            "composerTop": 521.40625,
+            "inputHeight": 121.59375
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "powerpoint",
+          "width": 280,
+          "height": 480,
+          "geometry": {
+            "chatBottom": 264,
+            "composerTop": 264,
+            "inputHeight": 64
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "powerpoint",
+          "width": 320,
+          "height": 480,
+          "geometry": {
+            "chatBottom": 286.203125,
+            "composerTop": 286.203125,
+            "inputHeight": 76.796875
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        },
+        {
+          "app": "powerpoint",
+          "width": 420,
+          "height": 760,
+          "geometry": {
+            "chatBottom": 521.40625,
+            "composerTop": 521.40625,
+            "inputHeight": 121.59375
+          },
+          "modal": {
+            "oneScrollRegion": true
+          },
+          "approval": true
+        }
+      ],
+      "checks": [
+        "long Markdown/table/code does not cover composer",
+        "long draft keeps send visible",
+        "resize follows latest without jumping while reading older messages",
+        "model name and context metadata do not intersect",
+        "modal content never covers footer",
+        "context details wrap",
+        "inline approval stays in chat and buttons remain accessible"
+      ]
+    },
+    "count-ui": {
+      "passed": true,
+      "scope": "mock WebView host; no real Office",
+      "countActualExpectedShown": true,
+      "blockedWritePreservesCause": true,
+      "copyOmitsCellValues": true,
+      "pageErrors": []
+    }
+  },
+  "contextHarness": {
+    "version": "0.8.11",
+    "source": {
+      "typecheck": true,
+      "passed": 134,
+      "skippedOnMacOS": 4,
+      "upstreamAgent": 183,
+      "upstreamProvider": 426
+    },
+    "worker": {
+      "documentReadWriteReadbackFinalResponse": "mock Office/provider over real worker stdio",
+      "contextUsageCompressionFollowup": "provider fixture over real worker stdio",
+      "realOfficeVerified": false,
+      "claude": "real child-process fixture: login/catalog/model/effort/GenOffice loop, no real account/network"
+    },
+    "ui": {
+      "contextStates": 6,
+      "shortContextDialog": {
+        "width": 280,
+        "height": 480,
+        "passed": true
+      },
+      "modalStates": 36,
+      "realWindowsOffice": false,
+      "readabilityStates": 9
+    },
+    "scope": "Local source/process and owned browser fixtures before final Windows build"
+  },
+  "readability": {
+    "passed": true,
+    "scope": "Owned mocked WebView fixture, no real Office/provider",
+    "reports": [
+      {
+        "app": "excel",
+        "width": 280,
+        "height": 480,
+        "geometry": {
+          "chatBottom": 264,
+          "composerTop": 264,
+          "inputHeight": 64
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "excel",
+        "width": 320,
+        "height": 480,
+        "geometry": {
+          "chatBottom": 286.203125,
+          "composerTop": 286.203125,
+          "inputHeight": 76.796875
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "excel",
+        "width": 420,
+        "height": 760,
+        "geometry": {
+          "chatBottom": 521.40625,
+          "composerTop": 521.40625,
+          "inputHeight": 121.59375
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "word",
+        "width": 280,
+        "height": 480,
+        "geometry": {
+          "chatBottom": 264,
+          "composerTop": 264,
+          "inputHeight": 64
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "word",
+        "width": 320,
+        "height": 480,
+        "geometry": {
+          "chatBottom": 286.203125,
+          "composerTop": 286.203125,
+          "inputHeight": 76.796875
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "word",
+        "width": 420,
+        "height": 760,
+        "geometry": {
+          "chatBottom": 521.40625,
+          "composerTop": 521.40625,
+          "inputHeight": 121.59375
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "powerpoint",
+        "width": 280,
+        "height": 480,
+        "geometry": {
+          "chatBottom": 264,
+          "composerTop": 264,
+          "inputHeight": 64
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "powerpoint",
+        "width": 320,
+        "height": 480,
+        "geometry": {
+          "chatBottom": 286.203125,
+          "composerTop": 286.203125,
+          "inputHeight": 76.796875
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      },
+      {
+        "app": "powerpoint",
+        "width": 420,
+        "height": 760,
+        "geometry": {
+          "chatBottom": 521.40625,
+          "composerTop": 521.40625,
+          "inputHeight": 121.59375
+        },
+        "modal": {
+          "oneScrollRegion": true
+        },
+        "approval": true
+      }
+    ],
+    "checks": [
+      "long Markdown/table/code does not cover composer",
+      "long draft keeps send visible",
+      "resize follows latest without jumping while reading older messages",
+      "model name and context metadata do not intersect",
+      "modal content never covers footer",
+      "context details wrap",
+      "inline approval stays in chat and buttons remain accessible"
+    ]
+  },
+  "uiBundle": {
+    "scope": "Final built UI tested with mocked WebView, not installed Office",
+    "files": {
+      "dist/ui/app.js": "e401e0bf413114a1fa8435bf74cdfac23be7a524c12b4440d9bd709c144de52e",
+      "dist/ui/app.css": "f4a9e8d3d2d69b1264b77bdc281af455bea33eab877db9e760db4386ce13c874",
+      "dist/ui/index.html": "46354a529f3f1e83da276643fe5f3116c5d1f5749cfd98ccc2d2749a9ddf4b55"
+    }
+  },
+  "currentWorkspaceReferenceSources": {
+    "scope": "Current local Workspace CSS source, not live Electron",
+    "files": [
+      {
+        "file": "/Users/ganadi/Documents/office_x/node_modules/@e2e/cx-design-system/dist/styles.css",
+        "sha256": "fb7dfefaa4714477d5e3913fa546022db7c76adfa75bd0138b4f40288412637a"
+      },
+      {
+        "file": "/Users/ganadi/Documents/office_x/node_modules/@e2e/cx-design-system/fonts/font.css",
+        "sha256": "1c2b994316b94d52a77622ef463f5fd4f6aae15619d536f9380353f57977d920"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/extensions/aipro-chat/design/agent-deck.css",
+        "sha256": "79cea93bce49a2bf675a65c971691309906e741c9b5a586ec094b92df02acc65"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/extensions/aipro-chat/src/app.css",
+        "sha256": "1e43fb818976e9b90b13a7bd4e4ab6d27c67a3f28a73b36c2f22e831ef4fa8f2"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-identity.css",
+        "sha256": "2a2c2d75e6d26393efc80dc301efaf61e344cf33e81d2f6de095cfd99175b305"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/electron-app/ios-tokens.css",
+        "sha256": "5b649794adc954c54ef903a9cdf61706c7ee2e0dc9b5354246dc15c139774a5b"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-typography.css",
+        "sha256": "fcd62f516fb597c3b55ef509d5da04e6e33f6a874c9d07f114d29f20d17b3d06"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-density.css",
+        "sha256": "2038d9d8a9d4c80edf84ae33a53703e6b1a32df0e500f7bdbcdb2c05478ba523"
+      },
+      {
+        "file": "/Users/ganadi/Documents/llm_router/packages/nubi-desktop/design/workspace-dialogs.css",
+        "sha256": "d28b3012abf7687f722e96d3a97cb5e643cfd336189827e9c8b037138f16f873"
+      }
+    ]
+  },
+  "nativeCOM": {
+    "architectures": [
+      "x64",
+      "x86"
+    ],
+    "scope": "Office-shaped IDispatch fixtures; not installed Office"
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "standaloneEditorsAbsent": true,
+    "officeInstalled": false,
+    "registry": [
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry32",
+        "app": "Excel"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry32",
+        "app": "Word"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry32",
+        "app": "PowerPoint"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry64",
+        "app": "Excel"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry64",
+        "app": "Word"
+      },
+      {
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry64",
+        "app": "PowerPoint"
+      }
+    ],
+    "installSeconds": 9.76,
+    "legacyEditorUpgradeCleanup": true,
+    "reinstallSeconds": 5.52,
+    "passed": true,
+    "runner": "windows-2022",
+    "imageFeatures": false,
+    "uninstallSeconds": 1.58,
+    "realOfficeVerified": false,
+    "liveModelVerified": false
+  },
+  "integrity": {
+    "commit": "b888e33e10216c0301bec21e634c7169718d54ea",
+    "exeSha256": "3401528722246281f5ad9e43d48068867d7bc0ce03f499582b6408011045cd93",
+    "exeBytes": 124479584,
+    "sourceSha256": "d5beecf7e40e003b44f18ca66fd558515070464aab2e6231941296a8aec97383",
+    "sourceFiles": 5559,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productAndTestSourceHashesChecked": 87,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true
+  },
+  "boundaries": {
+    "realOffice2016Verified": false,
+    "realWindowsClaudeVerified": false,
+    "liveWorkspaceElectronVisualProof": false,
+    "realProviderLoginTestedThisRelease": false
+  }
+}

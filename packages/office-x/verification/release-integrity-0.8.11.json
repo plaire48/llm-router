@@ -1,0 +1,12 @@
+{
+  "commit": "b888e33e10216c0301bec21e634c7169718d54ea",
+  "exeSha256": "3401528722246281f5ad9e43d48068867d7bc0ce03f499582b6408011045cd93",
+  "exeBytes": 124479584,
+  "sourceSha256": "d5beecf7e40e003b44f18ca66fd558515070464aab2e6231941296a8aec97383",
+  "sourceFiles": 5559,
+  "immutableGenOfficeFiles": 4582,
+  "immutableNubiFiles": 88,
+  "productAndTestSourceHashesChecked": 87,
+  "zipCRC": true,
+  "bothArchitectureEvidenceIncluded": true
+}

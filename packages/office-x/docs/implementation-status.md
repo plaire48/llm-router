@@ -9,3 +9,5 @@ Workspace ReasoningPicker와 ContextMeter를 공통 작업창에 연결했다. �
 검증: 소스/타입 검사, 실제 worker stdio + 제공자 모의 테스트, 세 앱 공통 UI의 토큰·요약·취소·복구, 현재 Workspace CSS 참조와 36개 모달 상태. 실제 Windows Office 2016과 사용자 계정의 모델 연결은 접근 가능한 환경이 없어 미검증이다. Windows 설치 검증은 릴리즈 증빙에 별도로 기록한다.
 
 첨부한 Codex 입력창 배치에 맞춰 모델·추론과 문맥·보내기를 정리했다. 승인을 대화 흐름 안으로 옮겼고, 크기 변화로 발생한 스크롤 이벤트는 사용자의 과거 답변 읽기와 구분한다. 연결 계정 기본 표시를 줄이고 모델 목록의 중첩 스크롤을 제거했다. 긴 문서/초안/모델 이름과 280/320/420px 폭·짧은 화면 9개 상태에서 내용·입력·메타데이터·푸터의 교차와 접근성을 검사했다.
+
+최종 Windows 빌드 b888e33과 설치/재설치/제거, 실제 WinForms WebView2 클릭·입력 검사가 통과했다. Windows 소스 테스트 138개와 코어 132개를 통과했다. Office 없는 Windows VM에서 설치 9.76초, 재설치 5.52초였다. 공개 EXE의 인증 없는 다운로드와 해시, 소스 ZIP·원본·최종 UI 번들을 대조했다. 증빙은 `verification/release-0.8.11.json`, `verification/public-download-0.8.11.json`이다. 실제 Office 2016과 실제 계정 연결은 미검증이다.

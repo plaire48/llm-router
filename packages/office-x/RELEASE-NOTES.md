@@ -18,3 +18,7 @@ Excel, Word, PowerPoint의 VSTO Agent에 Workspace 추론 설정과 문맥 사�
 검증: 소스/타입 검사, 실제 worker 프로세스의 사용량·수동 요약·후속 대화 검사, 세 앱 공통 모의 WebView의 요약/취소/복구와 36개 모달 상태, 긴 답변·표·코드·초안·승인 카드의 9개 화면 상태를 검사했습니다. Windows 빌드·설치 결과는 릴리즈 증빙에 기록합니다.
 
 실제 Windows Office 2016 환경과 사용자 계정의 Claude/ChatGPT 연결은 접근 가능한 기기가 없어 확인하지 못했습니다. 모의 COM과 설치된 WebView2 검사를 실제 Office 실사용 증빙으로 제시하지 않습니다.
+
+[Windows 빌드와 검사](https://github.com/plaire48/llm-router/actions/runs/38437718492) 통과: 소스 138개, 코어 132개, x86/x64 COM 모의 검사, 설치된 세 앱 채팅창 클릭/입력 검사. Office가 없는 Windows VM에서 설치 9.76초, 재설치 5.52초입니다. 실제 Office 내부 실사용 증빙은 아닙니다.
+
+설치 파일 SHA-256: 3401528722246281f5ad9e43d48068867d7bc0ce03f499582b6408011045cd93. 124479584바이트. GenOffice 4582개와 누비 88개 원본 및 변경 제품/테스트 소스 해시를 대조했습니다. 상세 범위는 release-0.8.11.json을 참고하세요.
