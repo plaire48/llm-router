@@ -15,7 +15,7 @@ namespace OfficeX.Core {
     else{var v=op["value"];if(!new[]{JTokenType.String,JTokenType.Integer,JTokenType.Float,JTokenType.Boolean,JTokenType.Null}.Contains(v.Type)||v.Type==JTokenType.String&&(((string)v).Length>32000||((string)v).Contains("\0"))||v.Type==JTokenType.Float&&(double.IsNaN((double)v)||double.IsInfinity((double)v)))throw new OfficeFault("cell_value_invalid",invocationStarted:false);}
    }
    string sheet=(string)input["sheet"]??defaultSheet;
-   var reads=new List<OfficeStep>{new OfficeStep{Id="cell_sheets",Member="Worksheets"},new OfficeStep{Id="cell_sheet",Target="cell_sheets",Member="Item",Args=new JArray(sheet==null?(object)1:sheet)}};
+   var reads=sheet==null?new List<OfficeStep>{new OfficeStep{Id="cell_sheet",Member="ActiveSheet"},new OfficeStep{Target="cell_sheet",Member="Name"}}:new List<OfficeStep>{new OfficeStep{Id="cell_sheets",Member="Worksheets"},new OfficeStep{Id="cell_sheet",Target="cell_sheets",Member="Item",Args=new JArray(sheet)}};
    for(int i=0;i<operations.Count;i++){string id="cell_"+i;reads.Add(new OfficeStep{Id=id,Target="cell_sheet",Member="Range",Args=new JArray(addresses[i])});foreach(var member in new[]{"Value2","Formula","NumberFormat"})reads.Add(new OfficeStep{Target=id,Member=member});}
    var before=session.Inspect(reads);var steps=new List<OfficeStep>();var checks=new List<OfficeCheck>();
    for(int i=0;i<operations.Count;i++){var op=(JObject)operations[i];string id="cell_"+i;

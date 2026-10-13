@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "candidateVersion": "0.8.5",
+  "scope": "browser with mock WebView host; not real Office or live Claude",
+  "results": [
+    {
+      "app": "excel",
+      "headerTextRemoved": true,
+      "copyFailureDisclosed": true,
+      "rejectionPreserved": true,
+      "explicitApproval": true,
+      "receiptShowsNoBackup": true,
+      "validationLocationVisible": true
+    },
+    {
+      "app": "word",
+      "headerTextRemoved": true,
+      "copyFailureDisclosed": true,
+      "rejectionPreserved": true,
+      "explicitApproval": true,
+      "receiptShowsNoBackup": true,
+      "validationLocationVisible": true
+    },
+    {
+      "app": "powerpoint",
+      "headerTextRemoved": true,
+      "copyFailureDisclosed": true,
+      "rejectionPreserved": true,
+      "explicitApproval": true,
+      "receiptShowsNoBackup": true,
+      "validationLocationVisible": true
+    }
+  ]
+}

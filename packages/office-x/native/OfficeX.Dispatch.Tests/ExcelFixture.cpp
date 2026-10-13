@@ -8,7 +8,7 @@
 // Excel-shaped native IDispatch server whose type library is deliberately broken.
 // Exercises the production host without installing Office or pretending this is Excel.
 struct Object;
-struct State { Object* active=nullptr; std::wstring copySource; int typeInfoCalls=0, valueWrites=0, copies=0, copyAttempts=0; HRESULT copyFailure=S_OK; };
+struct State { Object* active=nullptr; std::wstring copySource; int typeInfoCalls=0, valueWrites=0, copies=0, copyAttempts=0, activeSheet=0; HRESULT copyFailure=S_OK; };
 struct Object: IDispatch {
  State* state; LONG refs=1; std::wstring kind, name, address; VARIANT data;
  bool hasFormula=false;Object* document=nullptr;int start=0,end=0,style=-1;std::wstring text=L"\r";
@@ -20,7 +20,7 @@ struct Object: IDispatch {
  ULONG STDMETHODCALLTYPE Release() override {auto n=InterlockedDecrement(&refs);if(!n)delete this;return n;}
  HRESULT STDMETHODCALLTYPE GetTypeInfoCount(UINT* n) override {*n=1;return S_OK;}
  HRESULT STDMETHODCALLTYPE GetTypeInfo(UINT,LCID,ITypeInfo** p) override {++state->typeInfoCalls;*p=nullptr;return TYPE_E_INVDATAREAD;}
- static const std::vector<std::wstring>& Names(){static const std::vector<std::wstring> n={L"ActiveWorkbook",L"ActiveWindow",L"HWND",L"Workbooks",L"Add",L"Name",L"Worksheets",L"Count",L"Item",L"BuiltInDocumentProperties",L"Value",L"Range",L"Value2",L"NumberFormat",L"Font",L"Bold",L"Interior",L"Color",L"Columns",L"ColumnWidth",L"WrapText",L"Rows",L"AutoFit",L"UsedRange",L"CountLarge",L"Formula",L"Address",L"SaveCopyAs",L"HasVBProject",L"Activate",L"Content",L"TextFrame",L"TextRange",L"Size",L"RGB",L"Text",L"ActiveDocument",L"ActivePresentation",L"Documents",L"Presentations",L"PageSetup",L"SlideWidth",L"SlideHeight",L"Slides",L"Shapes",L"AddTextbox",L"WordWrap",L"AutoSize",L"BoundHeight",L"Windows",L"End",L"Style",L"Styles",L"NameLocal",L"FileFormat",L"HasTextFrame",L"Type",L"Left",L"Top",L"Width",L"Height",L"WordOpenXML",L"Tables",L"Sections",L"InlineShapes",L"HasFormula"};return n;}
+ static const std::vector<std::wstring>& Names(){static const std::vector<std::wstring> n={L"ActiveWorkbook",L"ActiveWindow",L"HWND",L"Workbooks",L"Add",L"Name",L"Worksheets",L"Count",L"Item",L"BuiltInDocumentProperties",L"Value",L"Range",L"Value2",L"NumberFormat",L"Font",L"Bold",L"Interior",L"Color",L"Columns",L"ColumnWidth",L"WrapText",L"Rows",L"AutoFit",L"UsedRange",L"CountLarge",L"Formula",L"Address",L"SaveCopyAs",L"HasVBProject",L"Activate",L"Content",L"TextFrame",L"TextRange",L"Size",L"RGB",L"Text",L"ActiveDocument",L"ActivePresentation",L"Documents",L"Presentations",L"PageSetup",L"SlideWidth",L"SlideHeight",L"Slides",L"Shapes",L"AddTextbox",L"WordWrap",L"AutoSize",L"BoundHeight",L"Windows",L"End",L"Style",L"Styles",L"NameLocal",L"FileFormat",L"HasTextFrame",L"Type",L"Left",L"Top",L"Width",L"Height",L"WordOpenXML",L"Tables",L"Sections",L"InlineShapes",L"HasFormula",L"ActiveSheet"};return n;}
  HRESULT STDMETHODCALLTYPE GetIDsOfNames(REFIID,LPOLESTR* names,UINT count,LCID,DISPID* ids) override {for(UINT i=0;i<count;i++){ids[i]=DISPID_UNKNOWN;for(size_t j=0;j<Names().size();j++)if(_wcsicmp(names[i],Names()[j].c_str())==0)ids[i]=static_cast<DISPID>(j+1);if(ids[i]==DISPID_UNKNOWN)return DISP_E_UNKNOWNNAME;}return S_OK;}
  Object* Child(const std::wstring& key,const std::wstring& type=L"object"){auto& child=children[key];if(!child)child=new Object(state,type);return child;}
  static void Ref(VARIANT* r,Object* o){r->vt=VT_DISPATCH;r->pdispVal=o;o->AddRef();}
@@ -63,6 +63,7 @@ struct Object: IDispatch {
   if(member==L"BuiltInDocumentProperties"||member==L"Font"||member==L"Interior"||member==L"Columns"||member==L"Rows"||member==L"Content"||member==L"TextFrame"||member==L"TextRange"){Ref(r,Child(member,member==L"BuiltInDocumentProperties"?L"properties":member==L"Font"?L"font":L"object"));return S_OK;}
   if(member==L"Item"&&kind==L"properties"){Ref(r,Child(L"Title",L"title"));return S_OK;}
   if(member==L"Value"&&kind==L"title"){if(set){VariantClear(&data);return VariantCopy(&data,&arg(0));}return VariantCopy(r,&data);}
+  if(member==L"ActiveSheet"&&kind==L"book"){auto collection=Child(L"Worksheets",L"sheets");if(state->activeSheet<0||state->activeSheet>=static_cast<int>(collection->sheets.size()))return DISP_E_BADINDEX;Ref(r,collection->sheets[state->activeSheet]);return S_OK;}
   if(member==L"Count"&&kind==L"sheets"){r->vt=VT_I4;r->lVal=static_cast<LONG>(sheets.size());return S_OK;}
   if(member==L"Item"&&kind==L"sheets"){if(p->cArgs!=1)return DISP_E_BADPARAMCOUNT;int i=Number(arg(0));if(arg(0).vt==VT_BSTR){i=0;for(size_t n=0;n<sheets.size();n++)if(sheets[n]->name==arg(0).bstrVal)i=static_cast<int>(n)+1;}if(i<1||i>static_cast<int>(sheets.size()))return DISP_E_BADINDEX;Ref(r,sheets[i-1]);return S_OK;}
   if(member==L"Add"&&kind==L"books"){auto book=Child(L"added:"+std::to_wstring(children.size()),L"book");state->active=book;Ref(r,book);return S_OK;}
@@ -86,3 +87,5 @@ extern "C" __declspec(dllexport) void __cdecl GetExcelFixtureStats(int* typeInfo
 extern "C" __declspec(dllexport) void __cdecl SetExcelFixtureCopyFailure(int code){state.copyFailure=static_cast<HRESULT>(code);}
 
 extern "C" __declspec(dllexport) int __cdecl GetExcelFixtureCopyAttempts(){return state.copyAttempts;}
+
+extern "C" __declspec(dllexport) void __cdecl SetExcelFixtureActiveSheet(int index){state.activeSheet=index-1;}

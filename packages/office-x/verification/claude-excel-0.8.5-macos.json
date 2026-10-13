@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "liveProvider": true,
+  "provider": "claude",
+  "platform": "macOS",
+  "nativeOffice": "mock",
+  "realOfficeVerified": false,
+  "realWindowsClaudeVerified": false,
+  "proposals": [
+    "create_document"
+  ],
+  "nativeMockWrites": 1,
+  "sheets": 1,
+  "multilineCellProposed": true,
+  "finalTextDelivered": true,
+  "connectedAfterCompletion": true
+}

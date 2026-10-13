@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "provider": "claude",
+  "liveProvider": true,
+  "platform": "macOS",
+  "nativeOffice": "mock",
+  "realOfficeVerified": false,
+  "realWindowsClaudeVerified": false,
+  "calls": [
+    "write_cells",
+    "set_formula"
+  ],
+  "literalTextProposed": true,
+  "numericValueProposed": true,
+  "generalFormulaProposed": true,
+  "finalTextDelivered": true
+}

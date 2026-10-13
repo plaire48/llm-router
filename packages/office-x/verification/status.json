@@ -6,7 +6,7 @@
     "typecheckPassed": true,
     "testsPassed": 90,
     "testsSkippedOnMac": 4,
-    "nativeCoreTestsPassed": 88,
+    "nativeCoreTestsPassed": 89,
     "nativeHostCompilePassed": true,
     "vendorGenOfficeFiles": 4582,
     "vendorNubiFiles": 88

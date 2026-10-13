@@ -1,6 +1,6 @@
 # 0.8.5 변경
 
-일반 Excel 셀 요청은 ExcelCellWrites를 통해 OfficeAutomationSession의 동일한 승인·대상 셀 원본 비교·읽기 검증에 연결된다. 기존 ExcelSession 곱셈 데모 경로는 테스트/데모에만 남는다. set_formula는 일반 수식을 지원하고 write_cells는 기존 셀·선택 외 대상도 지원한다. 문자열의 NumberFormat을 일시적으로 @로 설정한 뒤 복원하며 HasFormula=false와 Value2를 확인한다. 수식은 Formula/HasFormula를 검사하고 큰따옴표 리터럴의 대소문자를 보존해 함수 이름 표기 차이를 비교한다. 계산 결과 정확성은 이 검사와 별도다.
+일반 Excel 셀 요청은 ExcelCellWrites를 통해 OfficeAutomationSession의 동일한 승인·대상 셀 원본 비교·읽기 검증에 연결된다. 기존 ExcelSession 곱셈 데모 경로는 테스트/데모에만 남는다. 선택 문맥이 없으면 Bound Workbook의 ActiveSheet를 사용하고, 승인 대기 중 시트 전환도 원본 비교로 감지한다. set_formula는 일반 수식을 지원하고 write_cells는 기존 셀·선택 외 대상도 지원한다. 문자열의 NumberFormat을 일시적으로 @로 설정한 뒤 복원하며 HasFormula=false와 Value2를 확인한다. 수식은 Formula/HasFormula를 검사하고 큰따옴표 리터럴의 대소문자를 보존해 함수 이름 표기 차이를 비교한다. 계산 결과 정확성은 이 검사와 별도다.
 
 RequestCheckpoint는 SaveCopyAs 실패를 status=unavailable 경고로 전달한다. 동일 문서/실행 실패는 캐시하고 Begin 및 Rebind 시 초기화한다. 백업 없음은 승인 폼과 영수증에 노출한다. 새 문서 creation의 current/new 불일치는 작성 위치 선택으로 해소한다. 생성 성공 후 런타임 context.documentId/documentTarget을 갱신한다. 기존 선택 경로는 생성 이후 사용하지 않고 새 문서 Office 도구를 사용한다.
 
