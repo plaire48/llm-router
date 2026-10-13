@@ -49,7 +49,7 @@
     {
       "path": "packages/ui/src/tokens.css",
       "sourceSha256": "838e51df94976bdbd7ecbf829cb7939cc08e132a151eee37721acc8a87497fa0",
-      "adaptedSha256": "5c81c93a6df4e1c70fc85f1749930fb883cd5dc5a5df9ecef19a1c9b40530cc4"
+      "adaptedSha256": "222b696c30c7172b5e87ef94cd5774ed5d70c501b5c4835acd69c61a571cc8a1"
     },
     {
       "path": "apps/shell/src/renderer/src/tabbar.css",

@@ -25,7 +25,12 @@ try{
   if(!row||row.ready!=='complete'||!row.text?.trim())throw Error('Editor renderer did not load: '+kind);if(row.accent.toUpperCase()!=='#3182F6')throw Error('Editor accent mismatch: '+kind+' '+row.accent);observations.push({kind,ready:row.ready,accent:row.accent,font:row.font});
  }
  await shell.evaluate(()=>window.aiOffice.newPdf());await shell.waitForFunction(()=>window.aiOfficeTabs.list().then(t=>t.some(x=>x.kind==='pdf'&&x.active)),{},{timeout:90000});
- const pdf=await application.evaluate(async({webContents})=>{const wc=webContents.getAllWebContents().find(w=>w.getURL().startsWith('genoffice-app://pdf/'));return wc?await wc.executeJavaScript('({ready:document.readyState,text:document.body?.innerText?.slice(0,500)})'):null;});if(!pdf)throw Error('PDF renderer missing');observations.push({kind:'pdf',ready:pdf.ready});
+ let pdf;
+ for(let attempt=0;attempt<90;attempt++){
+  pdf=await application.evaluate(async({webContents})=>{const wc=webContents.getAllWebContents().find(w=>w.getURL().startsWith('genoffice-app://pdf/'));if(!wc)return null;try{return await wc.executeJavaScript('({ready:document.readyState,text:document.body?.innerText?.slice(0,500),font:getComputedStyle(document.body).fontFamily})');}catch{return null;}});
+  if(pdf?.ready==='complete'&&pdf.text?.trim().length>5)break;await new Promise(r=>setTimeout(r,1000));
+ }
+ if(!pdf||pdf.ready!=='complete'||!pdf.text?.trim())throw Error('PDF renderer did not load');observations.push({kind:'pdf',ready:pdf.ready,font:pdf.font});
  const opening=application.waitForEvent('window',{timeout:20000});await shell.evaluate(()=>window.nubiOffice.openConnection());const connection=await opening;await connection.waitForURL('**/connection.html',{timeout:20000});await connection.getByText('사용할 모델을 연결하세요',{exact:true}).waitFor({timeout:30000});for(const name of ['AI Pro','ChatGPT','FabriX','Claude'])await connection.getByRole('button',{name,exact:true}).waitFor();
  const account=await connection.evaluate(()=>window.nubiOffice.status());if(account.connected)throw Error('Unexpected real account in disposable smoke profile');
  const bridges={docs:'desktop',sheets:'desktopApi',slides:'slidesApi',pdf:'pdfApi',html:'htmlApi',markdown:'markdownApi'};
