@@ -1,94 +1,148 @@
 {
-  "version": "0.7.1",
+  "version": "0.8.0",
   "date": "2026-10-13",
   "genofficeCommit": "438d9c65709952490c970beaa2599ef45e74431f",
-  "sourceChecks": {
-    "genofficeHashes": 4582,
-    "nubiHashes": 88,
-    "unitTestsPassed": 67,
-    "unitTestsSkipped": 4,
-    "nativeCoreTests": 73,
-    "stdioMockIntegration": "passed",
-    "net472HostCrossCompile": "passed",
-    "creationOperationBrowserFlows": 6,
-    "existingBrowserFlows": 14,
-    "textBrowserFlows": 2,
-    "officeIdentity": {
-      "states": 12,
-      "propertiesPerState": 77,
-      "matchesExcel": true
-    },
-    "newGenofficeBrowserFlows": 9,
-    "realPdfConversionFormats": [
-      "docx",
-      "pptx",
-      "xlsx"
-    ],
-    "realPptxGeneratedFixture": true,
-    "claudeTextOnlyRecoveryFixture": true,
-    "upstreamPptxOps": 68,
-    "upstreamPipelines": 77,
-    "upstreamPdf2docx": 822,
-    "upstreamPptxEngine": 1253,
-    "upstreamPptxEngineSkipped": 1,
-    "upstreamEnginesTotalPassed": 2829,
-    "memberPreInvocationRecoveryFixture": true,
-    "powerpointSelectionFallbackCrossCompiled": true,
-    "originalFileEngineTests": 4,
-    "companionLocalBuild": "six editors passed",
-    "nativeAccountBridgeCrossCompile": "passed",
-    "upstreamDocsEditorTests": 3472,
-    "upstreamPdfEditorTests": 955,
-    "upstreamPdfEditorSkipped": 2,
-    "upstreamXlsxGatewayTests": 248,
-    "originalEditorTestsPassed": 7490,
-    "npm10CleanInstall": "passed",
-    "officeFeatureBrowserFlows": 9,
-    "upstreamSlidesEditorTests": 1422,
-    "upstreamSlidesEditorSkipped": 5,
-    "upstreamMarkdownEditorTests": 1069,
-    "upstreamHtmlEditorTests": 324,
-    "companionConnectionBrowserFlows": 10,
-    "modelSelectionCX": "Nubi Workspace deferred single-choice workflow form",
-    "modelFormCatalogRefreshWithoutProviderSwitch": "passed",
-    "upstreamUiTests": 165,
-    "windowsUnitTestsPassed": 71,
-    "sharedModelSettingsEditors": 6,
-    "nativeCamelCaseReviewRegression": true,
-    "nativeWireBrowserApps": 3,
-    "screenRecoveryWithoutDocumentReplay": true,
-    "headerActions": [
-      "model",
-      "rollback"
-    ],
-    "windowsComArchitectures": [
-      "x86",
-      "x64"
+  "product": {
+    "host": "Excel/Word/PowerPoint 2016 Windows VSTO",
+    "standaloneGenOfficeEditors": false,
+    "newConversationUI": false,
+    "historyUI": false,
+    "imageTools": false,
+    "retained": [
+      "GenOffice AgentLoop",
+      "native document read/edit/create",
+      "background DOCX/XLSX engines",
+      "PPTX generation/operations/audit",
+      "web search",
+      "PDF conversion",
+      "document rendering",
+      "whole-document rollback",
+      "Nubi account/model UI including Claude"
     ]
   },
-  "windowsVstoBuildVerified": true,
-  "windowsInstallerVerified": true,
-  "officeRuntimeVerified": false,
-  "liveModelVerified": false,
-  "genofficeFullProductParityVerified": false,
-  "releasePublished": true,
-  "windowsBuildVerified": true,
-  "windowsInstallVerified": true,
-  "companionEditorsIncluded": [
-    "docs",
-    "sheets",
-    "slides",
-    "pdf",
-    "markdown",
-    "html"
-  ],
-  "realOfficeVerified": false,
-  "upstreamFiles": 4582,
-  "releaseUrl": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.7.1-beta.1",
-  "companionRuntimeVerified": true,
-  "previousRelease": "office-x-v0.7.0-beta.1",
-  "windowsRun": 38345573982,
-  "buildCommit": "470c95f0a4f99738e126ab02bf29a532069d7071",
-  "sourcePackageCommit": "ecd1313b06d834ad1350be1165009be2fa303b57",
-  "nativeWebView2Verified": true
+  "localChecks": {
+    "vendorHashes": 4582,
+    "nubiHashes": 88,
+    "unitPassed": 70,
+    "unitSkippedMacOS": 4,
+    "nativeCorePassed": 74,
+    "hostCrossCompile": true,
+    "browserChatFlows": 16,
+    "nativeContractApps": 3,
+    "creationAndEditBrowserFlows": 6,
+    "searchAndRecoveryBrowserFlows": 9,
+    "cxIdentityStates": 12,
+    "cxIdentityPropertiesPerState": 77,
+    "stdioIntegration": "mock provider and native Office",
+    "claudeIntegration": "mock CLI; no live account"
+  },
+  "windowsChecks": {
+    "status": "passed",
+    "run": "https://github.com/plaire48/llm-router/actions/runs/38353145206",
+    "commit": "5cad64a878f50507265c0b05521d4370263e7078",
+    "nativeComArchitectures": [
+      "x64",
+      "x86"
+    ],
+    "nativeComScope": "production IDispatch against Scripting.Dictionary; not Office COM",
+    "surface": {
+      "passed": true,
+      "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+      "editors": 3,
+      "approvals": 3,
+      "physicalClickAndTyping": true,
+      "invalidContractRecovery": true,
+      "error": null
+    },
+    "installation": {
+      "passed": true,
+      "reinstallSeconds": 5.28,
+      "liveModelVerified": false,
+      "realOfficeVerified": false,
+      "standaloneEditorsAbsent": true,
+      "imageFeatures": false,
+      "officeInstalled": false,
+      "registry": [
+        {
+          "view": "Registry32",
+          "app": "Excel",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal"
+        },
+        {
+          "view": "Registry32",
+          "app": "Word",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal"
+        },
+        {
+          "view": "Registry32",
+          "app": "PowerPoint",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal"
+        },
+        {
+          "view": "Registry64",
+          "app": "Excel",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal"
+        },
+        {
+          "view": "Registry64",
+          "app": "Word",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal"
+        },
+        {
+          "view": "Registry64",
+          "app": "PowerPoint",
+          "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal"
+        }
+      ],
+      "legacyEditorUpgradeCleanup": true,
+      "uninstallSeconds": 1.57,
+      "installSeconds": 9.1,
+      "runner": "windows-2022"
+    },
+    "installer": {
+      "components": [
+        "excel",
+        "word",
+        "powerpoint"
+      ],
+      "version": "0.8.0",
+      "bytes": 124568322,
+      "prerequisites": [
+        {
+          "name": "vstor_redist.exe",
+          "sha256": "CFE1A40BBE4A50022DB2164ABDB0154984E2CECB761A23CDC81CB5754F6E0A18",
+          "source": "https://download.microsoft.com/download/5/d/2/5d24f8f8-efbb-4b63-aa33-3785e3104713/vstor_redist.exe"
+        },
+        {
+          "name": "MicrosoftEdgeWebview2Setup.exe",
+          "sha256": "9B5CA0A259E6FC9B57230089258BB2EE1DE74A9ED52F88D06B4AC354A8A68C70",
+          "source": "https://go.microsoft.com/fwlink/p/?LinkId=2124703"
+        },
+        {
+          "name": "node-v22.23.2-win-x64.zip",
+          "sha256": "1177b4137ba5adaa56354ae40f1080c7450e8ae09cecb47da459d1c52ac99f97",
+          "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x64.zip"
+        },
+        {
+          "name": "node-v22.23.2-win-x86.zip",
+          "sha256": "725c9e2bdd1c2016b41c995a81f4fa36ce4e2ee565b7455d8f889182727df647",
+          "source": "https://nodejs.org/dist/v22.23.2/node-v22.23.2-win-x86.zip"
+        }
+      ],
+      "realOfficeVerified": false,
+      "liveModelVerified": false,
+      "imageFeatures": false,
+      "compression": "zip/7, non-solid",
+      "standaloneEditors": false,
+      "manifestSigning": "self-signed preview",
+      "commit": "5cad64a878f50507265c0b05521d4370263e7078",
+      "installerAuthenticode": "unsigned"
+    },
+    "exeSha256": "c9af984ff6c97d7c6fe5304871e48afc055ddcf577a07c933fb4508b6e1c2f7c",
+    "sourceSha256": "a4747ad8e96415e0152c4230196b0d21002809303939a49a01a60bcbe782e3a7",
+    "sourceVendorHashesVerified": true,
+    "externalEditorProductSourceAbsent": true
+  },
+  "realOffice2016Verified": false,
+  "liveModelVerified": false
 }
