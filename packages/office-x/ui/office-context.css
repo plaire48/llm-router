@@ -10,14 +10,14 @@
 .office-host .office-shell .context-ring{width:40px;height:40px;flex:none;}
 .office-host .office-shell .context-ring text{stroke:none;font-size:14px;font-weight:600;}
 .office-host .office-shell .composer-tools .context-ring{width:36px;height:36px;}
-.office-context-caption{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:6px;font:var(--deck-font-caption);color:var(--nubi-text-meta);font-variant-numeric:tabular-nums;}
+.office-permission-row{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:6px;font:var(--deck-font-caption);color:var(--nubi-text-meta);font-variant-numeric:tabular-nums;}
 .office-context-status{display:flex;justify-content:space-between;align-items:center;flex:none;gap:8px;padding:4px var(--office-inset);color:var(--nubi-text-action);font:var(--deck-font-caption);}
 .office-context-status .cx-kit-button{min-height:32px;padding:4px 8px;}
 .office-context-notice{margin:0 0 8px;color:var(--nubi-text-secondary);font:var(--deck-font-caption);}
 :root:has(.office-host) .context-dialog{--cx-font-family:var(--nubi-font-family);max-height:calc(100dvh - 24px);}
 
 .office-host .office-shell .nubi-compose-card .model-trigger.cx-kit-button .model-trigger-label{font-weight:600;}
-.office-context-caption{align-items:center;gap:8px;}
+.office-permission-row{align-items:center;gap:8px;}
 .office-permission-trigger{display:inline-flex;align-items:center;gap:5px;padding:3px 5px;border:0;border-radius:6px;background:transparent;color:var(--office-muted);font:inherit;cursor:pointer;}
 .office-permission-trigger:hover,.office-permission-trigger[aria-expanded=true]{background:var(--office-selected);color:var(--office-action);}
 .office-permission-trigger:disabled{opacity:.5;cursor:default;}

@@ -12,7 +12,7 @@ async(page)=>{
   if(kind==='office_operations')await p.getByText('변경 내용 확인',{exact:true}).click();
   if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error(app+' horizontal overflow');
   await p.screenshot({path:'/Users/ganadi/Documents/office_x/verification/'+app+'-'+kind+'.png'});
-  await p.getByRole('button',{name:'변경 적용',exact:true}).click();await p.getByText(kind==='create_document'?'새 문서 생성 확인':'문서 변경 확인',{exact:true}).waitFor();
+  await p.getByRole('button',{name:'변경 적용',exact:true}).click();await p.getByText('적용됨',{exact:true}).waitFor();
   if(errors.length)throw Error(errors.join('\n'));const msg=await p.evaluate(()=>window.sent.find(m=>m.type==='approve'));if(msg.planId!=='plan')throw Error('approval binding');results.push({app,kind,passed:true});await ctx.close();
  }
  return {scope:'mock WebView host, not Office COM',results};

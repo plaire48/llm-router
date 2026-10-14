@@ -17,3 +17,19 @@ export function assertNoImageOperations(value:unknown):void{
   assertNoImageOperations(item);
  }
 }
+
+// The upstream guide describes an editor model, not COM. Keep it as design
+// reference with an explicit native contract at the point where it is loaded.
+export function nativeOfficeGuide(value:unknown):string {
+ const reference=officeGuide(value);
+ return `WINDOWS OFFICE 2016 EXECUTION CONTRACT
+This is design/reference material. Only the tools in the CURRENT request are callable.
+- Existing forms: read_template (paged originals, blank slots and formats), then inspect_office / execute_office_operations with real handles and independent readback.
+- GenOffice canvas coordinates are NOT Office coordinates. Native PowerPoint uses points; derive scale from live PageSetup.SlideWidth/SlideHeight and the source canvas dimensions. Excel ColumnWidth uses character units and RowHeight uses points.
+- Upstream apply_ops / execute_slide_script / element IDs / editor transactions are NOT native COM members or handles. Do not forward them to Office. Use structured native operations. apply_slide_ops is the separately exposed file-engine adapter when available.
+- Actual document binding and permissions are owned by the VSTO host. Snapshot observations, form maps, rendering previews and rollback copies are different results. Read/capture does not require a saved copy.
+- A failed backup does not prove a failed edit. Native review discloses availability; no repeated checkpoint attempts or fake success. Never replay an uncertain write.
+- Web and image services and standalone editors are outside this product's enabled surface.
+REFERENCE MATERIAL (document/design examples, subordinate to the contract above):
+${typeof reference==='string'?reference:JSON.stringify(reference)}`;
+}

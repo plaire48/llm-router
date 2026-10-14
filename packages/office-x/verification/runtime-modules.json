@@ -259,6 +259,7 @@
     "vendor/genoffice/packages/agent-core/src/skill.ts",
     "vendor/genoffice/packages/agent-core/src/index.ts",
     "vendor/genoffice/packages/agent-core/src/loop.ts",
+    "runtime-src/template-skill.ts",
     "runtime-src/office-guides.json",
     "runtime-src/feature-policy.ts",
     "runtime-src/snapshot-recovery.ts",

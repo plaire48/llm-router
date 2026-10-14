@@ -15,7 +15,7 @@ async(page)=>{
    await p.goto('http://127.0.0.1:4178/index.html');await p.getByRole('textbox',{name:'메시지',exact:true}).fill('같은 누비 화면 확인');await p.getByRole('button',{name:'보내기',exact:true}).click();await p.getByText('핵심 내용',{exact:true}).waitFor();await p.evaluate(()=>document.fonts.ready);
    await p.mouse.move(0,0);await p.evaluate(async()=>{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));for(const animation of document.getAnimations()){if(Number.isFinite(animation.effect.getComputedTiming().iterations))animation.finish();}});
    const styles=await p.evaluate(()=>{
-    const selectors=['.nubi-logo-title','.office-content','.nubi-user-bubble','.assistant .message-body','.assistant .message-body strong','.office-context-caption','.document-context','.nubi-composer-surface','.aipro-message-input','.model-trigger','[aria-label="보내기"]'];
+    const selectors=['.office-agent-identity','.office-content','.nubi-user-bubble','.assistant .message-body','.assistant .message-body strong','.office-permission-row','.document-context','.nubi-composer-surface','.aipro-message-input','.model-trigger','[aria-label="보내기"]'];
     const props=['fontFamily','fontSize','fontWeight','lineHeight','color','backgroundColor','borderRadius'];
     return Object.fromEntries(selectors.map(selector=>{const style=getComputedStyle(document.querySelector(selector));return [selector,Object.fromEntries(props.map(k=>[k,style[k]]))];}));
    });

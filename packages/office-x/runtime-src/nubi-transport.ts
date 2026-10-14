@@ -43,7 +43,7 @@ export function nubiTransport(providers: {complete: (...args:any[])=>Promise<any
       }
       // The failed envelope emitted no host calls. Resume with inspection only;
       // the next ordinary turn receives fresh observations and all native tools.
-      repairTools=request.tools.filter(t=>/^(load_office_guide|inspect_office|inspect_office_members|read_selection|read_outline|read_range|read_cells|read_worksheets|read_sheet_context|read_surrounding)$/.test(t.name));
+      repairTools=request.tools.filter(t=>/^(read_template|load_office_guide|inspect_office|inspect_office_members|read_selection|read_outline|read_range|read_cells|read_worksheets|read_sheet_context|read_surrounding)$/.test(t.name));
       return providers.complete([...messages,{role:'user',content:'후속 모델 응답 형식 처리에 실패했지만 이미 검증된 문서 변경은 유지됩니다. 사용자에게 문서를 확인하거나 다시 요청하라고 넘기지 마세요. 제공된 읽기 도구로 현재 문서 상태를 확인하세요. 다음 응답에서 관찰 결과에 따라 남은 작업과 저장을 이어가세요. 이전 생성·삽입·쓰기를 반복하지 마세요. 실제로 모든 작업이 검증되었다면 그 결과만 답하세요.'}],repairTools.map(t=>({type:'function',function:{name:t.name,description:t.description,parameters:t.inputSchema}})),controller.signal);
     }).then(result=>{
       if(controller.signal.aborted){cb.onDone();return;}

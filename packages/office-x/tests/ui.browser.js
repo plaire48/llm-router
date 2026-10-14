@@ -62,7 +62,7 @@ async (page) => {
   await page.evaluate(()=>window.officeFixture.receive({type:'text',runId:'fixture-run',data:'선택한 표를 확인했습니다. 빈 금액 셀 3개에 수식을 넣겠습니다.'}));
   await page.screenshot({path:'/Users/ganadi/Documents/office_x/verification/chat-review.png'});
   await page.getByRole('button',{name:'변경 적용',exact:true}).click();
-  await page.getByText('수식 검증 완료',{exact:true}).waitFor();
+  await page.getByText('적용됨',{exact:true}).waitFor();
   await page.screenshot({path:'/Users/ganadi/Documents/office_x/verification/chat-result.png'});
   for(const name of ['새 대화','대화 이력','검색과 이미지 설정','GenOffice 편집기 열기'])if(await page.getByRole('button',{name,exact:true}).count())throw Error('removed header action remains: '+name);
   await page.getByRole('button',{name:'연결 설정',exact:true}).click();

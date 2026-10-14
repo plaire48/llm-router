@@ -14,7 +14,7 @@ async (page) => {
   await p.goto('http://127.0.0.1:4178/index.html');await p.getByRole('button',{name:app==='word'?'문단 다듬기':'발표 문구 다듬기',exact:true}).click();await p.getByRole('button',{name:'보내기',exact:true}).click();
   await p.getByText('문단을 바꿀까요?',{exact:true}).waitFor();await p.getByText('이 보고서는 다양한 정보를 전달하고 있습니다.',{exact:true}).waitFor();await p.getByText('이 보고서는 핵심 정보를 전합니다.',{exact:true}).waitFor();
   await p.screenshot({path:'/Users/ganadi/Documents/office_x/verification/'+app+'-review.png'});
-  await p.getByRole('button',{name:'변경 적용',exact:true}).click();await p.getByText('문장 변경 확인',{exact:true}).waitFor();
+  await p.getByRole('button',{name:'변경 적용',exact:true}).click();await p.getByText('적용됨',{exact:true}).waitFor();
   if(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error(app+' horizontal overflow');
   const approval=await p.evaluate(()=>window.sent.find(m=>m.type==='approve'));if(approval.planId!=='text-plan'||approval.runId!=='text-run')throw Error('approval not bound');results.push(app+' before/after approval and receipt');await context.close();
  }

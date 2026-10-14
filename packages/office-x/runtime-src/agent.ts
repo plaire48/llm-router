@@ -1,4 +1,5 @@
 import {AgentLoop,composeSkills,type AgentTransport,type AgentSkill,type AgentMessage,type AgentRunResult} from '@genoffice/agent-core';
+import {templateSkill} from './template-skill';
 import {officeSkill} from './office-skill';
 import {textSkill} from './text-skill';
 import {trackEdits,editReceipts} from './edit-receipts';
@@ -17,7 +18,7 @@ export function startAgent(options:{transport:AgentTransport;request:string;cont
  const callKey=(call:any)=>JSON.stringify([call.name,call.input]);
  const unfinishedPreparation=()=>preparationOnly(options.request,options.context.permissionMode,ledger,editReceipts(native)?.attempted===true);
  const native=trackEdits(options.native);const repaired=new Set<string>();
- const rawSkill=composeSkills('office-x',harness+` Native permission mode: ${options.context.permissionMode==='read'?'read-only: inspect and explain; document changes and saving are disabled. Do not retry blocked writes or ask for conversational approval to bypass this mode.':options.context.permissionMode==='auto'?'requested document edits are pre-authorized by the user through the native permission menu; do not ask for approval for each ordinary edit. Native source checks and readback remain mandatory. Uncertain previous writes still require human recovery review; rollback and external file overwrites remain explicit decisions.':'confirm each change using the native review card, without duplicating it in a chat question.'}`,[(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(native,options.context),officeSkill(native,options.context),...(options.additionalSkills||[])]);
+ const rawSkill=composeSkills('office-x',harness+` Native permission mode: ${options.context.permissionMode==='read'?'read-only: inspect and explain; document changes and saving are disabled. Do not retry blocked writes or ask for conversational approval to bypass this mode.':options.context.permissionMode==='auto'?'requested document edits are pre-authorized by the user through the native permission menu; do not ask for approval for each ordinary edit. Native source checks and readback remain mandatory. Uncertain previous writes still require human recovery review; rollback and external file overwrites remain explicit decisions.':'confirm each change using the native review card, without duplicating it in a chat question.'}`,[(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(native,options.context),officeSkill(native,options.context),templateSkill(native,options.context),...(options.additionalSkills||[])]);
  // Feed actionable native diagnostics back to the original GenOffice loop.
  const skill:AgentSkill={...rawSkill,verifyResponse:(text,executed)=>{
   if(unfinishedPreparation()&&!preparationRetryUsed){preparationRetryUsed=true;options.event('recovery',{stage:'adjusting',code:'preparation_only'});return preparationCorrection;}

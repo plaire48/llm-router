@@ -4,7 +4,7 @@ import {CxButton,Icon} from '@e2e/cx-design-system';
 const modes=[
  {id:'read',label:'읽기 전용',detail:'문서를 읽고 분석합니다'},
  {id:'confirm',label:'매번 확인',detail:'변경 내용을 확인한 뒤 적용합니다'},
- {id:'auto',label:'자동 적용',detail:'요청한 편집을 반복 확인 없이 적용합니다'},
+ {id:'auto',label:'자동 승인',detail:'요청한 편집을 반복 확인 없이 적용합니다'},
 ];
 export function PermissionPicker({mode='confirm',disabled,onChange}){
  const [open,setOpen]=useState(false),[position,setPosition]=useState({}),trigger=useRef(null),panel=useRef(null);

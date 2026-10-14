@@ -16,7 +16,7 @@ async(page)=>{
   if(answer.length!==1||answer[0].questionId!=='q1'||answer[0].answers.writeRecovery!=='현재 상태에서 이어가기')throw Error('wrong answer');
   if(!await p.getByRole('button',{name:'현재 상태에서 이어가기',exact:true}).isDisabled())throw Error('double submit enabled');
   await p.evaluate(()=>{emit({type:'question_closed',runId:'run'});emit({type:'write_recovery_resumed',runId:'run'});emit({type:'receipt',runId:'run',receipt:{kind:'office_operations',status:'verified',mutated:true,count:1}});emit({type:'done',runId:'run',result:{text:'남은 작업을 처리했습니다.'}});});
-  await p.getByText('문서 변경 확인',{exact:true}).waitFor();if(await p.getByText('문서 상태 확인이 필요합니다.',{exact:true}).count())throw Error('stale warning');
+  await p.getByText('적용됨',{exact:true}).waitFor();if(await p.getByText('문서 상태 확인이 필요합니다.',{exact:true}).count())throw Error('stale warning');
   if(errors.length)throw Error(errors.join('\n'));results.push({app,waitingCard:true,oneClick:true,noOverflow:true,noDuplicateWarning:true});await ctx.close();
  }
  return {passed:true,scope:'mock WebView host, not actual Office',results};

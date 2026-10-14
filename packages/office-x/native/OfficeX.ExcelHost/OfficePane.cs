@@ -256,17 +256,22 @@ namespace OfficeX.ExcelHost
                 return await Task.Run(()=>files.SaveMarkdown((string)input["path"],destination,cancelToken),cancelToken);
             }
             if(new[]{"rollback_document","import_slides","open_artifact","import_word_content"}.Contains(name)){
+                string importMode=(string)input["mode"]??"new";
                 var planId=Guid.NewGuid().ToString("N");string summary=name=="rollback_document"?"문서 전체 스냅샷을 새 창에 복원합니다. 현재 문서는 그대로 유지됩니다.":(string)input["summary"]??"문서에 변경을 적용합니다.";
-                if(!await AwaitReview(planId,new{kind="file_operation",summary,name})){writesStopped=true;return new{status="rejected",mutated=false};}
+                // Native replacement has the same checkpoint/review contract as cell edits.
+                // Previously these imports attempted a second, fatal SaveCopyAs AFTER approval.
+                object checkpoint=null;
+                if(name=="import_word_content"||name=="import_slides"&&importMode!="new")checkpoint=files.PrepareCheckpoint(summary);
+                if(!await AwaitReview(planId,new{kind="file_operation",summary,name},checkpoint)){writesStopped=true;return new{status="rejected",mutated=false};}
                 object receipt;
                 if(name=="rollback_document")receipt=files.Restore((string)input["checkpointId"],cancelToken);
                 else if(name=="open_artifact")receipt=files.OpenArtifact((string)input["path"],(string)input["sourceState"],cancelToken);
-                else if(name=="import_slides")receipt=files.ImportSlides((string)input["path"],(string)input["mode"]??"new",(int?)input["slide"]??0,(string)input["sourceState"],cancelToken);
-                else if(name=="import_word_content")receipt=files.ImportWordContent((string)input["path"],(string)input["expectedTextHash"],cancelToken);else throw new OfficeFault("feature_removed");
-                var r=Wire.Object(receipt);
-                if((bool?)r["mutated"]==true&&(name=="rollback_document"||name=="open_artifact"||name=="import_slides"&&(string)input["mode"]=="new")){try{RebindActiveDocument();documentTarget="current";r["documentTarget"]="current";r["documentId"]=automationPort.DocumentId;r["targetId"]="document";}catch{r["status"]="partial";r["error"]="created_document_binding_failed";r["followUpAvailable"]=false;}}
+                else if(name=="import_slides")receipt=files.ImportSlides((string)input["path"],importMode,(int?)input["slide"]??0,(string)input["sourceState"],cancelToken,checkpoint);
+                else if(name=="import_word_content")receipt=files.ImportWordContent((string)input["path"],(string)input["expectedTextHash"],cancelToken,checkpoint);else throw new OfficeFault("feature_removed");
+                var r=Wire.Object(receipt);if(checkpoint!=null)r["checkpoint"]=JToken.FromObject(checkpoint);
+                if((bool?)r["mutated"]==true&&(name=="rollback_document"||name=="open_artifact"||name=="import_slides"&&importMode=="new")){try{RebindActiveDocument();documentTarget="current";r["documentTarget"]="current";r["documentId"]=automationPort.DocumentId;r["targetId"]="document";}catch{r["status"]="partial";r["error"]="created_document_binding_failed";r["followUpAvailable"]=false;}}
                 if((string)r["status"]=="verified"&&name=="import_slides"&&input["expectedTextHashes"] is JArray expected){
-                    var actual=JArray.FromObject(files.ReadSlideText());int offset=(string)input["mode"]=="append"?actual.Count-expected.Count:(string)input["mode"]=="regenerate"?(int?)input["slide"]??0:0;
+                    var actual=JArray.FromObject(files.ReadSlideText());int offset=importMode=="append"?actual.Count-expected.Count:importMode=="regenerate"?(int?)input["slide"]??0:0;
                     string Clean(string text)=>System.Text.RegularExpressions.Regex.Replace(text??"",@"\s+"," ").Trim();
                     bool matches=offset>=0&&actual.Count>=offset+expected.Count;
                     for(int i=0;matches&&i<expected.Count;i++){var right=((JArray)actual[offset+i]["texts"]).Select(x=>Clean((string)x)).Where(x=>x.Length>0).ToArray();matches=String.Equals(Wire.Hash(right),(string)expected[i],StringComparison.OrdinalIgnoreCase);}

@@ -11,7 +11,7 @@ import {join,extname,basename} from 'node:path';
 import {marked} from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import {Artifacts} from './services';
-import {excludedTools,imageOperation,assertNoImageOperations,officeGuide} from './feature-policy';
+import {excludedTools,imageOperation,assertNoImageOperations,officeGuide,nativeOfficeGuide} from './feature-policy';
 import type {NativeCall} from './excel-skill';
 import {checkedNative,NativeToolFailure} from './native-tool-result';
 const schema=(properties:Record<string,unknown>,required:string[]=[]):Record<string,unknown>=>({type:'object',properties,required,additionalProperties:false});
@@ -66,7 +66,7 @@ export function extendedOfficeSkill(options:{native:NativeCall;context:Record<st
    case 'save_artifact':{const a=artifacts.get(input.artifactId);return native(name,{path:a.path,name:a.name},signal);}
    case 'ask_clarification':case 'checkpoint_document':case 'list_checkpoints':case 'rollback_document':return native(name,input,signal);
    case 'render_document':{if(app==='powerpoint'){const r:any=await native('render_slides',{first:input.first||1,count:input.count||6,width:input.width||1280},signal);const items=r.files.map((f:any)=>{const a=artifacts.register(f.path,'슬라이드 '+f.slide);return {...artifacts.public(a),page:f.slide,previewPath:a.path};});event('artifacts',{items});return {total:r.total,items:items.map(({previewPath,...x}:any)=>x)};}const pdf:any=await native('export_document_pdf',{},signal);return renderPdf(pdf.path,input,signal);}
-   case 'load_genoffice_guide':if(imageOperation(input.name))throw Error('feature_removed_images');return input.name==='operations'?opNames().filter(n=>!imageOperation(n)):input.name==='operation-catalog'?opNames().filter(n=>!imageOperation(n)).join('\n'):Object.prototype.hasOwnProperty.call(SLIDES_GUIDES,input.name)?officeGuide((SLIDES_GUIDES as any)[input.name]):opGuide(input.name);
+   case 'load_genoffice_guide':if(imageOperation(input.name))throw Error('feature_removed_images');return input.name==='operations'?opNames().filter(n=>!imageOperation(n)):input.name==='operation-catalog'?opNames().filter(n=>!imageOperation(n)).join('\n'):Object.prototype.hasOwnProperty.call(SLIDES_GUIDES,input.name)?nativeOfficeGuide((SLIDES_GUIDES as any)[input.name]):nativeOfficeGuide(opGuide(input.name));
    case 'save_style_template':writeFileSync(templatePath(input.name),JSON.stringify({name:input.name,style:ensureText(input.style,16000)}));return {saved:true,name:input.name};
    case 'list_style_templates':return readdirSync(templates).filter(f=>f.endsWith('.json')).map(f=>JSON.parse(readFileSync(join(templates,f),'utf8')));
    case 'read_deck':{if(app!=='powerpoint')throw Error('powerpoint_required');const source:any=await native('export_document_copy',{},signal),d=await openPptx(readFileSync(source.path));const start=Math.max(0,(input.first||1)-1);return {sourceState:source.sourceState,total:d.deck.slides.length,size:d.deck.size,slides:compactRead(d.deck.slides.slice(start,start+Math.min(10,input.count||3)))};}
