@@ -41,3 +41,18 @@
 :root:has(.office-host) .nubi-model-form .model-form-provider strong{font-weight:var(--nubi-weight-label);}
 :root:has(.office-host) .nubi-model-form .model-form-provider[aria-checked=true] strong{font-weight:var(--nubi-weight-emphasis);}
 @media(max-width:300px){.model-form-providers{grid-template-columns:minmax(0,1fr);}}
+:root:has(.office-host) .nubi-model-form .model-form-fields{gap:16px;}
+:root:has(.office-host) .nubi-model-form .model-form-account-summary{padding:10px 12px;background:var(--office-surface-inset);border-radius:14px;min-height:48px;box-sizing:border-box;}
+:root:has(.office-host) .nubi-model-form .model-form-provider[aria-checked=true]{border-color:transparent;}
+.model-form-search-row{display:flex;align-items:center;gap:6px;min-width:0;}
+.model-form-search-row>.cx-search-input{flex:1;min-width:0;}
+.model-form-search-row>div:first-child{flex:1;min-width:0;}
+:root:has(.office-host) .nubi-model-form .model-form-account-actions{flex:none;gap:2px;flex-wrap:nowrap;border:0;padding:0;}
+:root:has(.office-host) .nubi-model-form .model-form-account-actions :is(.cx-kit-button,.cx-action-button){padding:6px;min-width:32px;width:32px;height:36px;color:var(--office-muted);}
+:root:has(.office-host) .nubi-model-form .model-form-account-actions :is(.cx-kit-button,.cx-action-button):hover{color:var(--office-action);background:var(--office-selected);}
+:root:has(.office-host) .nubi-model-form .model-form-option.cx-kit-button{gap:10px;min-height:52px;border:0;border-radius:12px;padding:10px 12px;}
+:root:has(.office-host) .nubi-model-form .model-form-check{order:2;background:transparent;color:var(--office-action);width:20px;height:20px;}
+:root:has(.office-host) .nubi-model-form .model-form-option-copy{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+:root:has(.office-host) .nubi-model-form .model-form-option-copy strong{font-size:14px;line-height:21px;}
+.model-form-option-copy>span{flex:none;font-variant-numeric:tabular-nums;font-size:12px;}
+@media(max-width:340px){:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-body{padding-inline:16px;}:root:has(.office-host) .nubi-model-form .model-form-option-copy{flex-direction:column;align-items:flex-start;gap:2px;}}

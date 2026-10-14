@@ -1,0 +1,40 @@
+{
+  "version": "0.8.15",
+  "actualOffice": false,
+  "liveModel": false,
+  "coreTests": {
+    "passed": 141,
+    "scope": "fake transport, fake native ports"
+  },
+  "runtimeTests": {
+    "passed": 161,
+    "skipped": 5,
+    "scope": "macOS and fake model/native fixtures"
+  },
+  "forms": {
+    "passed": true,
+    "dialogStates": 36,
+    "apps": [
+      "excel",
+      "word",
+      "powerpoint"
+    ],
+    "widths": [
+      280,
+      320,
+      420
+    ],
+    "scope": "browser mock WebView"
+  },
+  "permissions": {
+    "passed": true,
+    "states": 6,
+    "keyboard": true,
+    "scope": "browser mock WebView"
+  },
+  "vendor": {
+    "genoffice": 4582,
+    "nubi": 88,
+    "unchanged": true
+  }
+}

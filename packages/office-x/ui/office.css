@@ -152,3 +152,4 @@ details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-captio
 @media(max-width:300px){.office-host .office-shell .composer textarea.aipro-message-input{max-height:64px;}}
 
 .receipt-export p { margin:4px 0 0; font-size:var(--cx-font-size-sm,14px); line-height:1.5; overflow-wrap:anywhere; }
+.office-host .office-shell .header-actions .cx-kit-button[data-icon-only]{width:36px;min-width:36px;height:36px;padding:8px;border-radius:50%;}

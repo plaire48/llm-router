@@ -69,3 +69,19 @@
 /* Workspace can abbreviate titles in wide sheets. Office must retain the
    whole destination question when its host narrows to 280px. */
 :root:has(.office-host) .office-dialog :is(h2,.office-dialog-title,.office-dialog-title>span:last-child){white-space:normal;overflow:visible;text-overflow:clip;}
+/* Compact iOS-style sheets: one title, grouped choices, one accented action. */
+:root:has(.office-host) .cx-panel-backdrop>.office-dialog{border-radius:20px;}
+:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-header{padding:18px 20px 14px;gap:10px;}
+:root:has(.office-host) .office-dialog .cx-panel-header h2{font-size:18px;line-height:26px;min-height:26px;letter-spacing:-.25px;}
+:root:has(.office-host) .office-dialog-symbol{width:22px;height:22px;background:transparent;border-radius:0;color:var(--office-action);}
+:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-body{padding:4px 20px 16px;gap:16px;}
+:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer{padding:12px 20px 16px;gap:8px;}
+:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer .cx-kit-button:not(.cx-button--primary){border-color:transparent;background:transparent;}
+:root:has(.office-host) .office-dialog .cx-panel-header-actions [data-action=close]{min-width:32px;width:32px;height:32px;min-height:32px;border-radius:50%;background:var(--office-surface-inset);}
+:root:has(.office-host) .office-dialog .target-choices{gap:8px;}
+:root:has(.office-host) .office-dialog .target-choices .cx-kit-button{flex-direction:row;align-items:center;gap:12px;min-height:72px;padding:12px 14px;border:0;border-radius:14px;}
+.office-dialog .target-choices .cx-kit-button>svg{flex:none;color:var(--office-action);}
+.office-dialog .target-choice-copy{display:flex;flex:1;flex-direction:column;gap:2px;min-width:0;}
+.office-dialog .target-choice-copy strong{color:var(--office-ink);}
+:root:has(.office-host) .office-dialog .target-choices .cx-kit-button>svg:last-child{color:var(--office-meta);}
+@media(max-height:540px){:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-header{padding-block:12px;}:root:has(.office-host) .office-dialog.deck-dialog>.cx-panel-footer{padding-block:10px;}}
