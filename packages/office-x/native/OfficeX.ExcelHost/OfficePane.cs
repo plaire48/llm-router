@@ -218,6 +218,7 @@ namespace OfficeX.ExcelHost
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
             if(name=="review_write_recovery")return await ReviewWriteRecovery(cancelToken);
+            if(new[]{"create_document","replace_text","replace_blocks","import_slides","import_word_content","open_artifact","rollback_document","save_document"}.Contains(name))recoveryReads=null;
             if(writesStopped&&name!="ask_clarification"&&name!="calculate_and_read"&&name!="calculate_office"&&name!="read_document_for_markdown"&&name!="save_markdown"&&name!="save_artifact"&&name!="select_input_file"&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="ask_clarification"){
                 var questions=input["questions"] as JArray;if(questions==null||questions.Count<1||questions.Count>3||questions.Any(q=>q["question"]?.Type!=JTokenType.String||((string)q["question"]).Length>500||q["options"] is JArray opts&&opts.Count>6))throw new OfficeFault("question_invalid");
@@ -337,7 +338,7 @@ namespace OfficeX.ExcelHost
             string boundDocument=automationPort.DocumentId;
             while(true){
                 token.ThrowIfCancellationRequested();
-                OfficeObservation observed=null;bool limited=false;
+                OfficeObservation observed=null;bool limited=recoveryReads==null;
                 try{automationPort.CheckSource();observed=automation.Inspect(reads);}catch(OfficeFault){
                     // A previous target can have been deleted by the partial batch.
                     // Keep a route to human-reviewed replanning on the same document.
