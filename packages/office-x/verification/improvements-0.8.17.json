@@ -1,0 +1,77 @@
+{
+  "version": "0.8.17",
+  "buildCommit": "a93124c2e2e27227f54bb972442b8f40638517bd",
+  "local": {
+    "typecheck": true,
+    "testsPassed": 178,
+    "testsSkipped": 5,
+    "coreTestsPassed": 141,
+    "net472NativeHostAndDispatchTestsCompiled": true,
+    "immutableGenOfficeFilesVerified": 4582,
+    "immutableNubiFilesVerified": 88
+  },
+  "browserFixtures": {
+    "permissionsAcrossThreeAppsAndTwoWidths": 6,
+    "tokenAndRemainingTextRemoved": true,
+    "automaticConfirmReadOnlySelection": true,
+    "contextDetailsAndCompressionStillWork": true,
+    "rejectionAndApprovalWithMissingBackupAcrossThreeApps": 6,
+    "iconDetailsAndCopyAccessible": true,
+    "readabilityAcrossThreeAppsAndThreeWidths": 9,
+    "connectionErrorInsideModelDialog": true,
+    "screenshots": [
+      "permissions-0.8.17.png",
+      "icons-receipt-0.8.17.png",
+      "automatic-permission-0.8.17.png"
+    ]
+  },
+  "templateMap": {
+    "readsActualNativeObservations": true,
+    "usesSaveCopyAs": false,
+    "wholeDocumentBackup": false,
+    "coverage": "explicit bounded scope, paged by agent",
+    "excel": "32 cells per read including blanks, formulas, merged addresses and formatting",
+    "word": "paragraph or table-cell pages including originals, end markers and typography",
+    "powerpoint": "shape pages with geometry and empty text placeholders; non-text shapes structural only",
+    "allTemplateFeaturesVerifiedInRealOffice": false
+  },
+  "references": [
+    "https://learn.microsoft.com/en-us/office/vba/api/word.cell.range",
+    "https://learn.microsoft.com/en-us/office/vba/api/excel.range.mergearea",
+    "https://learn.microsoft.com/en-us/office/vba/api/powerpoint.shape.left"
+  ],
+  "actualOffice2016": false,
+  "actualWindowsClaudeAccount": false,
+  "actualWindowsChatGPTAccount": false,
+  "allSaveCopyAsCausesResolved": false,
+  "windowsRun": "https://github.com/plaire48/llm-router/actions/runs/38548361640",
+  "supersededRuns": [
+    {
+      "id": 38545986302,
+      "cause": "Installed UI assertion still expected removed receipt label; updated to check verified icon receipt and added native permission selection coverage",
+      "published": false
+    },
+    {
+      "id": 38547384138,
+      "cause": "Physical footer click did not open permissions; test window now fits actual desktop and checks hit-testing and enabled state",
+      "published": false,
+      "resolution": "Runner desktop height was 728 pixels; constraining the 800-pixel test window to the desktop allowed physical footer clicks. Final native UI validation passed."
+    }
+  ],
+  "windows": {
+    "passed": true,
+    "testsPassed": 182,
+    "testsSkipped": 1,
+    "nativeSurfaceDesktop": {
+      "width": 1024,
+      "height": 728
+    },
+    "physicalPermissionSelections": 6,
+    "physicalClickAndTyping": true,
+    "nativeSurfaceRecovery": true,
+    "installSeconds": 8.06,
+    "reinstallSeconds": 6.43,
+    "uninstallSeconds": 1.61,
+    "installedConverters": true
+  }
+}

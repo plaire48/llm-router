@@ -1,0 +1,13 @@
+{
+  "version": "0.8.17",
+  "buildCommit": "a93124c2e2e27227f54bb972442b8f40638517bd",
+  "run": "https://github.com/plaire48/llm-router/actions/runs/38548361640",
+  "installer": "https://github.com/plaire48/llm-router/releases/download/office-x-v0.8.17-beta.1/Nubi-Office-X-0.8.17-Setup.exe",
+  "actualWindowsInstaller": true,
+  "actualWindowsWebView2": true,
+  "nativeCOMFixtureBothArchitectures": true,
+  "actualOffice2016": false,
+  "liveWindowsProvider": false,
+  "integrity": "release-integrity-0.8.17.json",
+  "improvements": "improvements-0.8.17.json"
+}
