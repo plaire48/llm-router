@@ -1,0 +1,26 @@
+{
+  "buildCommit": "87ec3c0fb5b1ae8dc6872fde6545ca483139c4cb",
+  "exeSha256": "bdd1c00ffbf95fc63eb7da0dcf92ac17cdd64381ba5cbe571647edcd18f37ef1",
+  "exeBytes": 140017611,
+  "sourceSha256": "a49ef3d61ad42b11aa9ecdc02f80efe4917857b5498642405fa74f790fe1a566",
+  "sourceFiles": 5613,
+  "immutableGenOfficeFiles": 4582,
+  "immutableNubiFiles": 88,
+  "productSourceHashesChecked": 80,
+  "zipCRC": true,
+  "bothArchitectureEvidenceIncluded": true,
+  "installedConvertersVerified": true,
+  "actualOffice": false,
+  "windowsWorkflow": "https://github.com/plaire48/llm-router/actions/runs/38492035587",
+  "installSeconds": 9,
+  "reinstallSeconds": 6.36,
+  "uninstallSeconds": 1.43,
+  "actualOffice2016": false,
+  "actualClaudeOrChatGPT": false,
+  "windowsSourceTests": {
+    "passed": 159,
+    "skipped": 1
+  },
+  "nativeCoreTests": 135,
+  "publicRelease": "https://github.com/plaire48/llm-router/releases/tag/office-x-v0.8.14-beta.1"
+}

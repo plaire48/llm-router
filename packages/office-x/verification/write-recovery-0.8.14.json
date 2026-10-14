@@ -1,0 +1,12 @@
+{
+  "version": "0.8.14",
+  "scope": "source fixtures, native fake ports and browser mock WebView host",
+  "sourceTests": {"passed":155,"skipped":5},
+  "nativeCoreTests": {"passed":135,"actualOffice":false},
+  "nativeCompile": {"warnings":0,"errors":0},
+  "runtime": {"apps":["excel","word","powerpoint"],"noWritesOrModelRequestsDuringHumanWait":true,"resumeRemainingWork":true,"queuedCallsSkipped":true,"cancelReleasesWait":true,"declineStopsRun":true},
+  "core": {"sourceDriftRequiresNewReview":true,"oldPlansInvalidated":true,"oldSnapshotsInvalidated":true,"humanConfirmationDoesNotVerifyEarlierWrite":true},
+  "browser": {"apps":["excel","word","powerpoint"],"width":320,"oneClickAnswer":true,"doubleSubmitDisabled":true,"noHorizontalOverflow":true,"backupDisclosureBeforeApproval":true,"detailsCollapsed":true},
+  "actualOffice2016":false,"actualClaudeOrChatGPT":false,
+  "persistence":"same live Office and worker process only; no crash/restart recovery"
+}
