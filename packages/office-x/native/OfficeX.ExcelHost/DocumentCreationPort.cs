@@ -16,7 +16,7 @@ namespace OfficeX.ExcelHost {
   static string Identity(object o){var p=Marshal.GetIUnknownForObject(o);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   public DocumentCreationPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;using(var c=new Scope()){object doc=c.Hold(Source());sourceId=Identity(doc);}}
   object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
-  public void CheckSource(){using(var c=new Scope()){object win=c.Hold(OfficeDispatch.Get((object)application,"ActiveWindow")),doc=c.Hold(Source());if(Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
+  public void CheckSource(){using(var c=new Scope()){object win=c.Hold(OfficeDispatch.Get((object)application,"ActiveWindow")),doc=c.Hold(Source());if(OfficeWindow.Handle(win,app)!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}}
   public bool CreatedDocumentExists=>created!=null;
   public string CreatedName=>created==null?null:Convert.ToString(OfficeDispatch.Get(created,"Name"));
   public string CreatedDocumentId=>created==null?null:Identity(created);

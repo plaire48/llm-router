@@ -19,8 +19,8 @@ namespace OfficeX.ExcelHost {
   public TextPort(object application,string app,int hwnd){this.application=application;this.app=app;this.hwnd=hwnd;}
   static string Identity(object value){var p=Marshal.GetIUnknownForObject(value);try{return p.ToInt64().ToString();}finally{Marshal.Release(p);}}
   void Active(ComScope scope){
-   dynamic win=scope.Keep(application.ActiveWindow);
-   if(win==null||(int)win.HWND!=hwnd)throw new OfficeFault("activate_source_window");
+   object win=scope.Keep(OfficeDispatch.Get((object)application,"ActiveWindow"));
+   if(win==null||OfficeWindow.Handle(win,app)!=hwnd)throw new OfficeFault("activate_source_window");
    dynamic doc=scope.Keep(app=="word"?application.ActiveDocument:application.ActivePresentation);
    if(document!=null&&Identity(doc)!=documentId)throw new OfficeFault("source_changed");
   }

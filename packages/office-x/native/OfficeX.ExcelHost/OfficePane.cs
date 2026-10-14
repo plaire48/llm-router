@@ -44,7 +44,7 @@ namespace OfficeX.ExcelHost
         private void RebindActiveDocument(string expectedDocumentId=null){
             object window=null;OfficeAutomationPort next=null;DocumentCreationPort nextCreation=null;
             try{
-                window=OfficeDispatch.Get(application,"ActiveWindow");int handle=Convert.ToInt32(OfficeDispatch.Get(window,"HWND"));
+                window=OfficeDispatch.Get(application,"ActiveWindow");int handle=OfficeWindow.Handle(window,app);
                 next=new OfficeAutomationPort(application,app,handle);next.CheckSource();
                 if(expectedDocumentId!=null&&next.DocumentId!=expectedDocumentId)throw new OfficeFault("created_document_binding_failed",invocationStarted:false);
                 string name=next.DocumentName;nextCreation=new DocumentCreationPort(application,app,handle);

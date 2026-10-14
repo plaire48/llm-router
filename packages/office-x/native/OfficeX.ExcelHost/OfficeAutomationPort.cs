@@ -23,7 +23,7 @@ namespace OfficeX.ExcelHost {
   public object BoundDocument=>objects["document"];
   public string DocumentName=>(string)OfficeDispatch.Get(objects["document"],"Name");
   object Source()=>OfficeDispatch.Get((object)application,app=="word"?"ActiveDocument":app=="powerpoint"?"ActivePresentation":"ActiveWorkbook");
-  public void CheckSource(){object win=null,doc=null;try{win=OfficeDispatch.Get((object)application,"ActiveWindow");doc=Source();if(win==null||doc==null||Convert.ToInt32(OfficeDispatch.Get(win,"HWND"))!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
+  public void CheckSource(){object win=null,doc=null;try{win=OfficeDispatch.Get((object)application,"ActiveWindow");doc=Source();if(win==null||doc==null||OfficeWindow.Handle(win,app)!=hwnd||Identity(doc)!=sourceId)throw new OfficeFault("activate_source_window");}finally{Release(win);Release(doc);}}
   static void Release(object o){if(o!=null&&Marshal.IsComObject(o))Marshal.ReleaseComObject(o);}
   object Arg(JToken value,string path)=>OfficeArguments.Convert(value,id=>objects.TryGetValue(id,out var found)?found:null,path);
   readonly HashSet<string> preflightScalars=new HashSet<string>();bool preflightMutation;readonly Dictionary<string,object> preflightObjects=new Dictionary<string,object>();readonly List<object> preflightAcquired=new List<object>();
