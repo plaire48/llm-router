@@ -31,7 +31,23 @@ class Program {
    Console.WriteLine("PASS Windows IDispatch method, argument order, property get/set, SAFEARRAY, missing-member no-write checks. Office runtime not tested.");
   }catch(OfficeFault e){Console.Error.WriteLine(Wire.Json(new{error=e.Message,member=e.Member,nativeCode=e.NativeCode,invocationStarted=e.InvocationStarted}));throw;}finally{Marshal.ReleaseComObject(dictionary);}
  }
- static void PowerPointWindowRegression(){object app=null,window=null;try{Marshal.ThrowExceptionForHR(CreateExcelFixture("unused",out app));using(var port=new OfficeAutomationPort(app,"powerpoint",12345)){window=OfficeDispatch.Get(app,"ActiveWindow");try{OfficeDispatch.Get(window,"HWND");throw new Exception("Expected HWND name lookup failure");}catch(OfficeFault e){Equal("office_member_not_found",e.Message);Equal("HWND",e.Member);}port.CheckSource();using(var creator=new DocumentCreationPort(app,"powerpoint",12345))creator.CheckSource();GetExcelFixtureStats(out var info,out _,out _);Equal(0,info);}}finally{if(window!=null)Marshal.ReleaseComObject(window);if(app!=null)Marshal.ReleaseComObject(app);}}
+ [ComImport,Guid("91493457-5A91-11CF-8700-00AA0060263B"),InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
+ interface LegacyPowerPointWindow { [DispId(2020)] int HWND {get;} }
+ [ComImport,Guid("00020962-0000-0000-C000-000000000046"),InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
+ interface LegacyWordWindow { [DispId(39)] int Hwnd {get;} }
+ static void PowerPointWindowRegression(){var cases=new List<object>();foreach(var host in new[]{"powerpoint","word"}){object app=null,window=null;try{
+  Marshal.ThrowExceptionForHR(CreateExcelFixture("unused",out app));
+  using(var port=new OfficeAutomationPort(app,host,12345)){
+   window=OfficeWindow.GetActiveWindow(app);
+   try{OfficeDispatch.Get(window,"HWND");throw new Exception("Expected HWND name lookup failure");}catch(OfficeFault e){Equal("office_member_not_found",e.Message);Equal("HWND",e.Member);}
+   try{int old=host=="powerpoint"?((LegacyPowerPointWindow)window).HWND:((LegacyWordWindow)window).Hwnd;throw new Exception("Expected legacy window projection failure");}
+   catch(InvalidCastException e){Console.WriteLine("REPRO legacy "+host+" Office window projection fails: 0x"+unchecked((uint)e.HResult).ToString("X8"));}
+   Equal(12345,OfficeWindow.Handle(window,host));port.CheckSource();using(var creator=new DocumentCreationPort(app,host,12345))creator.CheckSource();
+   using(var wrong=new OfficeAutomationPort(app,host,54321)){try{wrong.CheckSource();throw new Exception("Wrong window accepted");}catch(OfficeFault e){Equal("activate_source_window",e.Message);}}
+   GetExcelFixtureStats(out var info,out var writes,out _);Equal(0,info);Equal(0,writes);cases.Add(new{app=host,legacyProjectionRejected=true,hiddenPropertyRead=true,wrongWindowRejected=true,typeInfoCalls=info,writes});
+  }
+ }finally{if(window!=null)Marshal.ReleaseComObject(window);if(app!=null)Marshal.ReleaseComObject(app);}}
+ Directory.CreateDirectory("verification");File.WriteAllText("verification/native-window-"+(IntPtr.Size==8?"x64":"x86")+".json",Wire.Json(new{passed=true,actualOffice=false,cases}));}
  static void AssertAnyCPU(Assembly assembly){assembly.ManifestModule.GetPEKind(out var kind,out var machine);Equal(false,(kind&PortableExecutableKinds.Required32Bit)!=0);Equal(false,(kind&PortableExecutableKinds.PE32Plus)!=0);}
  static void MarkdownExportRegression(){var folder=Path.Combine(Path.GetTempPath(),"nubi-markdown-native-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(folder);var results=new List<object>();
   try{foreach(string host in new[]{"excel","word","powerpoint"}){object app=null;try{Marshal.ThrowExceptionForHR(CreateExcelFixture("unused",out app));SetExcelFixtureCopyFailure(unchecked((int)0x800A03EC));

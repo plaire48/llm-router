@@ -17,3 +17,16 @@
 :root:has(.office-host) .context-dialog{--cx-font-family:var(--nubi-font-family);max-height:calc(100dvh - 24px);}
 
 .office-host .office-shell .nubi-compose-card .model-trigger.cx-kit-button .model-trigger-label{font-weight:600;}
+.office-context-caption{align-items:center;gap:8px;}
+.office-permission-trigger{display:inline-flex;align-items:center;gap:5px;padding:3px 5px;border:0;border-radius:6px;background:transparent;color:var(--office-muted);font:inherit;cursor:pointer;}
+.office-permission-trigger:hover,.office-permission-trigger[aria-expanded=true]{background:var(--office-selected);color:var(--office-action);}
+.office-permission-trigger:disabled{opacity:.5;cursor:default;}
+.office-permission-trigger:focus-visible{outline:2px solid var(--office-action);outline-offset:2px;}
+.office-permission-menu{position:fixed;z-index:1000;width:min(300px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:8px;border-radius:14px;background:var(--office-paper);color:var(--office-ink);box-shadow:var(--office-dialog-shadow);font-family:var(--office-font);box-sizing:border-box;}
+.office-permission-title{display:block;padding:8px 10px;font-size:13px;font-weight:600;}
+.office-permission-menu .office-permission-option.cx-kit-button{display:flex;justify-content:space-between;align-items:center;width:100%;height:auto;min-height:58px;padding:10px;text-align:left;white-space:normal;gap:8px;border:0;box-shadow:none;}
+.office-permission-option>span:first-child{display:flex;flex-direction:column;gap:4px;min-width:0;}
+.office-permission-option strong{font-size:14px;line-height:1.4;font-weight:600;}
+.office-permission-option small{font-size:12px;line-height:1.5;font-weight:400;color:var(--office-muted);}
+.office-permission-option[aria-checked=true]{background:var(--office-selected);color:var(--office-action);}
+.office-permission-menu p{margin:8px 10px 4px;font-size:11px;line-height:1.5;color:var(--office-meta);}

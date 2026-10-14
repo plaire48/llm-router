@@ -10,7 +10,7 @@ using OfficeX.Core;
 namespace OfficeX.ExcelHost
 {
     // Adapted from Nubi's stdio worker. No shell or local HTTP listener.
-    internal sealed class WorkerProcess : IDisposable
+    internal sealed class WorkerProcess : IOfficeWorker
     {
         private readonly Process process;
         private readonly StreamWriter input;

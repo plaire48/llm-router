@@ -269,6 +269,7 @@
     "runtime-src/text-skill.ts",
     "runtime-src/excel-skill.ts",
     "runtime-src/text-completion.ts",
+    "runtime-src/office-recovery.ts",
     "runtime-src/agent.ts",
     "runtime-src/nubi-transport.ts",
     "runtime-src/context-policy.mjs",

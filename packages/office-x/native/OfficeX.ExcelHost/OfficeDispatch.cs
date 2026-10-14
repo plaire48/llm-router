@@ -16,6 +16,18 @@ namespace OfficeX.ExcelHost {
    [PreserveSig]int Invoke(int id,ref Guid iid,uint lcid,ushort flags,ref DISPPARAMS args,[MarshalAs(UnmanagedType.Struct)]out object result,ref EXCEPINFO exception,out uint argumentError);
   }
   [DllImport("oleaut32.dll")]static extern int VariantClear(IntPtr variant);
+  // Host-only fixed window properties. Never exposed as an agent tool or used
+  // for arbitrary member IDs. No Office IID cast, name lookup or type-info load.
+  internal static object WindowHandle(object target,int id){
+   if(id!=2020&&id!=39)throw new OfficeFault("office_window_property_invalid",invocationStarted:false);
+   try{
+    var dispatch=target as Dispatch;if(dispatch==null)throw new OfficeFault("office_dispatch_unavailable","HWND",invocationStarted:false);
+    var iid=Guid.Empty;var parameters=new DISPPARAMS();var exception=new EXCEPINFO();object result;uint argumentError;
+    int hr=dispatch.Invoke(id,ref iid,1033,2,ref parameters,out result,ref exception,out argumentError);
+    if(hr<0){int code=exception.scode<0?exception.scode:hr;throw new OfficeFault("office_window_handle_unavailable","HWND",code,false);}
+    return result;
+   }catch(OfficeFault){throw;}catch(Exception error){throw new OfficeFault("office_window_handle_unavailable","HWND",error.HResult,false,error.GetType().Name);}
+  }
   public static void RequireMember(object target,string member){var dispatch=target as Dispatch;if(dispatch==null)throw new OfficeFault("office_dispatch_unavailable",member,invocationStarted:false);var iid=Guid.Empty;var ids=new int[1];int hr=dispatch.GetIDsOfNames(ref iid,new[]{member},1,1033,ids);if(hr<0)throw new OfficeFault(OfficeCallPolicy.ErrorCode(hr),member,hr,false);}
   public static object Get(object target,string member,params object[] args)=>Invoke(target,member,"get",args);
   public static object Call(object target,string member,params object[] args)=>Invoke(target,member,"call",args);

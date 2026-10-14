@@ -17,17 +17,18 @@ Partial Public Class ThisAddIn
     Public Sub ShowOfficeX()
         Dim openingStage As String = "window_lookup"
         Try
-            Dim window = Application.ActiveWindow
+            Dim window As Object = OfficeX.ExcelHost.OfficeWindow.GetActiveWindow(Application)
             If window Is Nothing Then Return
+            Dim windowHandle = OfficeX.ExcelHost.OfficeWindow.Handle(window, "powerpoint")
             Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
-            If Not panes.TryGetValue(window.HWND, pane) Then
+            If Not panes.TryGetValue(windowHandle, pane) Then
                 openingStage = "control_create"
-                Dim control = CreateControl(window.HWND)
+                Dim control = CreateControl(windowHandle)
                 Try
                     pane = TaskPaneOpening.Create(Function(caption) CustomTaskPanes.Add(control, caption, window), Function(caption) CustomTaskPanes.Add(control, caption), Sub(value) openingStage = value)
                     Dim createdPane = pane
                     TaskPaneOpening.SetWidth(Sub(value) createdPane.Width = value, Sub(value) openingStage = value)
-                    panes.Add(window.HWND, pane)
+                    panes.Add(windowHandle, pane)
                 Catch
                     control.Dispose()
                     If pane IsNot Nothing Then CustomTaskPanes.Remove(pane)
@@ -53,8 +54,8 @@ Partial Public Class ThisAddIn
     Private Sub FollowDocument(source As OfficeX.ExcelHost.OfficePane, newHandle As Integer)
         Dim openingStage As String = "follow_window_lookup"
         Try
-            Dim window = Application.ActiveWindow
-            If window Is Nothing OrElse window.HWND <> newHandle Then Return
+            Dim window As Object = OfficeX.ExcelHost.OfficeWindow.GetActiveWindow(Application)
+            If window Is Nothing OrElse OfficeX.ExcelHost.OfficeWindow.Handle(window, "powerpoint") <> newHandle Then Return
             Dim pane As Microsoft.Office.Tools.CustomTaskPane = Nothing
             If Not panes.TryGetValue(newHandle, pane) Then
                 openingStage = "control_create"
@@ -97,7 +98,7 @@ Partial Public Class ThisAddIn
         Dim closingWindowHandles As New List(Of Integer)()
         Try
             For Each window In presentation.Windows
-                closingWindowHandles.Add(CInt(window.Hwnd))
+                closingWindowHandles.Add(OfficeX.ExcelHost.OfficeWindow.Handle(window, "powerpoint"))
             Next
         Catch
             ' Office may already have removed the windows from a closing presentation.

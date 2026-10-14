@@ -1,19 +1,20 @@
 using System;
-using System.Runtime.InteropServices;
 using OfficeX.Core;
 namespace OfficeX.ExcelHost {
- // Verified against Office 2016 PIA metadata. Hidden window members can have
- // a stable DISPID while GetIDsOfNames("HWND") rejects their public name.
- // Bind only these window interfaces; never guess an ID on arbitrary objects.
- internal static class OfficeWindow {
-  [ComImport,Guid("91493457-5A91-11CF-8700-00AA0060263B"),InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
-  interface PowerPointWindow { [DispId(2020)] int HWND { get; } }
-  [ComImport,Guid("00020962-0000-0000-C000-000000000046"),InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
-  interface WordWindow { [DispId(39)] int Hwnd { get; } }
+ // Window objects come only from the host's ActiveWindow/DocumentWindows.
+ // Use base IDispatch, not an Office-specific interface projection. Hidden HWND
+ // properties have stable IDs in the Office 2016-compatible PIA metadata.
+ public static class OfficeWindow {
+  public static object GetActiveWindow(object application)=>OfficeDispatch.Get(application,"ActiveWindow");
   public static int Handle(object window,string app){
    if(window==null)throw new OfficeFault("activate_source_window",invocationStarted:false);
-   try{return app=="powerpoint"?((PowerPointWindow)window).HWND:app=="word"?((WordWindow)window).Hwnd:Convert.ToInt32(OfficeDispatch.Get(window,"HWND"));}
-   catch(OfficeFault){throw;}catch(Exception e){throw new OfficeFault("office_window_binding_failed","HWND",e.HResult,false,e.GetType().Name);}
+   if(app!="excel"&&app!="word"&&app!="powerpoint")throw new OfficeFault("office_app_invalid",invocationStarted:false);
+   try{
+    object value=app=="excel"?OfficeDispatch.Get(window,"HWND"):OfficeDispatch.WindowHandle(window,app=="powerpoint"?2020:39);
+    int handle=Convert.ToInt32(value);
+    if(handle==0)throw new OfficeFault("activate_source_window",invocationStarted:false);
+    return handle;
+   }catch(OfficeFault){throw;}catch(Exception e){throw new OfficeFault("office_window_binding_failed","HWND",e.HResult,false,e.GetType().Name);}
   }
  }
 }

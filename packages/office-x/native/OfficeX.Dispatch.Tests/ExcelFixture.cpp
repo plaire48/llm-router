@@ -15,7 +15,9 @@ struct Object: IDispatch {
  std::map<std::wstring,Object*> children; std::vector<Object*> sheets;
  Object(State* s,std::wstring k):state(s),kind(k){VariantInit(&data);}
  ~Object(){VariantClear(&data);for(auto& p:children)p.second->Release();for(auto p:sheets)p->Release();}
- HRESULT STDMETHODCALLTYPE QueryInterface(REFIID id,void** p) override {*p=nullptr;static const GUID powerpointWindow={0x91493457,0x5A91,0x11CF,{0x87,0x00,0x00,0xAA,0x00,0x60,0x26,0x3B}};static const GUID wordWindow={0x00020962,0x0000,0x0000,{0xC0,0x00,0x00,0x00,0x00,0x00,0x00,0x46}};if(id==IID_IUnknown||id==IID_IDispatch||(kind==L"window"&&(id==powerpointWindow||id==wordWindow))){*p=static_cast<IDispatch*>(this);AddRef();return S_OK;}return E_NOINTERFACE;}
+ // Simulate an Office window whose specific interface cannot be projected,
+ // while its base IDispatch and hidden property IDs remain callable.
+ HRESULT STDMETHODCALLTYPE QueryInterface(REFIID id,void** p) override {*p=nullptr;if(id==IID_IUnknown||id==IID_IDispatch){*p=static_cast<IDispatch*>(this);AddRef();return S_OK;}return E_NOINTERFACE;}
  ULONG STDMETHODCALLTYPE AddRef() override{return InterlockedIncrement(&refs);}
  ULONG STDMETHODCALLTYPE Release() override {auto n=InterlockedDecrement(&refs);if(!n)delete this;return n;}
  HRESULT STDMETHODCALLTYPE GetTypeInfoCount(UINT* n) override {*n=1;return S_OK;}

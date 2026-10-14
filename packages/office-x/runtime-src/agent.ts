@@ -4,6 +4,7 @@ import {textSkill} from './text-skill';
 import {trackEdits,editReceipts} from './edit-receipts';
 import {excelSkill,type NativeCall} from './excel-skill';
 import {textCompletion} from './text-completion';
+import {preparationOnly,preparationCorrection} from './preparation-completion';
 import {recoverOfficeMember} from './office-recovery';
 export type Recovery={code:string;verifiedWrites:number;uncertainWrites:boolean;nextStep:string};
 const harness=`Use the supplied Office and GenOffice rendering, conversion and recovery tools. Web search and image features are removed. Honor the selected document destination. Inspect the bound document, propose a valid native operation, execute only after approval, then independently read back the result. An error is evidence for a different method, not a reason to repeat identical invalid calls. For member/path/argument errors load_office_guide or inspect_office_members and use typed document helpers. For Count/geometry/type differences inspect actual results; do not guess a value or weaken validation. For snapshot/target errors reread the current document and use the new snapshot. After a partial or uncertain write, the native harness pauses for human confirmation. When it returns read_required with resumed=true, inspect current targets and propose only remaining changes with fresh approval. Earlier writes remain unverified; never replay them blindly. Report verified progress and remaining work separately. A final model reply never proves a document write or save. Keep Korean replies concise. Native approval and recovery cards already show pending decisions and backup availability; do not repeat those notices or raw error codes in chat prose.`;
@@ -11,11 +12,15 @@ export function startAgent(options:{transport:AgentTransport;request:string;cont
  let resolve!:(value:AgentRunResult&{recovery?:Recovery})=>void,reject!:(e:Error)=>void;
  const result=new Promise<AgentRunResult&{recovery?:Recovery}>((yes,no)=>{resolve=yes;reject=no;});
  const failures=new Map<string,number>(),ledger:any[]=[],controller=new AbortController();let abortReason='',settled=false,finalHistory:AgentMessage[]|undefined,latestHistory:AgentMessage[]=[];
- let requireNewModelPlan=false;
+ let requireNewModelPlan=false,preparationRetryUsed=false;
+ const unfinishedPreparation=()=>preparationOnly(options.request,options.context.permissionMode,ledger,editReceipts(native)?.attempted===true);
  const native=trackEdits(options.native);const repaired=new Set<string>();
- const rawSkill=composeSkills('office-x',harness,[(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(native,options.context),officeSkill(native,options.context),...(options.additionalSkills||[])]);
+ const rawSkill=composeSkills('office-x',harness+` Native permission mode: ${options.context.permissionMode==='read'?'read-only: inspect and explain; document changes and saving are disabled. Do not retry blocked writes or ask for conversational approval to bypass this mode.':options.context.permissionMode==='auto'?'requested document edits are pre-authorized by the user through the native permission menu; do not ask for approval for each ordinary edit. Native source checks and readback remain mandatory. Uncertain previous writes still require human recovery review; rollback and external file overwrites remain explicit decisions.':'confirm each change using the native review card, without duplicating it in a chat question.'}`,[(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(native,options.context),officeSkill(native,options.context),...(options.additionalSkills||[])]);
  // Feed actionable native diagnostics back to the original GenOffice loop.
- const skill:AgentSkill={...rawSkill,executeTool:async(call,signal)=>{if(requireNewModelPlan)return {summary:call.name,mutated:false,isError:false,output:JSON.stringify({status:'read_required',recovery:'Queued tool skipped after human review. Read the current document and plan remaining work in a new model turn; do not reuse queued writes.'})};const execution=await rawSkill.executeTool(call,signal);if(!execution.isError)return execution;
+ const skill:AgentSkill={...rawSkill,verifyResponse:(text,executed)=>{
+  if(unfinishedPreparation()&&!preparationRetryUsed){preparationRetryUsed=true;options.event('recovery',{stage:'adjusting',code:'preparation_only'});return preparationCorrection;}
+  return rawSkill.verifyResponse?.(text,executed)??null;
+ },executeTool:async(call,signal)=>{if(requireNewModelPlan)return {summary:call.name,mutated:false,isError:false,output:JSON.stringify({status:'read_required',recovery:'Queued tool skipped after human review. Read the current document and plan remaining work in a new model turn; do not reuse queued writes.'})};const execution=await rawSkill.executeTool(call,signal);if(!execution.isError)return execution;
   let failure:any;try{failure=JSON.parse(execution.output);}catch{failure={error:execution.output.startsWith('native_result_unavailable')?'native_result_unavailable':execution.output};}
   if(!signal?.aborted&&!['rejected','cancelled'].includes(String(failure.status||editReceipts(native)?.failure?.status))&&failure.error!=='cancelled'&&(failure.status==='partial'||failure.writeResultUncertain===true||failure.error==='writes_stopped_for_this_run'||failure.error==='native_result_unavailable')){
    options.event('tool_executed',{name:call.name,...execution});
@@ -56,7 +61,10 @@ export function startAgent(options:{transport:AgentTransport;request:string;cont
    const key=[event.call.name,code,d.failedMember||'',JSON.stringify(event.call.input)].join(':');const count=(failures.get(key)||0)+1;failures.set(key,count);options.event('recovery',{stage:'adjusting',code,attempt:count});
    if(count>=3){abortReason='office_repeated_tool_failure';loop.cancel();}
   },
-  onDone:value=>{if(abortReason){void recover(abortReason);return;}if(!settled){settled=true;resolve(value);}},onError:error=>{void recover(classifyAgentFailure(error));},
+  onDone:value=>{if(!value.cancelled&&!controller.signal.aborted&&unfinishedPreparation()){
+   if(!preparationRetryUsed){preparationRetryUsed=true;options.event('recovery',{stage:'adjusting',code:'preparation_only'});queueMicrotask(()=>{if(!controller.signal.aborted)loop.run(preparationCorrection);else if(!settled){settled=true;resolve({...value,cancelled:true});}});return;}
+   void recover('agent_preparation_only');return;
+  }if(abortReason){void recover(abortReason);return;}if(!settled){settled=true;resolve(value);}},onError:error=>{void recover(classifyAgentFailure(error));},
  }});
  if(options.history)loop.restore(options.history);loop.run(options.request);
  return {cancel:()=>{controller.abort();loop.cancel();},result,messages:()=>structuredClone(finalHistory||[...loop.messages])};
