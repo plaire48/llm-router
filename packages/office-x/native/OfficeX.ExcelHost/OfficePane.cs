@@ -337,13 +337,18 @@ namespace OfficeX.ExcelHost
             string boundDocument=automationPort.DocumentId;
             while(true){
                 token.ThrowIfCancellationRequested();
-                OfficeObservation observed=null;
-                try{automationPort.CheckSource();observed=automation.Inspect(reads);}catch(OfficeFault){}
+                OfficeObservation observed=null;bool limited=false;
+                try{automationPort.CheckSource();observed=automation.Inspect(reads);}catch(OfficeFault){
+                    // A previous target can have been deleted by the partial batch.
+                    // Keep a route to human-reviewed replanning on the same document.
+                    limited=true;
+                    try{automationPort.CheckSource();observed=automation.Inspect(new List<OfficeStep>{new OfficeStep{Member="Name"}});}catch(OfficeFault){}
+                }
                 questionId=Guid.NewGuid().ToString("N");
                 questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);
                 var choices=observed==null?new[]{"다시 확인","여기서 마치기"}:new[]{"현재 상태에서 이어가기","다시 확인","여기서 마치기"};
                 pendingQuestion=Wire.Object(new{type="question",kind="write_recovery",runId,questionId,target=target.Text,
-                    detail=observed==null?"문서를 열고 편집 가능한 상태인지 확인해 주세요.":"현재 문서를 다시 읽었습니다. 이어가면 남은 변경안을 확인받고 적용합니다.",
+                    detail=observed==null?"문서를 열고 편집 가능한 상태인지 확인해 주세요.":limited?"이전 작업 대상 일부를 읽지 못했습니다. 문서 화면을 확인한 뒤 남은 작업을 이어갈 수 있습니다.":"현재 문서를 다시 읽었습니다. 이어가면 남은 변경안을 확인받고 적용합니다.",
                     questions=new[]{new{id="writeRecovery",question="문서 상태를 확인해 주세요",options=choices}}});
                 status.Text="확인을 기다리고 있습니다";SendSurface(pendingQuestion);
                 JObject answers;
@@ -361,7 +366,7 @@ namespace OfficeX.ExcelHost
                     if(app!="excel")fallbackContext=new{app,documentId=boundDocument,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};
                     writesStopped=false;recoveryReads=null;
                     SendSurface(new{type="write_recovery_resumed",runId});
-                    return new{status="read_required",resumed=true,mutated=false,previousWriteVerified=false,snapshotId=fresh.SnapshotId,observation=fresh,
+                    return new{status="read_required",resumed=true,mutated=false,previousWriteVerified=false,readScope=limited?"document_identity":"previous_targets",snapshotId=fresh.SnapshotId,observation=fresh,
                         recovery="Human chose to continue from the observed current document. The previous write remains unverified. Inspect the actual remaining targets and submit a NEW reviewed plan only for missing work. Never replay previous Add/import/create operations or reuse old snapshots. Use Office operations instead of legacy text replacements. This read and human confirmation are not proof that the earlier write succeeded."};
                 }catch(OfficeFault){status.Text="문서 상태가 바뀌어 다시 확인합니다";}
             }
