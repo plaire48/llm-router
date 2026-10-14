@@ -11,9 +11,10 @@ import {refreshCatalog,loginCatalogFetch} from './provider-connection.mjs';
 export function officeProviders(vault, overrides={}) {
   const run=overrides.run||runClaude;
   let base,claude;
-  const providers=createDesktopProviders({findBinary:findClaudeBinary,startClaudeLogin:(binary,options)=>runClaudeLogin(binary,{...options,run}),openBrowser:async url=>{await openLoginBrowser(url);return {external:true};},hostLabel:'Excel',accountCatalog:true,
+  const providers=createDesktopProviders({findBinary:findClaudeBinary,openBrowser:async url=>{await openLoginBrowser(url);return {external:true};},hostLabel:'Excel',accountCatalog:true,
     onConnectionChange:(provider,record)=>vault('provider:'+provider,record),
     onActiveProvider:provider=>vault('provider:active',provider),...overrides,
+    startClaudeLogin:async(binary,options)=>{claude.clearConnectionDiagnostic();try{return await (overrides.startClaudeLogin||((b,o)=>runClaudeLogin(b,{...o,run})))(binary,options);}catch(error){claude.recordConnectionFailure('login',error);throw error;}},
     startLogin:options=>(overrides.startLogin||startLogin)({...options,fetchImpl:loginCatalogFetch(options.fetchImpl||overrides.fetchImpl||fetch,ORIGIN)}),
     chatGPTModels:(...args)=>refreshCatalog(()=>(overrides.chatGPTModels||desktopChatGPTModels)(...args)),run:officeClaudeRun(run),
     createBase:deps=>base=(overrides.createBase||createProviders)(deps),createClaude:deps=>claude=createOfficeClaudeCode(deps,overrides.createClaude)});

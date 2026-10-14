@@ -18,5 +18,5 @@ export function createOfficeClaudeCode(deps,create=createClaudeCode){
    diagnostic={stage,code:/^[a-z_]{1,60}$/.test(code)?code:'claude_cli_failed'};
    throw Error(diagnostic.code);
   }
- },connectionDiagnostic:()=>diagnostic,disconnect:()=>{diagnostic=null;return provider.disconnect();}};
+ },connectionDiagnostic:()=>diagnostic,clearConnectionDiagnostic:()=>{diagnostic=null;},recordConnectionFailure:(stage,error)=>{diagnostic={stage,code:/^[a-z_]{1,60}$/.test(error?.message)?error.message:'claude_login_failed'};},disconnect:()=>{diagnostic=null;return provider.disconnect();}};
 }

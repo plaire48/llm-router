@@ -23,7 +23,9 @@ async (page) => {
  await p.getByRole('radio',{name:'테스트 모델',exact:true}).waitFor();
  await p.getByRole('button',{name:'모델 목록 새로고침',exact:true}).click();
  await p.getByText('모델 목록 조회: 서버와 연결이 잠깐 끊겼습니다. 다시 시도해 주세요. 기존 모델 목록을 유지했습니다.',{exact:true}).waitFor({state:'detached'});
- await p.getByRole('button',{name:'취소',exact:true}).click();
+ await p.evaluate(()=>emit({type:'provider_state',state:{provider:'claude',connected:false,initializing:false,model:'',models:[],providers:[{id:'claude',connected:false}],catalogs:[],loginError:'claude_catalog_unavailable',connectionStage:'catalog'}}));
+ await p.locator('.nubi-model-form').getByText('계정 연결: Claude Code 로그인은 확인했지만 모델 목록을 받지 못했습니다.',{exact:true}).waitFor();
+ await p.evaluate(()=>connectAIPro());await p.getByRole('button',{name:'취소',exact:true}).click();
  if(!(await p.getByRole('button',{name:'보내기',exact:true}).isEnabled()))throw Error('catalog failure disconnected active account');
  if((await p.locator('body').innerText()).includes('모델 연결을 완료하지 못했습니다'))throw Error('generic login error remains');
  if(errors.length)throw Error(errors.join('\n'));await context.close();return {passed:true,scope:'browser with mock WebView host; no real Windows account',loginErrorClassified:true,retryAfterClick:true,successClearsError:true,silentCatalogFailureKeepsModels:true,manualCatalogRefreshClearsWarning:true,sendRemainsAvailable:true};
