@@ -25,11 +25,13 @@ class Program {
    var plan=session.Prepare(snapshot.SnapshotId,"STA dispatch",writes,checks);var receipt=session.Apply(plan.Id,true,default);Equal("verified",receipt.Status);Equal(1,receipt.CompletedWrites);
    snapshot=session.Inspect(reads);writes[1].Member="MissingMember";plan=session.Prepare(snapshot.SnapshotId,"No write on lookup failure",writes,checks);receipt=session.Apply(plan.Id,true,default);Equal(0,receipt.CompletedWrites);Equal(false,receipt.Mutated);Equal(true,OfficeCallPolicy.CanReplan(receipt));
    Equal(2,OfficeDispatch.Get(dictionary,"Count"));OfficeDispatch.Invoke(dictionary,"RemoveAll","call",new object[0]);Equal(0,OfficeDispatch.Get(dictionary,"Count"));
+   PowerPointWindowRegression();
    ExcelDocumentRegression();
    MarkdownExportRegression();
    Console.WriteLine("PASS Windows IDispatch method, argument order, property get/set, SAFEARRAY, missing-member no-write checks. Office runtime not tested.");
   }catch(OfficeFault e){Console.Error.WriteLine(Wire.Json(new{error=e.Message,member=e.Member,nativeCode=e.NativeCode,invocationStarted=e.InvocationStarted}));throw;}finally{Marshal.ReleaseComObject(dictionary);}
  }
+ static void PowerPointWindowRegression(){object app=null,window=null;try{Marshal.ThrowExceptionForHR(CreateExcelFixture("unused",out app));using(var port=new OfficeAutomationPort(app,"powerpoint",12345)){window=OfficeDispatch.Get(app,"ActiveWindow");try{OfficeDispatch.Get(window,"HWND");throw new Exception("Expected HWND name lookup failure");}catch(OfficeFault e){Equal("office_member_not_found",e.Message);Equal("HWND",e.Member);}port.CheckSource();using(var creator=new DocumentCreationPort(app,"powerpoint",12345))creator.CheckSource();GetExcelFixtureStats(out var info,out _,out _);Equal(0,info);}}finally{if(window!=null)Marshal.ReleaseComObject(window);if(app!=null)Marshal.ReleaseComObject(app);}}
  static void AssertAnyCPU(Assembly assembly){assembly.ManifestModule.GetPEKind(out var kind,out var machine);Equal(false,(kind&PortableExecutableKinds.Required32Bit)!=0);Equal(false,(kind&PortableExecutableKinds.PE32Plus)!=0);}
  static void MarkdownExportRegression(){var folder=Path.Combine(Path.GetTempPath(),"nubi-markdown-native-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(folder);var results=new List<object>();
   try{foreach(string host in new[]{"excel","word","powerpoint"}){object app=null;try{Marshal.ThrowExceptionForHR(CreateExcelFixture("unused",out app));SetExcelFixtureCopyFailure(unchecked((int)0x800A03EC));
