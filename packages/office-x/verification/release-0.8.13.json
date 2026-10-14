@@ -1,0 +1,424 @@
+{
+  "version": "0.8.13",
+  "buildCommit": "b9995098221afc6ca16ba0248d66e76dd625ddab",
+  "ci": "https://github.com/plaire48/llm-router/actions/runs/38489644724",
+  "changes": [
+    "text format converted for formula input",
+    "new imported cells return to General after literal insertion",
+    "Office 2016 Word and PowerPoint window interface binding",
+    "PPTX text field path and actual text hashes",
+    "bounded pre-call native document replan without replaying uncertain writes",
+    "diagnostic version from assembly metadata"
+  ],
+  "sourceTests": {
+    "macOSPassed": 149,
+    "macOSSkipped": 5,
+    "windowsPassed": 153,
+    "windowsSkipped": 1
+  },
+  "coreTests": 134,
+  "apiAlignment": {
+    "passed": true,
+    "source": "Office 15 PIA metadata used as Office 2016 compatible API baseline",
+    "actualOffice": false,
+    "bindings": [
+      {
+        "app": "word",
+        "type": "Application",
+        "member": "ActiveWindow",
+        "nativeArgs": null,
+        "dispid": 4,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Application",
+        "member": "ActiveDocument",
+        "nativeArgs": null,
+        "dispid": 3,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Window",
+        "member": "Hwnd",
+        "nativeArgs": null,
+        "dispid": 39,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Document",
+        "member": "Name",
+        "nativeArgs": null,
+        "dispid": 0,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Document",
+        "member": "Content",
+        "nativeArgs": null,
+        "dispid": 41,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Document",
+        "member": "Range",
+        "nativeArgs": 2,
+        "dispid": 2000,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Document",
+        "member": "ExportAsFixedFormat",
+        "nativeArgs": 2,
+        "dispid": 552,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Document",
+        "member": "SaveAs2",
+        "nativeArgs": 2,
+        "dispid": 568,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Range",
+        "member": "InsertFile",
+        "nativeArgs": 1,
+        "dispid": 123,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Range",
+        "member": "WordOpenXML",
+        "nativeArgs": null,
+        "dispid": 426,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Range",
+        "member": "Text",
+        "nativeArgs": null,
+        "dispid": 0,
+        "passed": true
+      },
+      {
+        "app": "word",
+        "type": "Tables",
+        "member": "Add",
+        "nativeArgs": 3,
+        "dispid": 200,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Application",
+        "member": "ActiveWindow",
+        "nativeArgs": null,
+        "dispid": 2004,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Application",
+        "member": "ActivePresentation",
+        "nativeArgs": null,
+        "dispid": 2005,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "DocumentWindow",
+        "member": "HWND",
+        "nativeArgs": null,
+        "dispid": 2020,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Presentation",
+        "member": "Name",
+        "nativeArgs": null,
+        "dispid": 2025,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Presentation",
+        "member": "Slides",
+        "nativeArgs": null,
+        "dispid": 2011,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Presentation",
+        "member": "PageSetup",
+        "nativeArgs": null,
+        "dispid": 2012,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Presentation",
+        "member": "SaveCopyAs",
+        "nativeArgs": 2,
+        "dispid": 2037,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Presentation",
+        "member": "ExportAsFixedFormat",
+        "nativeArgs": 2,
+        "dispid": 2096,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Presentations",
+        "member": "Open",
+        "nativeArgs": 4,
+        "dispid": 2005,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Slides",
+        "member": "InsertFromFile",
+        "nativeArgs": 2,
+        "dispid": 2005,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Slide",
+        "member": "Export",
+        "nativeArgs": 4,
+        "dispid": 2025,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Shapes",
+        "member": "AddTextbox",
+        "nativeArgs": 5,
+        "dispid": 19,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "TextFrame",
+        "member": "TextRange",
+        "nativeArgs": null,
+        "dispid": 2004,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "TextRange",
+        "member": "Text",
+        "nativeArgs": null,
+        "dispid": 0,
+        "passed": true
+      },
+      {
+        "app": "powerpoint",
+        "type": "Font",
+        "member": "Color",
+        "nativeArgs": null,
+        "dispid": 2003,
+        "passed": true
+      }
+    ],
+    "notAudited": "VBA dependency signatures outside the native document adapter were not inspected"
+  },
+  "installedUI": {
+    "passed": true,
+    "scope": "installed VSTO UI in real Windows WinForms WebView2 with actual C# packets and Windows mouse/keyboard input; Office COM and live LLM not tested",
+    "editors": 3,
+    "approvals": 3,
+    "physicalClickAndTyping": true,
+    "invalidContractRecovery": true,
+    "error": null
+  },
+  "install": {
+    "runner": "windows-2022",
+    "standaloneEditorsAbsent": true,
+    "officeInstalled": false,
+    "installSeconds": 9.33,
+    "reinstallSeconds": 6.29,
+    "realOfficeVerified": false,
+    "liveModelVerified": false,
+    "legacyEditorUpgradeCleanup": true,
+    "imageFeatures": false,
+    "registry": [
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry32"
+      },
+      {
+        "app": "Excel",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.ExcelAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "Word",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.WordAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      },
+      {
+        "app": "PowerPoint",
+        "manifest": "file:///C:/Program%20Files/Nubi%20Office%20X/OfficeX.PowerPointAddIn.vsto|vstolocal",
+        "view": "Registry64"
+      }
+    ],
+    "passed": true,
+    "uninstallSeconds": 1.71
+  },
+  "installedConverters": {
+    "passed": true,
+    "rows": [
+      {
+        "file": "first.html",
+        "quality": {
+          "sourceUnits": 2,
+          "verifiedUnits": 2,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "status": "verified",
+        "engines": [
+          "markitdown"
+        ],
+        "sha256": "e9a8f5ce9a7e7ba1694fe2fb1a8d8ea4166355ee0c458fd6e1f9c1c53e95c30f"
+      },
+      {
+        "file": "report.docx",
+        "quality": {
+          "sourceUnits": 10,
+          "verifiedUnits": 10,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "sha256": "a87a3e8c5745c8c6224e28fef910e58b20532be5a892d611c3d3b877968c2d99"
+      },
+      {
+        "file": "book.xlsx",
+        "quality": {
+          "sourceUnits": 21,
+          "verifiedUnits": 21,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "sha256": "9135479f0c4d78c9fe4ce66622a289b00dbe55b47507f97ae62406ebeb7f7cdc"
+      },
+      {
+        "file": "deck.pptx",
+        "quality": {
+          "sourceUnits": 7,
+          "verifiedUnits": 7,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": true
+        },
+        "warnings": [],
+        "status": "verified",
+        "engines": [
+          "genoffice",
+          "markitdown"
+        ],
+        "sha256": "f353c7661c2cac4dbab8e5fb13e3401e5b18bbb36518670d297ba15a83897ca5"
+      },
+      {
+        "file": "scanned.pdf",
+        "quality": {
+          "sourceUnits": 1,
+          "verifiedUnits": 1,
+          "missingUnits": 0,
+          "empty": false,
+          "complete": false,
+          "ocr": {
+            "used": true,
+            "recognizedRegions": null,
+            "minimumConfidence": 0.998925
+          }
+        },
+        "warnings": [
+          "OCR로 읽은 내용은 글자·숫자를 원문과 대조해 주세요."
+        ],
+        "status": "partial",
+        "engines": [
+          "genoffice",
+          "docling"
+        ],
+        "sha256": "3b56b5c8ac84031fce3b246546e303db2c243f74ffba52a205be0c23e35ce96d"
+      }
+    ],
+    "actualInstalledRuntime": true,
+    "seconds": 123.2086654,
+    "actualOffice": false,
+    "actualConverters": true
+  },
+  "integrity": {
+    "buildCommit": "b9995098221afc6ca16ba0248d66e76dd625ddab",
+    "exeSha256": "606d39f966ce6679ad9f5171e63ee9a587e70fc4120cb677a3e648c0ccd09772",
+    "exeBytes": 140013766,
+    "sourceSha256": "6bb368a9e3548f9cf30ccda42ee2ef0ff30d75d643630679cf824e73ec936eba",
+    "sourceFiles": 5604,
+    "immutableGenOfficeFiles": 4582,
+    "immutableNubiFiles": 88,
+    "productSourceHashesChecked": 80,
+    "zipCRC": true,
+    "bothArchitectureEvidenceIncluded": true,
+    "installedConvertersVerified": true,
+    "actualOffice": false
+  },
+  "uiBundle": {
+    "passed": true,
+    "platformBuildUIByteIdentical": true,
+    "uiFilesCompared": 140,
+    "installedWindowsRuntimeVerified": true,
+    "actualOffice": false
+  },
+  "boundaries": {
+    "actualOffice2016": false,
+    "liveClaudeChatGPTAccounts": false,
+    "nativeCOMFixturesOnly": true
+  }
+}

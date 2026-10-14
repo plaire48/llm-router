@@ -1,0 +1,224 @@
+{
+  "passed": true,
+  "source": "Office 15 PIA metadata used as Office 2016 compatible API baseline",
+  "actualOffice": false,
+  "bindings": [
+    {
+      "app": "word",
+      "type": "Application",
+      "member": "ActiveWindow",
+      "nativeArgs": null,
+      "dispid": 4,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Application",
+      "member": "ActiveDocument",
+      "nativeArgs": null,
+      "dispid": 3,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Window",
+      "member": "Hwnd",
+      "nativeArgs": null,
+      "dispid": 39,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Document",
+      "member": "Name",
+      "nativeArgs": null,
+      "dispid": 0,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Document",
+      "member": "Content",
+      "nativeArgs": null,
+      "dispid": 41,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Document",
+      "member": "Range",
+      "nativeArgs": 2,
+      "dispid": 2000,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Document",
+      "member": "ExportAsFixedFormat",
+      "nativeArgs": 2,
+      "dispid": 552,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Document",
+      "member": "SaveAs2",
+      "nativeArgs": 2,
+      "dispid": 568,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Range",
+      "member": "InsertFile",
+      "nativeArgs": 1,
+      "dispid": 123,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Range",
+      "member": "WordOpenXML",
+      "nativeArgs": null,
+      "dispid": 426,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Range",
+      "member": "Text",
+      "nativeArgs": null,
+      "dispid": 0,
+      "passed": true
+    },
+    {
+      "app": "word",
+      "type": "Tables",
+      "member": "Add",
+      "nativeArgs": 3,
+      "dispid": 200,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Application",
+      "member": "ActiveWindow",
+      "nativeArgs": null,
+      "dispid": 2004,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Application",
+      "member": "ActivePresentation",
+      "nativeArgs": null,
+      "dispid": 2005,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "DocumentWindow",
+      "member": "HWND",
+      "nativeArgs": null,
+      "dispid": 2020,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Presentation",
+      "member": "Name",
+      "nativeArgs": null,
+      "dispid": 2025,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Presentation",
+      "member": "Slides",
+      "nativeArgs": null,
+      "dispid": 2011,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Presentation",
+      "member": "PageSetup",
+      "nativeArgs": null,
+      "dispid": 2012,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Presentation",
+      "member": "SaveCopyAs",
+      "nativeArgs": 2,
+      "dispid": 2037,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Presentation",
+      "member": "ExportAsFixedFormat",
+      "nativeArgs": 2,
+      "dispid": 2096,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Presentations",
+      "member": "Open",
+      "nativeArgs": 4,
+      "dispid": 2005,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Slides",
+      "member": "InsertFromFile",
+      "nativeArgs": 2,
+      "dispid": 2005,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Slide",
+      "member": "Export",
+      "nativeArgs": 4,
+      "dispid": 2025,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Shapes",
+      "member": "AddTextbox",
+      "nativeArgs": 5,
+      "dispid": 19,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "TextFrame",
+      "member": "TextRange",
+      "nativeArgs": null,
+      "dispid": 2004,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "TextRange",
+      "member": "Text",
+      "nativeArgs": null,
+      "dispid": 0,
+      "passed": true
+    },
+    {
+      "app": "powerpoint",
+      "type": "Font",
+      "member": "Color",
+      "nativeArgs": null,
+      "dispid": 2003,
+      "passed": true
+    }
+  ],
+  "notAudited": "VBA dependency signatures outside the native document adapter were not inspected"
+}

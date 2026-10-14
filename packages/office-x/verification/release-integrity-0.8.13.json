@@ -1,0 +1,14 @@
+{
+  "buildCommit": "b9995098221afc6ca16ba0248d66e76dd625ddab",
+  "exeSha256": "606d39f966ce6679ad9f5171e63ee9a587e70fc4120cb677a3e648c0ccd09772",
+  "exeBytes": 140013766,
+  "sourceSha256": "6bb368a9e3548f9cf30ccda42ee2ef0ff30d75d643630679cf824e73ec936eba",
+  "sourceFiles": 5604,
+  "immutableGenOfficeFiles": 4582,
+  "immutableNubiFiles": 88,
+  "productSourceHashesChecked": 80,
+  "zipCRC": true,
+  "bothArchitectureEvidenceIncluded": true,
+  "installedConvertersVerified": true,
+  "actualOffice": false
+}

@@ -9,4 +9,6 @@ Windows Office 2016의 수식·문서 창·결과 검증에 맞춰 GenOffice 연
 - Word·PowerPoint에서 호출 전에 거부된 멤버·인수 오류는 실제 문서 구조와 새 snapshot을 다시 읽고 네이티브 가이드로 다른 계획을 수립합니다. 부분·불명확한 변경은 재실행하지 않습니다. 복구는 횟수를 제한합니다.
 - 오류 정보의 버전이 0.8.11로 고정돼 있던 문제를 수정했습니다. Markdown 내보내기와 변환 엔진의 필요 시 준비 방식을 유지합니다.
 
-Windows 빌드·설치·COM 테스트는 실제 Office 2016 및 실계정 Claude/ChatGPT 연결 검증을 대신하지 않습니다. 현재 실제 Office 호스트는 연결되지 않았습니다.
+Windows 소스 테스트 153개, 코어 테스트 134개, 32·64비트 COM 테스트와 실제 WebView2 클릭·입력을 통과했습니다. 설치 9.33초, 재설치 6.29초, 제거 1.71초를 확인했으며 설치된 변환 엔진의 최초 준비·문서 변환·한국어 OCR도 통과했습니다. 27개 Word·PowerPoint 멤버와 인수 조합을 Office 15 Interop의 Office 2016 호환 API 기준에 대조했습니다. 이 검증은 실제 Office 2016 및 실계정 Claude/ChatGPT 연결 검증을 대신하지 않습니다. 현재 실제 Office 호스트는 연결되지 않았습니다.
+
+[Windows 빌드와 검증](https://github.com/plaire48/llm-router/actions/runs/38489644724)
