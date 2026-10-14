@@ -26,6 +26,7 @@ namespace OfficeX.ExcelHost
         private OfficeAutomationSession automation;
         private DocumentCreationPort creationPort;
         private bool writesStopped,createdDuringRun,creationDestinationChosen;
+        private List<OfficeStep> recoveryReads;
         private string documentTarget="current",currentStage="host";
         private OfficeFiles files;
         private OfficePane followOwner;
@@ -144,7 +145,7 @@ namespace OfficeX.ExcelHost
         private void CaptureContextCore(){
             automationPort?.Dispose();creationPort?.Dispose();
             currentStage="capture_document";automationPort=new OfficeAutomationPort(application,app,windowHandle);automation=new OfficeAutomationSession(automationPort);automationPort.CheckSource();
-            creationPort=null;if(files==null)files=new OfficeFiles(application,app,()=>automationPort);surface.SetAssetsRoot(files.Folder);fallbackContext=null;writesStopped=false;createdDuringRun=false;creationDestinationChosen=false;files.ResetCheckpointFailure();
+            creationPort=null;if(files==null)files=new OfficeFiles(application,app,()=>automationPort);surface.SetAssetsRoot(files.Folder);fallbackContext=null;recoveryReads=null;writesStopped=false;createdDuringRun=false;creationDestinationChosen=false;files.ResetCheckpointFailure();
             currentStage="capture_selection";try{if(app=="excel")session=new ExcelSession(port);else textSession=new TextSession(textPort);}
             catch(OfficeFault e)when(new[]{"select_cells","single_range_required","range_limit","context_limit","select_text","text_block_limit","text_scope_invalid"}.Contains(e.Message)){fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,selectionReason=e.Message,documentToolsAvailable=true};}
             catch(Exception e){OfficeDiagnostics.Record(e,app,currentStage);fallbackContext=new{app,documentId=automationPort.DocumentId,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};}
@@ -216,7 +217,8 @@ namespace OfficeX.ExcelHost
             if(new[]{"web_search","read_web_page","open_genoffice_editor","insert_image","image_search","generate_image","analyze_media"}.Contains(name))throw new OfficeFault("feature_removed");
             var current=session;var cancelToken=cancellation.Token;
             cancelToken.ThrowIfCancellationRequested();
-            if(writesStopped&&name!="read_document_for_markdown"&&name!="save_markdown"&&name!="save_artifact"&&name!="select_input_file"&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
+            if(name=="review_write_recovery")return await ReviewWriteRecovery(cancelToken);
+            if(writesStopped&&name!="ask_clarification"&&name!="calculate_and_read"&&name!="calculate_office"&&name!="read_document_for_markdown"&&name!="save_markdown"&&name!="save_artifact"&&name!="select_input_file"&&name!="list_checkpoints"&&name!="rollback_document"&&name!="render_slides"&&name!="export_document_copy"&&name!="export_document_pdf"&&name!="inspect_office"&&name!="inspect_office_members"&&name!="read_selection"&&name!="read_outline"&&name!="read_range"&&name!="read_cells"&&name!="read_worksheets"&&name!="read_sheet_context"&&name!="read_surrounding")throw new OfficeFault("writes_stopped_for_this_run");
             if(name=="ask_clarification"){
                 var questions=input["questions"] as JArray;if(questions==null||questions.Count<1||questions.Count>3||questions.Any(q=>q["question"]?.Type!=JTokenType.String||((string)q["question"]).Length>500||q["options"] is JArray opts&&opts.Count>6))throw new OfficeFault("question_invalid");
                 questionId=Guid.NewGuid().ToString("N");questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);pendingQuestion=Wire.Object(new{type="question",runId,questionId,questions});SendSurface(pendingQuestion);
@@ -287,6 +289,7 @@ namespace OfficeX.ExcelHost
                 OfficePlan plan;
                 if(name=="execute_office_operations")plan=automation.Prepare((string)input["snapshotId"],(string)input["summary"],input["steps"]?.ToObject<List<OfficeStep>>(),input["checks"]?.ToObject<List<OfficeCheck>>());
                 else {if(app!="excel")throw new OfficeFault("excel_required",invocationStarted:false);plan=name=="add_worksheet"||name=="rename_worksheet"?ExcelWorksheets.Prepare(automation,input,name=="add_worksheet"):name=="format_cells"?ExcelCellFormats.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null):name=="merge_cells"?ExcelRangeTools.PrepareMerge(automation,input,fallbackContext==null?session?.Context.Worksheet:null):ExcelCellWrites.Prepare(automation,input,fallbackContext==null?session?.Context.Worksheet:null);}
+                recoveryReads=Wire.Clone(plan.Before.Steps);
                 status.Text="문서 변경안을 확인해 주세요.";
                 currentStage="checkpoint_before_write";var checkpoint=files.PrepareCheckpoint(plan.Summary);currentStage="native_"+name;var approved=await AwaitReview(plan.Id,plan,checkpoint);var receipt=await automation.ApplyAsync(plan.Id,approved,cancelToken);
                 writesStopped=receipt.Status!="verified"&&!OfficeCallPolicy.CanReplan(receipt);var result=Wire.Object(receipt);result["checkpoint"]=Wire.Object(checkpoint);SendSurface(new{type="receipt",runId,receipt=result});outcome.Text=receipt.Status=="verified"?"문서 변경과 결과를 확인했습니다. 저장 전입니다.":"변경 결과: "+receipt.Status;return result;
@@ -324,6 +327,43 @@ namespace OfficeX.ExcelHost
                 case "read_surrounding":return current.ReadSurrounding();
                 case "read_range":return current.ReadRange((string)input["address"]);
                 default:throw new OfficeFault("unsupported_tool");
+            }
+        }
+        private async Task<object> ReviewWriteRecovery(CancellationToken token) {
+            // Only the parent worker can request this gate. UI answers are correlated
+            // with the current run and an unguessable question ID, never model text.
+            writesStopped=true;
+            var reads=recoveryReads??new List<OfficeStep>{new OfficeStep{Member="Name"}};
+            string boundDocument=automationPort.DocumentId;
+            while(true){
+                token.ThrowIfCancellationRequested();
+                OfficeObservation observed=null;
+                try{automationPort.CheckSource();observed=automation.Inspect(reads);}catch(OfficeFault){}
+                questionId=Guid.NewGuid().ToString("N");
+                questionAnswer=new TaskCompletionSource<JObject>(TaskCreationOptions.RunContinuationsAsynchronously);
+                var choices=observed==null?new[]{"다시 확인","여기서 마치기"}:new[]{"현재 상태에서 이어가기","다시 확인","여기서 마치기"};
+                pendingQuestion=Wire.Object(new{type="question",kind="write_recovery",runId,questionId,target=target.Text,
+                    detail=observed==null?"문서를 열고 편집 가능한 상태인지 확인해 주세요.":"현재 문서를 다시 읽었습니다. 이어가면 남은 변경안을 확인받고 적용합니다.",
+                    questions=new[]{new{id="writeRecovery",question="문서 상태를 확인해 주세요",options=choices}}});
+                status.Text="확인을 기다리고 있습니다";SendSurface(pendingQuestion);
+                JObject answers;
+                using(token.Register(()=>questionAnswer?.TrySetCanceled()))try{answers=await questionAnswer.Task;}
+                finally{questionAnswer=null;questionId=null;pendingQuestion=null;SendSurface(new{type="question_closed",runId});}
+                token.ThrowIfCancellationRequested();
+                var choice=(string)answers["writeRecovery"];
+                if(choice=="여기서 마치기")return new{status="recovery_cancelled",mutated=false};
+                if(choice!="현재 상태에서 이어가기"||observed==null)continue;
+                try{
+                    automationPort.CheckSource();if(automationPort.DocumentId!=boundDocument)throw new OfficeFault("source_changed");
+                    var fresh=automation.ResumeAfterReview(observed.SnapshotId,true);
+                    // Legacy selection replacements are single-use. Continue through
+                    // actual document operations rather than recapturing a different selection.
+                    if(app!="excel")fallbackContext=new{app,documentId=boundDocument,targetId="document",document=automationPort.DocumentName,selectionAvailable=false,documentToolsAvailable=true};
+                    writesStopped=false;recoveryReads=null;
+                    SendSurface(new{type="write_recovery_resumed",runId});
+                    return new{status="read_required",resumed=true,mutated=false,previousWriteVerified=false,snapshotId=fresh.SnapshotId,observation=fresh,
+                        recovery="Human chose to continue from the observed current document. The previous write remains unverified. Inspect the actual remaining targets and submit a NEW reviewed plan only for missing work. Never replay previous Add/import/create operations or reuse old snapshots. Use Office operations instead of legacy text replacements. This read and human confirmation are not proof that the earlier write succeeded."};
+                }catch(OfficeFault){status.Text="문서 상태가 바뀌어 다시 확인합니다";}
             }
         }
         private Task<bool> ReviewText(TextPlan plan){status.Text="변경 전후를 확인해 주세요.";return AwaitReview(plan.Id,plan);}

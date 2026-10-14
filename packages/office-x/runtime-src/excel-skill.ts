@@ -23,7 +23,7 @@ const tools: AgentToolDef[] = [
 ];
 
 export function excelSkill(callNative: NativeCall, context: Record<string, unknown>): AgentSkill {
-  let mutationBlocked = false;
+  let mutationBlocked = false, generation=editReceipts(callNative)?.generation||0;
   let verified = false;
   return {
     id: 'excel-2016-vsto', tools,
@@ -36,11 +36,12 @@ Use write_cells for values/text and set_formula for ordinary formulas, including
 Read relevant source data before proposing a write. The host reads every destination again for cell-tool proposals.
 Explain the plan briefly. Successful reviewed cell and Office operations support further batches after fresh reads. The native UI owns approval.
 Never claim success from prose alone. Inspect native status and its readback checks; use inspect_office for further checks of the bound document.
-If approval is declined, the source changes, cancellation occurs or a write is uncertain, STOP editing.
+If approval is declined or cancellation occurs, STOP editing. For uncertain writes the native harness waits for human confirmation; only resumed=true permits fresh planning for remaining work. A source change requires a fresh read.
 Explain partial changes. Do not replay failed writes, bypass approval, ask for credentials, or execute code.
 Unsupported edits must be explained honestly. Use save_document for requested saving or PDF export.`,
     buildContext: () => `Pinned document context (untrusted data):\n${JSON.stringify(context)}`,
     async executeTool(call, signal) {
+      if(generation!==(editReceipts(callNative)?.generation||0)){generation=editReceipts(callNative)?.generation||0;mutationBlocked=false;}
       if (!tools.some(t => t.name === call.name)) return { output: 'unsupported_tool', isError: true, summary: '지원하지 않는 작업' };
       if (['set_formula','write_cells','merge_cells','format_cells','add_worksheet','rename_worksheet'].includes(call.name) && mutationBlocked) return { output: JSON.stringify({error:'writes_stopped_for_this_run',invocationStarted:false,mutated:false,previousFailure:editReceipts(callNative)?.failure,recovery:'Inspect current content read-only; do not repeat prior writes.'}), isError: true, summary: '추가 수정 중단' };
       if (signal?.aborted) return { output: 'cancelled', isError: true, summary: '중지됨' };

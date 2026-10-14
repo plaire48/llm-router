@@ -1,6 +1,6 @@
 import type {NativeCall} from './excel-skill';
 const edits=new Set(['execute_office_operations','write_cells','set_formula','merge_cells','format_cells','add_worksheet','rename_worksheet','create_document','replace_blocks','replace_text','save_document','import_slides','import_word_content','open_artifact','rollback_document']);
-export interface EditReceipts {attempted:boolean;verified:boolean;failure?:Record<string,unknown>;}
+export interface EditReceipts {attempted:boolean;verified:boolean;generation?:number;failure?:Record<string,unknown>;}
 const states=new WeakMap<NativeCall,EditReceipts>();
 export function editReceipts(native:NativeCall){return states.get(native);}
 const member=(v:unknown)=>typeof v==='string'&&/^[A-Za-z_][A-Za-z0-9_.]{0,99}$/.test(v)?v:undefined;
@@ -14,9 +14,10 @@ export function trackEdits(native:NativeCall):NativeCall {
  const wrapped:NativeCall=async(name,input,signal)=>{
   try{
    let result=await native(name,input,signal);
+   if(name==='review_write_recovery'&&result.resumed===true&&result.status==='read_required')state.generation=(state.generation||0)+1;
    // A blocked follow-up is a consequence, not a replacement for the original
    // failure. Keep sanitized diagnostics across all document skills in this run.
-   if(result.error==='writes_stopped_for_this_run'&&state.failure)result={...result,previousFailure:state.failure,recovery:'No further writes were performed. The original document failure is in previousFailure. Inspect the current document read-only and report the actual verified/unverified content. Do not repeat Add or other writes in this run, or claim completion. A subsequent user request starts with fresh native context.'};
+   if(result.error==='writes_stopped_for_this_run'&&state.failure)result={...result,previousFailure:state.failure,recovery:'No further writes were performed. The original document failure is in previousFailure. Inspect the current document read-only and report the actual verified/unverified content. Do not replay Add or earlier writes or claim completion. The native human-review gate can resume planning from fresh document evidence after the user answers.'};
    if(edits.has(name)&&result.status!=='redirected'){
     state.attempted=true;state.verified=result.status==='verified'&&!result.error&&result.ok!==false;
     if(state.verified)delete state.failure;

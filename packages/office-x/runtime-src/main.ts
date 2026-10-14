@@ -126,7 +126,7 @@ async function receive(msg: Record<string, any>) {
         if (signal?.aborted) { reject(new Error('cancelled')); return; }
         const callId = randomUUID();
         const cancel = () => { const p=pending.get(callId); pending.delete(callId); p?.cleanup(); reject(new Error('cancelled')); };
-        const timeout = setTimeout(cancel, 10 * 60 * 1000);
+        const timeout = ['review_write_recovery','ask_clarification'].includes(name)?undefined:setTimeout(cancel, 10 * 60 * 1000);
         pending.set(callId,{resolve:(result)=>{if(result.documentTarget==='current'||result.documentTarget==='new')context.documentTarget=result.documentTarget;if(result.documentId){context.documentId=result.documentId;context.targetId=result.targetId||'document';context.selectionAvailable=false;delete context.snapshotId;delete context.address;delete context.worksheet;delete context.worksheetId;delete context.cells;delete context.selection;context.document=result.document;}resolve(result);},reject,cleanup:()=>{clearTimeout(timeout);signal?.removeEventListener('abort',cancel);}});
         signal?.addEventListener('abort',cancel,{once:true});
         send({type:'tool',runId:id,id:callId,name,input});

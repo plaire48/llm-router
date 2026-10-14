@@ -1,11 +1,11 @@
 const errors={agent_tool_input_failed:'모델이 문서 작업 인자를 올바르게 만들지 못했습니다.',agent_tool_failed:'문서 도구 실행에 실패했습니다. 아래 오류 정보를 확인해 주세요.',agent_no_progress:'같은 문서 요청이 반복되어 진행하지 못했습니다.',agent_response_unverified:'문서 작업 결과와 모델 응답이 일치하지 않습니다.',agent_failed:'Agent 처리 중 오류가 발생했습니다. 확인된 문서 결과를 먼저 확인해 주세요.',office_repeated_tool_failure:'문서 도구에서 같은 오류가 반복되어 작업을 멈췄습니다.',no_credential:'모델 연결을 먼저 확인해주세요.',claude_cli_timeout:'Claude 응답 시간이 초과됐습니다.',claude_turn_limit:'Claude의 응답 처리 한도에 도달했습니다.',claude_structured_output_failed:'Claude가 문서 도구 응답을 올바른 형식으로 마치지 못했습니다.',claude_response_invalid:'Claude의 도구 응답 형식을 확인해야 합니다.',claude_cli_missing:'Claude Code를 찾지 못했습니다.',claude_login_required:'Claude에 다시 로그인해 주세요.',claude_cli_failed:'Claude Code 실행을 완료하지 못했습니다.',rate_limited:'Claude 사용 한도에 도달했습니다.',provider_response_failed:'모델의 후속 응답을 받지 못했습니다.'};
 export function outcome(message){
- const receipts=message.receipts||[message.receipt].filter(Boolean),verified=receipts.filter(r=>r.status==='verified'),created=receipts.find(r=>r.kind==='create_document'&&r.mutated),partial=receipts.find(r=>r.status==='partial');
+ const receipts=message.receipts||[message.receipt].filter(Boolean),verified=receipts.filter(r=>r.status==='verified'),created=receipts.find(r=>r.kind==='create_document'&&r.mutated),partial=receipts.find(r=>r.status==='partial'&&!r.recoveryReviewed);
  const reason=errors[message.errorCode]||'모델 응답을 마치지 못했습니다.';
  const exported=receipts.find(r=>r.kind==='save_markdown'&&r.saved===true);
  if(exported&&(exported.status==='partial'||message.failed))return {text:message.text||'Markdown 파일 저장을 확인했습니다.',notice:(message.failed?reason+' 저장된 파일은 유지됩니다. ':'')+(exported.status==='partial'?(exported.warnings?.[0]||'추출한 내용을 원문과 대조해 주세요.'):'저장 확인이 끝났습니다.'),tone:'warning',documentVerified:false,fileVerified:true};
  if(created&&created.status!=='verified')return {text:message.text||'새 문서가 열렸습니다. 내용 확인이 필요합니다.',notice:'생성된 문서의 최종 검증을 마치지 못했습니다. 문서 화면에서 실제 내용을 확인하세요.',tone:'warning',documentVerified:false};
- if(partial)return {text:message.text||'문서 변경 결과를 확인해야 합니다.',notice:'실제 적용 여부를 확인하지 못했습니다. 입력 완료로 판정하지 않았습니다.',tone:'warning',documentVerified:false};
+ if(partial)return {text:message.text||'문서 변경 결과를 확인해야 합니다.',notice:'문서 상태 확인이 필요합니다.',tone:'warning',documentVerified:false};
  if(message.failed&&verified.length)return {text:message.text||'문서 작업 결과를 확인했습니다.',notice:reason+' 확인된 문서 변경은 유지됩니다. 남은 작업만 이어서 요청하세요.',tone:'warning',documentVerified:true};
  return {text:message.text||(message.failed?reason:message.cancelled?'작업을 중지했습니다.':''),notice:message.failed?reason:'',tone:'danger',documentVerified:verified.length>0};
 }
@@ -24,7 +24,7 @@ export function toolFailure(execution){
  return {code,cause:safe(previous.error),countChecks,tool:safe(execution.name),member:safeMember(result.failedMember||previous.failedMember||source.member),inputPath:typeof path==='string'&&path.length<=150&&/^[A-Za-z_][A-Za-z0-9_]*(\[\d{1,3}\]|\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(path)?path:undefined,inputRule:safe(result.inputRule||source.inputRule),nativeCode:/^0x[0-9a-f]{8}$/i.test(result.nativeCode||previous.nativeCode||source.nativeCode||'')?result.nativeCode||previous.nativeCode||source.nativeCode:undefined,exception:safe(result.exceptionName||source.exception),stage:safe(result.failureStage||source.failureStage||source.stage),id:typeof source.id==='string'&&/^[a-f0-9]{12}$/i.test(source.id)?source.id:undefined,version:typeof source.version==='string'&&/^\d+\.\d+\.\d+$/.test(source.version)?source.version:undefined};
 }
 export function documentInputFailure(fault){
- if(fault?.code==='writes_stopped_for_this_run'){const c=fault.countChecks?.find(c=>!c.passed);return c?`앞선 개수 검증 실패로 후속 쓰기를 멈췄습니다. 예상 ${c.expected}개, 실제 ${c.actual}개입니다. 이미 적용된 내용을 먼저 확인해야 합니다.`:'앞선 문서 작업의 결과 확인이 필요해 후속 쓰기를 멈췄습니다. 이미 적용된 내용을 먼저 확인해야 합니다.';}
+ if(fault?.code==='writes_stopped_for_this_run'){const c=fault.countChecks?.find(c=>!c.passed);return c?`앞선 개수 검증 실패로 후속 쓰기를 멈췄습니다. 예상 ${c.expected}개, 실제 ${c.actual}개입니다. 이미 적용된 내용을 먼저 확인해야 합니다.`:'사용자 확인 후 현재 문서에서 이어갈 수 있습니다.';}
  if(fault?.inputRule==='worksheet_required')return '시트 목록에 이름을 적용하려던 요청을 쓰기 전에 중단했습니다. 실제 시트를 찾아 이름을 변경해야 합니다.';
  if(fault?.code==='office_count_expectation_invalid')return '문서를 변경하기 전에 예상 개수 오류를 발견했습니다. 실제 개수를 읽고 변경안을 다시 확인해야 합니다.';
  if(fault?.code==='readback_mismatch'&&fault.countChecks?.some(c=>!c.passed)){const c=fault.countChecks.find(c=>!c.passed);return `개수 확인: 예상 ${c.expected}개, 실제 ${c.actual}개. 셀 내용의 확인 결과도 함께 확인해야 합니다. 변경을 반복하지 않습니다.`;}
