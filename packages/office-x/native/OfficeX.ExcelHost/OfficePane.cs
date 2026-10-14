@@ -91,7 +91,7 @@ namespace OfficeX.ExcelHost
                 EnsureUiContext();
                 if(followOwner!=null){if(followOwner.running&&new[]{"approve","cancel","choose_target","answer_question","context"}.Contains((string)message["type"])){followOwner.ReceiveUi(message);return;}if(!followOwner.running)followOwner=null;}
                 switch((string)message["type"]) {
-                    case "ready":surface.Send(new {type="host",app,version="0.8.12"});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastContext!=null)surface.Send(lastContext);Publish();}break;
+                    case "ready":surface.Send(new {type="host",app,version=typeof(OfficePane).Assembly.GetName().Version.ToString(3)});if(followOwner==null)EnsureWorker();if(handoffState!=null)ReplayFollow();else {if(conversationId!=null){surface.Send(HandoffState());foreach(var retained in followMessages)surface.Send(retained);if(pendingQuestion!=null)surface.Send(pendingQuestion);if(pendingReview!=null)surface.Send(pendingReview);}if(lastProvider!=null)surface.Send(lastProvider);if(lastContext!=null)surface.Send(lastContext);Publish();}break;
                     case "ui_rendered":SurfaceReady?.Invoke();break;
                     case "ui_fault":OfficeDiagnostics.Record(new OfficeFault("chat_ui_failed"),app,"chat_"+(string)message["stage"]);break;
                     case "services":surface.Send(new{type="reply",id=(string)message["id"],error="feature_removed"});break;

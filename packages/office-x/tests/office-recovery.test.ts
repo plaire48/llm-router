@@ -1,0 +1,4 @@
+import {it,expect,vi} from 'vitest';
+import {recoverOfficeMember} from '../runtime-src/office-recovery';
+it('never starts corrective reading for partial, unknown or completed document writes',async()=>{for(const detail of [{status:'partial',invocationStarted:false},{invocationStarted:true},{},{invocationStarted:false,mutated:true},{invocationStarted:false,completedWrites:1},{invocationStarted:false,writeResultUncertain:true}]){const native=vi.fn();expect(await recoverOfficeMember(native,'word',{error:'office_member_not_found',...detail})).toBeNull();expect(native).not.toHaveBeenCalled();}});
+it('a failed native recovery read retains the original failure and cannot create a write plan',async()=>{const native=vi.fn(async()=>({error:'office_operation_failed',ok:false}));expect(await recoverOfficeMember(native,'powerpoint',{error:'office_member_not_found',invocationStarted:false,mutated:false})).toBeNull();expect(native).toHaveBeenCalledTimes(1);});

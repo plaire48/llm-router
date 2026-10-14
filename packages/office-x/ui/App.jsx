@@ -38,7 +38,7 @@ function App(){
   const [host,setHost]=useState('excel');
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.8.12');
+  const [version,setVersion]=useState('0.8.13');
   const [contextRecords,setContextRecords]=useState({}),[contextBusy,setContextBusy]=useState(false),[contextNotice,setContextNotice]=useState(''),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({}),[catalogProblem,setCatalogProblem]=useState(null);
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
@@ -55,7 +55,7 @@ function App(){
       if(m.type==='context_state'){setContextRecords(rows=>({...rows,[m.conversationId]:m}));return;}
       if(m.type==='context_compacting'){setContextBusy(!!m.active);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.12');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.13');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&(['start','demo','rollback'].includes(m.operation)||!run.current)){setBusy(false);setReview(null);setQuestion(null);run.current=null;updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}

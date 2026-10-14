@@ -61,6 +61,9 @@ namespace OfficeX.ExcelHost {
     OfficeDispatch.Set(range,"NumberFormat","@");var values=new object[item.Rows.Count,item.Rows[0].Count];
     for(int r=0;r<item.Rows.Count;r++)for(int col=0;col<item.Rows[r].Count;col++)values[r,col]=item.Rows[r][col];
     OfficeDispatch.Set(range,"Value2",values);
+    // Protect literal imports only while inserting. General allows the next
+    // user-entered formula to calculate without reparsing existing strings.
+    OfficeDispatch.Set(range,"NumberFormat","General");
     object head=c.Hold(OfficeDispatch.Get(sheet,"Range","A1",Region.CellAddress(1,item.Rows[0].Count))),font=c.Hold(OfficeDispatch.Get(head,"Font")),fill=c.Hold(OfficeDispatch.Get(head,"Interior")),columns=c.Hold(OfficeDispatch.Get(range,"Columns")),rows=c.Hold(OfficeDispatch.Get(range,"Rows"));
     OfficeDispatch.Set(font,"Bold",true);OfficeDispatch.Set(fill,"Color",0xF8EFE6);OfficeDispatch.Set(columns,"ColumnWidth",20);OfficeDispatch.Set(range,"WrapText",true);OfficeDispatch.Call(rows,"AutoFit");
    }
