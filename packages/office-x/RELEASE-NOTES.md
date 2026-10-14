@@ -10,3 +10,7 @@
 - PowerPoint·Word 창 핸들 조회에서 Office 전용 COM 인터페이스 캐스팅을 제거했습니다. Office 2016 호환 PIA의 HWND 식별자로 기본 IDispatch를 호출하며, 원본 창·문서 일치 검사는 유지합니다.
 
 GenOffice 원본 기반과 기존 Nubi UI 구성요소를 유지합니다. 실제 Office 2016 및 실계정 Claude/ChatGPT를 실행할 Windows PC에는 연결되지 않아 직접 검증하지 못했습니다. 자동 테스트·COM 모의 객체·설치 검증은 실제 Office 사용 검증과 구분합니다.
+
+Windows 32·64비트 COM 회귀 검사, 코어 141개, Windows 소스 테스트 165개를 통과했습니다. 실제 Windows WebView2에서 3개 앱 화면의 클릭·입력·승인과 화면 복구를 확인했습니다. 설치 7.97초, 재설치 5.01초, 제거 1.58초였으며 설치된 문서 변환 및 한국어 OCR도 통과했습니다.
+
+[Windows 빌드와 검증](https://github.com/plaire48/llm-router/actions/runs/38505226941)
