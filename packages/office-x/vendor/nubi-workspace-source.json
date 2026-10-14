@@ -368,13 +368,13 @@
       "source": "packages/nubi-desktop/runtime/claude-code.mjs",
       "sourceSha256": "19be2cee15378eede144fb8899f299212e0543e74f51dda8a6a4049d433382a5",
       "path": "runtime-src/claude-cli.mjs",
-      "sha256": "73a054ae43200d9a3a67a33ccbe5b2acb0ddb8c8c7e0158894139d00586a7512",
-      "note": "Office-specific discovery and Windows process launcher adapted from runClaude. CLI models, protocol, environment filtering and failure signals are imported unchanged."
+      "sha256": "2cbbb5b35ac9fc22c08ba5522468354b60f8547ebf7803c8cefe0885161ccb91",
+      "note": "Office-specific discovery and Windows process launcher adapted from runClaude. CLI protocol remains upstream; Office preserves only the Git Bash launch hint, filters credentials case-insensitively, and classifies sanitized process failures."
     },
     {
       "source": "packages/nubi-desktop/runtime/claude-code.mjs",
       "path": "runtime-src/claude-office-run.mjs",
-      "sha256": "8e778e52e0d5a36c8bc1e3b189e790a5df0378e1d24c1d4e743dc6a437e21221",
+      "sha256": "04b7e0b6430ce047aa226337eea4d69e3c02ddda0b3900d3a367a80790d0017e",
       "note": "Office wrapper adds typed proposal schemas, normalizes structured CLI envelopes and bounds result errors; immutable Nubi provider still validates tool names and decoding."
     }
   ]

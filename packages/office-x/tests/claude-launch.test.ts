@@ -13,6 +13,8 @@ async function fixture(){
   await writeFile(file,`const fs=require('node:fs');const args=process.argv.slice(2);
 if(args[0]==='--version'){console.log('2.1.99 (Claude Code)');process.exit(0);}
 if(args[0]==='hang'){setInterval(()=>{},1000);return;}
+if(args[0]==='shell-fail'){console.error('private path: Claude Code on Windows requires git-bash');process.exit(1);}
+if(args[0]==='auth'&&args[1]==='status'){console.log('{"loggedIn":false}');process.exit(1);}
 if(args[0]==='fail'){console.error('private account details');process.exit(1);}
 let input='';process.stdin.setEncoding('utf8');process.stdin.on('data',c=>input+=c);process.stdin.on('end',()=>console.log(JSON.stringify({args,input,path:process.env.Path||process.env.PATH,apiKey:process.env.ANTHROPIC_API_KEY,config:process.env.CLAUDE_CONFIG_DIR})));
 `);
@@ -33,6 +35,11 @@ describe('Claude process transport',()=>{
   });
   it('never exposes stderr when a detected CLI fails',async()=>{
     const {file}=await fixture();await expect(runClaude({kind:'native',file:process.execPath,prefixArgs:[file]},['fail'])).rejects.toThrow(/^claude_cli_failed$/);
+  });
+  it('reports unauthenticated CLI JSON and shell failure with distinct safe codes',async()=>{
+    const {file}=await fixture(),launch={kind:'native',file:process.execPath,prefixArgs:[file]};
+    await expect(runClaude(launch,['auth','status'])).rejects.toThrow('claude_login_required');
+    await expect(runClaude(launch,['shell-fail'])).rejects.toThrow('claude_shell_missing');
   });
   it('rejects command-line separators in a batch argument before launching CMD',async()=>{
     await expect(runClaude({kind:'cmd',file:'C:\\Tools\\claude.cmd'},['line one\nline two'])).rejects.toThrow('claude_cli_failed');

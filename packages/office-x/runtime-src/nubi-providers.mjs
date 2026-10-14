@@ -2,7 +2,7 @@ import {runClaude,findClaudeBinary} from './claude-cli.mjs';
 import {runClaudeLogin} from '../vendor/nubi/packages/nubi-desktop/runtime/claude-login.mjs';
 import {createDesktopProviders} from '../vendor/nubi/packages/nubi-desktop/runtime/desktop-providers.mjs';
 import {createProviders} from '../vendor/nubi/packages/nubi-office/worker/providers.mjs';
-import {createClaudeCode} from '../vendor/nubi/packages/nubi-desktop/runtime/claude-code.mjs';
+import {createOfficeClaudeCode} from './claude-connection.mjs';
 import {openLoginBrowser,startLogin} from '../vendor/nubi/packages/nubi-office/worker/aipro-auth.mjs';
 import {ORIGIN} from '../vendor/nubi/extensions/aipro-chat/core.js';
 import {desktopChatGPTModels} from '../vendor/nubi/packages/nubi-desktop/runtime/chatgpt-catalog.mjs';
@@ -16,10 +16,11 @@ export function officeProviders(vault, overrides={}) {
     onActiveProvider:provider=>vault('provider:active',provider),...overrides,
     startLogin:options=>(overrides.startLogin||startLogin)({...options,fetchImpl:loginCatalogFetch(options.fetchImpl||overrides.fetchImpl||fetch,ORIGIN)}),
     chatGPTModels:(...args)=>refreshCatalog(()=>(overrides.chatGPTModels||desktopChatGPTModels)(...args)),run:officeClaudeRun(run),
-    createBase:deps=>base=(overrides.createBase||createProviders)(deps),createClaude:deps=>claude=(overrides.createClaude||createClaudeCode)(deps)});
+    createBase:deps=>base=(overrides.createBase||createProviders)(deps),createClaude:deps=>claude=createOfficeClaudeCode(deps,overrides.createClaude)});
   // A staged model form can refresh another account without switching the
   // conversation or persisting a provider change before the user presses Apply.
   return {...providers,
+    status:()=>{const state=providers.status(),diagnostic=claude.connectionDiagnostic();return state.loginError&&diagnostic?{...state,loginError:diagnostic.code,connectionStage:diagnostic.stage}:state;},
     restoreConnections:async(records,selected)=>{
       const restored=await providers.restoreConnections(records,selected);
       if(selected&&selected!=='claude'){

@@ -23,14 +23,15 @@ export function officeClaudeRun(run){return async(binary,args,options={})=>{
    }
   }catch{/* An invalid input/schema is still rejected by the original provider. */}
  }
+ const structured=adapted.includes('--json-schema');
  let failure=null;
  try{const result=await run(binary,adapted,{...options,onEvent:event=>{
-   if(event?.type==='result'&&event.subtype==='success'){
+   if(structured&&event?.type==='result'&&event.subtype==='success'){
     let value=event.structured_output;
     if(!value&&typeof event.result==='string')try{value=JSON.parse(event.result.trim().replace(/^```(?:json)?\s*([\s\S]*?)\s*```$/,'$1'));}catch{}
     if(value&&typeof value.content==='string'&&Array.isArray(value.calls))event={...event,structured_output:{...value,calls:value.calls.map(c=>c&&c.arguments&&typeof c.arguments==='object'&&!Array.isArray(c.arguments)?{...c,arguments:JSON.stringify(c.arguments)}:c)}};
    }
-   failure=claudeResultFailure(event)||failure;options.onEvent?.(event);
+   failure=(structured?claudeResultFailure(event):null)||failure;options.onEvent?.(event);
   }});if(failure)throw Error(failure);return result;}
  catch(error){if(error.message==='cancelled')throw error;throw Error(failure||error.message);}
 };}

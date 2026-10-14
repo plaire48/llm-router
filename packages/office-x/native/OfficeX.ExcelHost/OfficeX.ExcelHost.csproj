@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net472</TargetFramework><Version>0.8.15</Version><LangVersion>latest</LangVersion><CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies></PropertyGroup>
+  <PropertyGroup><TargetFramework>net472</TargetFramework><Version>0.8.16</Version><LangVersion>latest</LangVersion><CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies></PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../OfficeX.Core/OfficeX.Core.csproj" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.3" PrivateAssets="all" />

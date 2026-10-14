@@ -78,7 +78,7 @@ button,input,textarea,select { font:inherit; }
 .receipt[data-status=verified]>strong { color:var(--nubi-text-success); }
 .receipt[data-status=rejected] { border-color:var(--deck-sub); background:var(--deck-section-surface); }
 .receipt span { color:var(--deck-sub); }
-.latest { align-self:center; flex:none; font:var(--deck-font-caption); }
+.office-shell .latest.cx-kit-button { align-self:center; flex:none; width:36px; min-width:36px; height:36px; padding:0; border-radius:50%; color:var(--office-ink); background:var(--office-paper); box-shadow:0 2px 8px #0000000d; }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 details pre { white-space:pre-wrap; text-align:left; font:var(--deck-font-caption); }
 @media(max-width:340px) { .office-shell { --office-inset:var(--cx-space-3); } .office-shell .nubi-beta { display:none; } .office-shell .agent-intro h1 { font-size:21px; } }

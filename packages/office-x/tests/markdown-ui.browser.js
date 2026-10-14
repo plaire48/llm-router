@@ -10,7 +10,7 @@ async (page) => {
   if(!(await p.evaluate(()=>sent.findLast(m=>m.type==='approve')?.approved)))throw Error('Save approval not forwarded');
   await p.evaluate(destination=>{emit({type:'review_closed'});emit({type:'receipt',runId:'md-run',receipt:{kind:'save_markdown',status:'partial',saved:true,document:'보고서.md',destination,warnings:['OCR로 읽은 내용은 글자·숫자를 원문과 대조해 주세요.']}});emit({type:'done',runId:'md-run',result:{text:'Markdown 파일을 저장했습니다. OCR 결과를 원문과 확인해 주세요.'}});},destination);
   await p.getByText('저장됨 / 추출 확인 필요',{exact:true}).waitFor();if(await p.getByText('실제 적용 여부를 확인하지 못했습니다. 입력 완료로 판정하지 않았습니다.',{exact:true}).count())throw Error('File persistence confused with document mutation');
-  if(await p.getByRole('button',{name:'문서 확인 후 이어서 요청',exact:true}).count())throw Error('OCR review must not replay Office work');
+  if(await p.getByRole('button',{name:'다시 시도',exact:true}).count())throw Error('OCR review must not replay Office work');
   await p.getByRole('textbox',{name:'메시지',exact:true}).fill('다음 파일 읽기');
   const geometry=await p.evaluate(()=>{const chat=document.querySelector('.conversation'),input=document.querySelector('textarea');return {overflow:document.documentElement.scrollWidth>innerWidth,chatBottom:chat.getBoundingClientRect().bottom,inputTop:input.getBoundingClientRect().top};});if(geometry.overflow||geometry.chatBottom>geometry.inputTop)throw Error('Export CX overlaps or overflows');
   if(errors.length)throw Error(errors.join('\n'));cases.push({app,viewport,saveApproval:true,requestedPathVisible:true,filePersistenceSeparated:true,ocrDisclosure:true,inputUsable:true,geometry});await context.close();

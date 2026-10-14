@@ -7,6 +7,24 @@ import os from 'node:os';
 import path from 'node:path';
 import {claudeEnvironment,claudeFailureCode} from '../vendor/nubi/packages/nubi-desktop/runtime/claude-code.mjs';
 
+// Only this non-secret launch hint survives the subscription credential filter.
+// Do not restore API keys, custom endpoints, or auth-store overrides.
+export function officeClaudeEnvironment(source=process.env){
+  const env=claudeEnvironment(source);
+  for(const key of Object.keys(env))if(/^(ANTHROPIC_|CLAUDE_CODE_|CLAUDE_AGENT_|CLAUDE_CONFIG_DIR$|CLAUDECODE$)/i.test(key))delete env[key];
+  const bash=envValue(source,'CLAUDE_CODE_GIT_BASH_PATH');
+  if(bash&&path.win32.isAbsolute(bash)&&/bash\.exe$/i.test(bash)&&!/[\r\n\0"]/.test(bash))env.CLAUDE_CODE_GIT_BASH_PATH=bash;
+  return env;
+}
+export function claudeProcessFailure(stderr){
+  if(/requires git-bash|could not find.*(?:git.bash|bash.exe)|CLAUDE_CODE_GIT_BASH_PATH/i.test(stderr))return 'claude_shell_missing';
+  if(/unknown option|unknown command/i.test(stderr))return 'claude_cli_update';
+  if(/certificate|unable_to_verify_leaf_signature|self.signed/i.test(stderr))return 'tls_untrusted';
+  if(/ENOTFOUND|EAI_AGAIN/i.test(stderr))return 'network_dns';
+  if(/ECONNREFUSED/i.test(stderr))return 'network_refused';
+  if(/ETIMEDOUT|ECONNRESET|fetch failed/i.test(stderr))return 'network_error';
+  return 'claude_cli_failed';
+}
 const envValue=(env,key)=>env[Object.keys(env).find(k=>k.toLowerCase()===key.toLowerCase())]||'';
 const withPath=(env,value)=>({...Object.fromEntries(Object.entries(env).filter(([k])=>k.toLowerCase()!=='path')),Path:value});
 function pathDirectories(value,p){
@@ -131,15 +149,15 @@ try {
 `;
 async function prepareLaunch(binary,args,environment,directory){
   const launch=typeof binary==='string'?{kind:process.platform==='win32'&&/\.(cmd|bat)$/i.test(binary)?'cmd':'native',file:binary,prefixArgs:[]}:binary;
-  let env={...claudeEnvironment(),...launch.environment,...environment};
+  let env={...officeClaudeEnvironment(),...launch.environment,...environment};
   // Sanitize the discovery environment too; credentials stay with the CLI.
-  env={...claudeEnvironment(env),...environment};
+  env={...officeClaudeEnvironment(env),...environment};
   if(process.platform==='win32'){
     // Windows environment keys are case-insensitive; Node otherwise chooses the
     // first alphabetic duplicate (PATH can shadow a newly discovered Path).
     const merged=new Map();
-    for(const source of [claudeEnvironment(),launch.environment||{},environment])for(const [key,value] of Object.entries(source))merged.set(key.toLowerCase(),[key,value]);
-    env={...claudeEnvironment(Object.fromEntries(merged.values())),...environment};
+    for(const source of [officeClaudeEnvironment(),launch.environment||{},environment])for(const [key,value] of Object.entries(source))merged.set(key.toLowerCase(),[key,value]);
+    env={...officeClaudeEnvironment(Object.fromEntries(merged.values())),...environment};
   }
   if(launch.kind==='native')return {file:launch.file,args:[...(launch.prefixArgs||[]),...args],env};
   if(launch.kind==='powershell'){
@@ -163,7 +181,7 @@ export async function runClaude(binary,args,{input='',signal,onEvent=()=>{},envi
     const launch=await prepareLaunch(binary,args,environment,directory);
     return await new Promise((resolve,reject)=>{
       const child=spawn(launch.file,launch.args,{cwd:directory,env:launch.env,shell:false,windowsHide:true,windowsVerbatimArguments:launch.windowsVerbatimArguments,stdio:['pipe','pipe','pipe']});
-      let output='',line='',bytes=0,failure=null,reportedFailure=null,killTimer;
+      let output='',line='',stderr='',bytes=0,failure=null,reportedFailure=null,killTimer;
       const stop=code=>{
         failure ||= Error(code);
         if(process.platform==='win32'&&child.pid){
@@ -181,9 +199,9 @@ export async function runClaude(binary,args,{input='',signal,onEvent=()=>{},envi
         output+=chunk;line+=chunk;let end;
         while((end=line.indexOf('\n'))>=0){emit(line.slice(0,end));line=line.slice(end+1);}
       });
-      child.stderr.on('data',()=>{});child.stdin.on('error',()=>{});
+      child.stderr.setEncoding('utf8');child.stderr.on('data',chunk=>{stderr=(stderr+chunk).slice(-8192);});child.stdin.on('error',()=>{});
       child.on('error',error=>{clean();reject(Error(error.code==='ENOENT'?'claude_cli_missing':'claude_cli_failed'));});
-      child.on('close',code=>{clean();if(line.trim())emit(line);if(failure)reject(failure);else if(code!==0)reject(Error(reportedFailure||'claude_cli_failed'));else resolve(output);});
+      child.on('close',code=>{clean();if(line.trim())emit(line);if(failure)reject(failure);else if(code!==0){let unauthenticated=false;if(args[0]==='auth'&&args[1]==='status')try{unauthenticated=JSON.parse(output).loggedIn===false;}catch{}reject(Error(unauthenticated?'claude_login_required':reportedFailure||claudeProcessFailure(stderr)));}else resolve(output);});
       child.stdin.end(input);if(signal?.aborted)abort();
     });
   }finally{await rm(directory,{recursive:true,force:true});}

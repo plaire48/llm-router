@@ -9,7 +9,7 @@ import {NubiLogo} from '../vendor/nubi/extensions/aipro-chat/src/AgentMark.jsx';
 import {ReasoningPicker} from '../vendor/nubi/packages/nubi-desktop/ui/ReasoningPicker.jsx';
 import {ResponseTime} from '../vendor/nubi/packages/nubi-desktop/ui/ResponseTime.jsx';
 import {useOfficeConversationScroll} from './useOfficeConversationScroll.js';
-import {providerLoginError,providerLoginDiagnostics} from '../vendor/nubi/packages/nubi-desktop/ui/provider-login-state.mjs';
+import {providerLoginError as workspaceLoginError,providerLoginDiagnostics} from '../vendor/nubi/packages/nubi-desktop/ui/provider-login-state.mjs';
 import {available,send,command,subscribe} from './bridge.js';
 import {labels,modelData,displayLabel} from './provider-view.js';
 import '@e2e/cx-design-system/styles.css';
@@ -32,6 +32,8 @@ import {PermissionPicker} from './PermissionPicker.jsx';
 import {OfficeDialog} from './OfficeDialog.jsx';
 import './office-dialog.css';
 import {outcome,inferDocumentTarget,toolFailure,documentInputFailure} from './run-outcome.js';
+import {providerCommandMessage} from './provider-command-errors.js';
+const providerLoginError=state=>state.loginError?providerCommandMessage(state.loginError,'login'):workspaceLoginError(state);
 const fresh=()=>({id:crypto.randomUUID(),title:'새 대화',messages:[]});
 const toolNames={export_markdown:'Markdown 추출 및 저장',generate_deck:'발표자료 작성',regenerate_slide:'슬라이드 다시 작성',render_document:'문서 화면 확인',rollback_document:'문서 복원',checkpoint_document:'복원 지점 저장',apply_slide_ops:'발표자료 편집',convert_document:'문서 변환',inspect_office_members:'지원 기능 확인',inspect_office:'문서 구조와 내용 읽기',execute_office_operations:'문서 수정 및 확인',create_document:'새 문서 만들기',save_document:'문서 저장',load_office_guide:'작업 방법 확인',read_selection:'선택 범위 읽기',read_cells:'셀 내용 읽기',read_worksheets:'시트 목록 읽기',add_worksheet:'시트 추가 및 확인',rename_worksheet:'시트 이름 변경 및 확인',merge_cells:'셀 병합 및 확인',format_cells:'셀 서식 변경 및 확인',read_range:'시트 범위 읽기',read_surrounding:'주변 표 읽기',read_sheet_context:'시트 구조 확인',write_cells:'셀 입력',set_formula:'수식 변경안 확인',calculate_and_read:'계산 결과 검증',replace_text:'문장 변경안 확인',replace_blocks:'문단 변경안 확인',read_outline:'문서 개요 읽기'};
 function App(){
@@ -40,7 +42,7 @@ function App(){
   const [permission,setPermission]=useState('confirm'),[sharedBusy,setSharedBusy]=useState(false);
   const textHost=host!=='excel';
   const app=officeApps[host]||officeApps.excel;
-  const [version,setVersion]=useState('0.8.15');
+  const [version,setVersion]=useState('0.8.16');
   const [contextRecords,setContextRecords]=useState({}),[contextBusy,setContextBusy]=useState(false),[contextNotice,setContextNotice]=useState(''),[checkpoints,setCheckpoints]=useState([]),[pendingRequest,setPendingRequest]=useState(''),[question,setQuestion]=useState(null),[questionAnswers,setQuestionAnswers]=useState({}),[catalogProblem,setCatalogProblem]=useState(null);
   const [provider,setProvider]=useState({}),[ready,setReady]=useState(false),[error,setError]=useState(''),[dialog,setDialog]=useState(null),[lost,setLost]=useState(false),[diagnostics,setDiagnostics]=useState(null);
   const [conversations,setConversations]=useState(()=>[fresh()]),[index,setIndex]=useState(0),[draft,setDraft]=useState(''),[busy,setBusy]=useState(false);
@@ -59,7 +61,7 @@ function App(){
       if(m.type==='context_state'){setContextRecords(rows=>({...rows,[m.conversationId]:m}));return;}
       if(m.type==='context_compacting'){setContextBusy(!!m.active);return;}
       if(m.type==='checkpoint_list'){setCheckpoints(m.checkpoints);setDialog('checkpoints');return;}
-      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.15');return;}
+      if(m.type==='host'){setHost(m.app);setVersion(m.version||'0.8.16');return;}
       if(m.type==='provider_state'){setProvider(m.state);setReady(!m.state.initializing);return;}
       if(m.type==='host_error'){setError(m.error);setDiagnostics(m.diagnostics||null);if(m.operation==='ready')setLost(true);if(!m.id&&(['start','demo','rollback'].includes(m.operation)||!run.current)){setBusy(false);setReview(null);setQuestion(null);run.current=null;updateReply({failed:true,text:m.error});}return;}
       if(m.type==='disconnected'){setLost(true);setProvider({});setReady(false);setBusy(false);setReview(null);updateReply({failed:true,text:'Agent 연결이 끊겼습니다. 문서 변경 결과를 확인해 주세요.'});return;}
@@ -139,9 +141,9 @@ function App(){
           {m.sources?.length>0&&<div className="source-list">{m.sources.slice(0,8).map((source,j)=><button className="source-link" key={j} onClick={()=>send({type:'open_source',url:source.url||source.sourceUrl})}>{source.title||source.source||'출처 '+(j+1)}</button>)}</div>}
           {m.artifacts?.length>0&&<div className="artifact-grid">{m.artifacts.map(a=><figure key={a.artifactId}>{a.preview&&<img src={a.preview} alt={a.name}/>}<figcaption>{a.name}</figcaption></figure>)}</div>}
 
-          {m.finished&&!busy&&!question&&(m.failed||m.recovery||m.receipt?.status==='partial'&&!m.receipt.recoveryReviewed)&&<CxNotice tone={m.recovery?'warning':result.tone}>{m.recovery?'남은 작업을 이어서 요청할 수 있습니다.':result.notice}{m.receipt?.kind!=='save_markdown'&&<CxButton disabled={busy} onClick={()=>{send({type:'inspect'});setDraft((active.messages.findLast(row=>row.role==='user')?.text||'')+'\n실제 값을 확인하고 남은 작업을 이어서 처리해줘');requestAnimationFrame(scroll.followLatest);}}>문서 확인 후 이어서 요청</CxButton>}</CxNotice>}
+          {m.finished&&!busy&&!question&&(m.failed||m.recovery||m.receipt?.status==='partial'&&!m.receipt.recoveryReviewed)&&<CxNotice tone={m.recovery?'warning':result.tone}>{m.recovery?'자동 복구를 마치지 못했습니다.':result.notice}{m.receipt?.kind!=='save_markdown'&&<CxButton disabled={busy} onClick={()=>{send({type:'inspect'});setDraft((active.messages.findLast(row=>row.role==='user')?.text||'')+'\n실제 값을 확인하고 남은 작업을 이어서 처리해줘');requestAnimationFrame(scroll.followLatest);}}>다시 시도</CxButton>}</CxNotice>}
           {(m.toolFaults?.length>0||m.receipt?.checkpoint?.available===false||m.receipt?.status==='partial')&&<details className="tool-errors"><summary>작업 상세</summary>{m.receipt?.checkpoint?.available===false&&<p>복원 사본 없음</p>}{m.receipt?.status==='partial'&&<p>이전 변경은 자동 검증되지 않았습니다.{m.receipt.recoveryReviewed?' 사용자 확인 후 남은 작업을 이어갔습니다.':''}</p>}{m.receipt?.nativeCode&&<p>{m.receipt.failedMember} {m.receipt.nativeCode}</p>}{m.toolFaults?.length>0&&<>{documentInputFailure(m.toolFaults.at(-1))?<p>{documentInputFailure(m.toolFaults.at(-1))}</p>:<p>{toolNames[m.toolFaults.at(-1).tool]||'문서 작업'} / <strong>{m.toolFaults.at(-1).member||'Office'}</strong> {m.toolFaults.at(-1).nativeCode}</p>}<p>{m.toolFaults.at(-1).code}</p><CxButton onClick={()=>navigator.clipboard.writeText(JSON.stringify({app:host,version,failures:m.toolFaults},null,2)).catch(()=>setError('오류 정보를 복사하지 못했습니다.'))}>문서 작업 오류 복사</CxButton></>}</details>}
-          {m.incomplete&&!m.failed&&!m.recovery&&<p className="muted">응답을 마치지 못했습니다. 문서 결과를 확인하세요.</p>}
+          {m.incomplete&&!m.failed&&!m.recovery&&<p className="muted">응답이 중단되었습니다. 적용된 변경은 유지됩니다.</p>}
           {m.cancelled&&<p className="muted">중지했습니다. 적용된 변경은 유지됩니다.</p>}
           {m.role==='assistant'&&<footer className="message-actions"><ResponseTime label="" timing={m.timing} live={busy&&i===active.messages.length-1}/>{m.text&&<ActionButton action="copy" label="답변 복사" iconOnly onClick={()=>navigator.clipboard.writeText(m.text).catch(()=>setError('답변을 선택해서 복사해 주세요.'))}/>}</footer>}
         </article>;})}
@@ -150,7 +152,7 @@ function App(){
       {review&&<section className="review" aria-label="문서 변경 승인"><strong>{review.plan.name==='save_markdown'?'Markdown을 저장할까요?':review.plan.kind==='create_document'?'새 문서를 만들까요?':['office_operations','file_operation'].includes(review.plan.kind)?'문서에 적용할까요?':textReview?'문단을 바꿀까요?':'수식을 적용할까요?'}</strong><p>{review.target}</p>{review.checkpoint?.available===false&&<p className="muted">복원 사본 없이 적용됩니다.</p>}{review.plan.kind==='file_operation'?<div className="review-text"><p>{review.plan.summary}</p>{review.plan.warnings?.length>0&&<p>{review.plan.warnings[0]}</p>}</div>:review.plan.kind==='create_document'?<div className="review-text"><strong>{review.plan.content.title}</strong>{(review.plan.content.paragraphs||review.plan.content.slides||review.plan.content.sheets||[]).map((part,i)=><div className="review-block" key={i}><strong>{part.title||part.name||''}</strong><p>{part.text||part.body?.join('\n')}</p>{part.rows&&<div className="review-table"><table><tbody>{part.rows.map((row,r)=><tr key={r}>{row.map((cell,c)=><td key={c}>{cell}</td>)}</tr>)}</tbody></table></div>}</div>)}</div>:review.plan.kind==='office_operations'?<div className="review-text"><p>{review.plan.summary}</p><details><summary>변경 내용 확인</summary>{review.plan.steps.map((step,i)=><div className="review-block" key={i}><strong>{step.target}.{step.member}</strong><pre>{JSON.stringify(step.action==='set'?step.value:step.args,null,2)}</pre></div>)}</details></div>:textReview?<div className="review-text">{review.plan.operations?.length?review.plan.operations.map(op=>{const block=review.plan.before.blocks.find(b=>b.id===op.blockId);return <div className="review-block" key={op.blockId}><strong>{block?.label||op.blockId}</strong><dl><dt>변경 전</dt><dd>{block?.text}</dd><dt>변경 후</dt><dd>{op.text}</dd></dl></div>;}):<dl><dt>변경 전</dt><dd>{review.plan.before.text}</dd><dt>변경 후</dt><dd>{review.plan.replacement}</dd></dl>}</div>:<div className="review-table"><table><thead><tr><th>셀</th><th>입력할 수식</th></tr></thead><tbody>{review.plan.operations.map(op=><tr key={op.address}><td>{op.address}</td><td><code>{op.formula}</code></td></tr>)}</tbody></table></div>}<div className="review-actions"><CxButton onClick={()=>send({type:'approve',runId:review.runId,planId:review.planId,approved:false})}>{review.plan.name==='save_markdown'?'저장 안 함':'적용 안 함'}</CxButton><CxButton variant="primary" onClick={()=>send({type:'approve',runId:review.runId,planId:review.planId,approved:true})}>{review.plan.name==='save_markdown'?'저장':review.checkpoint?.available===false?"복원 사본 없이 적용":"변경 적용"}</CxButton></div></section>}
       {contextNotice&&<p className="office-context-notice" role="status">{contextNotice}</p>}
       </div></div>
-      {scroll.away&&<CxButton className="latest" onClick={scroll.followLatest}>최근 답변으로 이동</CxButton>}
+      {scroll.away&&<CxButton className="latest" data-icon-only aria-label="최근 답변으로 이동" title="최근 답변으로 이동" onClick={scroll.followLatest}><Icon name="arrowDown" size={18}/></CxButton>}
       {sharedBusy&&!busy&&<div className="run-status" role="status">다른 문서에서 작업 중</div>}
       {busy&&!contextBusy&&!question&&!review&&<div className="run-status" role="status"><span className="status-spinner"/>{status}</div>}
       {contextBusy&&<div className="office-context-status" role="status"><span>대화 요약 중</span><CxButton onClick={()=>busy?send({type:'cancel'}):command('cancel',{conversationId:active.id},'context').catch(()=>{})}>취소</CxButton></div>}

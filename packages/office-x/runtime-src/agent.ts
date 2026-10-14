@@ -7,12 +7,14 @@ import {textCompletion} from './text-completion';
 import {preparationOnly,preparationCorrection} from './preparation-completion';
 import {recoverOfficeMember} from './office-recovery';
 export type Recovery={code:string;verifiedWrites:number;uncertainWrites:boolean;nextStep:string};
-const harness=`Use the supplied Office and GenOffice rendering, conversion and recovery tools. Web search and image features are removed. Honor the selected document destination. Inspect the bound document, propose a valid native operation, execute only after approval, then independently read back the result. An error is evidence for a different method, not a reason to repeat identical invalid calls. For member/path/argument errors load_office_guide or inspect_office_members and use typed document helpers. For Count/geometry/type differences inspect actual results; do not guess a value or weaken validation. For snapshot/target errors reread the current document and use the new snapshot. After a partial or uncertain write, the native harness pauses for human confirmation. When it returns read_required with resumed=true, inspect current targets and propose only remaining changes with fresh approval. Earlier writes remain unverified; never replay them blindly. Report verified progress and remaining work separately. A final model reply never proves a document write or save. Keep Korean replies concise. Native approval and recovery cards already show pending decisions and backup availability; do not repeat those notices or raw error codes in chat prose.`;
+const harness=`Use the supplied Office and GenOffice rendering, conversion and recovery tools. Web search and image features are removed. Honor the selected document destination. Inspect the bound document, propose a valid native operation, execute only after approval, then independently read back the result. An error is evidence for a different method, not a reason to repeat identical invalid calls. For member/path/argument errors load_office_guide or inspect_office_members and use typed document helpers. For Count/geometry/type differences inspect actual results; do not guess a value or weaken validation. For snapshot/target errors reread the current document and use the new snapshot. After a partial or uncertain write, the native harness pauses for human confirmation. When it returns read_required with resumed=true, inspect current targets and propose only remaining changes with fresh approval. Earlier writes remain unverified; never replay them blindly. Report verified progress and remaining work separately. A final model reply never proves a document write or save. Recoverable model interruptions do not end the user task. Read current document state and continue unfinished authorized work, including requested save. Never instruct the user to inspect the document and request continuation merely because a response failed. Keep Korean replies concise. Native approval and recovery cards already show pending decisions and backup availability; do not repeat those notices or raw error codes in chat prose.`;
 export function startAgent(options:{transport:AgentTransport;request:string;context:Record<string,unknown>;native:NativeCall;history?:AgentMessage[];additionalSkills?:AgentSkill[];compactionBytes?:number;event:(type:string,data:unknown)=>void}):{cancel():void;result:Promise<AgentRunResult&{recovery?:Recovery}>;messages():AgentMessage[]}{
  let resolve!:(value:AgentRunResult&{recovery?:Recovery})=>void,reject!:(e:Error)=>void;
  const result=new Promise<AgentRunResult&{recovery?:Recovery}>((yes,no)=>{resolve=yes;reject=no;});
  const failures=new Map<string,number>(),ledger:any[]=[],controller=new AbortController();let abortReason='',settled=false,finalHistory:AgentMessage[]|undefined,latestHistory:AgentMessage[]=[];
- let requireNewModelPlan=false,preparationRetryUsed=false;
+ let requireNewModelPlan=false,preparationRetryUsed=false,continuations=0,resuming=false;
+ const blockedCalls=new Set<string>();
+ const callKey=(call:any)=>JSON.stringify([call.name,call.input]);
  const unfinishedPreparation=()=>preparationOnly(options.request,options.context.permissionMode,ledger,editReceipts(native)?.attempted===true);
  const native=trackEdits(options.native);const repaired=new Set<string>();
  const rawSkill=composeSkills('office-x',harness+` Native permission mode: ${options.context.permissionMode==='read'?'read-only: inspect and explain; document changes and saving are disabled. Do not retry blocked writes or ask for conversational approval to bypass this mode.':options.context.permissionMode==='auto'?'requested document edits are pre-authorized by the user through the native permission menu; do not ask for approval for each ordinary edit. Native source checks and readback remain mandatory. Uncertain previous writes still require human recovery review; rollback and external file overwrites remain explicit decisions.':'confirm each change using the native review card, without duplicating it in a chat question.'}`,[(['word','powerpoint'].includes(String(options.context.app))?textSkill:excelSkill)(native,options.context),officeSkill(native,options.context),...(options.additionalSkills||[])]);
@@ -20,7 +22,7 @@ export function startAgent(options:{transport:AgentTransport;request:string;cont
  const skill:AgentSkill={...rawSkill,verifyResponse:(text,executed)=>{
   if(unfinishedPreparation()&&!preparationRetryUsed){preparationRetryUsed=true;options.event('recovery',{stage:'adjusting',code:'preparation_only'});return preparationCorrection;}
   return rawSkill.verifyResponse?.(text,executed)??null;
- },executeTool:async(call,signal)=>{if(requireNewModelPlan)return {summary:call.name,mutated:false,isError:false,output:JSON.stringify({status:'read_required',recovery:'Queued tool skipped after human review. Read the current document and plan remaining work in a new model turn; do not reuse queued writes.'})};const execution=await rawSkill.executeTool(call,signal);if(!execution.isError)return execution;
+ },executeTool:async(call,signal)=>{if(requireNewModelPlan)return {summary:call.name,mutated:false,isError:false,output:JSON.stringify({status:'read_required',recovery:'Queued tool skipped after human review. Read the current document and plan remaining work in a new model turn; do not reuse queued writes.'})};if(blockedCalls.has(callKey(call)))return {summary:call.name,mutated:false,isError:true,output:JSON.stringify({error:'office_repeated_call_blocked',recovery:'This exact call repeatedly failed before completion. Inspect current native members and use a different supported method. Do not repeat it.'})};const execution=await rawSkill.executeTool(call,signal);if(!execution.isError)return execution;
   let failure:any;try{failure=JSON.parse(execution.output);}catch{failure={error:execution.output.startsWith('native_result_unavailable')?'native_result_unavailable':execution.output};}
   if(!signal?.aborted&&!['rejected','cancelled'].includes(String(failure.status||editReceipts(native)?.failure?.status))&&failure.error!=='cancelled'&&(failure.status==='partial'||failure.writeResultUncertain===true||failure.error==='writes_stopped_for_this_run'||failure.error==='native_result_unavailable')){
    options.event('tool_executed',{name:call.name,...execution});
@@ -39,7 +41,18 @@ export function startAgent(options:{transport:AgentTransport;request:string;cont
  // Keep the most recent actual request even if upstream rolls a failed turn out of its history.
  const observed:AgentTransport={stream(request,cb){requireNewModelPlan=false;latestHistory=structuredClone(request.messages);return options.transport.stream(request,cb);}};
  const recover=async(code:string)=>{
-  if(settled)return;settled=true;
+  if(settled||resuming)return;
+  const failure=editReceipts(native)?.failure;
+  const safeToContinue=!failure?.mutated&&!failure?.writeResultUncertain&&!['partial','rejected','cancelled'].includes(String(failure?.status));
+  if(!controller.signal.aborted&&safeToContinue&&continuations<2&&/^(agent_preparation_only|agent_tool_input_failed|agent_tool_failed|agent_no_progress|office_repeated_tool_failure|agent_handoff)$/.test(code)){
+   continuations++;resuming=true;abortReason='';options.event('recovery',{stage:'adjusting',code,attempt:continuations});
+   // Upstream drops failed runs; restore the last submitted history with actual
+   // receipts, never just the original instruction (which could replay writes).
+   const history=structuredClone(latestHistory.length?latestHistory:[...loop.messages]);
+   queueMicrotask(()=>{resuming=false;if(controller.signal.aborted){if(!settled){settled=true;resolve({text:'',cancelled:true,turnLimit:false});}return;}loop.restore(history);loop.run('Continue from the actual receipts; this is an internal recovery, not a new user request. Honor the current document target and permission mode. Do not ask the user to inspect the document or repeat the request. Continue only the unfinished part of this request: '+options.request+' Re-read actual document state first. Previously verified changes must not be repeated. Repeated rejected calls are unavailable; choose a different native method.');});
+   return;
+  }
+  settled=true;
   if(controller.signal.aborted){resolve({text:'',cancelled:true,turnLimit:false});return;}
   const verified=ledger.filter(x=>x.status==='verified'&&x.mutated),uncertain=ledger.some(x=>x.mutated&&x.status!=='verified');
   const recovery:Recovery={code,verifiedWrites:verified.length,uncertainWrites:uncertain,nextStep:uncertain?'문서의 실제 값을 다시 읽어 변경 상태를 확인합니다.':'현재 문서를 다시 읽고 지원되는 도구로 남은 작업을 이어갑니다.'};
@@ -59,12 +72,12 @@ export function startAgent(options:{transport:AgentTransport;request:string;cont
   onToolExecuted:event=>{options.event('tool_executed',{name:event.call.name,...event.execution});let d:any;try{d=JSON.parse(event.execution.output);}catch{d={};}ledger.push({tool:event.call.name,status:d.status|| (event.execution.isError?'failed':'read'),error:d.error,member:d.failedMember,mutated:event.execution.mutated===true,completedWrites:d.completedWrites,saved:d.saved,fileHashVerified:d.saved===true&&/^[a-f0-9]{64}$/.test(d.sha256||''),qualityComplete:d.quality?.complete,checksPassed:Array.isArray(d.checks)&&d.checks.every((c:any)=>c.passed===true)});
    if(!event.execution.isError){if(event.execution.mutated)failures.clear();return;}const code=d.error;if(typeof code!=='string'||!(/^(office_[a-z_]+|native_execution_failed|writes_stopped_for_this_run)$/.test(code)))return;
    const key=[event.call.name,code,d.failedMember||'',JSON.stringify(event.call.input)].join(':');const count=(failures.get(key)||0)+1;failures.set(key,count);options.event('recovery',{stage:'adjusting',code,attempt:count});
-   if(count>=3){abortReason='office_repeated_tool_failure';loop.cancel();}
+   if(count>=3){blockedCalls.add(callKey(event.call));abortReason='office_repeated_tool_failure';loop.cancel();}
   },
   onDone:value=>{if(!value.cancelled&&!controller.signal.aborted&&unfinishedPreparation()){
    if(!preparationRetryUsed){preparationRetryUsed=true;options.event('recovery',{stage:'adjusting',code:'preparation_only'});queueMicrotask(()=>{if(!controller.signal.aborted)loop.run(preparationCorrection);else if(!settled){settled=true;resolve({...value,cancelled:true});}});return;}
    void recover('agent_preparation_only');return;
-  }if(abortReason){void recover(abortReason);return;}if(!settled){settled=true;resolve(value);}},onError:error=>{void recover(classifyAgentFailure(error));},
+  }if(!value.cancelled&&!controller.signal.aborted&&options.context.permissionMode!=='read'&&/이어서|남은 작업|다시 요청/.test(value.text)&&/확인해\s*주|확인하세요|요청하세요|요청해\s*주/.test(value.text)){void recover('agent_handoff');return;}if(abortReason){void recover(abortReason);return;}if(!settled){settled=true;resolve(value);}},onError:error=>{void recover(classifyAgentFailure(error));},
  }});
  if(options.history)loop.restore(options.history);loop.run(options.request);
  return {cancel:()=>{controller.abort();loop.cancel();},result,messages:()=>structuredClone(finalHistory||[...loop.messages])};

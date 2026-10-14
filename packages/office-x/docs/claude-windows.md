@@ -19,3 +19,11 @@
 Windows 11 실제 PC, 프로필별 실행 정책, 실제 Claude 계정 및 Office 내 실행은 현장 검증 대상이다. WSL 안에서만 실행되는 Linux Claude는 이 Windows 어댑터의 자동 탐지 대상이 아니다.
 
 공식 근거: [Claude Code 설치와 버전 확인](https://code.claude.com/docs/en/setup), [Node의 Windows CMD/BAT 실행 규칙](https://nodejs.org/download/release/v25.9.0/docs/api/child_process.html).
+
+## 0.8.16 연결 경로 수정
+
+- `CLAUDE_CODE_GIT_BASH_PATH`만 비밀 정보가 아닌 실행 경로로 유지합니다. 인증 키·엔드포인트·별도 인증 저장소는 전달하지 않습니다. 환경 변수 이름의 대소문자도 동일하게 필터링합니다.
+- `auth status`가 종료 코드 1과 `loggedIn:false`를 반환한 경우만 로그인 필요로 분류합니다. 프로세스 실행 실패는 `claude_auth_check_failed`로 구분합니다.
+- 목록 초기화에는 JSON 답변 필드를 요구하지 않습니다. `--json-schema` 답변 요청에서만 structured output을 검증합니다.
+- 원문 stderr는 저장하거나 노출하지 않습니다. 제한된 오류 코드로만 실행 환경·네트워크·인증·모델 목록을 구분합니다.
+- Mac 실제 CLI 인증/목록 성공은 Windows 실계정 연결 성공을 증명하지 않습니다.

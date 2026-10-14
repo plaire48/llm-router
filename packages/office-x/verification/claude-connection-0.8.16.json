@@ -1,0 +1,7 @@
+{
+  "platform": "darwin",
+  "connected": true,
+  "modelCount": 12,
+  "elapsedMs": 1884,
+  "scope": "Actual CLI-owned authentication and model catalog only. No Office, Windows account, or model completion."
+}
