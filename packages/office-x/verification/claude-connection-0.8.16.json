@@ -3,5 +3,6 @@
   "connected": true,
   "modelCount": 12,
   "elapsedMs": 1884,
-  "scope": "Actual CLI-owned authentication and model catalog only. No Office, Windows account, or model completion."
+  "scope": "Actual macOS CLI authentication, model catalog and one text-only completion. No Windows or Office execution.",
+  "completionVerified": true
 }

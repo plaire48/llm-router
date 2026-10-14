@@ -1,0 +1,38 @@
+{
+  "version": "0.8.16",
+  "sourceTests": {
+    "passed": 169,
+    "skipped": 5,
+    "platform": "darwin"
+  },
+  "browserFixture": {
+    "apps": [
+      "excel",
+      "word",
+      "powerpoint"
+    ],
+    "widths": [
+      280,
+      320,
+      420
+    ],
+    "iconOnlyLatest": true,
+    "layoutAndInput": true,
+    "asyncConnectionErrorVisibleInModelForm": true
+  },
+  "continuationFixture": {
+    "sequence": [
+      "write A1",
+      "provider envelope failure",
+      "inspect current document",
+      "write B1",
+      "save current document"
+    ],
+    "nativeWriteReplay": false,
+    "completed": true,
+    "uncertainWriteHITLRetained": true,
+    "preparationRecoveryLimit": 2
+  },
+  "actualWindowsOffice": false,
+  "actualWindowsClaudeAccount": false
+}

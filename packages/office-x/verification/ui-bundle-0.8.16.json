@@ -1,0 +1,6 @@
+{
+  "files": 140,
+  "byteIdentical": true,
+  "version": "0.8.16",
+  "scope": "every packaged UI file equals locally tested UI; development audit fixture excluded"
+}

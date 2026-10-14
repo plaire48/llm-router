@@ -8,4 +8,8 @@
 - Claude Code 실행에 필요한 Git Bash 경로는 유지하면서 API 키와 인증 저장소 변경 환경변수는 계속 제외합니다. CLI 인증 상태 명령 실패를 로그아웃으로 오인하지 않도록 분리했습니다.
 - 모델 목록 초기화의 정상 종료 응답에는 문서 답변용 structured_output 검사를 적용하지 않습니다. 인증 명령, 모델 목록, 실행 환경 오류를 구별해 표시합니다.
 
-Mac의 실제 Claude Code에서 공식 인증 확인과 모델 목록 초기화는 확인했습니다. Windows Office 2016 및 Windows 실계정 Claude/ChatGPT는 연결 가능한 PC가 없어 직접 검증하지 못했습니다. Windows CI의 설치, WebView2, COM 모의 객체 검증은 실제 Office 사용 검증과 구분합니다.
+Mac의 실제 Claude Code에서 공식 인증 확인, 모델 목록 초기화와 짧은 답변 완료를 확인했습니다. Windows Office 2016 및 Windows 실계정 Claude/ChatGPT는 연결 가능한 PC가 없어 직접 검증하지 못했습니다. Windows CI의 설치, WebView2, COM 모의 객체 검증은 실제 Office 사용 검증과 구분합니다.
+
+Windows 테스트 173개, 코어 검사 141개, 32·64비트 COM 모의 객체 검사와 실제 WebView2 클릭·입력·승인 검증을 통과했습니다. 설치 8.34초, 재설치 6.46초, 제거 1.45초였으며 설치된 문서 변환 및 한국어 OCR도 통과했습니다.
+
+[Windows 빌드와 검증](https://github.com/plaire48/llm-router/actions/runs/38507823390)

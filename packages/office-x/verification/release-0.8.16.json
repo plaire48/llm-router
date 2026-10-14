@@ -1,0 +1,25 @@
+{
+  "version": "0.8.16",
+  "buildCommit": "472789cc8b318fc9e83ebb508e53346fe25259ca",
+  "ciRun": 38507823390,
+  "windowsTests": {
+    "passed": 173,
+    "skipped": 1
+  },
+  "coreTests": {
+    "passed": 141
+  },
+  "nativeCOM": "x86/x64 simulated COM objects passed",
+  "installedWebView2": {
+    "apps": 3,
+    "physicalClickAndTyping": true,
+    "approvals": 3
+  },
+  "installSeconds": 8.34,
+  "reinstallSeconds": 6.46,
+  "uninstallSeconds": 1.45,
+  "installedConvertersAndKoreanOCR": true,
+  "actualWindowsOffice": false,
+  "actualWindowsClaudeAccount": false,
+  "actualMacClaudeTextCompletion": true
+}
