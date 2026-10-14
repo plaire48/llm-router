@@ -21,7 +21,7 @@ export function officeProviders(vault, overrides={}) {
   // A staged model form can refresh another account without switching the
   // conversation or persisting a provider change before the user presses Apply.
   return {...providers,
-    status:()=>{const state=providers.status(),diagnostic=claude.connectionDiagnostic();return state.loginError&&diagnostic?{...state,loginError:diagnostic.code,connectionStage:diagnostic.stage}:state;},
+    status:()=>{const state=providers.status(),diagnostic=claude.connectionDiagnostic();return state.provider==='claude'&&state.loginError&&diagnostic?{...state,loginError:diagnostic.code,connectionStage:diagnostic.stage}:state;},
     restoreConnections:async(records,selected)=>{
       const restored=await providers.restoreConnections(records,selected);
       if(selected&&selected!=='claude'){

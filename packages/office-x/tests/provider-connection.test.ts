@@ -41,3 +41,8 @@ it('restores the requested non-Claude account even while Claude was previously a
  const p=officeProviders(async()=>{},{createBase:()=>base,createClaude:()=>({status:()=>({provider:'claude',connected:true,models:[],model:'sonnet'})})});
  await p.select('claude');expect(p.status().provider).toBe('claude');const state=await restoreManualConnection(p,{provider:'aipro'},'aipro');expect(state.provider).toBe('aipro');expect(p.status().provider).toBe('aipro');expect(state.connected).toBe(true);
 });
+it('keeps an earlier Claude diagnostic from replacing another provider login error',async()=>{
+ const base={status:()=>({provider:'aipro',connected:false,providers:[],loginError:'tls_untrusted'})};
+ const p=officeProviders(async()=>{},{createBase:()=>base,createClaude:()=>({status:()=>({provider:'claude',connected:false}),connect:async()=>{throw Error('claude_cli_update');}})});
+ await expect(p.connect({provider:'claude'})).rejects.toThrow('claude_cli_update');expect(p.status().loginError).toBe('tls_untrusted');
+});
